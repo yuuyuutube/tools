@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Audio recovery test</title></head>
+<body><div id="app"></div><script type="module">
+  const NativeContext = window.AudioContext;
+  const pending = new URLSearchParams(location.search).get('mode') === 'pending';
+  let failures = 2;
+  let unlocked = false;
+  window.AudioContext = class extends NativeContext {
+    get state() { return unlocked ? super.state : 'suspended'; }
+    resume() {
+      if (failures-- > 0) return pending ? new Promise(() => {}) : Promise.reject(new DOMException('Test activation blocked', 'NotAllowedError'));
+      unlocked = true;
+      return super.resume();
+    }
+  };
+  await import('/src/main.ts');
+</script></body></html>
