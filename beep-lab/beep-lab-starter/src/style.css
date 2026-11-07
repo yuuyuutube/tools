@@ -376,3 +376,8 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
 .terrain-note { opacity: 0; pointer-events: none; transition: opacity .2s ease; }
 .terrain-note.art-playing { opacity: .8; }
 @media(prefers-reduced-motion:reduce) { .terrain-note { transition: none; } }
+.letterpress-art { isolation: isolate; }
+.ink-plate { mix-blend-mode: multiply; }
+.letterpress-note { transition: filter .18s ease; }
+.letterpress-note.art-playing { filter: brightness(1.2) saturate(1.2); }
+@media(prefers-reduced-motion:reduce) { .letterpress-note { transition: none; } }

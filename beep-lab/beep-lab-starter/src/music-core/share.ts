@@ -32,7 +32,7 @@ export function decodeShare(payload: string): Melody {
 }
 export function shareUrl(melody: Melody, base: string): string {
   const url = new URL(base); const art=url.searchParams.get('art');url.search = '?view=card';
-  if(art==='stars'||art==='weave'||art==='rhythm'||art==='terrain'||art==='random')url.searchParams.set('art',art); url.hash = `melody=${encodeShare(melody)}`;
+  if(art==='stars'||art==='weave'||art==='rhythm'||art==='terrain'||art==='letterpress'||art==='random')url.searchParams.set('art',art); url.hash = `melody=${encodeShare(melody)}`;
   if (url.href.length > MAX_SHARE_URL_LENGTH) throw new Error('分享網址太長，請縮短曲名或旋律後再試。');
   return url.href;
 }
