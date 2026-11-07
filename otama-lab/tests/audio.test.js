@@ -14,7 +14,8 @@ class AudioNode {
   start() { this.started = true; }
   stop(time) { this.stopped = true; this.stopTime = time; this.onended?.(); }
 }
-class Context {
+class Context extends EventTarget {
+  state = 'running';
   currentTime = 1; destination = {}; nodes = [];
   resume() { return Promise.resolve(); }
   createOscillator() { const node = new AudioNode(); this.nodes.push(node); return node; }
@@ -60,4 +61,32 @@ test('unsupported audio and rejected resume are recoverable', async () => {
   await synth.play(); assert.equal(synth.voice, null);
   await assert.rejects(synth.setEnabled(true), /音訊未能啟動/);
   assert.equal(synth.enabled, false);
+});
+
+test('a resumed but interrupted context never reports sound enabled', async () => {
+  class InterruptedContext extends Context { state = 'interrupted'; }
+  const synth = new Synth({ Context: InterruptedContext });
+  await assert.rejects(synth.setEnabled(true), /音訊未能啟動/);
+  assert.equal(synth.enabled, false);
+  assert.equal(synth.context.nodes.length, 0);
+});
+test('context interruptions stop an existing voice and allow a click to retry', async () => {
+  const messages = [];
+  const synth = new Synth({ Context, onState: (playing, message) => { if (message) messages.push(message); } });
+  await synth.setEnabled(true); await synth.play();
+  const voice = synth.voice;
+  synth.context.state = 'interrupted'; synth.context.dispatchEvent(new Event('statechange'));
+  assert.equal(synth.enabled, false); assert.equal(synth.voice, null); assert.equal(voice.osc.stopped, true);
+  assert.match(messages.at(-1), /音訊已暫停/);
+  synth.context.state = 'running'; await synth.setEnabled(true); await synth.play();
+  assert.ok(synth.voice); synth.stop();
+});
+test('a fresh enable gesture supersedes a blocked first resume', async () => {
+  const gate = deferred(); let attempts = 0;
+  class RetryContext extends Context { resume() { return ++attempts === 1 ? gate.promise : Promise.resolve(); } }
+  const synth = new Synth({ Context: RetryContext });
+  const first = synth.setEnabled(true);
+  assert.equal(await synth.setEnabled(true), true);
+  gate.resolve(); assert.equal(await first, false);
+  assert.equal(synth.enabled, true);
 });

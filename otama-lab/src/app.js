@@ -6,11 +6,21 @@ import { bindFocusMode } from './focus.js';
 const $ = id => document.getElementById(id);
 let position = .35, model = 'inverse', reference = BASE, sounding = false;
 let soundRequest = 0, pendingEnable = false;
-let focused = false, instrumentHeld = false, audioEnableTask = null, focusSession = 0;
+let focused = false, instrumentHeld = false, audioEnableTask = null, focusMutedByUser = false;
 const plots = [new PitchPlot($('frequency-plot'), 'frequency'), new PitchPlot($('pitch-plot'), 'pitch')];
-function soundButton(label, enabled) {
+function soundButton(label, enabled, { pending = false, error = false } = {}) {
   $('sound-label').textContent = label;
-  $('sound-icon').setAttribute('href', enabled ? '#icon-volume' : '#icon-muted');
+  for (const id of ['sound', 'focus-sound']) {
+    const button = $(id);
+    button.setAttribute('aria-pressed', String(enabled));
+    button.setAttribute('aria-busy', String(pending));
+    button.setAttribute('aria-label', label);
+    button.title = label;
+    button.dataset.error = String(error);
+  }
+  for (const id of ['sound-icon', 'focus-sound-icon']) {
+    $(id).setAttribute('href', enabled ? '#icon-volume' : '#icon-muted');
+  }
 }
 function audioStatus(message) {
   $('audio-status').textContent = message || (sounding ? '發聲中' : synth.enabled ? '聲音已開啟' : '聲音已關閉');
@@ -18,6 +28,8 @@ function audioStatus(message) {
 const synth = new Synth({ onState(playing, error) {
   sounding = playing;
   $('face').classList.toggle('playing', playing);
+  if (error) soundButton('重試聲音', false, { error: true });
+  else if (!synth.enabled && !pendingEnable) soundButton('開啟聲音', false);
   audioStatus(error);
 } });
 function render() {
@@ -54,7 +66,7 @@ function render() {
 function setPosition(value) { position = clamp(value); render(); }
 const instrument = bindInstrument({ strip: $('strip'), track: $('track'), range: $('pos'), getPosition: () => position, onPosition: setPosition, onStart() {
   instrumentHeld = true;
-  if (focused && !synth.enabled) {
+  if (focused && !synth.enabled && !focusMutedByUser) {
     void ensureSound().then(enabled => { if (enabled && instrumentHeld && focused) synth.play(); });
   } else synth.play();
 }, onStop() { instrumentHeld = false; synth.stop(); } });
@@ -80,21 +92,18 @@ $('octave').addEventListener('click', () => { instrument.stop(); setPosition(pos
 async function setSoundEnabled(enable) {
   const request = ++soundRequest;
   pendingEnable = enable;
-  $('sound').setAttribute('aria-pressed', String(enable));
-  soundButton(enable ? '啟動中…' : '開啟聲音', false);
+  soundButton(enable ? '重試啟動聲音' : '開啟聲音', false, { pending: enable });
   try {
     await synth.setEnabled(enable);
     if (request !== soundRequest) return false;
     pendingEnable = false;
-    $('sound').setAttribute('aria-pressed', String(synth.enabled));
     soundButton(synth.enabled ? '關閉聲音' : '開啟聲音', synth.enabled);
     audioStatus();
     return synth.enabled;
   } catch (error) {
     if (request !== soundRequest) return false;
     pendingEnable = false;
-    $('sound').setAttribute('aria-pressed', 'false');
-    soundButton('重試聲音', false);
+    soundButton('重試聲音', false, { error: true });
     audioStatus(error.message);
     return false;
   }
@@ -107,30 +116,28 @@ function ensureSound() {
   }
   return audioEnableTask;
 }
-$('sound').addEventListener('click', () => {
+// A real click can retry a suspended first-touch resume instead of merely
+// canceling it. Both views use the same state and the same enable request.
+function toggleSound() {
+  const enable = !synth.enabled;
+  focusMutedByUser = !enable;
+  audioEnableTask = null;
   instrument.stop();
-  void setSoundEnabled(!(synth.enabled || pendingEnable));
-});
+  void setSoundEnabled(enable);
+}
+for (const id of ['sound', 'focus-sound']) $(id).addEventListener('click', toggleSound);
 const focus = bindFocusMode({
   button: $('focus-mode'), strip: $('strip'),
   onEnter({ activateAudio }) {
-    instrument.stop(); focused = true;
-    const session = ++focusSession;
-    if (!activateAudio) return; // A direct link waits for the first real playing gesture.
-    void ensureSound().then(enabled => {
-      if (!enabled && focus.active && session === focusSession) {
-        const message = $('audio-status').textContent;
-        focus.exit(); audioStatus(message);
-      }
-    });
+    instrument.stop(); focused = true; focusMutedByUser = false;
+    if (activateAudio) void ensureSound();
   },
-  onExit() { ++focusSession; instrument.stop(); focused = false; render(); },
+  onExit() { instrument.stop(); focused = false; render(); },
 });
 // Emergency stop also invalidates a not-yet-completed enable gesture.
 function emergencyStop() {
   ++soundRequest; pendingEnable = false; audioEnableTask = null;
   instrument.stop(); synth.setEnabled(false);
-  $('sound').setAttribute('aria-pressed', 'false');
   soundButton('開啟聲音', false); audioStatus();
 }
 $('stop').addEventListener('click', emergencyStop);

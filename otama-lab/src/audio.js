@@ -13,10 +13,19 @@ export class Synth {
     if (!enabled) return false;
     if (!this.Context) throw new Error('此瀏覽器不支援 Web Audio，仍可使用滑軌與圖表。');
     try {
-      this.context ||= new this.Context();
+      if (!this.context || this.context.state === 'closed') {
+        const ctx = this.context = new this.Context();
+        ctx.addEventListener('statechange', () => {
+          if (ctx !== this.context || ctx.state === 'running' || !this.enabled) return;
+          this.enabled = false;
+          this.stop();
+          this.onState(false, '音訊已暫停，請點聲音按鈕重新啟動。');
+        });
+      }
       // Called directly from a user gesture, never on page load.
       await this.context.resume();
       if (request !== this.enableGeneration) return false;
+      if (this.context.state !== 'running') throw new Error('Audio context is not running');
       this.enabled = true;
       return true;
     } catch {
@@ -35,6 +44,7 @@ export class Synth {
     try {
       await this.context.resume();
       if (request !== this.generation || !this.enabled) return;
+      if (this.context.state !== 'running') throw new Error('Audio context is interrupted');
       const ctx = this.context, osc = ctx.createOscillator(), filter = ctx.createBiquadFilter(), gain = ctx.createGain();
       osc.type = 'sawtooth'; osc.frequency.value = this.frequency;
       filter.type = 'lowpass'; filter.frequency.value = 1150;
@@ -46,6 +56,7 @@ export class Synth {
       gain.gain.linearRampToValueAtTime(.045, ctx.currentTime + .012);
       this.onState(true);
     } catch {
+      this.enabled = false;
       this.stop();
       this.onState(false, '音訊被瀏覽器中斷，請關閉再開啟聲音。');
     }

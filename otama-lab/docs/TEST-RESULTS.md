@@ -110,3 +110,11 @@ npm run build
 - 確認載入時已進入專注模式但聲音開關仍關閉；第一次按住即啟動音訊與發聲表情，滑到靠近頭部可達 C6，放開停止。
 - 確認 `?mode=play&keep=test#strip` 的其他 query 與 anchor 均保留；退出只移除 mode，並恢復最新音高讀值。
 - 本機實際開啟 `/?mode=play` 已直接顯示琴頸與臉。音訊不依賴載入時的自動播放，仍遵守瀏覽器手勢要求。
+
+## 專注模式聲音控制修正
+
+- 使用者回報手機初次演奏可能靜音；尚未在同一實體手機重現，沒有假定已確認裝置原因。增加模式內的顯性 click 音訊開關，並保留原本首次操作自動嘗試啟動。
+- Node 19 / 19 通過，新增：resume 後仍 interrupted 不標示成功、播放途中中斷會停止且可重試、新 click enable 請求可取代未完成的首次 resume。
+- 瀏覽器 112 項檢查包含：專注模式聲音按鈕只有 SVG 且有可讀名稱、與一般開關同步、手動靜音後拖曳維持靜音、中斷不離開專注、在模式內重新啟動、直連模式直接開關聲音。
+- 已在本機 390px viewport 實際點擊喇叭一次，兩個開關均為 aria-pressed=true、圖示切換為 volume，畫面高度與 scrollHeight 同為 844。
+- 音訊啟用規則參考 [WebKit user activation](https://webkit.org/blog/13862/the-user-activation-api/) 與 [AudioContext state](https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/state)。此規則是可能原因，並非對使用者手機的診斷。

@@ -66,10 +66,17 @@ PASS: no horizontal page overflow
 PASS: focus mode enters and enables audio from its gesture
 PASS: focus mode URL can be bookmarked
 PASS: focus mode hides graphs, readouts and labels
-PASS: focus mode only keeps its exit control visible
+PASS: focus mode keeps sound and exit controls visible
 PASS: focus mode fits the viewport without overflow
 PASS: performance interface prevents accidental text selection
 PASS: exit button is accessible
+PASS: focus sound button is icon-only with an accessible name
+PASS: focus and lab sound controls show the same enabled state
+PASS: focus mute updates both controls without leaving the stage
+PASS: dragging after explicit mute does not turn audio back on
+PASS: focus sound can be enabled again with one click
+PASS: an interruption keeps the stage but updates both sound icons
+PASS: the focus sound button retries audio after interruption
 PASS: focus touch hold produces a playing expression
 PASS: fast focus glissando reaches the high endpoint near the head
 PASS: hidden graphs stay idle during performance
@@ -87,6 +94,8 @@ PASS: direct link preserves other URL parameters and anchor
 PASS: first hold in the direct link enables and plays audio
 PASS: direct link glides down to the high endpoint
 PASS: direct link release stops the sound
+PASS: direct-link sound button can mute without leaving focus
+PASS: direct-link sound button can restart without leaving focus
 PASS: direct link exit preserves unrelated query and anchor
 PASS: direct link exit restores the current pitch in the lab
 PASS: native Web Audio starts while keyboard is held
@@ -101,4 +110,4 @@ PASS: lostpointercapture: real synth starts on synthetic touch hold
 PASS: lostpointercapture: real synth stops
 PASS: window blur stops native synth
 PASS: emergency stop and disabling leave no voice
-103/103 passed
+112/112 passed
