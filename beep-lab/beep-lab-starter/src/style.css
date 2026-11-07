@@ -318,3 +318,8 @@ button:disabled { cursor: default; opacity: .45; }
 .roll-note { cursor: grab; touch-action: pan-y; }
 .roll-note.moving { cursor: grabbing; opacity: .65; }
 .roll-note.swap-target .roll-note-label { outline: 2px dashed var(--orange); outline-offset: 2px; }
+
+.roll-row-hover { position: absolute; left: 0; right: 0; height: 24px; pointer-events: none; background: #8ca56b26; }
+.roll-pitch.hovered { background: #bdcda7; color: #304226; font-weight: bold; }
+.rest-viewport.is-hovered { background: #d4dfc6; }
+.rest-viewport.is-hovered .rest-caption { background: #bdcda7; }

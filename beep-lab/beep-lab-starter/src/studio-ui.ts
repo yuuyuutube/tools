@@ -23,6 +23,12 @@ export function createStudio(container: HTMLElement, actions: {
   pitch.innerHTML = '<option value="rest">休止符</option>' + Array.from({length:36},(_,step)=>`<option value="${step}">${pitchSteps[step%12].toUpperCase()}${Math.floor(step/12)+1}</option>`).join('');
   let current: EditorState;
   let columns: {left:number;width:number}[] = [];
+  const rowHighlight = document.createElement('div'); rowHighlight.className='roll-row-hover'; rowHighlight.hidden=true;
+  function highlightRow(row: number | null) {
+    rowHighlight.hidden=row===null;
+    if(row!==null)rowHighlight.style.top=`${row*24}px`;
+    roll.querySelectorAll<HTMLElement>('.roll-pitch').forEach(label=>label.classList.toggle('hovered',Number(label.dataset.row)===row));
+  }
   const ghost = document.createElement('div'); ghost.className = 'roll-hover'; ghost.hidden = true;
   const hint = document.createElement('span'); hint.className = 'roll-hover-hint'; ghost.append(hint);
   let drag: { pointerId: number; startX: number; startScroll: number; original: MusicEvent; next: MusicEvent; handle: HTMLButtonElement; label: HTMLElement; width: number; left: string } | undefined;
@@ -72,8 +78,9 @@ export function createStudio(container: HTMLElement, actions: {
     if (commit) actions.update(pending.next);
   }
   roll.onpointermove = event => {
-    if(move?.active)return;
+    if(move?.active){highlightRow(null);return;}
     if (drag) {
+      highlightRow(null);
       if (event.pointerId !== drag.pointerId) return;
       const width = Math.max(1,drag.width + event.clientX-drag.startX + scroll.scrollLeft-drag.startScroll);
       drag.next = resizeRhythm(drag.original,width);
@@ -83,17 +90,24 @@ export function createStudio(container: HTMLElement, actions: {
       drag.handle.title=`預覽 ${formatEvent(drag.next)}，放開套用`;
       return;
     }
-    if (event.pointerType === 'touch' || (event.target as HTMLElement).closest('.roll-note, .roll-resize')) { ghost.hidden=true; return; }
+    if(event.pointerType==='touch'){ghost.hidden=true;highlightRow(null);return;}
+    const hovered=(event.target as HTMLElement).closest<HTMLElement>('.roll-note, .roll-resize');
+    if(hovered){
+      const eventIndex=hovered.classList.contains('roll-resize')?current.cursor-1:Number(hovered.dataset.index);
+      const step=current.melody.events[eventIndex]?noteStep(current.melody.events[eventIndex]):null;
+      highlightRow(step===null?null:35-step);ghost.hidden=true;return;
+    }
     const rect=roll.getBoundingClientRect(); const x=event.clientX-rect.left-42;
     const index=columns.findIndex(c=>x>=c.left && x<c.left+c.width);
     const row=Math.floor((event.clientY-rect.top)/24);
+    highlightRow(row>=0&&row<36?row:null);
     if(index<0 || row<0 || row>35){ghost.hidden=true;return;}
     ghost.hidden=false; ghost.style.left=`${42+columns[index].left}px`; ghost.style.top=`${row*24}px`; ghost.style.width=`${columns[index].width-4}px`;
     hint.style.bottom=row===0?'auto':'25px'; hint.style.top=row===0?'25px':'auto';
     hint.textContent=row===36?'休止符':`${pitchSteps[(35-row)%12].toUpperCase()}${Math.floor((35-row)/12)+1}`;
   };
-  roll.onpointerleave = () => { if(!drag) ghost.hidden=true; };
-  scroll.addEventListener('scroll',()=>{ghost.hidden=true;restGhost.hidden=true;restLane.style.transform=`translateX(${-scroll.scrollLeft}px)`;nextCaption.style.top=`${scroll.scrollTop+4}px`;});
+  roll.onpointerleave = () => { if(!drag) ghost.hidden=true; highlightRow(null); };
+  scroll.addEventListener('scroll',()=>{highlightRow(null);restLane.parentElement!.classList.remove('is-hovered');ghost.hidden=true;restGhost.hidden=true;restLane.style.transform=`translateX(${-scroll.scrollLeft}px)`;nextCaption.style.top=`${scroll.scrollTop+4}px`;});
   window.addEventListener('blur',()=>{clearDrag(false);clearMove(false);});
   document.addEventListener('visibilitychange',()=>{if(document.hidden){clearDrag(false);clearMove(false);}});
   document.addEventListener('keydown',event=>{if(event.key==='Escape' && (drag||move)){event.preventDefault();clearDrag(false);clearMove(false);}});
@@ -119,6 +133,7 @@ export function createStudio(container: HTMLElement, actions: {
     actions.update(noteFromStep(35-row,original));
   };
   restLane.onpointermove=event=>{
+    restLane.parentElement!.classList.toggle('is-hovered',event.pointerType!=='touch'&&!drag&&!move?.active);
     if(drag){roll.onpointermove?.call(roll,event);return;}
     if(event.pointerType==='touch'||drag||move?.active||(event.target as HTMLElement).closest('.roll-note,.roll-resize')){restGhost.hidden=true;return;}
     const x=event.clientX-restLane.getBoundingClientRect().left-42;
@@ -126,7 +141,7 @@ export function createStudio(container: HTMLElement, actions: {
     restGhost.hidden=index<0;
     if(index>=0){restGhost.style.left=`${42+columns[index].left}px`;restGhost.style.width=`${columns[index].width-4}px`;}
   };
-  restLane.onpointerleave=()=>{restGhost.hidden=true;};
+  restLane.onpointerleave=()=>{restGhost.hidden=true;restLane.parentElement!.classList.remove('is-hovered');};
   restLane.onclick=event=>{
     if(performance.now()<suppressClickUntil||(event.target as HTMLElement).closest('.roll-note,.roll-resize'))return;
     const x=event.clientX-restLane.getBoundingClientRect().left-42;
@@ -142,9 +157,9 @@ export function createStudio(container: HTMLElement, actions: {
       current = state;
       const previousScroll = scroll.scrollLeft;
       restLane.replaceChildren(restGhost); restGhost.hidden=true;
-      roll.replaceChildren(ghost,nextColumn); ghost.hidden=true; columns=[];
+      roll.replaceChildren(rowHighlight,ghost,nextColumn); highlightRow(null); ghost.hidden=true; columns=[];
       for(let row=0;row<36;row++) {
-        const label=document.createElement('span'); label.className='roll-pitch'; label.style.top=`${row*24}px`;
+        const label=document.createElement('span'); label.className='roll-pitch'; label.dataset.row=String(row); label.style.top=`${row*24}px`;
         label.textContent=row===36?'休止':`${pitchSteps[(35-row)%12].toUpperCase()}${Math.floor((35-row)/12)+1}`;
         roll.append(label);
       }
@@ -193,11 +208,11 @@ export function createStudio(container: HTMLElement, actions: {
       });
       columns.push({left,width:112});
       nextColumn.style.left=`${42+left}px`;nextColumn.style.width='112px';nextCaption.style.top=`${scroll.scrollTop+4}px`;
-      const totalWidth=`${Math.max(300,left+160)}px`;
+      const totalWidth=`${Math.max(300,left+176)}px`;
       roll.style.width=restLane.style.width=totalWidth;
       restLane.style.transform=`translateX(${-previousScroll}px)`;
       const addRest=document.createElement('button');addRest.className='rest-add';addRest.textContent='新增休止';addRest.setAttribute('aria-label','在結尾新增休止');
-      addRest.style.left=`${42+left+4}px`;addRest.onclick=event=>{event.stopPropagation();actions.append({type:'rest',duration:4,dotted:false});};restLane.append(addRest);
+      addRest.style.left=`${42+left+16}px`;addRest.onclick=event=>{event.stopPropagation();actions.append({type:'rest',duration:4,dotted:false});};restLane.append(addRest);
       const event=selected(); const step=event?noteStep(event):null;
       pitch.disabled=duration.disabled=dot.disabled=!event;
       container.querySelector<HTMLButtonElement>('#studio-delete')!.disabled=!event;
@@ -208,7 +223,7 @@ export function createStudio(container: HTMLElement, actions: {
       const index=current.cursor-1, event=selected(); if(!event) {scroll.scrollTop=400;return;}
       const row=noteStep(event); if(row!==null)scroll.scrollTop=Math.max(0,(35-row)*24-scroll.clientHeight/2);
       const col=columns[index];
-      if(col && index===current.melody.events.length-1 && col.width<=scroll.clientWidth-42)scroll.scrollLeft=Math.max(0,col.left+col.width+154-scroll.clientWidth);
+      if(col && index===current.melody.events.length-1 && col.width<=scroll.clientWidth-42)scroll.scrollLeft=Math.max(0,col.left+col.width+170-scroll.clientWidth);
       else if(col && (col.left<scroll.scrollLeft || col.left+col.width>scroll.scrollLeft+scroll.clientWidth-42))scroll.scrollLeft=col.left;
     },
     position(index: number|null) {
