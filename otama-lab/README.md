@@ -14,9 +14,23 @@ python3 -m http.server 4187 --bind 127.0.0.1
 
 開啟 <http://127.0.0.1:4187/>。`app.bundle.js` 是已提交的傳統 script，無需載入 ES modules，因此開啟工具本身不依賴 HTTP server。瀏覽器的 file:// 安全限制依產品而異；本次測試宿主禁止 file://，未能直接實測雙擊開啟。
 
+## 音域
+
+一般模式的「音域」只有兩個選項，與映射模型分開設定：
+
+| 音域 | 頻率 | 跨度 |
+| --- | --- | --- |
+| G3–D6（預設） | 196.00–1174.66 Hz | 31 半音 |
+| C3–C6 | 130.81–1046.50 Hz | 36 半音 |
+
+切換時保留目前琴頸位置與映射模型，停止正在演奏的音；同步更新雙圖、音符刻線、相對半音與靈敏度。標記的基準頻率會保留，若超出新音域則限制到新端點。這是音樂音域預設，不是 DX 官方固定音域或實測資料。沒有自訂音域欄位。
+
 ## 專注演奏直連
 
-<https://yuuyuutube.github.io/tools/otama-lab/?mode=play>
+- G3–D6：<https://yuuyuutube.github.io/tools/otama-lab/?mode=play&range=g3-d6>
+- C3–C6：<https://yuuyuutube.github.io/tools/otama-lab/?mode=play&range=c3-c6>
+
+未提供 range 的原有 `?mode=play` 直連使用預設 G3–D6。專注模式沿用選定音域，不額外顯示音域控制項。一般模式切換音域時會將 range 寫入網址，未知 range 值會安全使用預設。
 
 開啟後直接顯示專注演奏畫面，第一次按住琴頸或按鍵時會嘗試啟動聲音；若手機沒有立即發聲，可直接點右上角喇叭按鈕啟動或重試，不需要退出。頁面載入本身不嘗試自動播放，遵守瀏覽器手勢限制。從 header 進出模式會同步更新網址，保留其他參數與 anchor，可直接複製網址或加入書籤。
 
@@ -31,19 +45,19 @@ python3 -m http.server 4187 --bind 127.0.0.1
 - 方向鍵移動 1%；Shift + 方向鍵微調 0.1%；Page Up / Down 移動 10%；Home / End 到端點。Space / Enter 按住發聲。
 - 放開、取消、失去捕捉、視窗失焦或分頁隱藏會停止。Esc／停止按鈕同時關閉聲音開關。
 - 位置連續變化，沒有音符吸附。音名是最近的標準音，不會改變實際演奏頻率。
-- 標記基準音後可比較兩倍頻率；超出 C6 時停用倍頻按鈕。切換模型時保留基準頻率、重新計算其位置。
+- 標記基準音後可比較兩倍頻率；超出目前音域上限時停用倍頻按鈕。切換模型時保留基準頻率、重新計算其位置。
 
 ## 數學
 
 所有映射均為 **Simulation**，不是 DX 實測或電路說明。合成音為 sawtooth + 固定 lowpass，不是 Otamatone 原音色。
 
-x ∈ [0,1]，由低到高；f₀ = C3 = 130.81278265 Hz，f₁ = 8f₀ = C6。
+x ∈ [0,1]，由低到高（琴頸上端至靠近頭部的下端）；f₀、f₁ 為所選音域的最低與最高頻率。
 
 | 模型 | f(x) | 音程靈敏度 |
 | --- | --- | --- |
 | Linear frequency／等距 Hz | f₀ + (f₁ − f₀)x | 高音端較低 |
-| Equal semitone spacing／等距半音 | f₀ × 8ˣ | 固定 36 cents / 1% |
-| Inverse-length-inspired／反比靈感 | f₀ / (1 − 0.875x) | 高音端較高 |
+| Equal semitone spacing／等距半音 | f₀ × (f₁/f₀)ˣ | 固定 31 或 36 cents / 1% |
+| Inverse-length-inspired／反比靈感 | f₀ / [1 − (1 − f₀/f₁)x] | 高音端較高 |
 
 `MIDI = 69 + 12 log₂(f / 440)`；nearest = round(MIDI)；cents = 100 × (MIDI − nearest)。十二平均律、A4=440 Hz、C4 為中央 C。畫面顯示 Hz 1 位、半音 2 位、cents 整數；圖表及音訊使用完整精度頻率。半音圖為 `12 log₂(f / f₀)`。靈敏度是局部導數，以 cents / 1% 位移表示。
 
@@ -58,7 +72,7 @@ npm test
 
 `src/` 是各自可測試的 ES modules：
 
-- `pitch.js`：映射、反算、音名、cents、靈敏度。
+- `pitch.js`：兩個音域預設、映射、反算、音名、cents、靈敏度。
 - `instrument.js`：琴頸／滑桿 Pointer Events、鍵盤、安全停止。
 - `audio.js`：Web Audio 合成、手勢啟動、非同步競態防護。
 - `visualization.js`：雙 SVG 圖表、響應式座標、基準點。

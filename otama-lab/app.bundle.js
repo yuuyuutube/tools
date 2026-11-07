@@ -2,29 +2,42 @@
 (() => {
 'use strict';
 // src/pitch.js
-// Simulation only. No DX circuit or measurement is represented here.
-const BASE = 440 * 2 ** ((48 - 69) / 12);
-const TOP = BASE * 8;
+// Simulation only. These are selectable musical ranges, not measured DX specs.
+const makeRange = (id, lowMidi, highMidi, lowNote, highNote) => Object.freeze({
+  id, lowMidi, highMidi, lowNote, highNote, label: `${lowNote}–${highNote}`,
+  base: 440 * 2 ** ((lowMidi - 69) / 12),
+  top: 440 * 2 ** ((highMidi - 69) / 12),
+  semitones: highMidi - lowMidi,
+});
+const RANGES = Object.freeze({
+  'g3-d6': makeRange('g3-d6', 55, 86, 'G3', 'D6'),
+  'c3-c6': makeRange('c3-c6', 48, 84, 'C3', 'C6'),
+});
+const DEFAULT_RANGE = RANGES['g3-d6'];
+const rangeFor = id => Object.hasOwn(RANGES, id) ? RANGES[id] : DEFAULT_RANGE;
 const MODELS = Object.freeze({
-  inverse: { name: 'Inverse-length-inspired', formula: 'f(x) = f₀ / (1 − 0.875x)', hint: '向高音移動，同樣的位移跨過更多半音。高音的音符位置逐漸擠在一起。' },
-  exponential: { name: 'Equal semitone spacing', formula: 'f(x) = f₀ × 8ˣ', hint: '每一格音程一樣寬。半音圖是一條直線，Hz 圖卻向上彎曲。' },
+  inverse: { name: 'Inverse-length-inspired', formula: 'f(x) = f₀ / [1 − (1 − f₀/f₁)x]', hint: '向高音移動，同樣的位移跨過更多半音。高音的音符位置逐漸擠在一起。' },
+  exponential: { name: 'Equal semitone spacing', formula: 'f(x) = f₀ × (f₁/f₀)ˣ', hint: '每一格音程一樣寬。半音圖是一條直線，Hz 圖卻向上彎曲。' },
   linear: { name: 'Linear frequency', formula: 'f(x) = f₀ + (f₁ − f₀)x', hint: '每一格增加相同 Hz；越往高音，同樣的位移跨過的半音反而越少。' },
 });
 const clamp = x => Math.max(0, Math.min(1, Number(x) || 0));
-function frequencyAt(position, model) {
-  const x = clamp(position);
-  if (model === 'inverse') return BASE / (1 - .875 * x);
-  if (model === 'exponential') return BASE * 8 ** x;
-  if (model === 'linear') return BASE + (TOP - BASE) * x;
+function frequencyAt(position, model, range = DEFAULT_RANGE) {
+  const x = clamp(position), { base, top } = range, ratio = top / base;
+  let frequency;
+  if (model === 'inverse') frequency = base / (1 - (1 - 1 / ratio) * x);
+  else if (model === 'exponential') frequency = base * ratio ** x;
+  else if (model === 'linear') frequency = base + (top - base) * x;
+  else throw new RangeError(`Unknown simulation: ${model}`);
+  return x === 0 ? base : x === 1 ? top : frequency;
+}
+function positionAt(frequency, model, range = DEFAULT_RANGE) {
+  const { base, top, semitones } = range;
+  if (model === 'inverse') return clamp((1 - base / frequency) / (1 - base / top));
+  if (model === 'exponential') return clamp(12 * Math.log2(frequency / base) / semitones);
+  if (model === 'linear') return clamp((frequency - base) / (top - base));
   throw new RangeError(`Unknown simulation: ${model}`);
 }
-function positionAt(frequency, model) {
-  if (model === 'inverse') return clamp((1 - BASE / frequency) / .875);
-  if (model === 'exponential') return clamp(Math.log2(frequency / BASE) / 3);
-  if (model === 'linear') return clamp((frequency - BASE) / (TOP - BASE));
-  throw new RangeError(`Unknown simulation: ${model}`);
-}
-const semitonesFrom = (frequency, reference = BASE) => 12 * Math.log2(frequency / reference);
+const semitonesFrom = (frequency, reference = DEFAULT_RANGE.base) => 12 * Math.log2(frequency / reference);
 function pitchOf(frequency) {
   if (!Number.isFinite(frequency) || frequency <= 0) throw new RangeError('Frequency must be positive');
   const midi = 69 + 12 * Math.log2(frequency / 440);
@@ -33,11 +46,22 @@ function pitchOf(frequency) {
   const cents = Math.round(100 * (midi - nearest)) || 0;
   return { midi, nearest, cents, note: `${names[(nearest % 12 + 12) % 12]}${Math.floor(nearest / 12) - 1}` };
 }
+function rangeMarkers(range = DEFAULT_RANGE) {
+  const semitones = [];
+  for (let s = 0; s <= range.semitones; s += 12) semitones.push(s);
+  if (semitones.at(-1) !== range.semitones) semitones.push(range.semitones);
+  return semitones.map(s => {
+    const frequency = s === range.semitones ? range.top : range.base * 2 ** (s / 12);
+    return { semitones: s, frequency, note: pitchOf(frequency).note };
+  });
+}
 // Local derivative, expressed in cents for a 1 percentage-point displacement.
-function sensitivityAt(x, model) {
-  if (model === 'exponential') return 36;
-  if (model === 'linear') return 12 / Math.LN2 * 7 / (1 + 7 * x);
-  return 12 / Math.LN2 * .875 / (1 - .875 * x);
+function sensitivityAt(x, model, range = DEFAULT_RANGE) {
+  const ratio = range.top / range.base, a = 1 - 1 / ratio;
+  if (model === 'exponential') return range.semitones;
+  if (model === 'linear') return 12 / Math.LN2 * (ratio - 1) / (1 + (ratio - 1) * x);
+  if (model === 'inverse') return 12 / Math.LN2 * a / (1 - a * x);
+  throw new RangeError(`Unknown simulation: ${model}`);
 }
 const signed = value => `${value > 0 ? '+' : ''}${value}`;
 
@@ -210,8 +234,8 @@ function el(tag, attrs = {}, text) {
   return node;
 }
 class PitchPlot {
-  constructor(svg, kind) {
-    this.svg = svg; this.kind = kind;
+  constructor(svg, kind, range = DEFAULT_RANGE) {
+    this.svg = svg; this.kind = kind; this.range = range;
     this.mount();
     this.observer = new ResizeObserver(() => {
       const width = this.svg.getBoundingClientRect().width < 500 ? 360 : 700;
@@ -228,8 +252,9 @@ class PitchPlot {
     this.width = svg.getBoundingClientRect().width < 500 ? 360 : 700;
     this.X = x => 58 + x * (this.width - 78);
     svg.setAttribute('viewBox', `0 0 ${this.width} 245`);
-    this.Y = value => 195 - (kind === 'frequency' ? value / 1100 : value / 36) * 165;
-    this.value = f => kind === 'frequency' ? f : semitonesFrom(f);
+    const maxHz = Math.ceil(this.range.top / 250) * 250;
+    this.Y = value => 195 - value / (kind === 'frequency' ? maxHz : this.range.semitones) * 165;
+    this.value = f => kind === 'frequency' ? f : semitonesFrom(f, this.range.base);
     this.grid = el('g', { 'aria-hidden': 'true' });
     this.octaves = el('g', { 'aria-hidden': 'true' });
     this.curve = el('path', { fill: 'none', stroke: kind === 'frequency' ? '#c8f16e' : '#7edcd2', 'stroke-width': 3, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
@@ -239,7 +264,7 @@ class PitchPlot {
     this.dot = el('circle', { r: 6, fill: '#ff997e', stroke: '#0d1d1f', 'stroke-width': 2 });
     svg.append(el('rect', { x: 58, y: 30, width: this.width - 78, height: 165, rx: 6, fill: '#0d1d1f' }), this.grid, this.octaves, this.curve, this.cross, this.horizontal, this.reference, this.dot);
     const textStyle = { fill: '#a3b8ae', 'font-size': 12, 'font-family': 'system-ui, sans-serif' };
-    const ticks = kind === 'frequency' ? [0, 250, 500, 750, 1000] : [0, 12, 24, 36];
+    const ticks = kind === 'frequency' ? Array.from({ length: maxHz / 250 + 1 }, (_, i) => i * 250) : rangeMarkers(this.range).map(marker => marker.semitones);
     for (const value of ticks) {
       const y = this.Y(value);
       this.grid.append(el('line', { x1: 58, x2: this.width - 20, y1: y, y2: y, stroke: '#30494a' }), el('text', { ...textStyle, x: 47, y: y + 4, 'text-anchor': 'end' }, value));
@@ -248,20 +273,23 @@ class PitchPlot {
       const x = this.X(i / 4);
       this.grid.append(el('line', { x1: x, x2: x, y1: 30, y2: 195, stroke: '#30494a', 'stroke-opacity': .6 }), el('text', { ...textStyle, x, y: 217, 'text-anchor': 'middle' }, `${i * 25}%`));
     }
-    this.grid.append(el('text', { ...textStyle, x: 58, y: 14 }, kind === 'frequency' ? '頻率（Hz）' : '半音數（相對 C3）'), el('text', { ...textStyle, x: (this.width + 38) / 2, y: 242, 'text-anchor': 'middle' }, '琴頸位置（%）'));
+    this.grid.append(el('text', { ...textStyle, x: 58, y: 14 }, kind === 'frequency' ? '頻率（Hz）' : `半音數（相對 ${this.range.lowNote}）`), el('text', { ...textStyle, x: (this.width + 38) / 2, y: 242, 'text-anchor': 'middle' }, '琴頸位置（%）'));
   }
-  setModel(model) {
+  setModel(model, range = this.range) {
+    if (this.range !== range) { this.range = range; this.mount(); }
     this.model = model;
     const points = Array.from({ length: 301 }, (_, i) => {
       const x = i / 300;
-      return `${i ? 'L' : 'M'}${this.X(x).toFixed(3)},${this.Y(this.value(frequencyAt(x, model))).toFixed(3)}`;
+      return `${i ? 'L' : 'M'}${this.X(x).toFixed(3)},${this.Y(this.value(frequencyAt(x, model, this.range))).toFixed(3)}`;
     });
     this.curve.setAttribute('d', points.join(' '));
     this.octaves.replaceChildren();
-    for (let i = 0; i <= 3; i++) {
-      const f = BASE * 2 ** i, x = this.X(positionAt(f, model)), y = this.Y(this.value(f));
-      this.octaves.append(el('line', { x1: x, x2: x, y1: y, y2: 195, stroke: '#79948a', 'stroke-dasharray': '2 5', 'stroke-opacity': .45 }), el('text', { x: x + (i === 3 ? -7 : 7), y: y - 8, fill: '#a3b8ae', 'font-size': 11, 'text-anchor': i === 3 ? 'end' : 'start' }, `C${i + 3}`));
-    }
+    const markers = rangeMarkers(this.range);
+    markers.forEach(({ frequency, note }, i) => {
+      const x = this.X(positionAt(frequency, model, this.range)), y = this.Y(this.value(frequency));
+      const last = i === markers.length - 1;
+      this.octaves.append(el('line', { x1: x, x2: x, y1: y, y2: 195, stroke: '#79948a', 'stroke-dasharray': '2 5', 'stroke-opacity': .45 }), el('text', { x: x + (last ? -7 : 7), y: y - 8, fill: '#a3b8ae', 'font-size': 11, 'text-anchor': last ? 'end' : 'start' }, note));
+    });
   }
   update(position, frequency, reference) {
     this.last = [position, frequency, reference];
@@ -269,13 +297,14 @@ class PitchPlot {
     this.cross.setAttribute('x1', x); this.cross.setAttribute('x2', x);
     this.horizontal.setAttribute('y1', y); this.horizontal.setAttribute('y2', y);
     this.dot.setAttribute('cx', x); this.dot.setAttribute('cy', y);
-    this.reference.setAttribute('cx', this.X(positionAt(reference, this.model)));
+    this.reference.setAttribute('cx', this.X(positionAt(reference, this.model, this.range)));
     this.reference.setAttribute('cy', this.Y(this.value(reference)));
+    this.svg.dataset.range = this.range.id;
     this.svg.dataset.position = position;
     this.svg.dataset.frequency = frequency;
     this.svg.dataset.value = this.value(frequency);
     // Accessible dynamic summary is updated without a live region at drag rate.
-    this.svg.querySelector('desc').textContent = `Simulation。琴頸位置 ${(position * 100).toFixed(1)}%，${this.kind === 'frequency' ? `${frequency.toFixed(2)} Hz，絕對頻率` : `${semitonesFrom(frequency).toFixed(2)} 半音，相對 C3`}。空心圓是比較基準，珊瑚色圓點是目前位置。`;
+    this.svg.querySelector('desc').textContent = `Simulation。琴頸位置 ${(position * 100).toFixed(1)}%，${this.kind === 'frequency' ? `${frequency.toFixed(2)} Hz，絕對頻率` : `${semitonesFrom(frequency, this.range.base).toFixed(2)} 半音，相對 ${this.range.lowNote}`}。空心圓是比較基準，珊瑚色圓點是目前位置。`;
   }
 }
 
@@ -324,10 +353,11 @@ function bindFocusMode({ button, strip, onEnter, onExit }) {
 
 // src/app.js
 const $ = id => document.getElementById(id);
-let position = .35, model = 'inverse', reference = BASE, sounding = false;
+let range = rangeFor(new URLSearchParams(window.location.search).get('range'));
+let position = .35, model = 'inverse', reference = range.base, sounding = false;
 let soundRequest = 0, pendingEnable = false;
 let focused = false, instrumentHeld = false, audioEnableTask = null, focusMutedByUser = false;
-const plots = [new PitchPlot($('frequency-plot'), 'frequency'), new PitchPlot($('pitch-plot'), 'pitch')];
+const plots = [new PitchPlot($('frequency-plot'), 'frequency', range), new PitchPlot($('pitch-plot'), 'pitch', range)];
 function soundButton(label, enabled, { pending = false, error = false } = {}) {
   $('sound-label').textContent = label;
   for (const id of ['sound', 'focus-sound']) {
@@ -353,7 +383,7 @@ const synth = new Synth({ onState(playing, error) {
   audioStatus(error);
 } });
 function render() {
-  const f = frequencyAt(position, model), pitch = pitchOf(f);
+  const f = frequencyAt(position, model, range), pitch = pitchOf(f);
   $('finger').style.bottom = `${(1 - position) * 100}%`;
   synth.setFrequency(f);
   if (focused) {
@@ -372,15 +402,15 @@ function render() {
   for (const id of ['strip', 'pos']) $(id).setAttribute('aria-valuetext', description);
   $('graph-position').textContent = `x = ${position.toFixed(3)}`;
   $('graph-hz').textContent = `${f.toFixed(1)} Hz`;
-  $('graph-semitones').textContent = `${semitonesFrom(f).toFixed(2)} 半音`;
+  $('graph-semitones').textContent = `${semitonesFrom(f, range.base).toFixed(2)} 半音`;
   $('reference-hz').textContent = `${reference.toFixed(1)} Hz`;
   $('reference-note').textContent = pitchOf(reference).note;
   $('ratio').textContent = `× ${(f / reference).toFixed(3)}`;
   $('interval').textContent = `${signed(Number(semitonesFrom(f, reference).toFixed(2)))} 半音`;
-  const octaveAvailable = reference * 2 <= TOP * (1 + 1e-10);
+  const octaveAvailable = reference * 2 <= range.top * (1 + 1e-10);
   $('octave').disabled = !octaveAvailable;
-  $('octave-help').textContent = octaveAvailable ? '頻率 × 2 = +12 半音 = 1 個八度。' : '此基準的兩倍超出 C6；請先在較低處重新標記。';
-  $('sensitivity').textContent = sensitivityAt(position, model).toFixed(1);
+  $('octave-help').textContent = octaveAvailable ? '頻率 × 2 = +12 半音 = 1 個八度。' : `此基準的兩倍超出 ${range.highNote}；請先在較低處重新標記。`;
+  $('sensitivity').textContent = sensitivityAt(position, model, range).toFixed(1);
   for (const plot of plots) plot.update(position, f, reference);
 }
 function setPosition(value) { position = clamp(value); render(); }
@@ -395,20 +425,32 @@ function changeModel() {
   model = $('model').value;
   $('formula').textContent = MODELS[model].formula;
   $('model-hint').textContent = MODELS[model].hint;
-  for (const plot of plots) plot.setModel(model);
+  for (const plot of plots) plot.setModel(model, range);
   $('note-marks').replaceChildren();
-  for (let semitone = 0; semitone <= 36; semitone++) {
+  for (let semitone = 0; semitone <= range.semitones; semitone++) {
     const mark = document.createElement('i');
     mark.className = 'note-mark';
-    mark.style.bottom = `${(1 - positionAt(BASE * 2 ** (semitone / 12), model)) * 100}%`;
-    if (semitone % 12 === 0) { mark.style.width = '15px'; mark.style.background = '#c8f16e'; }
+    const frequency = semitone === range.semitones ? range.top : range.base * 2 ** (semitone / 12);
+    mark.style.bottom = `${(1 - positionAt(frequency, model, range)) * 100}%`;
+    if (semitone % 12 === 0 || semitone === range.semitones) { mark.style.width = '15px'; mark.style.background = '#c8f16e'; }
     $('note-marks').append(mark);
   }
+  $('octave-legend').textContent = rangeMarkers(range).map(marker => marker.note).join(' / ');
+  $('simulation-description').textContent = `音域 ${range.label}（${range.base.toFixed(2)}–${range.top.toFixed(2)} Hz），${range.semitones} 半音。十二平均律，A4 = 440 Hz。x 是由上至下、靠近頭部的位置比例；f₀ = ${range.lowNote}，f₁ = ${range.highNote}。反比模型僅供數學比較，不代表 Otamatone DX 真正的電路控制方式，也不是實測資料。合成音不是 Otamatone 原音色。`;
   render();
 }
+$('range').value = range.id;
+$('range').addEventListener('change', () => {
+  range = rangeFor($('range').value);
+  reference = Math.max(range.base, Math.min(range.top, reference));
+  const url = new URL(window.location.href);
+  url.searchParams.set('range', range.id);
+  try { window.history.replaceState(window.history.state, '', url); } catch { /* Local file viewer. */ }
+  changeModel();
+});
 $('model').addEventListener('change', changeModel);
-$('mark').addEventListener('click', () => { instrument.stop(); reference = frequencyAt(position, model); render(); });
-$('octave').addEventListener('click', () => { instrument.stop(); setPosition(positionAt(reference * 2, model)); });
+$('mark').addEventListener('click', () => { instrument.stop(); reference = frequencyAt(position, model, range); render(); });
+$('octave').addEventListener('click', () => { instrument.stop(); setPosition(positionAt(reference * 2, model, range)); });
 async function setSoundEnabled(enable) {
   const request = ++soundRequest;
   pendingEnable = enable;

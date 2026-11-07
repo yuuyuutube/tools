@@ -1,6 +1,7 @@
 import { Synth } from '../src/audio.js';
 import { bindInstrument } from '../src/instrument.js';
-import { BASE, TOP, frequencyAt, positionAt, pitchOf, semitonesFrom } from '../src/pitch.js';
+import { RANGES, DEFAULT_RANGE, rangeMarkers, frequencyAt, positionAt, pitchOf, semitonesFrom } from '../src/pitch.js';
+const BASE = DEFAULT_RANGE.base, TOP = DEFAULT_RANGE.top;
 const frame = document.querySelector('#app');
 const list = document.querySelector('#results');
 const failures = [];
@@ -26,12 +27,36 @@ document.querySelector('#run').addEventListener('click', async () => {
   // so input state can be tested. Native capture is verified separately by real drag.
   const capture = strip.setPointerCapture, has = strip.hasPointerCapture;
   strip.setPointerCapture = () => {}; strip.hasPointerCapture = () => false;
+  check('G3–D6 is the default range', $('range').value === 'g3-d6');
+  check('the range control has exactly the two agreed options', [...$('range').options].map(option => option.value).join(',') === 'g3-d6,c3-c6');
+  for (const selected of Object.values(RANGES)) {
+    $('range').value = selected.id; $('range').dispatchEvent(new win.Event('change'));
+    for (const mapping of ['inverse', 'exponential', 'linear']) {
+      $('model').value = mapping; $('model').dispatchEvent(new win.Event('change'));
+      for (const x of [0, .3712, 1]) {
+        $('pos').value = x * 100; $('pos').dispatchEvent(new win.Event('input', { bubbles: true }));
+        const expected = frequencyAt(x, mapping, selected);
+        check(`${selected.label}/${mapping}/${x}: pitch and both graphs agree`, $('hz').textContent === expected.toFixed(1) && $('note').textContent === pitchOf(expected).note && Number($('frequency-plot').dataset.frequency) === expected && Math.abs(Number($('pitch-plot').dataset.value) - semitonesFrom(expected, selected.base)) < 1e-8);
+      }
+      check(`${selected.label}/${mapping}: semitone extent, marks and legend`, Math.abs(Number($('pitch-plot').dataset.value) - selected.semitones) < 1e-8 && $('note-marks').children.length === selected.semitones + 1 && $('octave-legend').textContent === rangeMarkers(selected).map(marker => marker.note).join(' / '));
+      check(`${selected.label}/${mapping}: endpoint stays inside both plots`, Number($('frequency-plot').querySelector('circle:last-of-type').getAttribute('cy')) >= 30 && Number($('pitch-plot').querySelector('circle:last-of-type').getAttribute('cy')) >= 29.999999);
+    }
+    check(`${selected.label}: selected range is in the bookmark URL`, new URL(win.location.href).searchParams.get('range') === selected.id);
+  }
+  // A marked frequency remains in bounds when switching between the presets.
+  $('range').value = DEFAULT_RANGE.id; $('range').dispatchEvent(new win.Event('change'));
+  key('keydown', 'End'); key('keyup', 'End');
+  $('mark').click(); $('range').value = 'c3-c6'; $('range').dispatchEvent(new win.Event('change'));
+  check('a reference above the new range is clamped to its upper endpoint', $('reference-hz').textContent === `${RANGES['c3-c6'].top.toFixed(1)} Hz` && $('octave').disabled);
+  key('keydown', 'Home'); key('keyup', 'Home'); $('mark').click();
+  $('range').value = DEFAULT_RANGE.id; $('range').dispatchEvent(new win.Event('change'));
+  check('a reference below the new range is clamped to its lower endpoint', $('reference-hz').textContent === `${BASE.toFixed(1)} Hz` && !$('octave').disabled);
   for (const model of ['inverse', 'exponential', 'linear']) {
     $('model').value = model; $('model').dispatchEvent(new win.Event('change'));
     key('keydown', 'Home'); key('keyup', 'Home');
-    check(`${model}: Home C3`, $('note').textContent === 'C3' && $('hz').textContent === BASE.toFixed(1));
+    check(`${model}: Home ${DEFAULT_RANGE.lowNote}`, $('note').textContent === DEFAULT_RANGE.lowNote && $('hz').textContent === BASE.toFixed(1));
     key('keydown', 'End'); key('keyup', 'End');
-    check(`${model}: End C6`, $('note').textContent === 'C6' && $('cents').textContent === '0 cents');
+    check(`${model}: End ${DEFAULT_RANGE.highNote}`, $('note').textContent === DEFAULT_RANGE.highNote && $('cents').textContent === '0 cents');
     $('pos').value = 37.123; $('pos').dispatchEvent(new win.Event('input', { bubbles: true }));
     const f = frequencyAt(.3712, model); // native range step is 0.01%.
     check(`${model}: frequency / note / cents`, $('hz').textContent === f.toFixed(1) && $('note').textContent === pitchOf(f).note && $('cents').textContent === `${pitchOf(f).cents > 0 ? '+' : ''}${pitchOf(f).cents} cents`);
@@ -48,9 +73,9 @@ document.querySelector('#run').addEventListener('click', async () => {
     $('model').value = model; $('model').dispatchEvent(new win.Event('change'));
     for (const type of ['mouse', 'touch', 'pen']) {
       pointer(strip, 'pointerdown', type, 90, scale.left, scale.top);
-      check(`${model}/${type}: top is low C3`, $('note').textContent === 'C3' && $('finger').style.bottom === '100%');
+      check(`${model}/${type}: top is low ${DEFAULT_RANGE.lowNote}`, $('note').textContent === DEFAULT_RANGE.lowNote && $('finger').style.bottom === '100%');
       pointer(win, 'pointermove', type, 90, scale.left, scale.bottom);
-      check(`${model}/${type}: near head is high C6`, $('note').textContent === 'C6' && $('finger').style.bottom === '0%');
+      check(`${model}/${type}: near head is high ${DEFAULT_RANGE.highNote}`, $('note').textContent === DEFAULT_RANGE.highNote && $('finger').style.bottom === '0%');
       pointer(win, 'pointerup', type, 90, scale.left, scale.bottom);
     }
   }
@@ -58,14 +83,14 @@ document.querySelector('#run').addEventListener('click', async () => {
   for (const type of ['mouse', 'touch', 'pen']) {
     pointer(strip, 'pointerdown', type, 10, rect.x + 4, rect.top + rect.height * .25);
     pointer(strip, 'pointermove', type, 10, rect.x + 4, rect.bottom + 100);
-    check(`${type}: captured motion outside rail clamps to C6`, $('note').textContent === 'C6');
+    check(`${type}: captured motion outside rail clamps to ${DEFAULT_RANGE.highNote}`, $('note').textContent === DEFAULT_RANGE.highNote);
     pointer(win, 'pointerup', type, 10, rect.x + 100, rect.bottom + 100);
     pointer(strip, 'pointermove', type, 10, rect.x, rect.top);
-    check(`${type}: release ignores subsequent motion`, $('note').textContent === 'C6');
+    check(`${type}: release ignores subsequent motion`, $('note').textContent === DEFAULT_RANGE.highNote);
     pointer(strip, 'pointerdown', type, 11, rect.x, rect.top);
     pointer(win, 'pointercancel', type, 11, rect.x, rect.top);
     pointer(strip, 'pointermove', type, 11, rect.x, rect.bottom);
-    check(`${type}: cancellation clears drag`, $('note').textContent === 'C3');
+    check(`${type}: cancellation clears drag`, $('note').textContent === DEFAULT_RANGE.lowNote);
   }
   const trackRect = $('track').getBoundingClientRect();
   const finger = $('finger').getBoundingClientRect();
@@ -76,27 +101,27 @@ document.querySelector('#run').addEventListener('click', async () => {
   for (const pointerType of ['mouse', 'touch']) {
     pointer($('pos'), 'pointerdown', pointerType, 30, rangeRect.left + 9, rangeRect.top + 20);
     pointer(win, 'pointermove', pointerType, 30, rangeRect.right - 9, rangeRect.top + 20);
-    check(`${pointerType}: horizontal range reaches 100%`, $('note').textContent === 'C6');
+    check(`${pointerType}: horizontal range reaches 100%`, $('note').textContent === DEFAULT_RANGE.highNote);
     pointer(win, 'pointermove', pointerType, 30, rangeRect.left + 9, rangeRect.top + 20);
-    check(`${pointerType}: horizontal range reaches 0%`, $('note').textContent === 'C3');
+    check(`${pointerType}: horizontal range reaches 0%`, $('note').textContent === DEFAULT_RANGE.lowNote);
     pointer(win, 'pointerup', pointerType, 30, rangeRect.left, rangeRect.top);
   }
   strip.setPointerCapture = () => { throw new win.DOMException('Capture unavailable'); };
   pointer(strip, 'pointerdown', 'touch', 40, rect.left, trackRect.top);
   pointer(win, 'pointermove', 'touch', 40, rect.right + 100, trackRect.bottom);
-  check('capture failure still drags outside the neck through window events', $('note').textContent === 'C6');
+  check('capture failure still drags outside the neck through window events', $('note').textContent === DEFAULT_RANGE.highNote);
   pointer(win, 'pointerup', 'touch', 40, rect.right + 100, trackRect.bottom);
   pointer(win, 'pointermove', 'touch', 40, rect.left, trackRect.top);
-  check('capture fallback also stops after release', $('note').textContent === 'C6');
+  check('capture fallback also stops after release', $('note').textContent === DEFAULT_RANGE.highNote);
   strip.setPointerCapture = () => {};
   pointer(strip, 'pointerdown', 'touch', 50, rect.left, trackRect.top);
   strip.dispatchEvent(new win.PointerEvent('pointerdown', { pointerId: 51, pointerType: 'touch', isPrimary: false, button: 0, clientY: trackRect.bottom, bubbles: true }));
-  check('second finger does not take over the first touch', $('note').textContent === 'C3');
+  check('second finger does not take over the first touch', $('note').textContent === DEFAULT_RANGE.lowNote);
   pointer(win, 'pointerup', 'touch', 50, rect.left, trackRect.top);
   pointer(strip, 'pointerdown', 'touch', 60, rect.left, trackRect.top);
   pointer(strip, 'lostpointercapture', 'touch', 60, rect.left, trackRect.top);
   pointer(win, 'pointermove', 'touch', 60, rect.left, trackRect.bottom);
-  check('lost capture clears pointer state', $('note').textContent === 'C3');
+  check('lost capture clears pointer state', $('note').textContent === DEFAULT_RANGE.lowNote);
   strip.setPointerCapture = capture; strip.hasPointerCapture = has;
   $('pos').setPointerCapture = rangeCapture;
   check('decorative copy has been removed', !doc.querySelector('.hero, .rail-caption, .character-caption, .footer-sign, .eyebrow'));
@@ -184,6 +209,15 @@ document.querySelector('#run').addEventListener('click', async () => {
   directDoc.getElementById('focus-mode').click();
   check('direct link exit preserves unrelated query and anchor', !new URL(directWin.location.href).searchParams.has('mode') && new URL(directWin.location.href).searchParams.get('keep') === 'test' && directWin.location.hash === '#strip');
   check('direct link exit restores the current pitch in the lab', !directDoc.documentElement.classList.contains('focus-mode') && directDoc.getElementById('hz').textContent === TOP.toFixed(1));
+  const legacyWin = document.querySelector('#legacy').contentWindow;
+  const legacyDoc = legacyWin.document;
+  const legacyStrip = legacyDoc.getElementById('strip');
+  check('C3–C6 can be selected by a performance direct link', legacyDoc.getElementById('range').value === 'c3-c6' && legacyDoc.documentElement.classList.contains('focus-mode'));
+  legacyStrip.dispatchEvent(new legacyWin.KeyboardEvent('keydown', { key: 'End', bubbles: true, cancelable: true }));
+  legacyStrip.dispatchEvent(new legacyWin.KeyboardEvent('keyup', { key: 'End', bubbles: true, cancelable: true }));
+  check('legacy direct-link high endpoint remains C6', legacyStrip.getAttribute('aria-valuetext').includes('C6'));
+  legacyDoc.getElementById('focus-mode').click();
+  check('exiting focus preserves the selected range', new URL(legacyWin.location.href).searchParams.get('range') === 'c3-c6' && legacyDoc.getElementById('hz').textContent === RANGES['c3-c6'].top.toFixed(1));
   const audioResult = await audioReady;
   if (audioResult instanceof Error) {
     check('native Web Audio can start from a user gesture', false);

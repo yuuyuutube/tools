@@ -1,13 +1,14 @@
-import { BASE, TOP, MODELS, clamp, frequencyAt, positionAt, pitchOf, semitonesFrom, sensitivityAt, signed } from './pitch.js';
+import { rangeFor, rangeMarkers, MODELS, clamp, frequencyAt, positionAt, pitchOf, semitonesFrom, sensitivityAt, signed } from './pitch.js';
 import { Synth } from './audio.js';
 import { bindInstrument } from './instrument.js';
 import { PitchPlot } from './visualization.js';
 import { bindFocusMode } from './focus.js';
 const $ = id => document.getElementById(id);
-let position = .35, model = 'inverse', reference = BASE, sounding = false;
+let range = rangeFor(new URLSearchParams(window.location.search).get('range'));
+let position = .35, model = 'inverse', reference = range.base, sounding = false;
 let soundRequest = 0, pendingEnable = false;
 let focused = false, instrumentHeld = false, audioEnableTask = null, focusMutedByUser = false;
-const plots = [new PitchPlot($('frequency-plot'), 'frequency'), new PitchPlot($('pitch-plot'), 'pitch')];
+const plots = [new PitchPlot($('frequency-plot'), 'frequency', range), new PitchPlot($('pitch-plot'), 'pitch', range)];
 function soundButton(label, enabled, { pending = false, error = false } = {}) {
   $('sound-label').textContent = label;
   for (const id of ['sound', 'focus-sound']) {
@@ -33,7 +34,7 @@ const synth = new Synth({ onState(playing, error) {
   audioStatus(error);
 } });
 function render() {
-  const f = frequencyAt(position, model), pitch = pitchOf(f);
+  const f = frequencyAt(position, model, range), pitch = pitchOf(f);
   $('finger').style.bottom = `${(1 - position) * 100}%`;
   synth.setFrequency(f);
   if (focused) {
@@ -52,15 +53,15 @@ function render() {
   for (const id of ['strip', 'pos']) $(id).setAttribute('aria-valuetext', description);
   $('graph-position').textContent = `x = ${position.toFixed(3)}`;
   $('graph-hz').textContent = `${f.toFixed(1)} Hz`;
-  $('graph-semitones').textContent = `${semitonesFrom(f).toFixed(2)} 半音`;
+  $('graph-semitones').textContent = `${semitonesFrom(f, range.base).toFixed(2)} 半音`;
   $('reference-hz').textContent = `${reference.toFixed(1)} Hz`;
   $('reference-note').textContent = pitchOf(reference).note;
   $('ratio').textContent = `× ${(f / reference).toFixed(3)}`;
   $('interval').textContent = `${signed(Number(semitonesFrom(f, reference).toFixed(2)))} 半音`;
-  const octaveAvailable = reference * 2 <= TOP * (1 + 1e-10);
+  const octaveAvailable = reference * 2 <= range.top * (1 + 1e-10);
   $('octave').disabled = !octaveAvailable;
-  $('octave-help').textContent = octaveAvailable ? '頻率 × 2 = +12 半音 = 1 個八度。' : '此基準的兩倍超出 C6；請先在較低處重新標記。';
-  $('sensitivity').textContent = sensitivityAt(position, model).toFixed(1);
+  $('octave-help').textContent = octaveAvailable ? '頻率 × 2 = +12 半音 = 1 個八度。' : `此基準的兩倍超出 ${range.highNote}；請先在較低處重新標記。`;
+  $('sensitivity').textContent = sensitivityAt(position, model, range).toFixed(1);
   for (const plot of plots) plot.update(position, f, reference);
 }
 function setPosition(value) { position = clamp(value); render(); }
@@ -75,20 +76,32 @@ function changeModel() {
   model = $('model').value;
   $('formula').textContent = MODELS[model].formula;
   $('model-hint').textContent = MODELS[model].hint;
-  for (const plot of plots) plot.setModel(model);
+  for (const plot of plots) plot.setModel(model, range);
   $('note-marks').replaceChildren();
-  for (let semitone = 0; semitone <= 36; semitone++) {
+  for (let semitone = 0; semitone <= range.semitones; semitone++) {
     const mark = document.createElement('i');
     mark.className = 'note-mark';
-    mark.style.bottom = `${(1 - positionAt(BASE * 2 ** (semitone / 12), model)) * 100}%`;
-    if (semitone % 12 === 0) { mark.style.width = '15px'; mark.style.background = '#c8f16e'; }
+    const frequency = semitone === range.semitones ? range.top : range.base * 2 ** (semitone / 12);
+    mark.style.bottom = `${(1 - positionAt(frequency, model, range)) * 100}%`;
+    if (semitone % 12 === 0 || semitone === range.semitones) { mark.style.width = '15px'; mark.style.background = '#c8f16e'; }
     $('note-marks').append(mark);
   }
+  $('octave-legend').textContent = rangeMarkers(range).map(marker => marker.note).join(' / ');
+  $('simulation-description').textContent = `音域 ${range.label}（${range.base.toFixed(2)}–${range.top.toFixed(2)} Hz），${range.semitones} 半音。十二平均律，A4 = 440 Hz。x 是由上至下、靠近頭部的位置比例；f₀ = ${range.lowNote}，f₁ = ${range.highNote}。反比模型僅供數學比較，不代表 Otamatone DX 真正的電路控制方式，也不是實測資料。合成音不是 Otamatone 原音色。`;
   render();
 }
+$('range').value = range.id;
+$('range').addEventListener('change', () => {
+  range = rangeFor($('range').value);
+  reference = Math.max(range.base, Math.min(range.top, reference));
+  const url = new URL(window.location.href);
+  url.searchParams.set('range', range.id);
+  try { window.history.replaceState(window.history.state, '', url); } catch { /* Local file viewer. */ }
+  changeModel();
+});
 $('model').addEventListener('change', changeModel);
-$('mark').addEventListener('click', () => { instrument.stop(); reference = frequencyAt(position, model); render(); });
-$('octave').addEventListener('click', () => { instrument.stop(); setPosition(positionAt(reference * 2, model)); });
+$('mark').addEventListener('click', () => { instrument.stop(); reference = frequencyAt(position, model, range); render(); });
+$('octave').addEventListener('click', () => { instrument.stop(); setPosition(positionAt(reference * 2, model, range)); });
 async function setSoundEnabled(enable) {
   const request = ++soundRequest;
   pendingEnable = enable;

@@ -24,8 +24,8 @@
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="./src/styles.css?v=a396eabed60b">
-  <script defer src="./app.bundle.js?v=7ce676da834e"></script>
+  <link rel="stylesheet" href="./src/styles.css?v=208c6124bb92">
+  <script defer src="./app.bundle.js?v=c56ee81a6e92"></script>
 </head>
 <body>
 <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
@@ -55,14 +55,14 @@
     </section>
     <section class="card visualization" aria-labelledby="graphs-title">
       <div class="section-top"><h2 id="graphs-title">音高映射</h2><span class="live-position" id="graph-position">x = 0.350</span></div>
-      <div class="model-controls"><label for="model">模擬模型（Simulation）</label><select id="model"><option value="inverse">反比靈感模型</option><option value="exponential">等距半音模型</option><option value="linear">等距 Hz 模型</option></select></div>
+      <div class="model-controls"><div class="control-field"><label for="range">音域</label><select id="range"><option value="g3-d6">G3–D6</option><option value="c3-c6">C3–C6</option></select></div><div class="control-field"><label for="model">模擬模型（Simulation）</label><select id="model"><option value="inverse">反比靈感模型</option><option value="exponential">等距半音模型</option><option value="linear">等距 Hz 模型</option></select></div></div>
       <div class="model-meta"><code id="formula"></code></div>
       <p class="model-hint" id="model-hint"></p>
       <div class="plot-heading"><h3><i class="color-dot lime"></i>位置 × 頻率</h3><output id="graph-hz">— Hz</output></div>
       <svg id="frequency-plot" class="plot" viewBox="0 0 700 245" role="img" aria-labelledby="frequency-title frequency-desc"><title id="frequency-title">位置 × 頻率（Hz）— Simulation</title><desc id="frequency-desc">橫軸為位置百分比，縱軸為頻率 Hz。</desc></svg>
       <div class="plot-heading second"><h3><i class="color-dot cyan"></i>位置 × 半音</h3><output id="graph-semitones">— 半音</output></div>
-      <svg id="pitch-plot" class="plot" viewBox="0 0 700 245" role="img" aria-labelledby="pitch-title pitch-desc"><title id="pitch-title">位置 × 音高（半音）— Simulation</title><desc id="pitch-desc">橫軸為位置百分比，縱軸為相對 C3 的半音數。</desc></svg>
-      <div class="legend"><span><i class="color-dot coral"></i>目前位置</span><span><i class="legend-line"></i>C3 / C4 / C5 / C6</span><span><i class="color-dot reference"></i>比較基準</span></div>
+      <svg id="pitch-plot" class="plot" viewBox="0 0 700 245" role="img" aria-labelledby="pitch-title pitch-desc"><title id="pitch-title">位置 × 音高（半音）— Simulation</title><desc id="pitch-desc">橫軸為位置百分比，縱軸為相對 G3 的半音數。</desc></svg>
+      <div class="legend"><span><i class="color-dot coral"></i>目前位置</span><span><i class="legend-line"></i><span id="octave-legend">G3 / G4 / G5 / D6</span></span><span><i class="color-dot reference"></i>比較基準</span></div>
     </section>
   </div>
   <section class="experiment" aria-labelledby="experiment-title">
@@ -70,7 +70,7 @@
     <div class="experiment-body"><div class="comparison"><div><span class="section-label">基準音</span><strong id="reference-hz">—</strong><span id="reference-note">—</span></div><div><span class="section-label">目前／基準</span><strong id="ratio">—</strong><span id="interval">—</span></div></div><div class="experiment-actions"><button id="mark" class="btn" type="button"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-plus"/></svg>標記此音</button><button id="octave" class="btn primary" type="button"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-up"/></svg>基準音 × 2</button></div><p id="octave-help" class="help" role="status"></p></div>
     <div class="sensitivity"><span class="section-label">局部靈敏度</span><p><strong id="sensitivity">—</strong> cents / 1% 位移</p><span>目前位置附近的音程變化率。</span></div>
   </section>
-  <footer><details class="simulation-info"><summary>模擬設定與限制</summary><p>音域 C3–C6（130.81–1046.50 Hz），十二平均律，A4 = 440 Hz。x 是由上至下、靠近頭部的位置比例；f₀ = C3，f₁ = C6。反比模型僅供數學比較，不代表 Otamatone DX 真正的電路控制方式，也不是實測資料。合成音不是 Otamatone 原音色。</p></details></footer>
+  <footer><details class="simulation-info"><summary>模擬設定與限制</summary><p id="simulation-description">音域 G3–D6（196.00–1174.66 Hz），十二平均律，A4 = 440 Hz。x 是由上至下、靠近頭部的位置比例；f₀ = G3，f₁ = D6。反比模型僅供數學比較，不代表 Otamatone DX 真正的電路控制方式，也不是實測資料。合成音不是 Otamatone 原音色。</p></details></footer>
   <noscript><p class="card">請啟用 JavaScript，才能操作琴頸、圖表與合成音訊。</p></noscript>
 </main>
 </body>

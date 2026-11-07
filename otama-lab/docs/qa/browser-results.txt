@@ -1,49 +1,85 @@
-PASS: inverse: Home C3
-PASS: inverse: End C6
+PASS: G3–D6 is the default range
+PASS: the range control has exactly the two agreed options
+PASS: G3–D6/inverse/0: pitch and both graphs agree
+PASS: G3–D6/inverse/0.3712: pitch and both graphs agree
+PASS: G3–D6/inverse/1: pitch and both graphs agree
+PASS: G3–D6/inverse: semitone extent, marks and legend
+PASS: G3–D6/inverse: endpoint stays inside both plots
+PASS: G3–D6/exponential/0: pitch and both graphs agree
+PASS: G3–D6/exponential/0.3712: pitch and both graphs agree
+PASS: G3–D6/exponential/1: pitch and both graphs agree
+PASS: G3–D6/exponential: semitone extent, marks and legend
+PASS: G3–D6/exponential: endpoint stays inside both plots
+PASS: G3–D6/linear/0: pitch and both graphs agree
+PASS: G3–D6/linear/0.3712: pitch and both graphs agree
+PASS: G3–D6/linear/1: pitch and both graphs agree
+PASS: G3–D6/linear: semitone extent, marks and legend
+PASS: G3–D6/linear: endpoint stays inside both plots
+PASS: G3–D6: selected range is in the bookmark URL
+PASS: C3–C6/inverse/0: pitch and both graphs agree
+PASS: C3–C6/inverse/0.3712: pitch and both graphs agree
+PASS: C3–C6/inverse/1: pitch and both graphs agree
+PASS: C3–C6/inverse: semitone extent, marks and legend
+PASS: C3–C6/inverse: endpoint stays inside both plots
+PASS: C3–C6/exponential/0: pitch and both graphs agree
+PASS: C3–C6/exponential/0.3712: pitch and both graphs agree
+PASS: C3–C6/exponential/1: pitch and both graphs agree
+PASS: C3–C6/exponential: semitone extent, marks and legend
+PASS: C3–C6/exponential: endpoint stays inside both plots
+PASS: C3–C6/linear/0: pitch and both graphs agree
+PASS: C3–C6/linear/0.3712: pitch and both graphs agree
+PASS: C3–C6/linear/1: pitch and both graphs agree
+PASS: C3–C6/linear: semitone extent, marks and legend
+PASS: C3–C6/linear: endpoint stays inside both plots
+PASS: C3–C6: selected range is in the bookmark URL
+PASS: a reference above the new range is clamped to its upper endpoint
+PASS: a reference below the new range is clamped to its lower endpoint
+PASS: inverse: Home G3
+PASS: inverse: End D6
 PASS: inverse: frequency / note / cents
 PASS: inverse: graph cursors share exact position and frequency
 PASS: inverse: octave ratio and interval
 PASS: inverse: reference position follows mapping
 PASS: inverse: octave out of range is disabled
-PASS: exponential: Home C3
-PASS: exponential: End C6
+PASS: exponential: Home G3
+PASS: exponential: End D6
 PASS: exponential: frequency / note / cents
 PASS: exponential: graph cursors share exact position and frequency
 PASS: exponential: octave ratio and interval
 PASS: exponential: reference position follows mapping
 PASS: exponential: octave out of range is disabled
-PASS: linear: Home C3
-PASS: linear: End C6
+PASS: linear: Home G3
+PASS: linear: End D6
 PASS: linear: frequency / note / cents
 PASS: linear: graph cursors share exact position and frequency
 PASS: linear: octave ratio and interval
 PASS: linear: reference position follows mapping
 PASS: linear: octave out of range is disabled
-PASS: inverse/mouse: top is low C3
-PASS: inverse/mouse: near head is high C6
-PASS: inverse/touch: top is low C3
-PASS: inverse/touch: near head is high C6
-PASS: inverse/pen: top is low C3
-PASS: inverse/pen: near head is high C6
-PASS: exponential/mouse: top is low C3
-PASS: exponential/mouse: near head is high C6
-PASS: exponential/touch: top is low C3
-PASS: exponential/touch: near head is high C6
-PASS: exponential/pen: top is low C3
-PASS: exponential/pen: near head is high C6
-PASS: linear/mouse: top is low C3
-PASS: linear/mouse: near head is high C6
-PASS: linear/touch: top is low C3
-PASS: linear/touch: near head is high C6
-PASS: linear/pen: top is low C3
-PASS: linear/pen: near head is high C6
-PASS: mouse: captured motion outside rail clamps to C6
+PASS: inverse/mouse: top is low G3
+PASS: inverse/mouse: near head is high D6
+PASS: inverse/touch: top is low G3
+PASS: inverse/touch: near head is high D6
+PASS: inverse/pen: top is low G3
+PASS: inverse/pen: near head is high D6
+PASS: exponential/mouse: top is low G3
+PASS: exponential/mouse: near head is high D6
+PASS: exponential/touch: top is low G3
+PASS: exponential/touch: near head is high D6
+PASS: exponential/pen: top is low G3
+PASS: exponential/pen: near head is high D6
+PASS: linear/mouse: top is low G3
+PASS: linear/mouse: near head is high D6
+PASS: linear/touch: top is low G3
+PASS: linear/touch: near head is high D6
+PASS: linear/pen: top is low G3
+PASS: linear/pen: near head is high D6
+PASS: mouse: captured motion outside rail clamps to D6
 PASS: mouse: release ignores subsequent motion
 PASS: mouse: cancellation clears drag
-PASS: touch: captured motion outside rail clamps to C6
+PASS: touch: captured motion outside rail clamps to D6
 PASS: touch: release ignores subsequent motion
 PASS: touch: cancellation clears drag
-PASS: pen: captured motion outside rail clamps to C6
+PASS: pen: captured motion outside rail clamps to D6
 PASS: pen: release ignores subsequent motion
 PASS: pen: cancellation clears drag
 PASS: thumb edge belongs to the interactive neck
@@ -98,6 +134,9 @@ PASS: direct-link sound button can mute without leaving focus
 PASS: direct-link sound button can restart without leaving focus
 PASS: direct link exit preserves unrelated query and anchor
 PASS: direct link exit restores the current pitch in the lab
+PASS: C3–C6 can be selected by a performance direct link
+PASS: legacy direct-link high endpoint remains C6
+PASS: exiting focus preserves the selected range
 PASS: native Web Audio starts while keyboard is held
 PASS: native audio output has a nonzero waveform
 PASS: native oscillator glides to requested frequency
@@ -110,4 +149,4 @@ PASS: lostpointercapture: real synth starts on synthetic touch hold
 PASS: lostpointercapture: real synth stops
 PASS: window blur stops native synth
 PASS: emergency stop and disabling leave no voice
-112/112 passed
+151/151 passed
