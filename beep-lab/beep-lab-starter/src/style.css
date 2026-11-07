@@ -328,3 +328,5 @@ button:disabled { cursor: default; opacity: .45; }
 .roll-pitch.hovered { background: #bdcda7; color: #304226; font-weight: bold; }
 .rest-viewport.is-hovered { background: #d4dfc6; }
 .rest-viewport.is-hovered .rest-caption { background: #bdcda7; }
+
+.roll-column-hover, .rest-column-hover { position: absolute; top: 0; bottom: 0; pointer-events: none; background: #8ca56b18; }

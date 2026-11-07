@@ -29,6 +29,15 @@ export function createStudio(container: HTMLElement, actions: {
   const handleWidth = (width: number) => Math.min(16,width/2);
   function appendNext(event: MusicEvent) { actions.deselect(); actions.append(event); }
   let columns: {left:number;width:number}[] = [];
+  const columnHighlight = document.createElement('div'); columnHighlight.className='roll-column-hover'; columnHighlight.setAttribute('aria-hidden','true');
+  const restColumnHighlight = document.createElement('div'); restColumnHighlight.className='rest-column-hover'; restColumnHighlight.setAttribute('aria-hidden','true');
+  function highlightColumn(index: number | null) {
+    const column=columns[index ?? (hasSelection ? current?.cursor-1 : -1)];
+    for(const highlight of [columnHighlight,restColumnHighlight]) {
+      highlight.hidden=!column||!!drag||!!move?.active;
+      if(column) {highlight.style.left=`${42+column.left}px`;highlight.style.width=`${column.width}px`;}
+    }
+  }
   const rowHighlight = document.createElement('div'); rowHighlight.className='roll-row-hover'; rowHighlight.hidden=true;
   function highlightRow(row: number | null) {
     rowHighlight.hidden=row===null;
@@ -44,6 +53,7 @@ export function createStudio(container: HTMLElement, actions: {
     pending.button.classList.remove('moving');
     container.querySelectorAll('.swap-target').forEach(node=>node.classList.remove('swap-target'));
     if(pending.button.hasPointerCapture(pending.pointerId))pending.button.releasePointerCapture(pending.pointerId);
+    highlightColumn(null);
     if(pending.active){suppressClickUntil=performance.now()+250;if(commit)actions.swap(pending.index,pending.target);}
   }
   function attachMove(button:HTMLButtonElement,index:number) {
@@ -56,7 +66,7 @@ export function createStudio(container: HTMLElement, actions: {
       if(!move||event.pointerId!==move.pointerId)return;
       const dx=event.clientX-move.startX,dy=event.clientY-move.startY;
       if(!move.active){if(Math.abs(dx)<6 || Math.abs(dx)<Math.abs(dy))return;actions.beginEdit();move.active=true;button.classList.add('moving');}
-      ghost.hidden=true;restGhost.hidden=true;
+      ghost.hidden=true;restGhost.hidden=true;highlightRow(null);highlightColumn(null);
       const x=event.clientX-roll.getBoundingClientRect().left-42;
       const target=columns.findIndex(col=>x>=col.left&&x<col.left+col.width);
       move.target=target>=0&&target<current.melody.events.length?target:move.index;
@@ -84,12 +94,13 @@ export function createStudio(container: HTMLElement, actions: {
     pending.handle.title='拖曳調整時值；方向鍵縮短／延長';
     if (pending.handle.hasPointerCapture(pending.pointerId)) pending.handle.releasePointerCapture(pending.pointerId);
     suppressClickUntil = performance.now() + 250;
+    highlightColumn(null);
     if (commit) actions.update(pending.next);
   }
   roll.onpointermove = event => {
-    if(move?.active){highlightRow(null);return;}
+    if(move?.active){highlightRow(null);highlightColumn(null);return;}
     if (drag) {
-      highlightRow(null);
+      highlightRow(null);highlightColumn(null);
       if (event.pointerId !== drag.pointerId) return;
       const width = Math.max(1,drag.width + event.clientX-drag.startX + scroll.scrollLeft-drag.startScroll);
       drag.next = resizeRhythm(drag.original,width);
@@ -102,25 +113,26 @@ export function createStudio(container: HTMLElement, actions: {
       drag.handle.title=`預覽 ${formatEvent(drag.next)}，放開套用`;
       return;
     }
-    if(event.pointerType==='touch'){ghost.hidden=true;highlightRow(null);return;}
+    if(event.pointerType==='touch'){ghost.hidden=true;highlightRow(null);highlightColumn(null);return;}
     const hovered=(event.target as HTMLElement).closest<HTMLElement>('.roll-note, .roll-resize');
     if(hovered){
       const eventIndex=hovered.classList.contains('roll-resize')?current.cursor-1:Number(hovered.dataset.index);
       const step=current.melody.events[eventIndex]?noteStep(current.melody.events[eventIndex]):null;
-      highlightRow(step===null?null:35-step);ghost.hidden=true;return;
+      highlightRow(step===null?null:35-step);highlightColumn(eventIndex);ghost.hidden=true;return;
     }
     const rect=roll.getBoundingClientRect(); const x=event.clientX-rect.left-42;
     const index=columns.findIndex(c=>x>=c.left && x<c.left+c.width);
     const row=Math.floor((event.clientY-rect.top)/24);
     highlightRow(row>=0&&row<36?row:null);
+    highlightColumn(index>=0?index:null);
     if(index<0 || row<0 || row>35){ghost.hidden=true;return;}
     ghost.hidden=false; ghost.style.left=`${42+columns[index].left}px`; ghost.style.top=`${row*24}px`; ghost.style.width=`${columns[index].width-4}px`;
     hint.style.bottom=row===0?'auto':'25px'; hint.style.top=row===0?'25px':'auto';
     hint.textContent=row===36?'休止符':`${pitchSteps[(35-row)%12].toUpperCase()}${Math.floor((35-row)/12)+1}`;
   };
-  roll.onpointerleave = () => { if(!drag) ghost.hidden=true; highlightRow(null); };
-  scroll.addEventListener('scroll',()=>{highlightRow(null);restLane.parentElement!.classList.remove('is-hovered');ghost.hidden=true;restGhost.hidden=true;restLane.style.transform=`translateX(${-scroll.scrollLeft}px)`;nextCaption.style.top=`${scroll.scrollTop+4}px`;});
-  window.addEventListener('blur',()=>{clearDrag(false);clearMove(false);});
+  roll.onpointerleave = () => { if(!drag) ghost.hidden=true; highlightRow(null);highlightColumn(null); };
+  scroll.addEventListener('scroll',()=>{highlightRow(null);highlightColumn(null);restLane.parentElement!.classList.remove('is-hovered');ghost.hidden=true;restGhost.hidden=true;restLane.style.transform=`translateX(${-scroll.scrollLeft}px)`;nextCaption.style.top=`${scroll.scrollTop+4}px`;});
+  window.addEventListener('blur',()=>{clearDrag(false);clearMove(false);highlightRow(null);highlightColumn(null);});
   document.addEventListener('visibilitychange',()=>{if(document.hidden){clearDrag(false);clearMove(false);}});
   document.addEventListener('keydown',event=>{if(event.key==='Escape' && (drag||move)){event.preventDefault();clearDrag(false);clearMove(false);}});
   function selected() { return hasSelection ? current.melody.events[current.cursor - 1] : undefined; }
@@ -145,6 +157,9 @@ export function createStudio(container: HTMLElement, actions: {
     actions.update(noteFromStep(35-row,original));
   };
   restLane.onpointermove=event=>{
+    const hoverX=event.clientX-restLane.getBoundingClientRect().left-42;
+    const hoverIndex=columns.findIndex(col=>hoverX>=col.left&&hoverX<col.left+col.width);
+    highlightRow(null);highlightColumn(event.pointerType==='touch'||hoverIndex<0?null:hoverIndex);
     restLane.parentElement!.classList.toggle('is-hovered',event.pointerType!=='touch'&&!drag&&!move?.active);
     if(drag){roll.onpointermove?.call(roll,event);return;}
     if(event.pointerType==='touch'||drag||move?.active||(event.target as HTMLElement).closest('.roll-note,.roll-resize,.rest-next')){restGhost.hidden=true;return;}
@@ -153,7 +168,7 @@ export function createStudio(container: HTMLElement, actions: {
     restGhost.hidden=index<0;
     if(index>=0){restGhost.style.left=`${42+columns[index].left}px`;restGhost.style.width=`${columns[index].width-4}px`;}
   };
-  restLane.onpointerleave=()=>{restGhost.hidden=true;restLane.parentElement!.classList.remove('is-hovered');};
+  restLane.onpointerleave=()=>{highlightColumn(null);restGhost.hidden=true;restLane.parentElement!.classList.remove('is-hovered');};
   restLane.onclick=event=>{
     if(performance.now()<suppressClickUntil||(event.target as HTMLElement).closest('.roll-note,.roll-resize,.rest-next'))return;
     const x=event.clientX-restLane.getBoundingClientRect().left-42;
@@ -181,8 +196,8 @@ export function createStudio(container: HTMLElement, actions: {
       clearDrag(false); clearMove(false);
       current = state;
       const previousScroll = scroll.scrollLeft;
-      restLane.replaceChildren(restGhost); restGhost.hidden=true;
-      roll.replaceChildren(rowHighlight,ghost,nextColumn); highlightRow(null); ghost.hidden=true; columns=[];
+      restLane.replaceChildren(restColumnHighlight,restGhost); restGhost.hidden=true;
+      roll.replaceChildren(columnHighlight,rowHighlight,ghost,nextColumn); highlightRow(null); ghost.hidden=true; columns=[];
       for(let row=0;row<36;row++) {
         const label=document.createElement('span'); label.className='roll-pitch'; label.dataset.row=String(row); label.style.top=`${row*24}px`;
         label.textContent=row===36?'休止':`${pitchSteps[(35-row)%12].toUpperCase()}${Math.floor((35-row)/12)+1}`;
@@ -215,8 +230,9 @@ export function createStudio(container: HTMLElement, actions: {
           handle.onpointerdown=pointer=>{
             if(pointer.button!==0 || !pointer.isPrimary)return;
             pointer.preventDefault();pointer.stopPropagation();actions.beginEdit();
-            handle.setPointerCapture(pointer.pointerId); ghost.hidden=true; roll.classList.add('resizing');
+            handle.setPointerCapture(pointer.pointerId); ghost.hidden=true;restGhost.hidden=true;highlightRow(null); roll.classList.add('resizing');
             drag={pointerId:pointer.pointerId,startX:pointer.clientX,startScroll:scroll.scrollLeft,original:{...event},next:{...event},handle,label,width:barWidth,left:handle.style.left};
+            highlightColumn(null);
           };
           handle.onpointerup=pointer=>{if(drag?.pointerId===pointer.pointerId){pointer.preventDefault();clearDrag(true);}};
           handle.onpointercancel=()=>clearDrag(false);handle.onlostpointercapture=()=>clearDrag(false);
@@ -251,6 +267,7 @@ export function createStudio(container: HTMLElement, actions: {
       container.querySelector<HTMLButtonElement>('#studio-delete')!.disabled=!event;
       pitch.value=step===null?'rest':String(step); duration.value=String(field.duration); dot.checked=field.dotted;
       scroll.scrollLeft=previousScroll;
+      highlightColumn(null);
     },
     reveal() {
       const index=current.cursor-1, event=selected(); if(!event) {scroll.scrollTop=400;return;}
