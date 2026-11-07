@@ -25,3 +25,15 @@ test('share metadata points to real text-free image assets at expected sizes', a
     assert.doesNotMatch(svg, /<text\b|<image\b|\p{Extended_Pictographic}/u);
   }
 });
+
+test('live entry, worker and styles are packaged with subpath-safe, versioned URLs', async () => {
+  const html = await readFile(new URL('dist/live.html', root), 'utf8');
+  assert.match(html, /src="\.\/live\.bundle\.js\?v=[a-f0-9]{12}"/);
+  assert.match(html, /href="\.\/src\/live\/styles\.css\?v=[a-f0-9]{12}"/);
+  for (const file of ['live.bundle.js', 'pitch-worker.js']) {
+    const code = await readFile(new URL(`dist/${file}`, root), 'utf8');
+    assert.doesNotThrow(() => new Script(code));
+    if (file === 'live.bundle.js') assert.match(code, /\.\/pitch-worker\.js\?v=[a-f0-9]{12}/);
+  }
+  assert.doesNotMatch(html, /\p{Extended_Pictographic}/u);
+});

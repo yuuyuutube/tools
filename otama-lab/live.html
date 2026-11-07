@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0c1719">
+  <meta name="description" content="用麥克風即時觀察 Otamatone 的音高、音名、cents、滑音與顫音。音訊只在裝置上分析。">
+  <title>OTAMA LAB — 真琴分析</title>
+  <link rel="canonical" href="https://yuuyuutube.github.io/tools/otama-lab/live.html">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_TW">
+  <meta property="og:title" content="OTAMA LAB — 真琴分析">
+  <meta property="og:description" content="麥克風即時音高分析，觀察滑音與顫音。">
+  <meta property="og:url" content="https://yuuyuutube.github.io/tools/otama-lab/live.html">
+  <meta property="og:image" content="https://yuuyuutube.github.io/tools/otama-lab/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="./src/styles.css?v=4ce5bf8809f7">
+  <link rel="stylesheet" href="./src/live/styles.css?v=a573d409c455">
+  <script defer src="./live.bundle.js?v=e04d13f10c23"></script>
+</head>
+<body>
+<svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+  <symbol id="live-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2m-7 9v3m-4 0h8"/></symbol>
+  <symbol id="live-stop" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/></symbol>
+  <symbol id="live-back" viewBox="0 0 24 24"><path d="m12 5-7 7 7 7M5 12h15"/></symbol>
+  <symbol id="live-clear" viewBox="0 0 24 24"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/></symbol>
+</defs></svg>
+<a class="skip" href="#microphone">跳至麥克風控制</a>
+<main class="page live-page">
+  <header class="masthead"><a href="./" class="wordmark">OTAMA<span>LAB</span></a><h1>真琴分析</h1><a class="btn lab-link" href="./" aria-label="返回虛擬演奏" title="返回虛擬演奏"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-back"/></svg><span>虛擬演奏</span></a></header>
+  <div class="live-layout">
+    <section class="card live-readout" aria-labelledby="live-title">
+      <h2 id="live-title">麥克風音高</h2>
+      <div id="live-face" class="face" aria-hidden="true"><div class="eye left"></div><div class="eye right"></div><div class="mouth"></div></div>
+      <div class="readouts"><div><div class="section-label">頻率</div><div class="value"><span id="live-hz">—</span><span class="value-unit">Hz</span></div></div><div><div class="section-label">最近音符</div><div class="value" id="live-note">—</div></div></div>
+      <div class="tuner"><span aria-hidden="true">♭</span><div class="tuner-track" aria-hidden="true"><i class="tuner-center"></i><i id="live-needle" hidden></i></div><span aria-hidden="true">♯</span><output id="live-cents">— cents</output></div>
+      <dl class="live-quality"><div><dt>訊號品質</dt><dd id="live-confidence">—</dd></div><div><dt>音高穩定度</dt><dd id="live-stability">—</dd></div></dl>
+      <button class="btn primary mic-control" id="microphone" type="button" aria-pressed="false" aria-describedby="mic-status"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use id="mic-icon" href="#live-mic"/></svg><span id="mic-label">開啟麥克風</span></button>
+      <p id="mic-status" class="mic-status" role="status">開啟後，靠近麥克風演奏單音。</p>
+      <div class="level-row"><label for="input-level">輸入音量</label><meter id="input-level" min="0" max="1" value="0"></meter></div>
+      <p id="pitch-announcement" class="sr-only" role="status" aria-atomic="true"></p>
+    </section>
+    <section class="card timeline-card" aria-labelledby="timeline-title">
+      <div class="section-top"><div><h2 id="timeline-title">音高軌跡</h2><p class="timeline-window">最近 12 秒 · 半音等距</p></div><button id="clear-history" class="btn clear-history" type="button" aria-label="清除音高軌跡" title="清除音高軌跡"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-clear"/></svg></button></div>
+      <div class="timeline-wrap"><svg id="timeline" class="timeline" role="img" aria-label="最近 12 秒的麥克風音高軌跡"></svg><p id="timeline-empty" class="timeline-empty">等待麥克風音高</p></div>
+      <p class="timeline-caption">滑音會連成斜線，顫音會形成波浪。未偵測到音高時斷線，音高範圍自動縮放。</p>
+    </section>
+  </div>
+  <footer><details class="simulation-info"><summary>分析方式與限制</summary><p>音訊只在此裝置即時分析，不錄音、不上傳，也不回播。使用 YIN 單音基頻估計（60–2000 Hz），不限制在虛擬琴的音域，也不吸附標準音。十二平均律，A4 = 440 Hz。</p><p>訊號品質表示週期性估計，並非準確率；穩定度依最近 0.6 秒的音高變化判斷。背景噪音、和弦與過強的泛音可能造成誤判。此頁尚不儲存 DX 位置量測資料。</p></details></footer>
+  <noscript><p class="card">請啟用 JavaScript，才能使用麥克風音高分析。</p></noscript>
+</main>
+</body>
+</html>

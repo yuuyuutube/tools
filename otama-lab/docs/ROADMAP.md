@@ -6,20 +6,24 @@
 
 發行前裝置門檻：真實 iOS Safari / Android Chrome 觸控、分頁切換與背景中斷、VoiceOver / TalkBack；GitHub Pages production smoke test。
 
-## Phase 2 — Live Sound Lab
+## Phase 2 — Live Sound Lab（核心已實作）
 
-新增 `src/input/microphone.js`（getUserMedia、權限、裝置與生命週期）及 `src/analysis/yin.js`（單音 fundamental frequency）。分析放 AudioWorklet / Worker，避免阻塞手指操作；權限僅在明確啟動後要求，關閉時 stop tracks。以 HTTPS / localhost 運作。
+獨立 `live.html`，首頁提供入口。`src/input/microphone.js` 管理權限、手勢啟動、串流與生命週期；`src/analysis/yin.js` 自行實作 YIN，透過背景 Worker 分析。頁面提供 Hz、音名、cents、週期性品質、音量、穩定度、12 秒 pitch timeline；滑音與顫音保留連續音高，無可信音高時斷線。
 
-獨立的音高資料流契約（未實作）：
+實際資料流：
 
 ```js
-// 每次分析結果，未量化、不吸附標準音；失敗用 null。
-{ source: 'microphone', timestampMs, frequencyHz: null, confidence: 0, rms: 0, stable: false }
+// Worker 結果：失敗為 null，不量化、不吸附；音訊不保存。
+{ source: 'microphone', timestampMs, frequencyHz: null, confidence: 0, rms: 0, clipped: false }
+// PitchStability 另外推導，不改寫原始頻率。
+{ stable: false, spreadCents: null, label: '—' }
 ```
 
-輸出可交給純函式 `pitchOf` 計算最近音名與 cents，原始頻率仍是主要資料。新增 confidence、訊號強度、穩定度、pitch timeline、glissando / vibrato；低訊號或不穩定時不顯示假的確定音高。以已知頻率正弦波、諧波、噪音、滑音與非標準音驗證，並以真實 DX 比較倍頻／半頻錯判。使用開源可靠 YIN 實作時須檢查授權與來源。
+明確啟動後才要求權限；等待可取消，停止／背景／離頁釋放 tracks、AudioContext、Worker 與 timer。麥克風不經合成器回播，以 HTTPS / localhost 運作；虛擬演奏與真實輸入分頁。
 
-麥克風不經合成器回播，避免回授；mic 與 virtual source 明確分開。瀏覽器合成音與實際輸入資料使用不同 source 標籤。
+已以三種取樣率、非標準音、泛音、噪音、滑音／顫音與原生合成 MediaStream 驗證完整流程。這些是測試資料，不是 DX 實測。尚待：實體 DX、不同嘴型與強泛音的倍頻／半頻比較；真實 iOS Safari／Android Chrome 麥克風權限、背景與中斷；VoiceOver／TalkBack。
+
+下一輪只依實測問題調整閾值／音高偵測，不先堆入裝置選擇、錄音或測量功能。
 
 ## Phase 3 — DX Measurement Lab
 

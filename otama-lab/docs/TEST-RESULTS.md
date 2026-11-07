@@ -129,3 +129,16 @@ npm run build
 - 這些是網站的模擬演奏範圍，並非宣稱 DX 的官方固定音域或實測曲線。
 
 快取相容補充：正式站初次載入曾取得 7bee75b 舊版 HTML，搭配新 bundle 後缺少 range 節點而失敗，重新整理才恢復。現在會補齊新音域的 DOM hooks；`tests/cached-page.html` 保存該舊格式，新增 3 項確認預設讀值、僅兩個選項與無需 reload 即可切換音域。完整瀏覽器檢查增為 154 項。
+
+## Phase 2 · 獨立真琴分析頁（2026-11-07）
+
+- 建置成功，dist 包含 live.html、live.bundle.js、pitch-worker.js 與版本化樣式，使用相對 URL，可放在 GitHub Pages 子目錄；沒有新增第三方套件。
+- Node 42 / 42：原有音高與合成器回歸，加上 44.1／48／96 kHz 的 60–2000 Hz 正弦與泛音、+37 cents、非標準音、DC、弱音、固定 seed 噪音、滑音／顫音、品質、穩定度、12 秒歷史與斷線。
+- 麥克風生命週期測試：取消後晚到的 stream、權限拒絕後重試、resume 失敗後晚到 stream、track ended、AudioContext interruption、Worker 錯誤與 timeout、停止後不接受晚到結果，均確認資源釋放。
+- Live 瀏覽器桌面與 320px viewport 各 31 / 31 通過（iframe 內容約 288px）；另檢查 390×844 完整頁面無水平溢出。完整流程：原生 Web Audio → 原生 MediaStream → 正式麥克風控制器 → 真正 Worker → YIN → Hz／note／cents／tuner／timeline。包含 440 Hz、+37 cents、82.41 Hz、1900 Hz、滑音、5 Hz／35 cents 顫音、靜音、取消與拒絕權限、重新啟動及離頁停止。
+- QA 的 getUserMedia 由測試頁替換為明確標記的原生合成串流，無實體麥克風或喇叭輸出。此結果不能當成實際 DX 或實際麥克風準確率。
+- 既有虛擬演奏瀏覽器 154 / 154 回歸通過，包含拖曳、雙音域／三映射、專注直連與聲音控制；原本角色與演奏 bundle 未改動。
+- 瀏覽器測試曾發現原生 timer receiver 綁定問題及極窄版面的四位數 Hz 溢出，已修正並重測。
+- 瀏覽器測試宿主偶有不屬於本專案的 MutationObserver.observe 錯誤（專案沒有使用 MutationObserver）；正式頁需另檢查 console。QA PASS／FAIL 保存在 docs/qa/live-*.txt。
+
+尚未驗證：真實 DX 演奏、真實麥克風與背景環境的倍頻／半頻誤判、iOS Safari／Android Chrome 的實際權限與背景中斷、實體觸控裝置、VoiceOver／TalkBack。本次窄螢幕檢查是瀏覽器 viewport，不宣稱為真實手機測試。下一步優先用 DX 實測調整偵測條件，再進 Phase 3 位置量測。

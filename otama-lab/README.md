@@ -1,10 +1,11 @@
 # OTAMA LAB
 
-用虛擬 Otamatone 比較琴頸位置、頻率、音名與音程的純前端工具。保留原型角色，提供三種數學模擬、連續滑音、同步雙圖與八度比較。沒有後端、第三方執行時依賴、API key 或麥克風要求。
+用虛擬 Otamatone 比較琴頸位置、頻率、音名與音程，並在獨立的真琴分析頁用麥克風觀察實際演奏。純前端，沒有後端、第三方執行時依賴或 API key；虛擬演奏頁不要求麥克風。
 
 ## 開啟
 
 - 正式網址：<https://yuuyuutube.github.io/tools/otama-lab/>
+- 真琴分析：<https://yuuyuutube.github.io/tools/otama-lab/live.html>
 - 本機可直接開啟 `index.html`，或建置後的 `dist/index.html`。
 - 開發／執行瀏覽器測試時，在此資料夾啟動 HTTP server：
 
@@ -13,6 +14,19 @@ python3 -m http.server 4187 --bind 127.0.0.1
 ```
 
 開啟 <http://127.0.0.1:4187/>。`app.bundle.js` 是已提交的傳統 script，無需載入 ES modules，因此開啟工具本身不依賴 HTTP server。瀏覽器的 file:// 安全限制依產品而異；本次測試宿主禁止 file://，未能直接實測雙擊開啟。
+
+## 真琴分析（Phase 2）
+
+獨立的 `live.html`，首頁右上角「真琴分析」可進入。按「開啟麥克風」並允許權限，再靠近麥克風演奏單音；按同一按鈕、Esc、離開頁面或切到背景均停止取音。權限等待中可取消，晚到的允許結果會立即關閉，錯誤後可重試。
+
+- 顯示實際偵測的 Hz、最近音名／八度、cents、週期性訊號品質、音量、音高穩定度。
+- 最近 12 秒的半音等距時間線自動縮放，保留連續滑音與顫音；無音高時斷線。關閉麥克風後保留當次軌跡，可按垃圾桶圖示清除；再次啟動開始新一輪。
+- 自行實作 YIN 的差分、累積平均正規化、閾值與拋物線內插；約 60–2000 Hz，不套用虛擬琴的 G3–D6 範圍、不吸附標準音。未找到可信週期不回傳猜測值。
+- 4096 samples（取樣率高於 60 kHz 時 8192），每個結果後約 40 ms 再分析；單一 Worker、最多一筆在途工作，避免累積延遲。FFT frame 是分析視窗，不表示以最大頻譜峰值判斷基頻。
+- 品質為 `1 − CMND` 的週期性指標，不是準確率。穩定度要求至少 250 ms／5 個樣本，最近 600 ms 的音高全距 ≤25 cents 才標示穩定；滑音／顫音會顯示變動中，與品質分開。
+- 只在記憶體保留音高歷史，不錄音、不上傳、不回播；沒有音訊連到喇叭。沒有 DX 位置量測或假實測資料。
+
+麥克風頁需透過 **HTTPS 或 localhost** 開啟，不能依賴雙擊本機 HTML；以瀏覽器使用者手勢啟動 AudioContext。背景噪音、和弦、強泛音與設備處理都可能造成倍頻／半頻誤判，仍待實體 DX 和 iOS／Android 驗證。演算法依據 [YIN 原論文 DOI](https://doi.org/10.1121/1.1458024)，API 參考 [getUserMedia](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia) 與 [AnalyserNode](https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode)。
 
 ## 音域
 
@@ -79,10 +93,16 @@ npm test
 - `app.js`：介面與狀態協調。
 - `focus.js`：專注演奏的視圖切換、viewport 高度與返回位置。
 - `styles.css`：保留角色美術、響應式布局、reduced motion。
+- `input/microphone.js`：麥克風權限、使用者手勢、分析串流、競態與資源釋放。
+- `analysis/yin.js` / `pitch-worker.js`：純音高偵測與背景 Worker。
+- `analysis/stability.js`：獨立的音高穩定度，不改寫原始 Hz。
+- `live/timeline.js` / `live/app.js` / `live/styles.css`：12 秒歷史與獨立真琴分析頁。
 
-`build` 依固定依賴順序將小型 modules 合成為 classic IIFE `app.bundle.js`，並為 bundle / CSS 加上內容版本參數，避免新畫面搭配舊快取；另產出 `dist/`（HTML、bundle、CSS、assets、.nojekyll）。生成器只支援目前使用的 named relative imports 與具名宣告；加入其他 module 語法會明確失敗。對已快取的舊版頁面，程式會補齊缺少的音域元件，避免舊 HTML 搭配新 bundle 時讀值空白。修改 `src/` 後務必重新 build，並將更新的根目錄 bundle 一併提交。
+`build` 依固定依賴順序將小型 modules 合成為 classic IIFE `app.bundle.js`、`live.bundle.js` 與 `pitch-worker.js`，並為 bundle／Worker／CSS 加上內容版本參數；另產出 `dist/`（兩頁 HTML、bundles、Worker、CSS、assets、.nojekyll）。所有路徑相對於頁面，可部署 Pages 子路徑。生成器只支援目前使用的 named relative imports 與具名宣告；加入其他 module 語法會明確失敗。對已快取的舊版演奏頁，程式會補齊缺少的音域元件。修改 `src/` 後務必重新 build，並提交更新的根目錄 bundles／Worker。
 
 瀏覽器整合測試：開啟 `/tests/browser.html` 按 Run checks，會播放短暫合成音。測試頁本身使用 ES modules，因此需 HTTP。測試檔不進 dist。
+
+真琴頁整合測試：`/tests/live-browser.html` 的 Run checks 以原生 Web Audio 產生的測試 MediaStream 通過正式控制器、Worker、YIN 與 UI；不存取實體麥克風，也不播放聲音。測試頁明確標示為合成訊號，不能當作 DX 實測。
 
 ## Favicon 與分享圖
 
@@ -90,7 +110,7 @@ npm test
 
 ## GitHub Pages
 
-目前專案位於 `yuuyuutube/tools` repository 的 `otama-lab/`，根目錄 `index.html`、`app.bundle.js`、`src/styles.css` 與 `assets/` 已能作為 Pages 子目錄直接發布。此方式沿用 repository 原有的 Pages 設定，無需將 dist 放到根目錄、也不覆蓋其他工具。
+目前專案位於 `yuuyuutube/tools` repository 的 `otama-lab/`，兩頁 HTML、三個生成的 JS、`src/styles.css`、`src/live/styles.css` 與 `assets/` 已能作為 Pages 子目錄直接發布。沿用 repository 原有的 Pages 設定，無需將 dist 放到根目錄、也不覆蓋其他工具。
 
 若將此資料夾作為獨立 repository：在 Settings → Pages 選 GitHub Actions，使用本專案 `.github/workflows/pages.yml` 即可將 dist 部署成獨立網站。若保留 monorepo 結構，GitHub 不會執行這個巢狀 workflow；請沿用 repository 原有發布流程。換網址時需同步更新 canonical、og:url、og:image 與 twitter:image。
 
