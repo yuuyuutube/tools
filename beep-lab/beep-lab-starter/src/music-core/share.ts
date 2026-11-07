@@ -31,7 +31,8 @@ export function decodeShare(payload: string): Melody {
   } catch { throw invalid(); }
 }
 export function shareUrl(melody: Melody, base: string): string {
-  const url = new URL(base); url.search = '?view=card'; url.hash = `melody=${encodeShare(melody)}`;
+  const url = new URL(base); const art=url.searchParams.get('art');url.search = '?view=card';
+  if(art==='stars'||art==='weave'||art==='random')url.searchParams.set('art',art); url.hash = `melody=${encodeShare(melody)}`;
   if (url.href.length > MAX_SHARE_URL_LENGTH) throw new Error('分享網址太長，請縮短曲名或旋律後再試。');
   return url.href;
 }
@@ -40,5 +41,5 @@ export function readSharedMelody(hash: string): Melody {
   return decodeShare(hash.slice(8));
 }
 export function editUrl(melody: Melody, base: string): string {
-  const url = new URL(shareUrl(melody,base)); url.search = '?edit=1'; return url.href;
+  const url = new URL(shareUrl(melody,base)); url.searchParams.delete('view');url.searchParams.set('edit','1'); return url.href;
 }

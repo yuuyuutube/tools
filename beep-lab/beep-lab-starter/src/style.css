@@ -365,3 +365,8 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
 .weave-note { transition: filter .18s ease; }
 .weave-note.art-playing { filter: brightness(1.25) saturate(1.15); }
 @media(prefers-reduced-motion:reduce) { .weave-note { transition: none; } }
+.star-note { transition: filter .18s ease; }
+.star-note.art-playing { filter: brightness(1.6) drop-shadow(0 0 6px #f8dfae); }
+.art-controls { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin: -12px 0 20px; font-size: 12px; color: var(--muted); }
+.art-controls select { min-height: 44px; padding: 0 10px; border: 1px solid var(--line); border-radius: 4px; color: var(--ink); background: transparent; font: inherit; }
+@media(prefers-reduced-motion:reduce) { .star-note { transition: none; } }

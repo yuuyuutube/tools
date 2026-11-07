@@ -42,3 +42,10 @@ describe('versioned share links',()=>{
     expect(()=>readSharedMelody('#other=x')).toThrow();expect(()=>shareUrl(sample(),'https://example.com/'+'a'.repeat(2048))).toThrow('太長');
   });
 });
+
+it('preserves selected card art across sharing and editing, without carrying unrelated settings',()=>{
+  const url=shareUrl(sample(),'https://example.com/tools/beep-lab/?art=stars&focus=1');
+  expect(new URL(url).search).toBe('?view=card&art=stars');
+  expect(new URL(editUrl(sample(),url)).searchParams.get('art')).toBe('stars');
+  expect(new URL(shareUrl(sample(),'https://example.com/?art=evil')).searchParams.has('art')).toBe(false);
+});

@@ -53,3 +53,41 @@ export function createMelodyArt(melody: Melody) {
   const overprint=threads.cloneNode(true) as SVGGElement;overprint.setAttribute('opacity','.12');svg.append(overprint);
   return {element:svg,position(index:number|null) {groups.forEach((items,i)=>items.forEach(group=>group.classList.toggle('art-playing',i===index)));}};
 }
+
+export function buildStars(melody: Melody) {
+  const weights=melody.events.map(event=>4/event.duration*(event.dotted?1.5:1));
+  const total=weights.reduce((a,b)=>a+b,0)||1;
+  let time=0;
+  return melody.events.flatMap((event,index)=>{
+    const step=noteStep(event);const x=62+(time+weights[index]/2)/total*476;time+=weights[index];
+    return step===null?[]:[{index,x,y:466-step/35*330,radius:3+Math.sqrt(weights[index])*3,octave:Math.floor(step/12),duration:weights[index],connected:index>0&&melody.events[index-1].type==='note'}];
+  });
+}
+export function createStarArt(melody: Melody) {
+  const ns='http://www.w3.org/2000/svg';
+  function node(tag:string,attrs:Record<string,string|number>) {const element=document.createElementNS(ns,tag);for(const[key,value]of Object.entries(attrs))element.setAttribute(key,String(value));return element;}
+  const svg=node('svg',{viewBox:'0 0 600 600',role:'img','aria-label':'根據這首旋律生成的聲音星圖',class:'melody-art star-art'});
+  svg.append(node('rect',{width:600,height:600,fill:'#202d43'}));
+  const orbit=node('g',{fill:'none',stroke:'#bec7cb','stroke-width':.7,opacity:.22});
+  for(const radius of [100,180,260,340])orbit.append(node('circle',{cx:300,cy:300,r:radius}));
+  orbit.append(node('path',{d:'M40 300H560M300 40V560','stroke-dasharray':'2 8'}));svg.append(orbit);
+  const points=buildStars(melody);const palette=['#e9be78','#a8c9cd','#deaaa0'];
+  const groups:Element[][]=melody.events.map(()=>[]);
+  points.forEach((point,i)=>{
+    const previous=points[i-1];
+    if(previous&&point.connected)svg.append(node('path',{d:`M${previous.x} ${previous.y}L${point.x} ${point.y}`,fill:'none',stroke:'#aebdcb','stroke-width':1,opacity:.45}));
+  });
+  points.forEach(point=>{
+    const group=node('g',{'data-art-note':point.index,class:'star-note'});
+    const color=palette[point.octave];
+    if(point.duration>=1)group.append(node('circle',{cx:point.x,cy:point.y,r:point.radius+8,fill:'none',stroke:color,'stroke-width':.8,opacity:.5}));
+    group.append(node('circle',{cx:point.x,cy:point.y,r:point.radius,fill:color}));
+    group.append(node('path',{d:`M${point.x-2} ${point.y}h4M${point.x} ${point.y-2}v4`,stroke:'#f7f0df','stroke-width':1}));
+    svg.append(group);groups[point.index].push(group);
+  });
+  return {element:svg,position(index:number|null){groups.forEach((items,i)=>items.forEach(group=>group.classList.toggle('art-playing',i===index)));}};
+}
+export type CardArtStyle='weave'|'stars';
+export function resolveArtStyle(value:string|null,random=Math.random):CardArtStyle {
+  return value==='random'?(random()<.5?'weave':'stars'):value==='stars'?'stars':'weave';
+}

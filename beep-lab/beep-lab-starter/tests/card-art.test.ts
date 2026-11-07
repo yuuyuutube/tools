@@ -31,3 +31,15 @@ describe('melody weave',()=>{
     expect(buildWeave(createMelody()).tiles).toEqual([]);
   });
 });
+
+import {buildStars,resolveArtStyle} from '../src/card-art';
+describe('sound constellation',()=>{
+  it('uses cumulative duration, pitch height and duration size, leaving gaps at rests',()=>{
+    const melody=sample();const points=buildStars(melody);
+    expect(points).toHaveLength(2);expect(points[1].connected).toBe(false);expect(points[1].x).toBeGreaterThan(points[0].x);expect(points[1].y).toBeLessThan(points[0].y);expect(points[0].radius).toBeGreaterThan(points[1].radius);
+    expect(buildStars({...melody,title:'new'})).toEqual(points);
+  });
+  it('resolves explicit styles, safe defaults and both random outcomes',()=>{
+    expect(resolveArtStyle('stars')).toBe('stars');expect(resolveArtStyle('unknown')).toBe('weave');expect(resolveArtStyle('random',()=>.2)).toBe('weave');expect(resolveArtStyle('random',()=>.8)).toBe('stars');
+  });
+});
