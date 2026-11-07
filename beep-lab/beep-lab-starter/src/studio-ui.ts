@@ -3,13 +3,14 @@ import { noteFromStep, noteStep, pitchSteps, resizeRhythm } from './music-core/s
 import type { EditorState } from './music-core/editor';
 export function createStudio(container: HTMLElement, actions: {
   beginEdit: () => void;
+  deselect: () => void; refresh: () => void;
   select: (cursor: number) => void; update: (event: MusicEvent) => void;
   append: (event: MusicEvent) => void; swap: (from: number, to: number) => void;
   insert: (event: MusicEvent) => void; remove: () => void;
 }) {
-  container.innerHTML = `<p class="studio-help">每格直線間距為四分音符。最後一欄點擊新增音符；底部固定列可加入休止。拖曳音塊交換位置，右側把手調整時值；Esc 取消。</p>
+  container.innerHTML = `<p class="studio-help">每格直線間距為四分音符。最後一欄點擊新增音符；底部固定列可加入休止。拖曳音塊交換位置，右緣把手調整時值。點外部空白或 Esc 取消選取；拖曳時 Esc 取消操作。</p>
     <div class="roll-scroll" tabindex="0" aria-label="音高編輯區，可上下左右捲動"><div class="piano-roll"></div></div><div class="rest-viewport"><span class="rest-caption">休止</span><div class="rest-lane"></div></div>
-    <div class="studio-fields"><label>音高<select id="studio-pitch"></select></label><label>時值<select id="studio-duration">${durations.map(d => `<option value="${d}">1/${d}</option>`).join('')}</select></label><label class="studio-dot"><input id="studio-dot" type="checkbox"/>附點</label></div>
+    <div class="studio-fields"><span class="studio-field-context" aria-live="polite">下一音</span><label>音高<select id="studio-pitch"></select></label><label>時值<select id="studio-duration">${durations.map(d => `<option value="${d}">1/${d}</option>`).join('')}</select></label><label class="studio-dot"><input id="studio-dot" type="checkbox"/>附點</label></div>
     <div class="studio-actions"><button id="studio-add">新增音符</button><button id="studio-rest">新增休止</button><button id="studio-delete">刪除選取</button></div>`;
   const roll = container.querySelector<HTMLElement>('.piano-roll')!;
   const scroll = container.querySelector<HTMLElement>('.roll-scroll')!;
@@ -22,6 +23,11 @@ export function createStudio(container: HTMLElement, actions: {
   const dot = container.querySelector<HTMLInputElement>('#studio-dot')!;
   pitch.innerHTML = '<option value="rest">休止符</option>' + Array.from({length:36},(_,step)=>`<option value="${step}">${pitchSteps[step%12].toUpperCase()}${Math.floor(step/12)+1}</option>`).join('');
   let current: EditorState;
+  let hasSelection = false;
+  let nextEvent: MusicEvent = noteFromStep(12, {duration:4,dotted:false});
+  const rhythmWidth = (event: MusicEvent) => 320/event.duration*(event.dotted?1.5:1);
+  const handleWidth = (width: number) => Math.min(16,width/2);
+  function appendNext(event: MusicEvent) { actions.deselect(); actions.append(event); }
   let columns: {left:number;width:number}[] = [];
   const rowHighlight = document.createElement('div'); rowHighlight.className='roll-row-hover'; rowHighlight.hidden=true;
   function highlightRow(row: number | null) {
@@ -72,7 +78,8 @@ export function createStudio(container: HTMLElement, actions: {
     pending.label.style.width = `${Math.max(1,pending.width-2)}px`;
     pending.label.textContent = formatEvent(pending.original);
     pending.label.parentElement!.style.width = `${pending.width}px`;
-    pending.handle.style.width = `${Math.min(24,pending.width)}px`;
+    pending.handle.style.width = `${handleWidth(pending.width)}px`;
+    pending.handle.classList.toggle('short',pending.width<24);
     pending.handle.style.left = pending.left;
     pending.handle.title='拖曳調整時值；方向鍵縮短／延長';
     if (pending.handle.hasPointerCapture(pending.pointerId)) pending.handle.releasePointerCapture(pending.pointerId);
@@ -89,8 +96,9 @@ export function createStudio(container: HTMLElement, actions: {
       const size = 320/drag.next.duration*(drag.next.dotted?1.5:1);
       drag.label.parentElement!.style.width = `${size}px`;
       drag.label.style.width = `${Math.max(1,size-2)}px`; drag.label.textContent = formatEvent(drag.next);
-      drag.handle.style.left = `${parseFloat(drag.label.parentElement!.style.left)+size-Math.min(24,size)}px`;
-      drag.handle.style.width=`${Math.min(24,size)}px`;
+      drag.handle.style.left = `${parseFloat(drag.label.parentElement!.style.left)+size-handleWidth(size)}px`;
+      drag.handle.style.width=`${handleWidth(size)}px`;
+      drag.handle.classList.toggle('short',size<24);
       drag.handle.title=`預覽 ${formatEvent(drag.next)}，放開套用`;
       return;
     }
@@ -115,14 +123,14 @@ export function createStudio(container: HTMLElement, actions: {
   window.addEventListener('blur',()=>{clearDrag(false);clearMove(false);});
   document.addEventListener('visibilitychange',()=>{if(document.hidden){clearDrag(false);clearMove(false);}});
   document.addEventListener('keydown',event=>{if(event.key==='Escape' && (drag||move)){event.preventDefault();clearDrag(false);clearMove(false);}});
-  function selected() { return current.melody.events[current.cursor - 1]; }
+  function selected() { return hasSelection ? current.melody.events[current.cursor - 1] : undefined; }
   function fieldEvent(): MusicEvent {
     const rhythm = { duration: Number(duration.value) as MusicEvent['duration'], dotted: dot.checked };
     return pitch.value === 'rest' ? { type:'rest', ...rhythm } : noteFromStep(Number(pitch.value), rhythm);
   }
-  pitch.onchange = duration.onchange = dot.onchange = () => { if (selected()) actions.update(fieldEvent()); };
-  container.querySelector<HTMLButtonElement>('#studio-add')!.onclick = () => actions.insert(noteFromStep(noteStep(selected() ?? {type:'rest',duration:4,dotted:false}) ?? 12, {duration:4,dotted:false}));
-  container.querySelector<HTMLButtonElement>('#studio-rest')!.onclick = () => actions.insert({type:'rest',duration:4,dotted:false});
+  pitch.onchange = duration.onchange = dot.onchange = () => { if (selected()) actions.update(fieldEvent()); else { nextEvent=fieldEvent(); actions.refresh(); } };
+  container.querySelector<HTMLButtonElement>('#studio-add')!.onclick = () => { const event=noteFromStep(noteStep(selected() ?? nextEvent) ?? 12,nextEvent); if(hasSelection)actions.insert(event);else appendNext(event); };
+  container.querySelector<HTMLButtonElement>('#studio-rest')!.onclick = () => { const event:MusicEvent={type:'rest',duration:nextEvent.duration,dotted:nextEvent.dotted}; if(hasSelection)actions.insert(event);else appendNext(event); };
   container.querySelector<HTMLButtonElement>('#studio-delete')!.onclick = () => actions.remove();
   roll.onclick = event => {
     if (performance.now()<suppressClickUntil || (event.target as HTMLElement).closest('.roll-note, .roll-resize')) return;
@@ -132,7 +140,7 @@ export function createStudio(container: HTMLElement, actions: {
     const row = Math.floor((event.clientY - rect.top)/24);
     if (index < 0 || row < 0 || row > 35) return;
     const original = current.melody.events[index];
-    if(!original){actions.append(noteFromStep(35-row,{duration:4,dotted:false}));return;}
+    if(!original){appendNext(noteFromStep(35-row,nextEvent));return;}
     actions.select(index+1);
     actions.update(noteFromStep(35-row,original));
   };
@@ -156,7 +164,19 @@ export function createStudio(container: HTMLElement, actions: {
     actions.select(index+1);actions.update({type:'rest',duration:original.duration,dotted:original.dotted});
   };
   return {
-    render(state: EditorState) {
+    input(key: string, dotted = false) {
+      if (/^[0-7]$/.test(key)) {
+        const event: MusicEvent=key==='0'?{type:'rest',duration:nextEvent.duration,dotted:nextEvent.dotted}:noteFromStep(Math.floor((noteStep(nextEvent)??12)/12)*12+[0,2,4,5,7,9,11][Number(key)-1],{duration:nextEvent.duration,dotted:dotted||nextEvent.dotted});
+        appendNext(event);
+      } else if(key==='8'||key==='9') {
+        const at=durations.indexOf(nextEvent.duration);
+        nextEvent={...nextEvent,duration:durations[Math.max(0,Math.min(durations.length-1,at+(key==='8'?1:-1)))]};actions.refresh();
+      } else if(key==='.') {nextEvent={...nextEvent,dotted:!nextEvent.dotted};actions.refresh();}
+      else if(key==='*') {nextEvent=noteFromStep(((noteStep(nextEvent)??12)+12)%36,nextEvent);actions.refresh();}
+      else if(key==='#'&&nextEvent.type==='note') {nextEvent={...nextEvent,sharp:!nextEvent.sharp};actions.refresh();}
+    },
+    render(state: EditorState, selection: boolean) {
+      hasSelection=selection;
       clearDrag(false); clearMove(false);
       current = state;
       const previousScroll = scroll.scrollLeft;
@@ -173,22 +193,24 @@ export function createStudio(container: HTMLElement, actions: {
         columns.push({left,width});
         const step=noteStep(event);
         const button=document.createElement('button'); button.className='roll-note';
-        button.dataset.index=String(index); button.classList.toggle('selected',index===state.cursor-1);
+        button.dataset.index=String(index); button.classList.toggle('selected',hasSelection && index===state.cursor-1);
         button.style.left=`${42+left}px`; button.style.top=step===null?'4px':`${(35-step)*24-10}px`;
         button.style.width=`${width}px`;
         const label=document.createElement('span'); label.className='roll-note-label'; label.textContent=formatEvent(event); label.style.width=`${Math.max(1,width-2)}px`; button.append(label); button.setAttribute('aria-label',`選取第 ${index+1} 音 ${formatEvent(event)}`);
-        button.setAttribute('aria-pressed',String(index===state.cursor-1));
+        button.title=formatEvent(event);
+        button.setAttribute('aria-pressed',String(hasSelection && index===state.cursor-1));
         button.onclick=()=>{if(performance.now()>=suppressClickUntil)actions.select(index+1);};
         attachMove(button,index);
         const lane=step===null?restLane:roll;
         lane.append(button);
-        if(index===state.cursor-1) {
+        if(hasSelection && index===state.cursor-1) {
           const handle=document.createElement('button'); handle.className='roll-resize';
           const barWidth=320/event.duration*(event.dotted?1.5:1);
-          handle.style.left=`${42+left+barWidth-Math.min(24,barWidth)}px`; handle.style.top=`${parseFloat(button.style.top)+24}px`; handle.style.width=`${Math.min(24,barWidth)}px`;
+          handle.style.left=`${42+left+barWidth-handleWidth(barWidth)}px`; handle.style.top=button.style.top; handle.style.width=`${handleWidth(barWidth)}px`;
           handle.setAttribute('aria-label',`拖曳調整第 ${index+1} 音時值，方向鍵亦可調整`);
           handle.title='拖曳調整時值；方向鍵縮短／延長';
-          handle.innerHTML='<svg width="12" height="20" viewBox="0 0 12 20" aria-hidden="true"><path d="M4 5v10m4-10v10" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>';
+          handle.classList.toggle('short',barWidth<24);
+          handle.innerHTML='<svg width="12" height="20" viewBox="0 0 12 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.5"><path class="resize-first" d="M4 5v10"/><path class="resize-second" d="M8 5v10"/></g></svg>';
           handle.onpointerdown=pointer=>{
             if(pointer.button!==0 || !pointer.isPrimary)return;
             pointer.preventDefault();pointer.stopPropagation();actions.beginEdit();
@@ -210,24 +232,30 @@ export function createStudio(container: HTMLElement, actions: {
         }
         left+=width;
       });
-      columns.push({left,width:80});
-      nextColumn.style.left=`${42+left}px`;nextColumn.style.width='80px';nextCaption.style.top=`${scroll.scrollTop+4}px`;
-      const totalWidth=`${Math.max(300,left+144)}px`;
+      const nextWidth=rhythmWidth(nextEvent);
+      const addIcon='<svg width="8" height="12" viewBox="0 0 8 12" aria-hidden="true"><path d="M4 3v6M1 6h6" stroke="currentColor" fill="none"/></svg>';
+      nextCaption.innerHTML=nextWidth>=80?'下一個音符':addIcon; nextCaption.title='下一個音符';
+      nextCaption.style.left=nextWidth<24?'0':'5px';
+      columns.push({left,width:nextWidth});
+      nextColumn.style.left=`${42+left}px`;nextColumn.style.width=`${nextWidth}px`;nextCaption.style.top=`${scroll.scrollTop+4}px`;
+      const totalWidth=`${Math.max(300,left+nextWidth+64)}px`;
       roll.style.width=restLane.style.width=totalWidth;
       restLane.style.transform=`translateX(${-previousScroll}px)`;
       const addRest=document.createElement('button');addRest.className='rest-next';addRest.textContent='新增休止';addRest.setAttribute('aria-label','在下一音欄新增休止');
-      addRest.style.left=`${42+left}px`;addRest.onclick=event=>{event.stopPropagation();actions.append({type:'rest',duration:4,dotted:false});};restLane.append(addRest);
-      const event=selected(); const step=event?noteStep(event):null;
-      pitch.disabled=duration.disabled=dot.disabled=!event;
+      if(nextWidth<64)addRest.innerHTML=addIcon;
+      addRest.style.left=`${42+left}px`;addRest.style.width=`${nextWidth}px`;addRest.title='新增休止';addRest.onclick=event=>{event.stopPropagation();appendNext({type:'rest',duration:nextEvent.duration,dotted:nextEvent.dotted});};restLane.append(addRest);
+      const event=selected(); const field=event??nextEvent; const step=noteStep(field);
+      pitch.disabled=duration.disabled=dot.disabled=false;
+      container.querySelector('.studio-field-context')!.textContent=event?'選取音':'下一音';
       container.querySelector<HTMLButtonElement>('#studio-delete')!.disabled=!event;
-      pitch.value=step===null?'rest':String(step); duration.value=String(event?.duration??4); dot.checked=event?.dotted??false;
+      pitch.value=step===null?'rest':String(step); duration.value=String(field.duration); dot.checked=field.dotted;
       scroll.scrollLeft=previousScroll;
     },
     reveal() {
       const index=current.cursor-1, event=selected(); if(!event) {scroll.scrollTop=400;return;}
       const row=noteStep(event); if(row!==null)scroll.scrollTop=Math.max(0,(35-row)*24-scroll.clientHeight/2);
       const col=columns[index];
-      if(col && index===current.melody.events.length-1 && col.width<=scroll.clientWidth-42)scroll.scrollLeft=Math.max(0,col.left+col.width+138-scroll.clientWidth);
+      if(col && index===current.melody.events.length-1 && col.width<=scroll.clientWidth-42)scroll.scrollLeft=Math.max(0,col.left+col.width+rhythmWidth(nextEvent)+58-scroll.clientWidth);
       else if(col && (col.left<scroll.scrollLeft || col.left+col.width>scroll.scrollLeft+scroll.clientWidth-42))scroll.scrollLeft=col.left;
     },
     position(index: number|null) {

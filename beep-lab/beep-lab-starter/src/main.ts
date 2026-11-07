@@ -62,7 +62,7 @@ $('#app').innerHTML = `
       </div>
     </section>
     <section class="below"><details class="guide"><summary>操作說明 ${icon('chevron')}</summary><div class="guide-body">
-<p>Studio 每格直線間距代表一個四分音符；音符與休止符依累積時值排列，附點會增加一半寬度。最後的「下一個音符」欄可預覽並點擊新增。休止列固定在圖下方，不受音高區上下捲動影響。拖曳音塊本體可與目標音符交換位置，或選取後按 Alt＋左右鍵。滑鼠移到既有欄位則會出現虛線音高預覽。拖曳選取音右側把手可改時值，放開套用、Esc 取消；把手也支援左右方向鍵。音高／時值欄位可精確調整。復原／重做跨兩個模式共用；快捷鍵 Ctrl／⌘ Z、Ctrl／⌘ Shift Z。載入其他作品會重設編輯紀錄。專注模式使用 Classic 鍵盤。</p>
+<p>Studio 點音符選取，點外部空白或按 Esc 取消選取。未選取時，下方欄位設定下一音；選取時只修改該音符，新增設定會另外保留。每格直線間距代表一個四分音符；音符與休止符依累積時值排列，附點會增加一半寬度。最後的「下一個音符」欄可預覽並點擊新增。休止列固定在圖下方，不受音高區上下捲動影響。拖曳音塊本體可與目標音符交換位置，或選取後按 Alt＋左右鍵。滑鼠移到既有欄位則會出現虛線音高預覽。拖曳選取音右側把手可改時值，放開套用、Esc 取消；把手也支援左右方向鍵。音高／時值欄位可精確調整。復原／重做跨兩個模式共用；快捷鍵 Ctrl／⌘ Z、Ctrl／⌘ Shift Z。載入其他作品會重設編輯紀錄。專注模式使用 Classic 鍵盤。</p>
       <div class="guide-grid">
         <section class="guide-section" aria-labelledby="guide-notes"><h3 id="guide-notes">輸入音符</h3>
           <dl class="key-reference">
@@ -92,13 +92,16 @@ $('#app').innerHTML = `
   </main>
   <dialog id="confirm-dialog" aria-labelledby="confirm-title"><form method="dialog"><h2 id="confirm-title">確認操作</h2><p id="confirm-text"></p><div class="dialog-actions"><button value="cancel">取消</button><button value="confirm" class="save-button">確認</button></div></form></dialog>
 `;
+let studioSelection = false;
 const studio = createStudio($('#studio-panel'), {
   beginEdit() { stop(); },
-  select(cursor) { stop(); state = { ...state, cursor }; renderScore(); },
+  refresh() { renderScore(); },
+  deselect() { studioSelection=false; renderScore(); },
+  select(cursor) { stop(); studioSelection=true; state = { ...state, cursor }; renderScore(); },
   update(event) { commitEdit(updateSelected(state, event)); },
   insert(event) { commitEdit(appendStudioEvent(state, event)); },
   append(event) { commitEdit(appendStudioEvent({ ...state, cursor: state.melody.events.length }, event)); },
-  swap(from, to) { commitEdit(swapStudioEvents(state, from, to)); },
+  swap(from, to) { studioSelection=true; commitEdit(swapStudioEvents(state, from, to)); },
   remove() { apply('Backspace'); },
 });
 function setViewMode(mode: 'classic' | 'studio') {
@@ -189,7 +192,7 @@ function stop() { cancelPress(); player.stop(); $('#lcd-mode').textContent = '�
 function renderScore() {
   $<HTMLButtonElement>('#undo').disabled = !history.canUndo;
   $<HTMLButtonElement>('#redo').disabled = !history.canRedo;
-  studio.render(state);
+  studio.render(state, studioSelection);
   const score = $('#score');
   score.replaceChildren();
   if (!state.melody.events.length) {
@@ -214,7 +217,8 @@ function renderScore() {
   $('#position').textContent = `${state.cursor} / ${state.melody.events.length}`;
   $('#duration').textContent = `${state.melody.events.reduce((sum, e) => sum + eventSeconds(e, state.melody.tempoBpm), 0).toFixed(1)} 秒`;
   $('#octave').textContent = `下一音 ${state.octave}`;
-  const selectedEvent = state.melody.events[state.cursor - 1];
+  const selectedEvent = viewMode==='studio'&&!studioSelection?undefined:state.melody.events[state.cursor - 1];
+  document.querySelectorAll<HTMLButtonElement>('[data-command="Backspace"], [data-command="."]').forEach(button=>button.disabled=viewMode==='studio'&&!studioSelection);
   const octaveButton = $<HTMLButtonElement>('#selected-octave');
   const selectedNote = selectedEvent?.type === 'note' ? selectedEvent : undefined;
   octaveButton.disabled = !selectedNote;
@@ -242,7 +246,13 @@ function commitEdit(result: EditResult) {
   else if (result.preview) notify(`${formatEvent(result.preview)} · 已修改`);
   if (result.preview) void player.previewNote(result.preview, state.melody.tempoBpm).catch(handleAudioError);
 }
-function apply(key: string, dotted = false) { commitEdit(edit(state, key, dotted)); }
+function apply(key: string, dotted = false) {
+  if(viewMode==='studio'&&!studioSelection) {
+    if(key==='ArrowLeft'||key==='ArrowRight') studioSelection=true;
+    else { studio.input(key,dotted); return; }
+  }
+  commitEdit(edit(state, key, dotted));
+}
 
 player.onPosition = index => {
   if (viewMode === 'studio') studio.position(index);
@@ -317,6 +327,10 @@ document.querySelectorAll<HTMLButtonElement>('[data-key]').forEach(button => {
 const musicKeys = new Set('0123456789*#'.split(''));
 function textTarget(target: EventTarget | null) { return target instanceof HTMLElement && (target.matches('input, textarea, select') || target.isContentEditable); }
 document.addEventListener('keydown', event => {
+  if(event.defaultPrevented)return;
+  if(event.key==='Escape'&&viewMode==='studio'&&!$<HTMLDialogElement>('#confirm-dialog').open) {
+    cancelPress(); stop(); studioSelection=false; renderScore(); return;
+  }
   if (!textTarget(event.target) && !$<HTMLDialogElement>('#confirm-dialog').open && (event.ctrlKey || event.metaKey) && !event.altKey && (event.key.toLowerCase() === 'z' || event.key.toLowerCase() === 'y')) {
     event.preventDefault(); restoreHistory(event.shiftKey || event.key.toLowerCase() === 'y' ? 'redo' : 'undo'); return;
   }
@@ -324,9 +338,14 @@ document.addEventListener('keydown', event => {
   if (musicKeys.has(event.key)) {
     event.preventDefault(); if (!event.repeat) beginPress(event.key, document.querySelector<HTMLElement>(`[data-key="${event.key}"]`) ?? undefined);
   } else if (['ArrowLeft', 'ArrowRight', 'Backspace', '.'].includes(event.key)) { event.preventDefault(); apply(event.key); }
-  else if (event.code === 'Space' && (event.target === enableSoundButton || (event.target instanceof HTMLElement && !!event.target.closest('#focus-toggle, #focus-exit, #selected-octave, #undo, #redo, #mode-classic, #mode-studio, .studio-actions button, .roll-resize, .rest-next')))) return;
+  else if (event.code === 'Space' && (event.target === enableSoundButton || (event.target instanceof HTMLElement && !!event.target.closest('#focus-toggle, #focus-exit, #selected-octave, #undo, #redo, #mode-classic, #mode-studio, .studio-actions button, .roll-note, .roll-resize, .rest-next')))) return;
   else if (event.code === 'Space') { event.preventDefault(); if (!event.repeat) $('#play').click(); }
-  else if (event.key === 'Escape') { cancelPress(); stop(); }
+  else if (event.key === 'Escape') { cancelPress(); stop(); if(viewMode==='studio'){studioSelection=false;renderScore();} }
+});
+document.addEventListener('click', event => {
+  if(viewMode!=='studio'||!studioSelection||!(event.target instanceof Element))return;
+  if(event.target.closest('.roll-scroll,.rest-viewport,.studio-fields,.studio-actions,button,input,select,textarea,a,summary,dialog'))return;
+  studioSelection=false;renderScore();
 });
 document.addEventListener('keyup', event => { endPress(event.key); document.querySelectorAll('.music-key.pressed').forEach(el => el.classList.remove('pressed')); });
 window.addEventListener('resize', () => requestAnimationFrame(() => {
@@ -345,6 +364,7 @@ async function confirmAction(message: string): Promise<boolean> {
   return new Promise(resolve => dialog.addEventListener('close', () => resolve(dialog.returnValue === 'confirm'), { once: true }));
 }
 function load(melody: Melody, saved: boolean) {
+  studioSelection=false;
   stop(); cancelPress(); state = { melody: structuredClone(melody), cursor: melody.events.length, octave: 2 };
   history.clear(); savedDigest = saved ? melodyDigest() : undefined;
   titleInput.value = melody.title;

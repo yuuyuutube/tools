@@ -301,19 +301,22 @@ button:disabled { cursor: default; opacity: .45; }
 
 .roll-hover { position: absolute; height: 24px; border: 2px dashed var(--orange); border-radius: 3px; background: #bd482818; pointer-events: none; z-index: 4; }
 .roll-hover-hint { position: absolute; bottom: 25px; left: 0; background: var(--ink); color: #fff; border-radius: 3px; padding: 3px 6px; font: 11px monospace; white-space: nowrap; }
-.roll-resize { position: absolute; width: 24px; height: 20px; min-height: 20px; padding: 0; border: 0; border-radius: 3px; color: #71331e; background: #bd482826; z-index: 5; cursor: ew-resize; touch-action: none; }
-.roll-resize:hover { background: #bd48284d; }
+.roll-resize { position: absolute; width: 24px; height: 44px; min-height: 44px; padding: 0; border: 0; border-radius: 0; color: #708453; background: transparent; z-index: 5; cursor: ew-resize; touch-action: none; }
+.roll-resize:hover, .roll-resize:focus-visible, .resizing .roll-resize { color: var(--orange); background: transparent; }
+.roll-resize.short .resize-second { display: none; }
+.roll-resize.short .resize-first { transform: translateX(2px); }
+.studio-field-context { font-size: 12px; color: var(--muted); }
 .roll-resize:active { transform: none; }
 .piano-roll.resizing { cursor: ew-resize; }
 .piano-roll.resizing .roll-note.selected { z-index: 4; }
 .piano-roll.resizing .roll-note-label { max-width: none; box-shadow: 0 0 0 1px var(--orange); }
 .piano-roll { height: 864px; }
 .next-column { position: absolute; top: 0; bottom: 0; border-left: 1px dashed #829767; background: #c5d49e26; pointer-events: none; }
-.next-column > span { position: absolute; left: 5px; font-size: 11px; color: #58664d; background: #eef0e6e6; padding: 3px; }
+.next-column > span { position: absolute; white-space: nowrap; left: 5px; font-size: 11px; color: #58664d; background: #eef0e6e6; padding: 3px; }
 .rest-viewport { position: relative; height: 54px; overflow: hidden; border: 1px solid var(--line); border-top: 0; background: #e2e7d8; }
 .rest-lane { position: relative; height: 54px; background: repeating-linear-gradient(to right, #c7ccbe 0 1px, transparent 1px 80px); background-position: 42px 0; }
 .rest-caption { position: absolute; left: 0; top: 0; width: 40px; height: 54px; line-height: 54px; background: #d4ddc6; font-size: 11px; padding-left: 6px; z-index: 6; pointer-events: none; }
-.rest-next { position: absolute; top: 5px; height: 44px; width: 80px; border: 2px solid transparent; border-left: 1px dashed #829767; border-radius: 0; font-size: 12px; background: #c5d49e26; }
+.rest-next { overflow: hidden; white-space: nowrap; padding: 0; position: absolute; top: 5px; height: 44px; width: 80px; border: 2px solid transparent; border-left: 1px dashed #829767; border-radius: 0; font-size: 12px; background: #c5d49e26; }
 .rest-next:hover, .rest-next:focus-visible { border: 2px dashed var(--orange); background: #bd482818; }
 .rest-next:active { transform: none; }
 .rest-hover { position: absolute; top: 5px; height: 44px; border: 2px dashed var(--orange); border-radius: 3px; pointer-events: none; background: #bd482818; z-index: 4; }
