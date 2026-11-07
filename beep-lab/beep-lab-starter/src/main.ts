@@ -216,7 +216,7 @@ function renderScore() {
   }
   $('#position').textContent = `${state.cursor} / ${state.melody.events.length}`;
   $('#duration').textContent = `${state.melody.events.reduce((sum, e) => sum + eventSeconds(e, state.melody.tempoBpm), 0).toFixed(1)} 秒`;
-  $('#octave').textContent = `下一音 ${state.octave}`;
+  $('#octave').textContent = `下一音 ${viewMode==='studio'?studio.nextOctave():state.octave}`;
   const selectedEvent = viewMode==='studio'&&!studioSelection?undefined:state.melody.events[state.cursor - 1];
   document.querySelectorAll<HTMLButtonElement>('[data-command="Backspace"], [data-command="."]').forEach(button=>button.disabled=viewMode==='studio'&&!studioSelection);
   const octaveButton = $<HTMLButtonElement>('#selected-octave');
@@ -247,6 +247,7 @@ function commitEdit(result: EditResult) {
   if (result.preview) void player.previewNote(result.preview, state.melody.tempoBpm).catch(handleAudioError);
 }
 function apply(key: string, dotted = false) {
+  if(viewMode==='studio'&&key==='*') { studio.input(key,dotted); return; }
   if(viewMode==='studio'&&!studioSelection) {
     if(key==='ArrowLeft'||key==='ArrowRight') studioSelection=true;
     else { studio.input(key,dotted); return; }

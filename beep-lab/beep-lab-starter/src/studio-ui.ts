@@ -164,6 +164,7 @@ export function createStudio(container: HTMLElement, actions: {
     actions.select(index+1);actions.update({type:'rest',duration:original.duration,dotted:original.dotted});
   };
   return {
+    nextOctave() { return nextEvent.type==='note'?nextEvent.octave:'—'; },
     input(key: string, dotted = false) {
       if (/^[0-7]$/.test(key)) {
         const event: MusicEvent=key==='0'?{type:'rest',duration:nextEvent.duration,dotted:nextEvent.dotted}:noteFromStep(Math.floor((noteStep(nextEvent)??12)/12)*12+[0,2,4,5,7,9,11][Number(key)-1],{duration:nextEvent.duration,dotted:dotted||nextEvent.dotted});
