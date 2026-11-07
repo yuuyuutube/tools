@@ -122,9 +122,27 @@ main { padding-bottom: 32px; }
 summary { list-style: none; display: flex; align-items: center; justify-content: space-between; cursor: pointer; min-height: 48px; font-size: 13px; }
 summary::-webkit-details-marker { display: none; }
 .guide[open] summary .icon { transform: rotate(180deg); }
-.guide-body { padding: 0 0 16px; max-width: 700px; font-size: 12px; line-height: 1.9; color: var(--muted); }
-.guide-body b { color: #363e2f; }
-.historical-note { font-size: 11px; }
+.guide-body { padding: 12px 0 24px; font-size: 14px; line-height: 1.8; color: var(--muted); }
+.guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.guide-body h3 { margin: 0 0 16px; font-size: 15px; line-height: 1.5; color: var(--ink); }
+.guide-body h4 { margin: 22px 0 12px; font-size: 13px; font-weight: 600; color: var(--ink); }
+.key-reference { margin: 0; }
+.key-reference > div { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 12px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid #d5d7cc; }
+.key-reference > div:first-child { padding-top: 0; }
+.key-reference > div:last-child { border-bottom: 0; }
+.key-reference dt, .key-reference dd { margin: 0; }
+.guide-body kbd { display: inline-block; padding: 1px 6px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 3px; color: var(--ink); background: #e9ebe2; font: 12px/1.6 'Courier New', monospace; white-space: nowrap; }
+.shortcuts > div { grid-template-columns: 112px minmax(0, 1fr); padding: 7px 0; }
+.guide-list { margin: 0; padding-left: 20px; }
+.guide-list li { padding-left: 3px; }
+.guide-list li + li { margin-top: 10px; }
+.guide-support { margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); }
+.historical-note { margin: 22px 0 0; font-size: 12px; line-height: 1.8; }
+@media(max-width:750px) {
+  .guide-grid { grid-template-columns: 1fr; gap: 28px; }
+  .guide-body { padding-top: 12px; font-size: 14px; }
+  .guide-section + .guide-section { padding-top: 24px; border-top: 1px solid var(--line); }
+}
 .library { padding-top: 24px; }
 .library-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; }
 h2 { margin: 0; font-size: 16px; }

@@ -50,7 +50,32 @@ $('#app').innerHTML = `
         <div class="workspace-actions"><button id="save" class="save-button">${icon('save')}<span>儲存</span></button><button id="new">${icon('add')}<span>新旋律</span></button><button id="demo">${icon('load')}<span>示範</span></button></div>
       </div>
     </section>
-    <section class="below"><details class="guide"><summary>操作說明 ${icon('chevron')}</summary><div class="guide-body"><p><b>1–7</b> 輸入 C–B；<b>0</b> 插入休止符。按鍵會立即試聽，首次點擊會啟用聲音。</p><p><b>8 / 9</b> 縮短／延長游標左方音符；<b>#</b> 切換升音（E、B 除外）。<b>*</b> 設定下一音的八度 1–3。</p><p>長按音符鍵 450ms 輸入附點音，或用「附點」／實體 <b>.</b> 修改左方音符。左右方向鍵移動，Backspace 左刪除，空白鍵播放／停止，Esc 停止。</p><p>點音符把游標放在它右方；新音符一律插入。作品僅儲存在目前瀏覽器。音訊啟用失敗時可按「啟用聲音」重試；成功後請再按音符或播放。iPhone 若仍無聲，請確認媒體音量。</p><p class="historical-note">現代復刻，音色及部分操作為近似設計；附點按鈕為擴充功能。</p></div></details>
+    <section class="below"><details class="guide"><summary>操作說明 ${icon('chevron')}</summary><div class="guide-body">
+      <div class="guide-grid">
+        <section class="guide-section" aria-labelledby="guide-notes"><h3 id="guide-notes">輸入音符</h3>
+          <dl class="key-reference">
+            <div><dt><kbd>1–7</kbd></dt><dd>輸入 C–B，按下即可試聽。</dd></div>
+            <div><dt><kbd>0</kbd></dt><dd>插入休止符。</dd></div>
+            <div><dt><kbd>8</kbd> <kbd>9</kbd></dt><dd>縮短／延長游標左方音符。</dd></div>
+            <div><dt><kbd>*</kbd></dt><dd>設定下一音的八度，依 1–3 循環。</dd></div>
+            <div><dt><kbd>#</kbd></dt><dd>切換左方音符的升音，E、B 除外。</dd></div>
+          </dl>
+        </section>
+        <section class="guide-section" aria-labelledby="guide-edit"><h3 id="guide-edit">編輯旋律</h3>
+          <ul class="guide-list"><li>點選音符，游標會放在它右方。新音符一律插入。</li><li>長按音符鍵約半秒（450ms），輸入附點音；也可用「附點」按鈕修改左方音符。</li></ul>
+          <h4>實體鍵盤快捷鍵</h4>
+          <dl class="key-reference shortcuts">
+            <div><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>移動游標</dd></div>
+            <div><dt><kbd>Backspace</kbd></dt><dd>刪除左方音符</dd></div>
+            <div><dt><kbd>.</kbd></dt><dd>切換附點</dd></div>
+            <div><dt><kbd>Space</kbd></dt><dd>播放／停止</dd></div>
+            <div><dt><kbd>Esc</kbd></dt><dd>停止播放</dd></div>
+          </dl>
+        </section>
+      </div>
+      <section class="guide-support" aria-labelledby="guide-sound"><h3 id="guide-sound">聲音與儲存</h3><ul class="guide-list"><li>第一次點音符或播放會啟用聲音。若啟用失敗，按「啟用聲音」重試，再按音符或播放。</li><li>iPhone 若仍無聲，請確認媒體音量。</li><li>作品僅儲存在目前瀏覽器，換裝置或瀏覽器不會同步。</li></ul></section>
+      <p class="historical-note">現代復刻，音色及部分操作為近似設計；附點按鈕為擴充功能。</p>
+    </div></details>
     <div class="library"><div class="library-heading"><h2>已儲存作品 <span id="library-count">0</span></h2><span>僅儲存於此瀏覽器</span></div><div id="library-notice"></div><div id="songs"></div></div></section>
   </main>
   <dialog id="confirm-dialog" aria-labelledby="confirm-title"><form method="dialog"><h2 id="confirm-title">確認操作</h2><p id="confirm-text"></p><div class="dialog-actions"><button value="cancel">取消</button><button value="confirm" class="save-button">確認</button></div></form></dialog>
