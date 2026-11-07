@@ -5,11 +5,16 @@ export function bindFocusMode({ button, strip, onEnter, onExit }) {
   const size = () => {
     if (active) root.style.setProperty('--performance-height', `${window.visualViewport?.height || window.innerHeight}px`);
   };
-  function setActive(next) {
+  function setActive(next, { activateAudio = true } = {}) {
     if (active === next) return;
     if (next) scrollY = window.scrollY;
     active = next;
     root.classList.toggle('focus-mode', active);
+    const url = new URL(window.location.href);
+    if (active) url.searchParams.set('mode', 'play');
+    else if (url.searchParams.get('mode') === 'play') url.searchParams.delete('mode');
+    // Preserve other query parameters and the anchor when bookmarking this view.
+    try { window.history.replaceState(window.history.state, '', url); } catch { /* Some local file viewers restrict URL changes. */ }
     button.setAttribute('aria-pressed', String(active));
     button.setAttribute('aria-label', active ? '離開專注演奏' : '專注演奏（開啟聲音）');
     button.title = active ? '離開專注演奏（Esc）' : '專注演奏（開啟聲音）';
@@ -18,7 +23,7 @@ export function bindFocusMode({ button, strip, onEnter, onExit }) {
     if (active) {
       size();
       strip.focus({ preventScroll: true });
-      onEnter();
+      onEnter({ activateAudio });
     } else {
       root.style.removeProperty('--performance-height');
       onExit();
@@ -32,5 +37,5 @@ export function bindFocusMode({ button, strip, onEnter, onExit }) {
   });
   window.addEventListener('resize', size);
   window.visualViewport?.addEventListener('resize', size);
-  return { exit: () => setActive(false), get active() { return active; } };
+  return { enter: options => setActive(true, options), exit: () => setActive(false), get active() { return active; } };
 }

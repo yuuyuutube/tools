@@ -64,6 +64,7 @@ PASS: rail prevents touch scrolling via CSS
 PASS: range prevents touch scrolling via CSS
 PASS: no horizontal page overflow
 PASS: focus mode enters and enables audio from its gesture
+PASS: focus mode URL can be bookmarked
 PASS: focus mode hides graphs, readouts and labels
 PASS: focus mode only keeps its exit control visible
 PASS: focus mode fits the viewport without overflow
@@ -76,9 +77,18 @@ PASS: focus release closes the mouth and stops playing
 PASS: focus viewport cannot scroll
 PASS: short landscape-height stage fits without scrolling
 PASS: exit stops a held note
+PASS: exit removes only the performance query parameter
 PASS: exit restores readouts and the latest graph values
 PASS: Escape exits and disables audio safely
 PASS: rapid mode toggles never leave a late playing note
+PASS: direct link starts in performance mode
+PASS: direct link waits silently for its first gesture
+PASS: direct link preserves other URL parameters and anchor
+PASS: first hold in the direct link enables and plays audio
+PASS: direct link glides down to the high endpoint
+PASS: direct link release stops the sound
+PASS: direct link exit preserves unrelated query and anchor
+PASS: direct link exit restores the current pitch in the lab
 PASS: native Web Audio starts while keyboard is held
 PASS: native audio output has a nonzero waveform
 PASS: native oscillator glides to requested frequency
@@ -91,4 +101,4 @@ PASS: lostpointercapture: real synth starts on synthetic touch hold
 PASS: lostpointercapture: real synth stops
 PASS: window blur stops native synth
 PASS: emergency stop and disabling leave no voice
-93/93 passed
+103/103 passed

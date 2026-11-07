@@ -101,3 +101,12 @@ npm run build
 - 正式部署採內容 hash 的 bundle / CSS URL，解決曾實際觀察到的舊版腳本快取。
 
 專注模式實際 viewport 檢查：390×844 的 scrollWidth / scrollHeight 恰為 390 / 844，滑鼠向下跨出琴頸可達 100%，放開後停止發聲表情；連續捲動後 scrollTop 仍為 0。844×390 橫向時 scrollHeight 為 390，角色臉完整位於 viewport 內。
+
+## 專注演奏直連
+
+直連：<https://yuuyuutube.github.io/tools/otama-lab/?mode=play>。
+
+- 桌面與手機尺寸共 103 項瀏覽器檢查通過，Node 16 項通過。
+- 確認載入時已進入專注模式但聲音開關仍關閉；第一次按住即啟動音訊與發聲表情，滑到靠近頭部可達 C6，放開停止。
+- 確認 `?mode=play&keep=test#strip` 的其他 query 與 anchor 均保留；退出只移除 mode，並恢復最新音高讀值。
+- 本機實際開啟 `/?mode=play` 已直接顯示琴頸與臉。音訊不依賴載入時的自動播放，仍遵守瀏覽器手勢要求。

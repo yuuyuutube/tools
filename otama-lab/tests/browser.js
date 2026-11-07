@@ -4,7 +4,10 @@ import { BASE, TOP, frequencyAt, positionAt, pitchOf, semitonesFrom } from '../s
 const frame = document.querySelector('#app');
 const list = document.querySelector('#results');
 const failures = [];
-document.querySelector('#run').disabled = false;
+Promise.all([...document.querySelectorAll('iframe')].map(surface => new Promise(resolve => {
+  if (surface.contentDocument?.readyState === 'complete' && surface.contentDocument.URL !== 'about:blank') resolve();
+  else surface.addEventListener('load', resolve, { once: true });
+}))).then(() => { document.querySelector('#run').disabled = false; });
 function check(name, condition) {
   const li = document.createElement('li'); li.className = condition ? 'pass' : 'fail';
   li.textContent = `${condition ? 'PASS' : 'FAIL'}: ${name}`; list.append(li);
@@ -110,6 +113,7 @@ document.querySelector('#run').addEventListener('click', async () => {
   const mode = $('focus-mode');
   mode.click(); await pause(120);
   check('focus mode enters and enables audio from its gesture', doc.documentElement.classList.contains('focus-mode') && $('sound').getAttribute('aria-pressed') === 'true');
+  check('focus mode URL can be bookmarked', new URL(win.location.href).searchParams.get('mode') === 'play');
   check('focus mode hides graphs, readouts and labels', ['.visualization', '.readouts', '.tickmarks', '.experiment', 'footer'].every(selector => win.getComputedStyle(doc.querySelector(selector)).display === 'none'));
   check('focus mode only keeps its exit control visible', [...doc.querySelectorAll('button')].filter(button => button.getClientRects().length).length === 1 && mode.getClientRects().length > 0);
   check('focus mode fits the viewport without overflow', doc.documentElement.scrollHeight <= doc.documentElement.clientHeight && doc.documentElement.scrollWidth <= doc.documentElement.clientWidth);
@@ -134,11 +138,31 @@ document.querySelector('#run').addEventListener('click', async () => {
   key('keydown', ' '); await pause(60);
   mode.click(); await pause(80);
   check('exit stops a held note', !$('face').classList.contains('playing'));
+  check('exit removes only the performance query parameter', !new URL(win.location.href).searchParams.has('mode'));
   check('exit restores readouts and the latest graph values', !doc.documentElement.classList.contains('focus-mode') && $('hz').textContent === TOP.toFixed(1) && Number($('frequency-plot').dataset.frequency) === TOP);
   mode.click(); await pause(60); key('keydown', 'Escape');
   check('Escape exits and disables audio safely', !doc.documentElement.classList.contains('focus-mode') && $('sound').getAttribute('aria-pressed') === 'false');
   mode.click(); mode.click(); await pause(100);
   check('rapid mode toggles never leave a late playing note', !doc.documentElement.classList.contains('focus-mode') && !$('face').classList.contains('playing'));
+  const directWin = document.querySelector('#direct').contentWindow;
+  const directDoc = directWin.document;
+  const directStrip = directDoc.getElementById('strip');
+  const directSound = directDoc.getElementById('sound');
+  check('direct link starts in performance mode', directDoc.documentElement.classList.contains('focus-mode'));
+  check('direct link waits silently for its first gesture', directSound.getAttribute('aria-pressed') === 'false' && !directDoc.getElementById('face').classList.contains('playing'));
+  check('direct link preserves other URL parameters and anchor', new URL(directWin.location.href).searchParams.get('keep') === 'test' && directWin.location.hash === '#strip');
+  const directRect = directDoc.getElementById('track').getBoundingClientRect();
+  const directPointer = (target, type, y) => target.dispatchEvent(new directWin.PointerEvent(type, { pointerType: 'touch', pointerId: 200, button: 0, buttons: type === 'pointerup' ? 0 : 1, isPrimary: true, clientX: directRect.left + 5, clientY: y, bubbles: true, cancelable: true }));
+  directPointer(directStrip, 'pointerdown', directRect.top);
+  await pause(150);
+  check('first hold in the direct link enables and plays audio', directSound.getAttribute('aria-pressed') === 'true' && directDoc.getElementById('face').classList.contains('playing'));
+  directPointer(directWin, 'pointermove', directRect.bottom);
+  check('direct link glides down to the high endpoint', directStrip.getAttribute('aria-valuenow') === '100.00');
+  directPointer(directWin, 'pointerup', directRect.bottom); await pause(80);
+  check('direct link release stops the sound', !directDoc.getElementById('face').classList.contains('playing'));
+  directDoc.getElementById('focus-mode').click();
+  check('direct link exit preserves unrelated query and anchor', !new URL(directWin.location.href).searchParams.has('mode') && new URL(directWin.location.href).searchParams.get('keep') === 'test' && directWin.location.hash === '#strip');
+  check('direct link exit restores the current pitch in the lab', !directDoc.documentElement.classList.contains('focus-mode') && directDoc.getElementById('hz').textContent === TOP.toFixed(1));
   const audioResult = await audioReady;
   if (audioResult instanceof Error) {
     check('native Web Audio can start from a user gesture', false);

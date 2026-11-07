@@ -276,11 +276,16 @@ function bindFocusMode({ button, strip, onEnter, onExit }) {
   const size = () => {
     if (active) root.style.setProperty('--performance-height', `${window.visualViewport?.height || window.innerHeight}px`);
   };
-  function setActive(next) {
+  function setActive(next, { activateAudio = true } = {}) {
     if (active === next) return;
     if (next) scrollY = window.scrollY;
     active = next;
     root.classList.toggle('focus-mode', active);
+    const url = new URL(window.location.href);
+    if (active) url.searchParams.set('mode', 'play');
+    else if (url.searchParams.get('mode') === 'play') url.searchParams.delete('mode');
+    // Preserve other query parameters and the anchor when bookmarking this view.
+    try { window.history.replaceState(window.history.state, '', url); } catch { /* Some local file viewers restrict URL changes. */ }
     button.setAttribute('aria-pressed', String(active));
     button.setAttribute('aria-label', active ? '離開專注演奏' : '專注演奏（開啟聲音）');
     button.title = active ? '離開專注演奏（Esc）' : '專注演奏（開啟聲音）';
@@ -289,7 +294,7 @@ function bindFocusMode({ button, strip, onEnter, onExit }) {
     if (active) {
       size();
       strip.focus({ preventScroll: true });
-      onEnter();
+      onEnter({ activateAudio });
     } else {
       root.style.removeProperty('--performance-height');
       onExit();
@@ -303,7 +308,7 @@ function bindFocusMode({ button, strip, onEnter, onExit }) {
   });
   window.addEventListener('resize', size);
   window.visualViewport?.addEventListener('resize', size);
-  return { exit: () => setActive(false), get active() { return active; } };
+  return { enter: options => setActive(true, options), exit: () => setActive(false), get active() { return active; } };
 }
 
 // src/app.js
@@ -417,9 +422,10 @@ $('sound').addEventListener('click', () => {
 });
 const focus = bindFocusMode({
   button: $('focus-mode'), strip: $('strip'),
-  onEnter() {
+  onEnter({ activateAudio }) {
     instrument.stop(); focused = true;
     const session = ++focusSession;
+    if (!activateAudio) return; // A direct link waits for the first real playing gesture.
     void ensureSound().then(enabled => {
       if (!enabled && focus.active && session === focusSession) {
         const message = $('audio-status').textContent;
@@ -442,5 +448,11 @@ window.addEventListener('blur', emergencyStop);
 window.addEventListener('pagehide', emergencyStop);
 document.addEventListener('visibilitychange', () => { if (document.hidden) emergencyStop(); });
 changeModel();
+
+// Opening a URL is not an audio gesture. Show the stage immediately; the first
+// pointer/key hold resumes audio through ensureSound in the input handler.
+if (new URLSearchParams(window.location.search).get('mode') === 'play') {
+  focus.enter({ activateAudio: false });
+}
 
 })();

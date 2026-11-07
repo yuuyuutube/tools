@@ -113,9 +113,10 @@ $('sound').addEventListener('click', () => {
 });
 const focus = bindFocusMode({
   button: $('focus-mode'), strip: $('strip'),
-  onEnter() {
+  onEnter({ activateAudio }) {
     instrument.stop(); focused = true;
     const session = ++focusSession;
+    if (!activateAudio) return; // A direct link waits for the first real playing gesture.
     void ensureSound().then(enabled => {
       if (!enabled && focus.active && session === focusSession) {
         const message = $('audio-status').textContent;
@@ -138,3 +139,9 @@ window.addEventListener('blur', emergencyStop);
 window.addEventListener('pagehide', emergencyStop);
 document.addEventListener('visibilitychange', () => { if (document.hidden) emergencyStop(); });
 changeModel();
+
+// Opening a URL is not an audio gesture. Show the stage immediately; the first
+// pointer/key hold resumes audio through ensureSound in the input handler.
+if (new URLSearchParams(window.location.search).get('mode') === 'play') {
+  focus.enter({ activateAudio: false });
+}
