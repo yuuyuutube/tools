@@ -1,4 +1,6 @@
 const paths = {
+  expand: '<path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/>',
+  collapse: '<path d="M3 8h5V3m8 0v5h5M8 21v-5H3m13 5v-5h5"/>',
   left: '<path d="m14 6-6 6 6 6"/>',
   right: '<path d="m10 6 6 6-6 6"/>',
   backspace: '<path d="M9 5h12v14H9l-7-7Z"/><path d="m12 9 6 6m0-6-6 6"/>',

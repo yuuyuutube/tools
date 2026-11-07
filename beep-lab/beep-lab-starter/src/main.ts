@@ -24,12 +24,12 @@ const keys: { key: string; pitch?: string; label: string; symbol?: IconName }[] 
   { key: '0', label: '休止', symbol: 'rest' }, { key: '#', label: '升音', symbol: 'sharp' },
 ];
 $('#app').innerHTML = `
-  <header class="site-header"><img src="./favicon.svg" width="32" height="32" alt="" /><h1>BEEP COMPOSER</h1></header>
+  <header class="site-header"><img src="./favicon.svg" width="32" height="32" alt="" /><h1>BEEP COMPOSER</h1><button id="focus-toggle" aria-label="進入專注模式" title="專注模式" aria-pressed="false">${icon('expand')}</button></header>
   <main>
     <section class="instrument" aria-label="單音編曲器">
       <div class="editor-panel">
         <div class="lcd">
-          <div class="lcd-top"><span id="lcd-mode">就緒</span><span id="dirty-label">未儲存</span></div>
+          <div class="lcd-top"><span id="lcd-mode">就緒</span><span id="dirty-label">未儲存</span><button id="focus-exit" aria-label="退出專注模式" title="退出專注模式">${icon('collapse')}</button></div>
           <label class="song-label" for="song-title">曲名</label><input id="song-title" maxlength="60" value="未命名旋律" autocomplete="off" spellcheck="false" enterkeyhint="done" />
           <div id="score" class="score" role="group" aria-label="旋律，點音符將游標置於其右方" tabindex="0" inputmode="none"></div>
           <div class="lcd-footer"><span id="position" aria-label="游標位置">0 / 0</span><span id="duration">0.0 秒</span><span id="octave">八度 2</span></div>
@@ -80,6 +80,31 @@ $('#app').innerHTML = `
   </main>
   <dialog id="confirm-dialog" aria-labelledby="confirm-title"><form method="dialog"><h2 id="confirm-title">確認操作</h2><p id="confirm-text"></p><div class="dialog-actions"><button value="cancel">取消</button><button value="confirm" class="save-button">確認</button></div></form></dialog>
 `;
+let focusMode = false;
+let beforeFocusScroll = 0;
+function updateFocusViewport() {
+  document.documentElement.style.setProperty('--focus-height', `${window.visualViewport?.height ?? window.innerHeight}px`);
+}
+function setFocusMode(enabled: boolean) {
+  cancelPress();
+  if (enabled) beforeFocusScroll = window.scrollY;
+  focusMode = enabled;
+  document.documentElement.classList.toggle('focus-mode', enabled);
+  $('#focus-toggle').setAttribute('aria-pressed', String(enabled));
+  updateFocusViewport();
+  if (enabled) $('#focus-exit').focus({ preventScroll: true });
+  else {
+    window.scrollTo(0, beforeFocusScroll);
+    $('#focus-toggle').focus({ preventScroll: true });
+  }
+}
+$('#focus-toggle').onclick = () => setFocusMode(!focusMode);
+$('#focus-exit').onclick = () => setFocusMode(false);
+window.visualViewport?.addEventListener('resize', updateFocusViewport);
+window.addEventListener('resize', updateFocusViewport);
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && focusMode) { setFocusMode(false); stop(); }
+});
 function notify(message: string) { $('#status').textContent = message; }
 function renderAudioRecovery() {
   $('#sound-recovery').hidden = player.availability !== 'blocked' || muted;
@@ -230,7 +255,7 @@ document.addEventListener('keydown', event => {
   if (musicKeys.has(event.key)) {
     event.preventDefault(); if (!event.repeat) beginPress(event.key, document.querySelector<HTMLElement>(`[data-key="${event.key}"]`) ?? undefined);
   } else if (['ArrowLeft', 'ArrowRight', 'Backspace', '.'].includes(event.key)) { event.preventDefault(); apply(event.key); }
-  else if (event.code === 'Space' && event.target === enableSoundButton) return;
+  else if (event.code === 'Space' && (event.target === enableSoundButton || (event.target instanceof HTMLElement && !!event.target.closest('#focus-toggle, #focus-exit')))) return;
   else if (event.code === 'Space') { event.preventDefault(); if (!event.repeat) $('#play').click(); }
   else if (event.key === 'Escape') { cancelPress(); stop(); }
 });

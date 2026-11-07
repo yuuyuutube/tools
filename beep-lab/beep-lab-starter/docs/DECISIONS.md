@@ -53,3 +53,9 @@ Composer 文字 parser（只有 display formatter 及經驗證的 JSON parse/ser
 - 音訊從 running 進入 suspended／interrupted 時停止原播放並提供恢復；舊請求延遲失敗不覆蓋新手勢的成功狀態。Stop 仍會阻止尚未完成的播放請求發聲。
 - 依使用者本次明確授權提交及推送此工具。沿用現有 tools Git 靜態發佈方式，不建立 Sites 雲端專案。source 保留 `beep-lab-starter/`，`npm run release` 產出可直接服務的 `beep-lab/index.html`、assets 與圖示；只替換此工具生成的 assets 目錄。
 - Vite 使用相對 base，支援 `/tools/beep-lab/` 子目錄；正式分享 URL 由 `.env.production` 提供，支援帶子路徑且以 `/` 結尾的 SITE_URL。正式站是否成功更新需另查 HTTP／部署狀態，不能以 push 成功代替上線驗證。
+
+## 專注模式
+
+Header 的 SVG 展開按鈕切換瀏覽器內的專注版面，不要求 Fullscreen API 權限。只保留 editor-panel 與 keypad-panel；退出按鈕放在 LCD 右上角，Esc 可退出並停止播放。退出還原頁面捲動位置與按鈕焦點，不更動旋律或收藏。
+
+模式使用可視 viewport 高度與 safe-area；直向上下排列、橫向左右排列，鎖住整頁捲動，長旋律仍可在 LCD 內捲動但隱藏捲軸。手機版隱藏曲名輸入，避免原生鍵盤佔用編曲空間；曲名／速度／儲存可退出模式後操作。不宣稱隱藏手機瀏覽器自身的網址列或系統 UI。

@@ -198,3 +198,44 @@ dialog p { font-size: 13px; line-height: 1.9; }
 @media(prefers-reduced-motion:reduce) {
   *, *:before, *:after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
+
+#focus-toggle { margin-left: auto; width: 44px; flex-shrink: 0; }
+#focus-exit { display: none; }
+html.focus-mode, .focus-mode body { overflow: hidden; overscroll-behavior: none; }
+.focus-mode body { position: fixed; inset: 0; }
+.focus-mode .site-header, .focus-mode .settings-panel, .focus-mode .below { display: none; }
+.focus-mode main { position: fixed; inset: 0; max-width: none; height: var(--focus-height, 100dvh); padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left)); }
+.focus-mode .instrument { height: 100%; min-height: 0; grid-template-areas: 'editor keypad'; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
+.focus-mode .editor-panel { display: flex; flex-direction: column; min-height: 0; padding: 16px; }
+.focus-mode .lcd { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.focus-mode .lcd-top { align-items: center; padding-bottom: 4px; gap: 10px; }
+.focus-mode #dirty-label { margin-left: auto; }
+.focus-mode #focus-exit { display: inline-flex; width: 44px; border-color: #829767; flex-shrink: 0; }
+.focus-mode .score { flex: 1; min-height: 32px; height: auto; scrollbar-width: none; overscroll-behavior: contain; }
+.focus-mode .score::-webkit-scrollbar { display: none; }
+.focus-mode .empty-score { min-height: 0; }
+.focus-mode .keypad-panel { min-height: 0; padding: 16px; }
+.focus-mode .keypad { height: 100%; min-height: 0; grid-template-rows: repeat(4, minmax(44px, 1fr)); }
+.focus-mode .music-key { min-height: 44px; }
+.focus-mode .edit-tools, .focus-mode .transport, .focus-mode .sound-recovery { flex-shrink: 0; }
+@media(max-width:750px) and (orientation:portrait) {
+  .focus-mode .instrument { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) minmax(200px, .85fr); grid-template-areas: 'editor' 'keypad'; }
+  .focus-mode .editor-panel { padding: 8px; border: 0; }
+  .focus-mode .lcd { padding: 4px 12px 8px; }
+  .focus-mode .song-label, .focus-mode #song-title { display: none; }
+  .focus-mode .lcd-footer { padding-top: 6px; }
+  .focus-mode .edit-tools { margin: 6px 0; }
+  .focus-mode .transport button { min-height: 44px; }
+  .focus-mode .keypad-panel { padding: 0 8px 8px; }
+  .focus-mode .keypad { gap: 6px; }
+  .focus-mode .music-key { padding: 6px 12px; }
+  .focus-mode .sound-recovery { margin-top: 6px; padding: 4px 8px; }
+}
+@media(orientation:landscape) and (max-height:520px) {
+  .focus-mode .editor-panel, .focus-mode .keypad-panel { padding: 8px; }
+  .focus-mode .song-label, .focus-mode #song-title { display: none; }
+  .focus-mode .lcd { padding: 4px 12px 6px; }
+  .focus-mode .edit-tools { margin: 6px 0; }
+  .focus-mode .keypad { gap: 6px; }
+  .focus-mode .music-key { padding: 5px 10px; }
+}
