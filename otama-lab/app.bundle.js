@@ -353,6 +353,27 @@ function bindFocusMode({ button, strip, onEnter, onExit }) {
 
 // src/app.js
 const $ = id => document.getElementById(id);
+// An already cached pre-range HTML page can load the newest static bundle.
+// Supply only the new range hooks so that this older markup remains playable.
+if (!$('range')) {
+  const controls = $('model').closest('.model-controls');
+  const field = document.createElement('div'), modelField = document.createElement('div');
+  field.className = modelField.className = 'control-field';
+  const label = document.createElement('label'), select = document.createElement('select');
+  label.htmlFor = select.id = 'range'; label.textContent = '音域';
+  for (const preset of Object.values(RANGES)) {
+    const option = document.createElement('option'); option.value = preset.id; option.textContent = preset.label; select.append(option);
+  }
+  field.append(label, select);
+  modelField.append(document.querySelector('label[for="model"]'), $('model'));
+  controls.replaceChildren(field, modelField);
+}
+if (!$('octave-legend')) {
+  const marker = document.querySelector('.legend-line'), label = document.createElement('span');
+  label.id = 'octave-legend'; marker.parentElement.replaceChildren(marker, label);
+}
+if (!$('simulation-description')) document.querySelector('.simulation-info p').id = 'simulation-description';
+
 let range = rangeFor(new URLSearchParams(window.location.search).get('range'));
 let position = .35, model = 'inverse', reference = range.base, sounding = false;
 let soundRequest = 0, pendingEnable = false;

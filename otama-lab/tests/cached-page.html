@@ -1,0 +1,78 @@
+<!doctype html>
+<!-- Regression fixture: cached pre-range HTML from 7bee75b, loading the current bundle. -->
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0c1719">
+  <meta name="description" content="拖曳虛擬 Otamatone，聽見滑音，同步觀察頻率、音名、音程與三種位置映射模型。">
+  <title>OTAMA LAB — 音高實驗室</title>
+  <link rel="canonical" href="https://yuuyuutube.github.io/tools/otama-lab/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_TW">
+  <meta property="og:title" content="OTAMA LAB — 音高實驗室">
+  <meta property="og:description" content="操作虛擬 Otamatone，比較頻率、音程與位置的關係。">
+  <meta property="og:url" content="https://yuuyuutube.github.io/tools/otama-lab/">
+  <meta property="og:image" content="https://yuuyuutube.github.io/tools/otama-lab/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:alt" content="深綠色背景上的奶油色 Otamatone，帶有萊姆色滑軌指示器與粉紅色嘴巴。">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="OTAMA LAB — 音高實驗室">
+  <meta name="twitter:description" content="操作虛擬 Otamatone，比較頻率、音程與位置的關係。">
+  <meta name="twitter:image" content="https://yuuyuutube.github.io/tools/otama-lab/assets/og.png">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../src/styles.css?v=a396eabed60b">
+  <script defer src="../app.bundle.js?v=7ce676da834e"></script>
+</head>
+<body>
+<svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+  <symbol id="icon-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></symbol>
+  <symbol id="icon-muted" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Zm5 4 6 6m0-6-6 6"/></symbol>
+  <symbol id="icon-stop" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/></symbol>
+  <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="icon-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 9l12-2"/><ellipse cx="6" cy="18" rx="3" ry="3"/><ellipse cx="18" cy="16" rx="3" ry="3"/></symbol>
+  <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="icon-up" viewBox="0 0 24 24"><path d="M12 20V4m-6 6 6-6 6 6"/></symbol>
+</defs></svg>
+<a class="skip" href="#strip">跳至虛擬琴頸</a>
+<main class="page">
+  <header class="masthead"><a href="./" class="wordmark">OTAMA<span>LAB</span></a><h1>音高實驗室</h1><button class="btn focus-sound" id="focus-sound" type="button" aria-pressed="false" aria-label="開啟聲音" aria-describedby="audio-status" title="開啟聲音"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use id="focus-sound-icon" href="#icon-muted"/></svg></button><button class="btn mode-button" id="focus-mode" type="button" aria-pressed="false" aria-label="專注演奏（開啟聲音）" title="專注演奏（開啟聲音）"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-music"/></svg><span>專注演奏</span></button></header>
+  <div class="lab-layout">
+    <section class="card instrument" aria-labelledby="instrument-title">
+      <h2 id="instrument-title">虛擬琴頸</h2>
+      <div class="otama"><div class="tickmarks" aria-hidden="true"><span>低音</span><span>25%</span><span>50%</span><span>75%</span><span>高音</span></div><div class="rail" tabindex="0" role="slider" aria-orientation="vertical" aria-label="虛擬琴頸，向下靠近頭部提高音高" aria-describedby="play-help" aria-valuemin="0" aria-valuemax="100" aria-valuenow="35" id="strip"><div class="strip" id="track"><div id="note-marks" aria-hidden="true"></div><div class="finger" id="finger"></div></div></div></div>
+      <div id="face" class="face" aria-hidden="true"><div class="eye left"></div><div class="eye right"></div><div class="mouth"></div></div>
+      <div class="readouts"><div><div class="section-label">頻率</div><div class="value"><span id="hz">—</span><span class="value-unit">Hz</span></div></div><div><div class="section-label">最近音符</div><div class="value" id="note">—</div></div></div>
+      <div class="tuner"><span>♭</span><div class="tuner-track" aria-hidden="true"><i class="tuner-center"></i><i id="tuner-needle"></i></div><span>♯</span><output id="cents">— cents</output></div>
+      <div class="sliderrow"><label for="pos">琴頸位置 <output id="percent">35.0%</output></label><input type="range" min="0" max="100" step=".01" value="35" id="pos" aria-describedby="play-help"></div>
+      <div class="controls"><button class="btn primary" id="sound" type="button" aria-pressed="false"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use id="sound-icon" href="#icon-muted"/></svg><span id="sound-label">開啟聲音</span></button><button class="btn" id="stop" type="button"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-stop"/></svg>停止</button></div>
+      <p id="audio-status" class="audio-status" role="status">聲音已關閉</p>
+      <p id="play-help" class="help">按住琴頸或滑桿拖曳，放開即停止發聲。</p>
+      <details class="keyboard-help"><summary>鍵盤操作</summary><p>方向鍵移動 1%，Shift + 方向鍵微調 0.1%；Home / End 到兩端，Page Up / Down 移動 10%。Space / Enter 按住發聲，Esc 停止。</p></details>
+    </section>
+    <section class="card visualization" aria-labelledby="graphs-title">
+      <div class="section-top"><h2 id="graphs-title">音高映射</h2><span class="live-position" id="graph-position">x = 0.350</span></div>
+      <div class="model-controls"><label for="model">模擬模型（Simulation）</label><select id="model"><option value="inverse">反比靈感模型</option><option value="exponential">等距半音模型</option><option value="linear">等距 Hz 模型</option></select></div>
+      <div class="model-meta"><code id="formula"></code></div>
+      <p class="model-hint" id="model-hint"></p>
+      <div class="plot-heading"><h3><i class="color-dot lime"></i>位置 × 頻率</h3><output id="graph-hz">— Hz</output></div>
+      <svg id="frequency-plot" class="plot" viewBox="0 0 700 245" role="img" aria-labelledby="frequency-title frequency-desc"><title id="frequency-title">位置 × 頻率（Hz）— Simulation</title><desc id="frequency-desc">橫軸為位置百分比，縱軸為頻率 Hz。</desc></svg>
+      <div class="plot-heading second"><h3><i class="color-dot cyan"></i>位置 × 半音</h3><output id="graph-semitones">— 半音</output></div>
+      <svg id="pitch-plot" class="plot" viewBox="0 0 700 245" role="img" aria-labelledby="pitch-title pitch-desc"><title id="pitch-title">位置 × 音高（半音）— Simulation</title><desc id="pitch-desc">橫軸為位置百分比，縱軸為相對 C3 的半音數。</desc></svg>
+      <div class="legend"><span><i class="color-dot coral"></i>目前位置</span><span><i class="legend-line"></i>C3 / C4 / C5 / C6</span><span><i class="color-dot reference"></i>比較基準</span></div>
+    </section>
+  </div>
+  <section class="experiment" aria-labelledby="experiment-title">
+    <div class="experiment-intro"><h2 id="experiment-title">八度比較</h2><p>標記基準音，再比較兩倍頻率。</p></div>
+    <div class="experiment-body"><div class="comparison"><div><span class="section-label">基準音</span><strong id="reference-hz">—</strong><span id="reference-note">—</span></div><div><span class="section-label">目前／基準</span><strong id="ratio">—</strong><span id="interval">—</span></div></div><div class="experiment-actions"><button id="mark" class="btn" type="button"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-plus"/></svg>標記此音</button><button id="octave" class="btn primary" type="button"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-up"/></svg>基準音 × 2</button></div><p id="octave-help" class="help" role="status"></p></div>
+    <div class="sensitivity"><span class="section-label">局部靈敏度</span><p><strong id="sensitivity">—</strong> cents / 1% 位移</p><span>目前位置附近的音程變化率。</span></div>
+  </section>
+  <footer><details class="simulation-info"><summary>模擬設定與限制</summary><p>音域 C3–C6（130.81–1046.50 Hz），十二平均律，A4 = 440 Hz。x 是由上至下、靠近頭部的位置比例；f₀ = C3，f₁ = C6。反比模型僅供數學比較，不代表 Otamatone DX 真正的電路控制方式，也不是實測資料。合成音不是 Otamatone 原音色。</p></details></footer>
+  <noscript><p class="card">請啟用 JavaScript，才能操作琴頸、圖表與合成音訊。</p></noscript>
+</main>
+</body>
+</html>

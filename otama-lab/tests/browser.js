@@ -218,6 +218,11 @@ document.querySelector('#run').addEventListener('click', async () => {
   check('legacy direct-link high endpoint remains C6', legacyStrip.getAttribute('aria-valuetext').includes('C6'));
   legacyDoc.getElementById('focus-mode').click();
   check('exiting focus preserves the selected range', new URL(legacyWin.location.href).searchParams.get('range') === 'c3-c6' && legacyDoc.getElementById('hz').textContent === RANGES['c3-c6'].top.toFixed(1));
+  const cachedWin = document.querySelector('#cached').contentWindow, cachedDoc = cachedWin.document;
+  check('cached pre-range HTML receives exactly the two range options', cachedDoc.getElementById('range')?.options.length === 2);
+  check('cached pre-range HTML remains playable with new default readings', cachedDoc.getElementById('hz').textContent === frequencyAt(.35, 'inverse').toFixed(1) && cachedDoc.getElementById('octave-legend').textContent === 'G3 / G4 / G5 / D6');
+  cachedDoc.getElementById('range').value = 'c3-c6'; cachedDoc.getElementById('range').dispatchEvent(new cachedWin.Event('change'));
+  check('cached pre-range HTML can switch range without a reload', cachedDoc.getElementById('hz').textContent === frequencyAt(.35, 'inverse', RANGES['c3-c6']).toFixed(1) && cachedDoc.getElementById('simulation-description').textContent.includes('C3–C6'));
   const audioResult = await audioReady;
   if (audioResult instanceof Error) {
     check('native Web Audio can start from a user gesture', false);

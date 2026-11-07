@@ -80,7 +80,7 @@ npm test
 - `focus.js`：專注演奏的視圖切換、viewport 高度與返回位置。
 - `styles.css`：保留角色美術、響應式布局、reduced motion。
 
-`build` 依固定依賴順序將小型 modules 合成為 classic IIFE `app.bundle.js`，並為 bundle / CSS 加上內容版本參數，避免新畫面搭配舊快取；另產出 `dist/`（HTML、bundle、CSS、assets、.nojekyll）。生成器只支援目前使用的 named relative imports 與具名宣告；加入其他 module 語法會明確失敗。修改 `src/` 後務必重新 build，並將更新的根目錄 bundle 一併提交。
+`build` 依固定依賴順序將小型 modules 合成為 classic IIFE `app.bundle.js`，並為 bundle / CSS 加上內容版本參數，避免新畫面搭配舊快取；另產出 `dist/`（HTML、bundle、CSS、assets、.nojekyll）。生成器只支援目前使用的 named relative imports 與具名宣告；加入其他 module 語法會明確失敗。對已快取的舊版頁面，程式會補齊缺少的音域元件，避免舊 HTML 搭配新 bundle 時讀值空白。修改 `src/` 後務必重新 build，並將更新的根目錄 bundle 一併提交。
 
 瀏覽器整合測試：開啟 `/tests/browser.html` 按 Run checks，會播放短暫合成音。測試頁本身使用 ES modules，因此需 HTTP。測試檔不進 dist。
 

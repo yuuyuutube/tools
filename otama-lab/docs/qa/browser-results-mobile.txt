@@ -137,6 +137,9 @@ PASS: direct link exit restores the current pitch in the lab
 PASS: C3–C6 can be selected by a performance direct link
 PASS: legacy direct-link high endpoint remains C6
 PASS: exiting focus preserves the selected range
+PASS: cached pre-range HTML receives exactly the two range options
+PASS: cached pre-range HTML remains playable with new default readings
+PASS: cached pre-range HTML can switch range without a reload
 PASS: native Web Audio starts while keyboard is held
 PASS: native audio output has a nonzero waveform
 PASS: native oscillator glides to requested frequency
@@ -149,4 +152,4 @@ PASS: lostpointercapture: real synth starts on synthetic touch hold
 PASS: lostpointercapture: real synth stops
 PASS: window blur stops native synth
 PASS: emergency stop and disabling leave no voice
-151/151 passed
+154/154 passed
