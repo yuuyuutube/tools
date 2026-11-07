@@ -1,3 +1,4 @@
+import { createSpecimenArt } from './specimen-art';
 import { createLetterpressArt } from './letterpress-art';
 import { createTerrainArt } from './terrain-art';
 import type { Melody } from './music-core/model';
@@ -89,10 +90,10 @@ export function createStarArt(melody: Melody) {
   });
   return {element:svg,position(index:number|null){groups.forEach((items,i)=>items.forEach(group=>group.classList.toggle('art-playing',i===index)));}};
 }
-export type CardArtStyle='weave'|'stars'|'rhythm'|'terrain'|'letterpress';
+export type CardArtStyle='weave'|'stars'|'rhythm'|'terrain'|'letterpress'|'specimen';
 export function resolveArtStyle(value:string|null,random=Math.random):CardArtStyle {
-  const styles:CardArtStyle[]=['weave','stars','rhythm','terrain','letterpress'];
-  return value==='random'?styles[Math.min(styles.length-1,Math.max(0,Math.floor(random()*styles.length)))]:value==='stars'||value==='rhythm'||value==='terrain'||value==='letterpress'?value:'weave';
+  const styles:CardArtStyle[]=['weave','stars','rhythm','terrain','letterpress','specimen'];
+  return value==='random'?styles[Math.min(styles.length-1,Math.max(0,Math.floor(random()*styles.length)))]:value==='stars'||value==='rhythm'||value==='terrain'||value==='letterpress'||value==='specimen'?value:'weave';
 }
 
 export function buildRhythm(melody: Melody) {
@@ -132,5 +133,5 @@ export function createRhythmArt(melody: Melody) {
   return {element:svg,position(index:number|null){groups.forEach((items,i)=>items.forEach(group=>group.classList.toggle('art-playing',i===index)));}};
 }
 export function createCardArt(melody:Melody,style:CardArtStyle) {
-  return style==='letterpress'?createLetterpressArt(melody):style==='terrain'?createTerrainArt(melody):style==='stars'?createStarArt(melody):style==='rhythm'?createRhythmArt(melody):createMelodyArt(melody);
+  return style==='specimen'?createSpecimenArt(melody):style==='letterpress'?createLetterpressArt(melody):style==='terrain'?createTerrainArt(melody):style==='stars'?createStarArt(melody):style==='rhythm'?createRhythmArt(melody):createMelodyArt(melody);
 }
