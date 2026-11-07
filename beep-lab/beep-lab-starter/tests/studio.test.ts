@@ -82,3 +82,22 @@ describe('duration resizing',()=>{
     expect(history.redo(before)).toEqual(after);
   });
 });
+
+describe('event swapping and append column',()=>{
+  it('swaps entire events without losing rhythm, keeps other events, and is undoable',async()=>{
+    const {swapStudioEvents}=await import('../src/music-core/studio');
+    let before=initial(); before=edit(edit(edit(before,'1').state,'2').state,'0').state;
+    before.melody.events[0]={...noteFromStep(30,{duration:8,dotted:true})};
+    const after=swapStudioEvents(before,0,2).state;
+    expect(after.melody.events).toEqual([before.melody.events[2],before.melody.events[1],before.melody.events[0]]);
+    expect(after.cursor).toBe(3);expect(before.melody.events[0].type).toBe('note');
+    const history=new EditHistory();history.record(before,after);expect(history.undo(after)).toEqual(before);expect(history.redo(before)).toEqual(after);
+    for(const [a,b] of [[0,0],[-1,1],[0,3],[0,1.5]])expect(swapStudioEvents(before,a,b).state).toBe(before);
+  });
+  it('appends from the next column even when the editing cursor is at the beginning',()=>{
+    const before=edit(initial(),'1').state;
+    const after=appendStudioEvent({...before,cursor:before.melody.events.length},noteFromStep(24,{duration:4,dotted:false})).state;
+    expect(after.melody.events[0]).toEqual(before.melody.events[0]);expect(after.melody.events[1]).toMatchObject({pitch:'c',octave:3});
+    expect(after.cursor).toBe(2);
+  });
+});

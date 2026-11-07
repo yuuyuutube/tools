@@ -307,3 +307,14 @@ button:disabled { cursor: default; opacity: .45; }
 .piano-roll.resizing { cursor: ew-resize; }
 .piano-roll.resizing .roll-note.selected { z-index: 4; }
 .piano-roll.resizing .roll-note-label { max-width: none; box-shadow: 0 0 0 1px var(--orange); }
+.piano-roll { height: 864px; }
+.next-column { position: absolute; top: 0; bottom: 0; border-left: 1px dashed #829767; background: #c5d49e26; pointer-events: none; }
+.next-column > span { position: absolute; left: 5px; font-size: 11px; color: #58664d; background: #eef0e6e6; padding: 3px; }
+.rest-viewport { position: relative; height: 54px; overflow: hidden; border: 1px solid var(--line); border-top: 0; background: #e2e7d8; }
+.rest-lane { position: relative; height: 54px; }
+.rest-caption { position: absolute; left: 0; top: 0; width: 40px; height: 54px; line-height: 54px; background: #d4ddc6; font-size: 11px; padding-left: 6px; z-index: 6; pointer-events: none; }
+.rest-add { position: absolute; top: 5px; height: 44px; width: 104px; border-style: dashed; font-size: 12px; background: #eef0e6; }
+.rest-hover { position: absolute; top: 5px; height: 44px; border: 2px dashed var(--orange); border-radius: 3px; pointer-events: none; background: #bd482818; z-index: 4; }
+.roll-note { cursor: grab; touch-action: pan-y; }
+.roll-note.moving { cursor: grabbing; opacity: .65; }
+.roll-note.swap-target .roll-note-label { outline: 2px dashed var(--orange); outline-offset: 2px; }

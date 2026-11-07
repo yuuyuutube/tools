@@ -31,3 +31,11 @@ export function resizeRhythm(event: MusicEvent, width: number): MusicEvent {
     Math.abs(scale / candidate - width) < Math.abs(scale / closest - width) ? candidate : closest, denominators[0] as typeof denominators[number]);
   return { ...event, duration };
 }
+
+export function swapStudioEvents(state: EditorState, from: number, to: number): EditResult {
+  const count = state.melody.events.length;
+  if (!Number.isInteger(from) || !Number.isInteger(to) || from < 0 || to < 0 || from >= count || to >= count || from === to) return { state };
+  const events = state.melody.events.map(event => ({ ...event }));
+  [events[from], events[to]] = [events[to], events[from]];
+  return { state: { ...state, cursor: to + 1, melody: { ...state.melody, events, updatedAt: new Date().toISOString() } }, message: `已交換第 ${from + 1} 與第 ${to + 1} 音。` };
+}
