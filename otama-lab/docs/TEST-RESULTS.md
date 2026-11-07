@@ -40,7 +40,7 @@
 - 真實裝置切換分頁／鎖屏／來電、音訊裝置變動、低電量或背景節流。
 - 外接鍵盤、多瀏覽器（獨立 Safari / Chrome / Firefox）、VoiceOver / TalkBack 與 OS reduced motion。
 - 耳機／喇叭的主觀聽感、延遲與音量；本次以數位波形確認音訊，不代表所有硬體輸出已聆聽驗證。
-- **GitHub Actions 實際雲端執行及公開 Pages URL**：本次接續工作已確認 parent tools repository 與 origin/main；本次將此工具加入 main，沿用 repository 既有的 Pages 發布流程。公開頁面驗證結果另列於本次修正紀錄。
+- 分享平台各自的 OG 預覽快取與顯示尚未逐一測試；實際 PNG 與 favicon 公開網址已驗證 HTTP 200。
 
 ## 畫面證據
 
@@ -71,3 +71,14 @@ npm run build
 - 新版已去除宣傳標語、實驗編號、角色旁白與裝飾性雙語；保留操作說明、數值、科學標示。
 - Favicon：SVG + 32px PNG；Apple touch icon：180px；OG 圖：1200×630 PNG（向量原稿亦保留），圖中無文字。
 - file:// 的 ES modules 已改為預先生成的 classic script；IAB 的 URL 安全政策禁止開啟 file://，因此只完成傳統 script 解析檢查與 HTTP 下的功能測試，沒有宣稱已實測雙擊 HTML。
+
+## GitHub Pages 正式站驗證
+
+功能 commit：`19d0318006074cd769d7d9e14ac89410958ccae1`，已推送 origin/main。
+
+- 既有 Pages source 為 main /；[此次 workflow](https://github.com/yuuyuutube/tools/actions/runs/42340945013) 的 build、report-build-status、deploy 均成功。
+- 正式頁 <https://yuuyuutube.github.io/tools/otama-lab/> 已由 404 更新為完整工具。
+- 實際從標記邊緣拖出琴頸，位置由 35% 移至 95.83%；切換等距 Hz 模型後，顯示 1008.3 Hz，雙圖均使用 1008.3485329293906 Hz。
+- 正式頁測試期間 console 無 warning / error。
+- 正式 OG PNG 與 SVG favicon 均回應 HTTP 200，Content-Type 分別為 image/png、image/svg+xml。
+- 實體手機觸控仍未驗證；上述手機版測試為 390px viewport、合成觸控事件及滑鼠拖曳。
