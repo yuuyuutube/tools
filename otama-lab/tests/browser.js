@@ -39,17 +39,28 @@ document.querySelector('#run').addEventListener('click', async () => {
     key('keydown', 'End'); key('keyup', 'End'); $('mark').click();
     check(`${model}: octave out of range is disabled`, $('octave').disabled);
   }
+  const scale = $('track').getBoundingClientRect();
+  for (const model of ['inverse', 'exponential', 'linear']) {
+    $('model').value = model; $('model').dispatchEvent(new win.Event('change'));
+    for (const type of ['mouse', 'touch', 'pen']) {
+      pointer(strip, 'pointerdown', type, 90, scale.left, scale.top);
+      check(`${model}/${type}: top is low C3`, $('note').textContent === 'C3' && $('finger').style.bottom === '100%');
+      pointer(win, 'pointermove', type, 90, scale.left, scale.bottom);
+      check(`${model}/${type}: near head is high C6`, $('note').textContent === 'C6' && $('finger').style.bottom === '0%');
+      pointer(win, 'pointerup', type, 90, scale.left, scale.bottom);
+    }
+  }
   const rect = strip.getBoundingClientRect();
   for (const type of ['mouse', 'touch', 'pen']) {
-    pointer(strip, 'pointerdown', type, 10, rect.x + 4, rect.top + rect.height * .75);
-    pointer(strip, 'pointermove', type, 10, rect.x + 4, rect.top - 100);
+    pointer(strip, 'pointerdown', type, 10, rect.x + 4, rect.top + rect.height * .25);
+    pointer(strip, 'pointermove', type, 10, rect.x + 4, rect.bottom + 100);
     check(`${type}: captured motion outside rail clamps to C6`, $('note').textContent === 'C6');
-    pointer(win, 'pointerup', type, 10, rect.x + 100, rect.top - 100);
-    pointer(strip, 'pointermove', type, 10, rect.x, rect.bottom);
+    pointer(win, 'pointerup', type, 10, rect.x + 100, rect.bottom + 100);
+    pointer(strip, 'pointermove', type, 10, rect.x, rect.top);
     check(`${type}: release ignores subsequent motion`, $('note').textContent === 'C6');
-    pointer(strip, 'pointerdown', type, 11, rect.x, rect.bottom);
-    pointer(win, 'pointercancel', type, 11, rect.x, rect.bottom);
-    pointer(strip, 'pointermove', type, 11, rect.x, rect.top);
+    pointer(strip, 'pointerdown', type, 11, rect.x, rect.top);
+    pointer(win, 'pointercancel', type, 11, rect.x, rect.top);
+    pointer(strip, 'pointermove', type, 11, rect.x, rect.bottom);
     check(`${type}: cancellation clears drag`, $('note').textContent === 'C3');
   }
   const trackRect = $('track').getBoundingClientRect();
@@ -67,20 +78,20 @@ document.querySelector('#run').addEventListener('click', async () => {
     pointer(win, 'pointerup', pointerType, 30, rangeRect.left, rangeRect.top);
   }
   strip.setPointerCapture = () => { throw new win.DOMException('Capture unavailable'); };
-  pointer(strip, 'pointerdown', 'touch', 40, rect.left, trackRect.bottom);
-  pointer(win, 'pointermove', 'touch', 40, rect.right + 100, trackRect.top);
+  pointer(strip, 'pointerdown', 'touch', 40, rect.left, trackRect.top);
+  pointer(win, 'pointermove', 'touch', 40, rect.right + 100, trackRect.bottom);
   check('capture failure still drags outside the neck through window events', $('note').textContent === 'C6');
-  pointer(win, 'pointerup', 'touch', 40, rect.right + 100, trackRect.top);
-  pointer(win, 'pointermove', 'touch', 40, rect.left, trackRect.bottom);
+  pointer(win, 'pointerup', 'touch', 40, rect.right + 100, trackRect.bottom);
+  pointer(win, 'pointermove', 'touch', 40, rect.left, trackRect.top);
   check('capture fallback also stops after release', $('note').textContent === 'C6');
   strip.setPointerCapture = () => {};
-  pointer(strip, 'pointerdown', 'touch', 50, rect.left, trackRect.bottom);
-  strip.dispatchEvent(new win.PointerEvent('pointerdown', { pointerId: 51, pointerType: 'touch', isPrimary: false, button: 0, clientY: trackRect.top, bubbles: true }));
+  pointer(strip, 'pointerdown', 'touch', 50, rect.left, trackRect.top);
+  strip.dispatchEvent(new win.PointerEvent('pointerdown', { pointerId: 51, pointerType: 'touch', isPrimary: false, button: 0, clientY: trackRect.bottom, bubbles: true }));
   check('second finger does not take over the first touch', $('note').textContent === 'C3');
-  pointer(win, 'pointerup', 'touch', 50, rect.left, trackRect.bottom);
-  pointer(strip, 'pointerdown', 'touch', 60, rect.left, trackRect.bottom);
-  pointer(strip, 'lostpointercapture', 'touch', 60, rect.left, trackRect.bottom);
-  pointer(win, 'pointermove', 'touch', 60, rect.left, trackRect.top);
+  pointer(win, 'pointerup', 'touch', 50, rect.left, trackRect.top);
+  pointer(strip, 'pointerdown', 'touch', 60, rect.left, trackRect.top);
+  pointer(strip, 'lostpointercapture', 'touch', 60, rect.left, trackRect.top);
+  pointer(win, 'pointermove', 'touch', 60, rect.left, trackRect.bottom);
   check('lost capture clears pointer state', $('note').textContent === 'C3');
   strip.setPointerCapture = capture; strip.hasPointerCapture = has;
   $('pos').setPointerCapture = rangeCapture;

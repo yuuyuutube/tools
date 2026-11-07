@@ -17,7 +17,7 @@ export function bindInstrument({ strip, track = strip, range, getPosition, onPos
   const setFromPointer = e => {
     if (pointerTarget === strip) {
       const rect = track.getBoundingClientRect();
-      if (rect.height) onPosition(clamp(1 - (e.clientY - rect.top) / rect.height));
+      if (rect.height) onPosition(clamp((e.clientY - rect.top) / rect.height));
     } else if (pointerTarget === range) {
       const rect = range.getBoundingClientRect();
       // Matches the 18px thumb in styles.css, including both endpoints.

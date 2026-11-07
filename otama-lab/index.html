@@ -41,7 +41,7 @@
   <div class="lab-layout">
     <section class="card instrument" aria-labelledby="instrument-title">
       <h2 id="instrument-title">虛擬琴頸</h2>
-      <div class="otama"><div class="tickmarks" aria-hidden="true"><span>高音</span><span>75%</span><span>50%</span><span>25%</span><span>低音</span></div><div class="rail" tabindex="0" role="slider" aria-orientation="vertical" aria-label="虛擬琴頸，向上提高音高" aria-describedby="play-help" aria-valuemin="0" aria-valuemax="100" aria-valuenow="35" id="strip"><div class="strip" id="track"><div id="note-marks" aria-hidden="true"></div><div class="finger" id="finger"></div></div></div></div>
+      <div class="otama"><div class="tickmarks" aria-hidden="true"><span>低音</span><span>25%</span><span>50%</span><span>75%</span><span>高音</span></div><div class="rail" tabindex="0" role="slider" aria-orientation="vertical" aria-label="虛擬琴頸，向下靠近頭部提高音高" aria-describedby="play-help" aria-valuemin="0" aria-valuemax="100" aria-valuenow="35" id="strip"><div class="strip" id="track"><div id="note-marks" aria-hidden="true"></div><div class="finger" id="finger"></div></div></div></div>
       <div id="face" class="face" aria-hidden="true"><div class="eye left"></div><div class="eye right"></div><div class="mouth"></div></div>
       <div class="readouts"><div><div class="section-label">頻率</div><div class="value"><span id="hz">—</span><span class="value-unit">Hz</span></div></div><div><div class="section-label">最近音符</div><div class="value" id="note">—</div></div></div>
       <div class="tuner"><span>♭</span><div class="tuner-track" aria-hidden="true"><i class="tuner-center"></i><i id="tuner-needle"></i></div><span>♯</span><output id="cents">— cents</output></div>
@@ -68,7 +68,7 @@
     <div class="experiment-body"><div class="comparison"><div><span class="section-label">基準音</span><strong id="reference-hz">—</strong><span id="reference-note">—</span></div><div><span class="section-label">目前／基準</span><strong id="ratio">—</strong><span id="interval">—</span></div></div><div class="experiment-actions"><button id="mark" class="btn" type="button"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-plus"/></svg>標記此音</button><button id="octave" class="btn primary" type="button"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-up"/></svg>基準音 × 2</button></div><p id="octave-help" class="help" role="status"></p></div>
     <div class="sensitivity"><span class="section-label">局部靈敏度</span><p><strong id="sensitivity">—</strong> cents / 1% 位移</p><span>目前位置附近的音程變化率。</span></div>
   </section>
-  <footer><details class="simulation-info"><summary>模擬設定與限制</summary><p>音域 C3–C6（130.81–1046.50 Hz），十二平均律，A4 = 440 Hz。x 是由下至上的位置比例；f₀ = C3，f₁ = C6。反比模型僅供數學比較，不代表 Otamatone DX 真正的電路控制方式，也不是實測資料。合成音不是 Otamatone 原音色。</p></details></footer>
+  <footer><details class="simulation-info"><summary>模擬設定與限制</summary><p>音域 C3–C6（130.81–1046.50 Hz），十二平均律，A4 = 440 Hz。x 是由上至下、靠近頭部的位置比例；f₀ = C3，f₁ = C6。反比模型僅供數學比較，不代表 Otamatone DX 真正的電路控制方式，也不是實測資料。合成音不是 Otamatone 原音色。</p></details></footer>
   <noscript><p class="card">請啟用 JavaScript，才能操作琴頸、圖表與合成音訊。</p></noscript>
 </main>
 </body>

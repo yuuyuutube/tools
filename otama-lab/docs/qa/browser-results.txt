@@ -19,6 +19,24 @@ PASS: linear: graph cursors share exact position and frequency
 PASS: linear: octave ratio and interval
 PASS: linear: reference position follows mapping
 PASS: linear: octave out of range is disabled
+PASS: inverse/mouse: top is low C3
+PASS: inverse/mouse: near head is high C6
+PASS: inverse/touch: top is low C3
+PASS: inverse/touch: near head is high C6
+PASS: inverse/pen: top is low C3
+PASS: inverse/pen: near head is high C6
+PASS: exponential/mouse: top is low C3
+PASS: exponential/mouse: near head is high C6
+PASS: exponential/touch: top is low C3
+PASS: exponential/touch: near head is high C6
+PASS: exponential/pen: top is low C3
+PASS: exponential/pen: near head is high C6
+PASS: linear/mouse: top is low C3
+PASS: linear/mouse: near head is high C6
+PASS: linear/touch: top is low C3
+PASS: linear/touch: near head is high C6
+PASS: linear/pen: top is low C3
+PASS: linear/pen: near head is high C6
 PASS: mouse: captured motion outside rail clamps to C6
 PASS: mouse: release ignores subsequent motion
 PASS: mouse: cancellation clears drag
@@ -57,4 +75,4 @@ PASS: lostpointercapture: real synth starts on synthetic touch hold
 PASS: lostpointercapture: real synth stops
 PASS: window blur stops native synth
 PASS: emergency stop and disabling leave no voice
-59/59 passed
+77/77 passed

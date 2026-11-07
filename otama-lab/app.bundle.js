@@ -128,7 +128,7 @@ function bindInstrument({ strip, track = strip, range, getPosition, onPosition, 
   const setFromPointer = e => {
     if (pointerTarget === strip) {
       const rect = track.getBoundingClientRect();
-      if (rect.height) onPosition(clamp(1 - (e.clientY - rect.top) / rect.height));
+      if (rect.height) onPosition(clamp((e.clientY - rect.top) / rect.height));
     } else if (pointerTarget === range) {
       const rect = range.getBoundingClientRect();
       // Matches the 18px thumb in styles.css, including both endpoints.
@@ -296,7 +296,7 @@ function render() {
   const description = `${(position * 100).toFixed(1)}%，${pitch.note}，${f.toFixed(1)} 赫茲，${signed(pitch.cents)} cents`;
   $('strip').setAttribute('aria-valuenow', (position * 100).toFixed(2));
   for (const id of ['strip', 'pos']) $(id).setAttribute('aria-valuetext', description);
-  $('finger').style.bottom = `${position * 100}%`;
+  $('finger').style.bottom = `${(1 - position) * 100}%`;
   $('graph-position').textContent = `x = ${position.toFixed(3)}`;
   $('graph-hz').textContent = `${f.toFixed(1)} Hz`;
   $('graph-semitones').textContent = `${semitonesFrom(f).toFixed(2)} 半音`;
@@ -323,7 +323,7 @@ function changeModel() {
   for (let semitone = 0; semitone <= 36; semitone++) {
     const mark = document.createElement('i');
     mark.className = 'note-mark';
-    mark.style.bottom = `${positionAt(BASE * 2 ** (semitone / 12), model) * 100}%`;
+    mark.style.bottom = `${(1 - positionAt(BASE * 2 ** (semitone / 12), model)) * 100}%`;
     if (semitone % 12 === 0) { mark.style.width = '15px'; mark.style.background = '#c8f16e'; }
     $('note-marks').append(mark);
   }
