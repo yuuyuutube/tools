@@ -100,3 +100,25 @@ describe('local library recovery', () => {
     expect(readLibrary(storage).warning).toBeTruthy(); expect(() => writeLibrary(storage, [createMelody()])).toThrow('儲存失敗');
   });
 });
+
+describe('selected octave extension', () => {
+  it('changes only the selected note, preserving rhythm, pitch and future octave', () => {
+    const original = input(['1', '#', '.', '8', '2', 'ArrowLeft']);
+    const changed = edit(original, 'selectedOctave');
+    expect(changed.state.melody.events[0]).toMatchObject({ pitch: 'c', sharp: true, dotted: true, duration: 8, octave: 3 });
+    expect(changed.state.melody.events[1]).toEqual(original.melody.events[1]);
+    expect(original.melody.events[0]).toMatchObject({ octave: 2 });
+    expect(changed.state.octave).toBe(2);
+    expect(changed.preview).toEqual(changed.state.melody.events[0]);
+    expect(input(['selectedOctave', 'selectedOctave'], changed.state).melody.events[0]).toMatchObject({ octave: 2 });
+  });
+  it('ignores rests and an empty selection and retains octave through storage', () => {
+    for (const state of [initial(), input(['0'])]) {
+      const result = edit(state, 'selectedOctave');
+      expect(result.state.melody).toEqual(state.melody); expect(result.preview).toBeUndefined();
+    }
+    const state = input(['1', 'selectedOctave']); const storage = memory();
+    writeLibrary(storage, [state.melody]);
+    expect(readLibrary(storage).songs[0].events[0]).toMatchObject({ octave: 3 });
+  });
+});

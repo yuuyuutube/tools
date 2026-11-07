@@ -239,3 +239,8 @@ html.focus-mode, .focus-mode body { overflow: hidden; overscroll-behavior: none;
   .focus-mode .keypad { gap: 6px; }
   .focus-mode .music-key { padding: 5px 10px; }
 }
+
+.lcd-footer { align-items: center; flex-wrap: wrap; gap: 6px; }
+#selected-octave { margin-left: auto; min-height: 44px; padding: 0 6px; font-size: 11px; border-color: #829767; gap: 3px; }
+#selected-octave .icon { width: 16px; height: 16px; }
+#selected-octave:disabled { opacity: .5; cursor: default; }

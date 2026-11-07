@@ -32,7 +32,7 @@ $('#app').innerHTML = `
           <div class="lcd-top"><span id="lcd-mode">就緒</span><span id="dirty-label">未儲存</span><button id="focus-exit" aria-label="退出專注模式" title="退出專注模式">${icon('collapse')}</button></div>
           <label class="song-label" for="song-title">曲名</label><input id="song-title" maxlength="60" value="未命名旋律" autocomplete="off" spellcheck="false" enterkeyhint="done" />
           <div id="score" class="score" role="group" aria-label="旋律，點音符將游標置於其右方" tabindex="0" inputmode="none"></div>
-          <div class="lcd-footer"><span id="position" aria-label="游標位置">0 / 0</span><span id="duration">0.0 秒</span><span id="octave">八度 2</span></div>
+          <div class="lcd-footer"><span id="position" aria-label="游標位置">0 / 0</span><span id="duration">0.0 秒</span><span id="octave">下一音 2</span><button id="selected-octave" data-command="selectedOctave" title="擴充功能：調整選取音的八度" disabled>${icon('octave')}<span>選取音 —</span></button></div>
         </div>
         <div class="edit-tools"><div class="cursor-controls"><button data-command="ArrowLeft" aria-label="游標向左">${icon('left')}</button><button data-command="ArrowRight" aria-label="游標向右">${icon('right')}</button><button data-command="Backspace" aria-label="刪除游標左方音符">${icon('backspace')}</button></div><button data-command="." class="dot-key" aria-label="切換左方音符附點">${icon('dot')}<span>附點</span></button></div>
         <div class="transport"><button id="play" class="play-button" aria-label="播放旋律">${icon('play')}<span>播放</span></button><button id="stop" aria-label="停止播放">${icon('stop')}<span>停止</span></button><button id="mute" aria-label="靜音" aria-pressed="false">${icon('volume')}</button></div>
@@ -62,7 +62,7 @@ $('#app').innerHTML = `
           </dl>
         </section>
         <section class="guide-section" aria-labelledby="guide-edit"><h3 id="guide-edit">編輯旋律</h3>
-          <ul class="guide-list"><li>點選音符，游標會放在它右方。新音符一律插入。</li><li>長按音符鍵約半秒（450ms），輸入附點音；也可用「附點」按鈕修改左方音符。</li></ul>
+          <ul class="guide-list"><li>點選音符，游標會放在它右方。新音符一律插入。按螢幕內的「選取音八度」可事後調整該音，依 1–3 循環；不影響下一音的八度設定。</li><li>長按音符鍵約半秒（450ms），輸入附點音；也可用「附點」按鈕修改左方音符。</li></ul>
           <h4>實體鍵盤快捷鍵</h4>
           <dl class="key-reference shortcuts">
             <div><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>移動游標</dd></div>
@@ -74,7 +74,7 @@ $('#app').innerHTML = `
         </section>
       </div>
       <section class="guide-support" aria-labelledby="guide-sound"><h3 id="guide-sound">聲音與儲存</h3><ul class="guide-list"><li>第一次點音符或播放會啟用聲音。若啟用失敗，按「啟用聲音」重試，再按音符或播放。</li><li>iPhone 若仍無聲，請確認媒體音量。</li><li>作品僅儲存在目前瀏覽器，換裝置或瀏覽器不會同步。</li></ul></section>
-      <p class="historical-note">現代復刻，音色及部分操作為近似設計；附點按鈕為擴充功能。</p>
+      <p class="historical-note">現代復刻，音色及部分操作為近似設計；附點按鈕與選取音八度調整為擴充功能。</p>
     </div></details>
     <div class="library"><div class="library-heading"><h2>已儲存作品 <span id="library-count">0</span></h2><span>僅儲存於此瀏覽器</span></div><div id="library-notice"></div><div id="songs"></div></div></section>
   </main>
@@ -167,7 +167,13 @@ function renderScore() {
   }
   $('#position').textContent = `${state.cursor} / ${state.melody.events.length}`;
   $('#duration').textContent = `${state.melody.events.reduce((sum, e) => sum + eventSeconds(e, state.melody.tempoBpm), 0).toFixed(1)} 秒`;
-  $('#octave').textContent = `八度 ${state.octave}`;
+  $('#octave').textContent = `下一音 ${state.octave}`;
+  const selectedEvent = state.melody.events[state.cursor - 1];
+  const octaveButton = $<HTMLButtonElement>('#selected-octave');
+  const selectedNote = selectedEvent?.type === 'note' ? selectedEvent : undefined;
+  octaveButton.disabled = !selectedNote;
+  octaveButton.querySelector('span')!.textContent = `選取音 ${selectedNote ? `八度 ${selectedNote.octave}` : '—'}`;
+  octaveButton.setAttribute('aria-label', selectedNote ? `選取音八度 ${selectedNote.octave}，點擊切換八度（擴充功能）` : '請先選取音符以調整八度');
   requestAnimationFrame(() => {
     const selected = score.querySelector<HTMLElement>('.cursor-here');
     if (selected) revealNote(selected);
@@ -261,7 +267,7 @@ document.addEventListener('keydown', event => {
   if (musicKeys.has(event.key)) {
     event.preventDefault(); if (!event.repeat) beginPress(event.key, document.querySelector<HTMLElement>(`[data-key="${event.key}"]`) ?? undefined);
   } else if (['ArrowLeft', 'ArrowRight', 'Backspace', '.'].includes(event.key)) { event.preventDefault(); apply(event.key); }
-  else if (event.code === 'Space' && (event.target === enableSoundButton || (event.target instanceof HTMLElement && !!event.target.closest('#focus-toggle, #focus-exit')))) return;
+  else if (event.code === 'Space' && (event.target === enableSoundButton || (event.target instanceof HTMLElement && !!event.target.closest('#focus-toggle, #focus-exit, #selected-octave')))) return;
   else if (event.code === 'Space') { event.preventDefault(); if (!event.repeat) $('#play').click(); }
   else if (event.key === 'Escape') { cancelPress(); stop(); }
 });

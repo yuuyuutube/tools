@@ -29,6 +29,12 @@ export function edit(state: EditorState, key: string, dotted = false): EditResul
   } else if (key === '*') {
     octave = (octave % 3 + 1) as Octave;
     message = `下一個音符：八度 ${octave}。`;
+  } else if (key === 'selectedOctave') {
+    if (!selected || selected.type === 'rest') message = '請先選取要調整八度的音符。';
+    else {
+      selected.octave = (selected.octave % 3 + 1) as Octave;
+      preview = selected;
+    }
   } else if (key === '#') {
     if (!selected || selected.type === 'rest') message = '請將游標移到音符右方，再切換升音。';
     else if (selected.pitch === 'e' || selected.pitch === 'b') message = '依原手冊規則，E 與 B 不提供升音。';
