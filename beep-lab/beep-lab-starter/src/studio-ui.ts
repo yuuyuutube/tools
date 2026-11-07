@@ -210,9 +210,9 @@ export function createStudio(container: HTMLElement, actions: {
         }
         left+=width;
       });
-      columns.push({left,width:112});
-      nextColumn.style.left=`${42+left}px`;nextColumn.style.width='112px';nextCaption.style.top=`${scroll.scrollTop+4}px`;
-      const totalWidth=`${Math.max(300,left+176)}px`;
+      columns.push({left,width:80});
+      nextColumn.style.left=`${42+left}px`;nextColumn.style.width='80px';nextCaption.style.top=`${scroll.scrollTop+4}px`;
+      const totalWidth=`${Math.max(300,left+144)}px`;
       roll.style.width=restLane.style.width=totalWidth;
       restLane.style.transform=`translateX(${-previousScroll}px)`;
       const addRest=document.createElement('button');addRest.className='rest-next';addRest.textContent='新增休止';addRest.setAttribute('aria-label','在下一音欄新增休止');
@@ -227,7 +227,7 @@ export function createStudio(container: HTMLElement, actions: {
       const index=current.cursor-1, event=selected(); if(!event) {scroll.scrollTop=400;return;}
       const row=noteStep(event); if(row!==null)scroll.scrollTop=Math.max(0,(35-row)*24-scroll.clientHeight/2);
       const col=columns[index];
-      if(col && index===current.melody.events.length-1 && col.width<=scroll.clientWidth-42)scroll.scrollLeft=Math.max(0,col.left+col.width+170-scroll.clientWidth);
+      if(col && index===current.melody.events.length-1 && col.width<=scroll.clientWidth-42)scroll.scrollLeft=Math.max(0,col.left+col.width+138-scroll.clientWidth);
       else if(col && (col.left<scroll.scrollLeft || col.left+col.width>scroll.scrollLeft+scroll.clientWidth-42))scroll.scrollLeft=col.left;
     },
     position(index: number|null) {
