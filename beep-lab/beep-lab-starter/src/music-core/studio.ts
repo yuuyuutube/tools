@@ -22,3 +22,12 @@ export function noteFromStep(step: number, rhythm: Pick<MusicEvent, 'duration' |
 export function noteStep(event: MusicEvent): number | null {
   return event.type === 'rest' ? null : (event.octave - 1) * 12 + pitchSteps.indexOf(`${event.pitch}${event.sharp ? '#' : ''}` as typeof pitchSteps[number]);
 }
+
+export function resizeRhythm(event: MusicEvent, width: number): MusicEvent {
+  if (!Number.isFinite(width)) return { ...event };
+  const denominators = [1, 2, 4, 8, 16, 32] as const;
+  const scale = 320 * (event.dotted ? 1.5 : 1);
+  const duration = denominators.reduce((closest, candidate) =>
+    Math.abs(scale / candidate - width) < Math.abs(scale / closest - width) ? candidate : closest, denominators[0] as typeof denominators[number]);
+  return { ...event, duration };
+}

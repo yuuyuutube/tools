@@ -62,7 +62,7 @@ $('#app').innerHTML = `
       </div>
     </section>
     <section class="below"><details class="guide"><summary>操作說明 ${icon('chevron')}</summary><div class="guide-body">
-<p>Studio 可點音塊選取，再點同欄格子修改音高，或用下方音高／時值欄位精確調整。復原／重做跨兩個模式共用；快捷鍵 Ctrl／⌘ Z、Ctrl／⌘ Shift Z。載入其他作品會重設編輯紀錄。專注模式使用 Classic 鍵盤。</p>
+<p>Studio 可點音塊選取，滑鼠移到同欄格子會出現虛線音高預覽。拖曳選取音右側把手可改時值，放開套用、Esc 取消；把手也支援左右方向鍵。音高／時值欄位可精確調整。復原／重做跨兩個模式共用；快捷鍵 Ctrl／⌘ Z、Ctrl／⌘ Shift Z。載入其他作品會重設編輯紀錄。專注模式使用 Classic 鍵盤。</p>
       <div class="guide-grid">
         <section class="guide-section" aria-labelledby="guide-notes"><h3 id="guide-notes">輸入音符</h3>
           <dl class="key-reference">
@@ -93,6 +93,7 @@ $('#app').innerHTML = `
   <dialog id="confirm-dialog" aria-labelledby="confirm-title"><form method="dialog"><h2 id="confirm-title">確認操作</h2><p id="confirm-text"></p><div class="dialog-actions"><button value="cancel">取消</button><button value="confirm" class="save-button">確認</button></div></form></dialog>
 `;
 const studio = createStudio($('#studio-panel'), {
+  beginEdit() { stop(); },
   select(cursor) { stop(); state = { ...state, cursor }; renderScore(); },
   update(event) { commitEdit(updateSelected(state, event)); },
   insert(event) { commitEdit(appendStudioEvent(state, event)); },
@@ -321,7 +322,7 @@ document.addEventListener('keydown', event => {
   if (musicKeys.has(event.key)) {
     event.preventDefault(); if (!event.repeat) beginPress(event.key, document.querySelector<HTMLElement>(`[data-key="${event.key}"]`) ?? undefined);
   } else if (['ArrowLeft', 'ArrowRight', 'Backspace', '.'].includes(event.key)) { event.preventDefault(); apply(event.key); }
-  else if (event.code === 'Space' && (event.target === enableSoundButton || (event.target instanceof HTMLElement && !!event.target.closest('#focus-toggle, #focus-exit, #selected-octave, #undo, #redo, #mode-classic, #mode-studio, .studio-actions button')))) return;
+  else if (event.code === 'Space' && (event.target === enableSoundButton || (event.target instanceof HTMLElement && !!event.target.closest('#focus-toggle, #focus-exit, #selected-octave, #undo, #redo, #mode-classic, #mode-studio, .studio-actions button, .roll-resize')))) return;
   else if (event.code === 'Space') { event.preventDefault(); if (!event.repeat) $('#play').click(); }
   else if (event.key === 'Escape') { cancelPress(); stop(); }
 });

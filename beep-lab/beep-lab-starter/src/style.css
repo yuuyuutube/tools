@@ -298,3 +298,12 @@ button:disabled { cursor: default; opacity: .45; }
 @media(min-height:650px) {
   .focus-mode .history-tools { display: flex; }
 }
+
+.roll-hover { position: absolute; height: 24px; border: 2px dashed var(--orange); border-radius: 3px; background: #bd482818; pointer-events: none; z-index: 4; }
+.roll-hover-hint { position: absolute; bottom: 25px; left: 0; background: var(--ink); color: #fff; border-radius: 3px; padding: 3px 6px; font: 11px monospace; white-space: nowrap; }
+.roll-resize { position: absolute; width: 24px; height: 44px; min-height: 44px; padding: 0; border: 0; border-radius: 3px; color: #71331e; background: #bd482826; z-index: 5; cursor: ew-resize; touch-action: none; }
+.roll-resize:hover { background: #bd48284d; }
+.roll-resize:active { transform: none; }
+.piano-roll.resizing { cursor: ew-resize; }
+.piano-roll.resizing .roll-note.selected { z-index: 4; }
+.piano-roll.resizing .roll-note-label { max-width: none; box-shadow: 0 0 0 1px var(--orange); }

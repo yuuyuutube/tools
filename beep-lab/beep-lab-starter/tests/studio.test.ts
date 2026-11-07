@@ -60,3 +60,25 @@ describe('shared undo/redo',()=>{
     let count=0;while(history.canUndo){state=history.undo(state);count++;}expect(count).toBe(100);
   });
 });
+
+describe('duration resizing',()=>{
+  it('snaps dragging to supported durations and keeps dots, pitch and octave',async()=>{
+    const {resizeRhythm}=await import('../src/music-core/studio');
+    const note=noteFromStep(30,{duration:4,dotted:true});
+    expect(resizeRhythm(note,60)).toEqual({...note,duration:8});
+    expect(resizeRhythm(note,-100)).toMatchObject({duration:32,dotted:true});
+    expect(resizeRhythm(note,10000)).toMatchObject({duration:1,dotted:true});
+    expect(resizeRhythm(note,NaN)).toEqual(note);
+    expect(resizeRhythm({type:'rest',duration:4,dotted:false},160)).toEqual({type:'rest',duration:2,dotted:false});
+  });
+  it('commits a resize as one undoable edit',async()=>{
+    const {resizeRhythm}=await import('../src/music-core/studio');
+    const history=new EditHistory();const before=edit(initial(),'1').state;
+    const preview=resizeRhythm(before.melody.events[0],180);
+    const after=updateSelected(before,preview).state;
+    history.record(before,after);
+    expect(after.melody.events[0].duration).toBe(2);
+    expect(history.undo(after)).toEqual(before);expect(history.canUndo).toBe(false);
+    expect(history.redo(before)).toEqual(after);
+  });
+});
