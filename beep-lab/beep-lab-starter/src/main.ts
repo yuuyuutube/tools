@@ -1,4 +1,8 @@
 import './style.css';
+import { EditHistory } from './music-core/history';
+import { appendStudioEvent, updateSelected } from './music-core/studio';
+import { createStudio } from './studio-ui';
+import type { EditResult } from './music-core/editor';
 import { icon, type IconName } from './icons';
 import { createMelody, eventSeconds, formatEvent, MAX_BPM, MIN_BPM, type Melody } from './music-core/model';
 import { edit, type EditorState } from './music-core/editor';
@@ -10,6 +14,11 @@ const $ = <T extends HTMLElement = HTMLElement>(selector: string) => document.qu
 const player = new AudioEngine();
 let state: EditorState = { melody: createMelody('未命名旋律'), cursor: 0, octave: 2 };
 let dirty = false;
+const history = new EditHistory();
+let savedDigest: string | undefined;
+let viewMode: 'classic' | 'studio' = 'classic';
+let modeBeforeFocus: 'classic' | 'studio' = 'classic';
+function melodyDigest() { return JSON.stringify([state.melody.id, state.melody.title, state.melody.tempoBpm, state.melody.events]); }
 let muted = false;
 let library: ReturnType<typeof readLibrary>;
 try { library = readLibrary(localStorage); }
@@ -24,7 +33,7 @@ const keys: { key: string; pitch?: string; label: string; symbol?: IconName }[] 
   { key: '0', label: '休止', symbol: 'rest' }, { key: '#', label: '升音', symbol: 'sharp' },
 ];
 $('#app').innerHTML = `
-  <header class="site-header"><img src="./favicon.svg" width="32" height="32" alt="" /><h1>BEEP COMPOSER</h1><button id="focus-toggle" aria-label="進入專注模式" title="專注模式" aria-pressed="false">${icon('expand')}</button></header>
+  <header class="site-header"><img src="./favicon.svg" width="32" height="32" alt="" /><h1>BEEP COMPOSER</h1><div class="mode-switch" role="group" aria-label="編輯模式"><button id="mode-classic" aria-pressed="true">Classic</button><button id="mode-studio" aria-pressed="false">Studio</button></div><button id="focus-toggle" aria-label="進入專注模式" title="專注模式" aria-pressed="false">${icon('expand')}</button></header>
   <main>
     <section class="instrument" aria-label="單音編曲器">
       <div class="editor-panel">
@@ -34,6 +43,8 @@ $('#app').innerHTML = `
           <div id="score" class="score" role="group" aria-label="旋律，點音符將游標置於其右方" tabindex="0" inputmode="none"></div>
           <div class="lcd-footer"><span id="position" aria-label="游標位置">0 / 0</span><span id="duration">0.0 秒</span><span id="octave">下一音 2</span><button id="selected-octave" data-command="selectedOctave" title="擴充功能：調整選取音的八度" disabled>${icon('octave')}<span>選取音 —</span></button></div>
         </div>
+        <div id="studio-panel" hidden></div>
+        <div class="history-tools" aria-label="編輯紀錄"><button id="undo" aria-label="復原" title="復原 Ctrl/⌘ Z" disabled>${icon('undo')}<span>復原</span></button><button id="redo" aria-label="重做" title="重做 Ctrl/⌘ Shift Z" disabled>${icon('redo')}<span>重做</span></button></div>
         <div class="edit-tools"><div class="cursor-controls"><button data-command="ArrowLeft" aria-label="游標向左">${icon('left')}</button><button data-command="ArrowRight" aria-label="游標向右">${icon('right')}</button><button data-command="Backspace" aria-label="刪除游標左方音符">${icon('backspace')}</button></div><button data-command="." class="dot-key" aria-label="切換左方音符附點">${icon('dot')}<span>附點</span></button></div>
         <div class="transport"><button id="play" class="play-button" aria-label="播放旋律">${icon('play')}<span>播放</span></button><button id="stop" aria-label="停止播放">${icon('stop')}<span>停止</span></button><button id="mute" aria-label="靜音" aria-pressed="false">${icon('volume')}</button></div>
         <div id="sound-recovery" class="sound-recovery" hidden>
@@ -51,6 +62,7 @@ $('#app').innerHTML = `
       </div>
     </section>
     <section class="below"><details class="guide"><summary>操作說明 ${icon('chevron')}</summary><div class="guide-body">
+<p>Studio 可點音塊選取，再點同欄格子修改音高，或用下方音高／時值欄位精確調整。復原／重做跨兩個模式共用；快捷鍵 Ctrl／⌘ Z、Ctrl／⌘ Shift Z。載入其他作品會重設編輯紀錄。專注模式使用 Classic 鍵盤。</p>
       <div class="guide-grid">
         <section class="guide-section" aria-labelledby="guide-notes"><h3 id="guide-notes">輸入音符</h3>
           <dl class="key-reference">
@@ -80,6 +92,33 @@ $('#app').innerHTML = `
   </main>
   <dialog id="confirm-dialog" aria-labelledby="confirm-title"><form method="dialog"><h2 id="confirm-title">確認操作</h2><p id="confirm-text"></p><div class="dialog-actions"><button value="cancel">取消</button><button value="confirm" class="save-button">確認</button></div></form></dialog>
 `;
+const studio = createStudio($('#studio-panel'), {
+  select(cursor) { stop(); state = { ...state, cursor }; renderScore(); },
+  update(event) { commitEdit(updateSelected(state, event)); },
+  insert(event) { commitEdit(appendStudioEvent(state, event)); },
+  remove() { apply('Backspace'); },
+});
+function setViewMode(mode: 'classic' | 'studio') {
+  stop(); viewMode = mode;
+  document.documentElement.classList.toggle('studio-mode', mode === 'studio');
+  $('#studio-panel').hidden = mode !== 'studio';
+  $('#mode-classic').setAttribute('aria-pressed', String(mode === 'classic'));
+  $('#mode-studio').setAttribute('aria-pressed', String(mode === 'studio'));
+  renderScore(); if (mode === 'studio') studio.reveal();
+}
+$('#mode-classic').onclick = () => setViewMode('classic');
+$('#mode-studio').onclick = () => setViewMode('studio');
+function restoreHistory(direction: 'undo' | 'redo') {
+  stop(); state = history[direction](state);
+  titleInput.value = state.melody.title;
+  $<HTMLInputElement>('#tempo').value = String(state.melody.tempoBpm);
+  $<HTMLInputElement>('#tempo-number').value = String(state.melody.tempoBpm);
+  setDirty(savedDigest !== melodyDigest()); renderScore();
+  if (viewMode === 'studio') studio.reveal();
+  notify(direction === 'undo' ? '已復原。' : '已重做。');
+}
+$('#undo').onclick = () => restoreHistory('undo');
+$('#redo').onclick = () => restoreHistory('redo');
 let focusMode = false;
 let beforeFocusScroll = 0;
 function updateFocusViewport() {
@@ -87,7 +126,7 @@ function updateFocusViewport() {
 }
 function setFocusMode(enabled: boolean, syncUrl = true) {
   cancelPress();
-  if (enabled) beforeFocusScroll = window.scrollY;
+  if (enabled) { beforeFocusScroll = window.scrollY; modeBeforeFocus = viewMode; setViewMode('classic'); }
   focusMode = enabled;
   if (syncUrl) {
     const url = new URL(window.location.href);
@@ -100,6 +139,7 @@ function setFocusMode(enabled: boolean, syncUrl = true) {
   updateFocusViewport();
   if (enabled) $('#focus-exit').focus({ preventScroll: true });
   else {
+    if (viewMode !== modeBeforeFocus) setViewMode(modeBeforeFocus);
     window.scrollTo(0, beforeFocusScroll);
     $('#focus-toggle').focus({ preventScroll: true });
   }
@@ -141,9 +181,12 @@ enableSoundButton.onclick = async () => {
     $('#sound-recovery-message').textContent = '聲音尚未啟用';
   }
 };
-function setDirty(value = true) { dirty = value; $('#dirty-label').textContent = value ? '未儲存' : '已儲存'; }
+function setDirty(value = true) { dirty = value; if (!value) savedDigest = melodyDigest(); $('#dirty-label').textContent = value ? '未儲存' : '已儲存'; }
 function stop() { cancelPress(); player.stop(); $('#lcd-mode').textContent = '就緒'; $('#play').classList.remove('playing'); }
 function renderScore() {
+  $<HTMLButtonElement>('#undo').disabled = !history.canUndo;
+  $<HTMLButtonElement>('#redo').disabled = !history.canRedo;
+  studio.render(state);
   const score = $('#score');
   score.replaceChildren();
   if (!state.melody.events.length) {
@@ -184,18 +227,22 @@ function revealNote(element: HTMLElement) {
   if (element.offsetTop < score.scrollTop) score.scrollTop = element.offsetTop;
   else if (element.offsetTop + element.offsetHeight > score.scrollTop + score.clientHeight) score.scrollTop = element.offsetTop + element.offsetHeight - score.clientHeight;
 }
-function apply(key: string, dotted = false) {
+function commitEdit(result: EditResult) {
   stop();
+  history.record(state, result.state);
   const previous = state.melody;
-  const result = edit(state, key, dotted);
   state = result.state;
-  if (previous !== state.melody) setDirty();
+  if (previous !== state.melody) setDirty(savedDigest !== melodyDigest());
   renderScore();
+  if (viewMode === 'studio') studio.reveal();
   if (result.message) notify(result.message);
-  else if (result.preview) notify(`${formatEvent(result.preview)} · ${result.preview.type === 'rest' ? '休止符' : '已輸入／修改'}${result.preview.dotted ? ' · 附點 × 1.5' : ''}`);
+  else if (result.preview) notify(`${formatEvent(result.preview)} · 已修改`);
   if (result.preview) void player.previewNote(result.preview, state.melody.tempoBpm).catch(handleAudioError);
 }
+function apply(key: string, dotted = false) { commitEdit(edit(state, key, dotted)); }
+
 player.onPosition = index => {
+  if (viewMode === 'studio') studio.position(index);
   document.querySelectorAll('.score-note.sounding').forEach(el => el.classList.remove('sounding'));
   if (index !== null) {
     const element = document.querySelector<HTMLElement>(`.score-note[data-index="${index}"]`);
@@ -203,7 +250,7 @@ player.onPosition = index => {
     $('#lcd-mode').textContent = `播放 ${index + 1}`;
   }
 };
-player.onEnd = () => { $('#lcd-mode').textContent = '就緒'; $('#play').classList.remove('playing'); };
+player.onEnd = () => { $('#lcd-mode').textContent = '就緒'; $('#play').classList.remove('playing'); if (viewMode === 'studio') studio.reveal(); };
 $('#play').onclick = () => {
   if (player.isPlaying) { stop(); return; }
   if (!state.melody.events.length) { notify('先按幾個音符，或載入示範旋律。'); return; }
@@ -220,15 +267,19 @@ $('#mute').onclick = () => {
   else void player.unlock().then(() => notify('聲音已啟用。')).catch(handleAudioError);
 };
 const titleInput = $<HTMLInputElement>('#song-title');
-titleInput.oninput = () => { state.melody = { ...state.melody, title: titleInput.value, updatedAt: new Date().toISOString() }; setDirty(); };
+titleInput.oninput = () => { const before = structuredClone(state); state.melody = { ...state.melody, title: titleInput.value, updatedAt: new Date().toISOString() }; history.record(before, state, 'title'); setDirty(); $<HTMLButtonElement>('#undo').disabled = !history.canUndo; $<HTMLButtonElement>('#redo').disabled = !history.canRedo; };
+titleInput.onblur = () => history.breakGroup();
 function tempo(value: string) {
   stop();
   const number = Number(value);
   if (!Number.isInteger(number) || number < MIN_BPM || number > MAX_BPM) { notify('BPM 請輸入 40–240 的整數。'); return; }
+  const before = structuredClone(state);
   state.melody = { ...state.melody, tempoBpm: number, updatedAt: new Date().toISOString() };
   $<HTMLInputElement>('#tempo').value = String(number); $<HTMLInputElement>('#tempo-number').value = String(number);
-  setDirty(); renderScore();
+  history.record(before, state, 'tempo'); setDirty(); renderScore();
 }
+$<HTMLInputElement>('#tempo').onchange = () => history.breakGroup();
+$<HTMLInputElement>('#tempo-number').onblur = () => history.breakGroup();
 $<HTMLInputElement>('#tempo').oninput = event => tempo((event.target as HTMLInputElement).value);
 $<HTMLInputElement>('#tempo-number').oninput = event => tempo((event.target as HTMLInputElement).value);
 $<HTMLInputElement>('#tempo-number').onchange = event => { tempo((event.target as HTMLInputElement).value); $<HTMLInputElement>('#tempo-number').value = String(state.melody.tempoBpm); };
@@ -263,11 +314,14 @@ document.querySelectorAll<HTMLButtonElement>('[data-key]').forEach(button => {
 const musicKeys = new Set('0123456789*#'.split(''));
 function textTarget(target: EventTarget | null) { return target instanceof HTMLElement && (target.matches('input, textarea, select') || target.isContentEditable); }
 document.addEventListener('keydown', event => {
+  if (!textTarget(event.target) && !$<HTMLDialogElement>('#confirm-dialog').open && (event.ctrlKey || event.metaKey) && !event.altKey && (event.key.toLowerCase() === 'z' || event.key.toLowerCase() === 'y')) {
+    event.preventDefault(); restoreHistory(event.shiftKey || event.key.toLowerCase() === 'y' ? 'redo' : 'undo'); return;
+  }
   if (textTarget(event.target) || event.ctrlKey || event.metaKey || event.altKey || $<HTMLDialogElement>('#confirm-dialog').open) return;
   if (musicKeys.has(event.key)) {
     event.preventDefault(); if (!event.repeat) beginPress(event.key, document.querySelector<HTMLElement>(`[data-key="${event.key}"]`) ?? undefined);
   } else if (['ArrowLeft', 'ArrowRight', 'Backspace', '.'].includes(event.key)) { event.preventDefault(); apply(event.key); }
-  else if (event.code === 'Space' && (event.target === enableSoundButton || (event.target instanceof HTMLElement && !!event.target.closest('#focus-toggle, #focus-exit, #selected-octave')))) return;
+  else if (event.code === 'Space' && (event.target === enableSoundButton || (event.target instanceof HTMLElement && !!event.target.closest('#focus-toggle, #focus-exit, #selected-octave, #undo, #redo, #mode-classic, #mode-studio, .studio-actions button')))) return;
   else if (event.code === 'Space') { event.preventDefault(); if (!event.repeat) $('#play').click(); }
   else if (event.key === 'Escape') { cancelPress(); stop(); }
 });
@@ -288,6 +342,7 @@ async function confirmAction(message: string): Promise<boolean> {
 }
 function load(melody: Melody, saved: boolean) {
   stop(); cancelPress(); state = { melody: structuredClone(melody), cursor: melody.events.length, octave: 2 };
+  history.clear(); savedDigest = saved ? melodyDigest() : undefined;
   titleInput.value = melody.title;
   $<HTMLInputElement>('#tempo').value = String(melody.tempoBpm); $<HTMLInputElement>('#tempo-number').value = String(melody.tempoBpm);
   setDirty(!saved); renderScore(); notify(`已載入「${melody.title}」。`);

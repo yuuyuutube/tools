@@ -64,3 +64,13 @@
 - `npm run release` 包含 TypeScript strict 檢查、production build 與靜態檔案整理。正式成品在 source 資料夾外的 `beep-lab/`，不包含測試注入頁、node_modules 或 TypeScript 原始碼。
 
 - 另外覆蓋 AudioContext 暫時初始化失敗後可重試，不將暫時性失敗誤認為完全不支援。production 靜態成品在本機 `/beep-lab/` 實測五音輸入、播放／停止、favicon 與絕對 OG URL 正常，console 無 error／warn。
+
+## M0.3 驗收
+
+- 使用者已接受目前 Classic 體驗為本階段完成，進入 Studio；這項接受不代表先前列出的手機真機測試已全部完成。
+- `npm test`：36 項通過（3 檔），含新增 Studio 更新／插入、36 半音對照、音高與節奏隔離、無效升音驗證、共用 JSON round-trip、Undo／Redo 全序列、redo 分支清除、100 步邊界、時間戳 no-op 與輸入合併測試。
+- `npm run release`：TypeScript strict 檢查、Vite build、靜態發佈成品整理成功。
+- 內建瀏覽器實測 Classic 輸入兩音、Studio 改第二音為 F#3／附點八分、切回 Classic 顯示 `8.#f3`；復原與重做正確，console 沒有 error／warn。
+- 儲存 Studio QA、刷新載入後再修改／復原，音符完整保留，回到保存內容時顯示已儲存；Studio 播放位置與 Stop 正常。
+- 375px Studio 無水平溢出；專注模式 320×480 無整頁溢出，transport 底部 261px、keypad 起點 269px，沒有控制區互相遮擋。退出專注會恢復 Studio。
+- 音塊提供 44px 高的命中區與完整 aria 名稱，表單欄位可精確選音高／時值。圖形背景格點的觸控精準度及真實行動裝置仍待手動驗收，不宣稱已通過 iPhone／Android 真機測試。
