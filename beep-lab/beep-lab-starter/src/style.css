@@ -358,3 +358,10 @@ button:disabled { cursor: default; opacity: .45; }
 .card-actions a { flex: 1; }
 a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
 @media(max-width:750px) { .card-main { margin: 20px auto; } .workspace-actions { flex-wrap: wrap; } .workspace-actions button { flex: 1; min-width: 80px; } }
+
+.card-mode .beep-card { background: #faf8f2; }
+.card-art { margin: calc(-1 * clamp(20px,5vw,36px)) calc(-1 * clamp(20px,5vw,36px)) 28px; border-bottom: 1px solid #d4cec0; }
+.melody-art { display: block; width: 100%; height: auto; aspect-ratio: 1; }
+.weave-note { transition: filter .18s ease; }
+.weave-note.art-playing { filter: brightness(1.25) saturate(1.15); }
+@media(prefers-reduced-motion:reduce) { .weave-note { transition: none; } }

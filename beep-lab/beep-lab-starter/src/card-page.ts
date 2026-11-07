@@ -3,10 +3,11 @@ import { eventSeconds, formatEvent, type Melody } from './music-core/model';
 import { readSharedMelody, editUrl } from './music-core/share';
 import { createShareDialog } from './share-dialog';
 import { icon } from './icons';
+import { createMelodyArt } from './card-art';
 const app=document.querySelector<HTMLElement>('#app')!;
 document.title='BEEP CARD';
 document.documentElement.classList.add('card-mode');
-app.innerHTML=`<header class="site-header"><img src="./favicon.svg" width="32" height="32" alt=""/><span class="card-brand">BEEP CARD</span><a class="composer-link" href="./">開啟編曲器</a></header><main class="card-main"><article class="beep-card"><h1 class="card-title"></h1><p class="card-meta"></p><div class="card-score" aria-label="旋律音符"></div><div class="transport"><button id="card-play" class="play-button">${icon('play')}<span>播放</span></button><button id="card-stop">${icon('stop')}<span>停止</span></button><button id="card-mute" aria-label="靜音" aria-pressed="false">${icon('volume')}</button></div><p class="card-status" role="status" aria-live="polite">點播放聆聽旋律。</p><button id="card-enable" hidden>${icon('volume')}<span>啟用聲音</span></button><div class="card-actions"><a id="card-edit" class="save-button">${icon('edit')}<span>編輯這首</span></a><button id="card-share">${icon('share')}<span>分享</span></button></div></article></main>`;
+app.innerHTML=`<header class="site-header"><img src="./favicon.svg" width="32" height="32" alt=""/><span class="card-brand">BEEP CARD</span><a class="composer-link" href="./">開啟編曲器</a></header><main class="card-main"><article class="beep-card"><div class="card-art"></div><h1 class="card-title"></h1><p class="card-meta"></p><div class="card-score" aria-label="旋律音符"></div><div class="transport"><button id="card-play" class="play-button">${icon('play')}<span>播放</span></button><button id="card-stop">${icon('stop')}<span>停止</span></button><button id="card-mute" aria-label="靜音" aria-pressed="false">${icon('volume')}</button></div><p class="card-status" role="status" aria-live="polite">點播放聆聽旋律。</p><button id="card-enable" hidden>${icon('volume')}<span>啟用聲音</span></button><div class="card-actions"><a id="card-edit" class="save-button">${icon('edit')}<span>編輯這首</span></a><button id="card-share">${icon('share')}<span>分享</span></button></div></article></main>`;
 const melody:Melody|undefined=(()=>{
 try { return readSharedMelody(location.hash); }
 catch(error) {
@@ -19,6 +20,8 @@ catch(error) {
 }
 })();
 if (melody) {
+  const artwork=createMelodyArt(melody);
+  document.querySelector('.card-art')!.append(artwork.element);
   const engine=new AudioEngine();let muted=false;let attempt=0;
   const status=document.querySelector<HTMLElement>('.card-status')!;
   const play=document.querySelector<HTMLButtonElement>('#card-play')!;
@@ -33,6 +36,7 @@ if (melody) {
   function audioError(error:unknown) {idle();status.textContent=error instanceof AudioActivationError?error.message:'無法播放，請再試一次。';enable.hidden=error instanceof AudioActivationError&&!error.recoverable;}
   engine.onEnd=idle;
   engine.onPosition=index=>{
+    artwork.position(index);
     notes.forEach((note,i)=>note.classList.toggle('sounding',i===index));
     if(index!==null){const note=notes[index];if(note.offsetTop<score.scrollTop||note.offsetTop+note.offsetHeight>score.scrollTop+score.clientHeight)score.scrollTop=note.offsetTop-score.offsetTop;}
   };
