@@ -49,3 +49,6 @@ it('preserves selected card art across sharing and editing, without carrying unr
   expect(new URL(editUrl(sample(),url)).searchParams.get('art')).toBe('stars');
   expect(new URL(shareUrl(sample(),'https://example.com/?art=evil')).searchParams.has('art')).toBe(false);
 });
+it('preserves rhythm composition in shared links',()=>{
+  expect(new URL(shareUrl(sample(),'https://example.com/?art=rhythm')).searchParams.get('art')).toBe('rhythm');
+});

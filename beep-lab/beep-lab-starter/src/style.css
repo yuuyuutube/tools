@@ -370,3 +370,6 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
 .art-controls { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin: -12px 0 20px; font-size: 12px; color: var(--muted); }
 .art-controls select { min-height: 44px; padding: 0 10px; border: 1px solid var(--line); border-radius: 4px; color: var(--ink); background: transparent; font: inherit; }
 @media(prefers-reduced-motion:reduce) { .star-note { transition: none; } }
+.rhythm-note { transition: filter .18s ease; }
+.rhythm-note.art-playing { filter: brightness(1.2) saturate(1.2); }
+@media(prefers-reduced-motion:reduce) { .rhythm-note { transition: none; } }

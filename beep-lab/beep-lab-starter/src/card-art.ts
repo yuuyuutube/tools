@@ -87,7 +87,48 @@ export function createStarArt(melody: Melody) {
   });
   return {element:svg,position(index:number|null){groups.forEach((items,i)=>items.forEach(group=>group.classList.toggle('art-playing',i===index)));}};
 }
-export type CardArtStyle='weave'|'stars';
+export type CardArtStyle='weave'|'stars'|'rhythm';
 export function resolveArtStyle(value:string|null,random=Math.random):CardArtStyle {
-  return value==='random'?(random()<.5?'weave':'stars'):value==='stars'?'stars':'weave';
+  const styles:CardArtStyle[]=['weave','stars','rhythm'];
+  return value==='random'?styles[Math.min(2,Math.max(0,Math.floor(random()*3)))]:value==='stars'||value==='rhythm'?value:'weave';
+}
+
+export function buildRhythm(melody: Melody) {
+  const lengths=melody.events.map(event=>4/event.duration*(event.dotted?1.5:1));
+  const total=lengths.reduce((a,b)=>a+b,0)||1;
+  const colors=['#cc563d','#355a9d','#dab34f','#315c4f','#b57889'];
+  let time=0;
+  return melody.events.flatMap((event,index)=>{
+    const width=488*lengths[index]/total;const x=56+488*time/total;time+=lengths[index];
+    const step=noteStep(event);
+    if(step===null)return [];
+    const height=100+step/35*250;
+    return [{index,x,y:468-height,width:width-Math.min(7,width*.14),height,color:colors[(step+Math.floor(step/12))%5],dotted:event.dotted,beats:lengths[index]}];
+  });
+}
+export function createRhythmArt(melody: Melody) {
+  const ns='http://www.w3.org/2000/svg';
+  function node(tag:string,attrs:Record<string,string|number>) {const element=document.createElementNS(ns,tag);for(const[key,value]of Object.entries(attrs))element.setAttribute(key,String(value));return element;}
+  const svg=node('svg',{viewBox:'0 0 600 600',role:'img','aria-label':'根據這首旋律生成的節奏構成',class:'melody-art rhythm-art'});
+  const paper='#f4eee2';svg.append(node('rect',{width:600,height:600,fill:paper}));
+  svg.append(node('path',{d:'M56 64H544M56 484H544',stroke:'#30372f','stroke-width':1,fill:'none'}));
+  const groups:Element[][]=melody.events.map(()=>[]);
+  buildRhythm(melody).forEach(block=>{
+    const group=node('g',{'data-art-note':block.index,class:'rhythm-note'});
+    const centre=block.x+block.width/2;
+    group.append(node('path',{d:`M${centre} 84V${block.y}`,stroke:'#30372f','stroke-width':.8,opacity:.6}));
+    group.append(node('rect',{x:block.x,y:block.y,width:block.width,height:block.height,fill:block.color}));
+    if(block.width>24) {
+      const radius=Math.min(block.width*.32,block.height*.32,54);
+      group.append(node('circle',{cx:centre,cy:block.y+block.height*.52,r:radius,fill:paper}));
+      group.append(node('path',{d:`M${block.x} ${block.y+block.height*.52}H${block.x+block.width}`,stroke:block.color,'stroke-width':Math.min(9,block.height*.05)}));
+    }
+    group.append(node('rect',{x:block.x,y:506,width:block.width,height:Math.min(28,7+block.beats*7),fill:'#30372f'}));
+    if(block.dotted)group.append(node('circle',{cx:centre,cy:552,r:3,fill:block.color}));
+    svg.append(group);groups[block.index].push(group);
+  });
+  return {element:svg,position(index:number|null){groups.forEach((items,i)=>items.forEach(group=>group.classList.toggle('art-playing',i===index)));}};
+}
+export function createCardArt(melody:Melody,style:CardArtStyle) {
+  return style==='stars'?createStarArt(melody):style==='rhythm'?createRhythmArt(melody):createMelodyArt(melody);
 }

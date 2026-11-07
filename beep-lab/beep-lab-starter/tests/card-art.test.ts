@@ -39,7 +39,21 @@ describe('sound constellation',()=>{
     expect(points).toHaveLength(2);expect(points[1].connected).toBe(false);expect(points[1].x).toBeGreaterThan(points[0].x);expect(points[1].y).toBeLessThan(points[0].y);expect(points[0].radius).toBeGreaterThan(points[1].radius);
     expect(buildStars({...melody,title:'new'})).toEqual(points);
   });
-  it('resolves explicit styles, safe defaults and both random outcomes',()=>{
-    expect(resolveArtStyle('stars')).toBe('stars');expect(resolveArtStyle('unknown')).toBe('weave');expect(resolveArtStyle('random',()=>.2)).toBe('weave');expect(resolveArtStyle('random',()=>.8)).toBe('stars');
+  it('resolves explicit styles, safe defaults and all three random outcomes',()=>{
+    expect(resolveArtStyle('stars')).toBe('stars');expect(resolveArtStyle('unknown')).toBe('weave');expect(resolveArtStyle('random',()=>.2)).toBe('weave');expect(resolveArtStyle('random',()=>.5)).toBe('stars');expect(resolveArtStyle('random',()=>.8)).toBe('rhythm');
+  });
+});
+
+import {buildRhythm} from '../src/card-art';
+describe('rhythm composition',()=>{
+  it('maps note height and rhythm width, leaving rests blank',()=>{
+    const blocks=buildRhythm(sample());expect(blocks).toHaveLength(2);expect(blocks[0].index).toBe(0);expect(blocks[1].index).toBe(2);
+    expect(blocks[1].height).toBeGreaterThan(blocks[0].height);expect(blocks[0].width).toBeGreaterThan(blocks[1].width);expect(blocks[1].dotted).toBe(true);
+  });
+  it('is deterministic and keeps dense or extreme rhythms bounded',()=>{
+    const melody={...sample(),events:Array.from({length:512},(_,i)=>noteFromStep(i%36,{duration:i===511?32:1,dotted:false}))};
+    const blocks=buildRhythm(melody);expect(buildRhythm({...melody,title:'new'})).toEqual(blocks);
+    for(const block of blocks){expect(block.width).toBeGreaterThan(0);expect(block.x+block.width).toBeLessThanOrEqual(544.001);expect(block.y).toBeGreaterThanOrEqual(118);expect(block.y+block.height).toBe(468);}
+    expect(buildRhythm({...sample(),events:[{type:'rest',duration:4,dotted:false}]})).toEqual([]);
   });
 });
