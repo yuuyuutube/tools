@@ -35,7 +35,7 @@ const keys: { key: string; pitch?: string; label: string; symbol?: IconName }[] 
   { key: '0', label: '休止', symbol: 'rest' }, { key: '#', label: '升音', symbol: 'sharp' },
 ];
 $('#app').innerHTML = `
-  <header class="site-header"><img src="./favicon.svg" width="32" height="32" alt="" /><h1>BEEP COMPOSER</h1><div class="mode-switch" role="group" aria-label="編輯模式"><button id="mode-classic" aria-pressed="true">Classic</button><button id="mode-studio" aria-pressed="false">Studio</button></div><button id="focus-toggle" aria-label="進入專注模式" title="專注模式" aria-pressed="false">${icon('expand')}</button></header>
+  <header class="site-header"><img src="./favicon.svg" width="32" height="32" alt="" /><h1>BEEP COMPOSER</h1><a class="box-nav" href="?view=box" target="_blank" rel="noopener">音樂盒</a><div class="mode-switch" role="group" aria-label="編輯模式"><button id="mode-classic" aria-pressed="true">Classic</button><button id="mode-studio" aria-pressed="false">Studio</button></div><button id="focus-toggle" aria-label="進入專注模式" title="專注模式" aria-pressed="false">${icon('expand')}</button></header>
   <main>
     <section class="instrument" aria-label="單音編曲器">
       <div class="editor-panel">
@@ -424,6 +424,12 @@ function renderLibrary() {
   });
 }
 renderScore(); renderLibrary();
+const storedSongId=new URLSearchParams(location.search).get('song');
+if(storedSongId) {
+  const song=library.songs.find(song=>song.id===storedSongId);
+  if(song)load(song,true);else notify('找不到這首收藏，可能已被移除。');
+  const clean=new URL(location.href);clean.searchParams.delete('song');window.history.replaceState(null,'',clean);
+}
 if(location.hash.startsWith('#melody=')) {
   try {load(readSharedMelody(location.hash),false);notify('已載入分享旋律，修改後可儲存自己的版本。');}
   catch(error){notify((error as Error).message);}

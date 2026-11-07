@@ -154,3 +154,13 @@ terrain 使用獨立 SVG 模組，依 canonical Melody 計算累積時值及音�
 使用者希望卡片圖案選單不包含隨機，改由分享視窗安排。本次卡片只列七種風格；分享視窗以「目前圖案／隨機驚喜」兩種設定分離欣賞與分享。Composer 無指定風格時顯示旋律織紋預設。隨機在設定變更時抽選一次並產生具體 art 值，顯示本次風格，可重新抽選且排除上一次結果；預覽、複製與系統分享不再重抽，不修改目前卡片。每次開啟擷取旋律快照、重設為目前圖案。舊 art=random 網址仍可解析。
 
 抽出 art-styles 輕量風格清單與名稱，避免分享設定載入全部 SVG 生成器。資料模型仍不包含視覺或分享 UI 狀態。
+
+## M2.1：音樂盒第一個小里程碑
+
+使用者已驗收 M1 並授權第一個音樂盒小里程碑：瀏覽、試聽、編輯及 WAV 下載，先不做標籤。新增 ?view=box 獨立入口，直接共用 readLibrary／Melody／AudioEngine，沒有建立第二份收藏或修改 storage schema。Composer 的入口開新分頁，保留未儲存編曲。BEEP CARD 也有音樂盒入口。
+
+封面由相同旋律及 BPM 穩定選出七種藝術之一，不依賴標題／ID／時間戳，並以 IntersectionObserver 延遲繪製。點封面帶風格開卡片；分享視窗沿用該封面風格，仍可隨機。編輯收藏用本機 song ID 載入並清理網址，保留 ID／已儲存狀態；儲存更新原作品。共享連結匯入仍建立新作品，不與收藏編輯混用。
+
+WAV 為無依賴、可測試的 PCM 合成器，沿用 frequency／eventSeconds canonical 映射，以帶限奇次諧波近似方波，短 attack／release、音間留隙及固定振幅。單聲道 22.05kHz／16-bit little-endian RIFF；休止輸出零值，附點與 BPM 保留。Worker 背景產生並 transfer ArrayBuffer，主執行緒僅建立 Blob 下載。限制 180 秒，在配置記憶體前檢查；超長不截斷。一次一份下載，離頁取消 Worker 並恢復狀態，Blob URL 延後釋放。iOS 不宣稱自動設為鈴聲。
+
+播放沿用單一引擎，試聽按鈕與全域停止同步；快速切換、停止與 pending unlock 由 request token 防止舊請求更新 UI。失焦／隱藏／離頁停止；storage 事件與 bfcache 返回重新讀取收藏。此階段沒有登入、雲端、標籤或新音色。

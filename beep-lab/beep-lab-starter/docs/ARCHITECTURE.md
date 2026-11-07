@@ -68,3 +68,7 @@ type Melody = {
 - 音量有安全預設與靜音選項。
 - 動態效果遵守 `prefers-reduced-motion`。
 - 操作需可使用鍵盤、可辨識焦點、按鈕有可及名稱。
+
+## M2.1 音樂盒與音訊檔
+
+音樂盒為獨立 UI，共用同一 localStorage 收藏與 Melody schema。封面由 album-cover 的穩定風格選取及既有 SVG 模組產生。WAV 合成器與 UI／AudioContext 解耦，Worker 執行 renderWav，回傳 PCM16 RIFF ArrayBuffer；UI 負責 Blob 下載及狀態。song query 只讀取本機既有 ID 以更新原作品；分享 hash 則持續匯入新 ID。

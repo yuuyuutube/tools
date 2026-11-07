@@ -390,3 +390,25 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
 #share-art-mode { width: 100%; min-height: 44px; padding: 0 10px; border: 1px solid var(--line); border-radius: 3px; background: #f8f8f1; color: var(--ink); font: inherit; margin-bottom: 16px; }
 .share-art-result { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: -6px 0 16px; font-size: 12px; color: var(--muted); }
 .reroll-art { padding: 0 10px; flex-shrink: 0; }
+
+.box-nav { display: inline-flex; min-height: 44px; align-items: center; padding: 0 10px; color: var(--ink); font-size: 12px; text-decoration: none; white-space: nowrap; }
+.box-header h1 { font-size: 17px; }
+.box-main { padding-top: 16px; }
+.box-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.box-toolbar p { font-size: 14px; margin: 0; }
+.box-toolbar button { padding: 0 12px; }
+.box-storage-note, .box-status, #box-warning { font-size: 12px; color: var(--muted); line-height: 1.7; }
+.box-status { min-height: 21px; margin: 8px 0 20px; }
+.album-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 28px 20px; padding: 4px 0 40px; }
+.album-card { min-width: 0; border: 1px solid #d2d2c6; background: #faf8f2; }
+.album-cover { display: block; aspect-ratio: 1; background: #e9e6da; overflow: hidden; border-bottom: 1px solid #d2d2c6; }
+.album-info { padding: 16px; }
+.album-info h2 { margin: 0 0 8px; font-size: 16px; line-height: 1.4; overflow-wrap: anywhere; }
+.album-meta { font-size: 11px; color: var(--muted); margin: 0 0 16px; }
+.album-controls { display: grid; grid-template-columns: 1fr 1fr 44px 44px; gap: 6px; }
+.album-controls button, .album-controls a { min-width: 0; min-height: 44px; padding: 0 4px; font-size: 12px; gap: 4px; }
+.album-controls a { display: inline-flex; align-items: center; justify-content: center; color: var(--ink); border: 1px solid var(--line); border-radius: 4px; }
+.album-controls .icon { width: 16px; height: 16px; }
+.box-empty { grid-column: 1/-1; border: 1px solid var(--line); padding: 36px; text-align: center; }
+@media(max-width:900px) { .album-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media(max-width:540px) { .album-grid { grid-template-columns: minmax(0,1fr); gap: 24px; } .box-header { gap: 4px; } .box-header h1 { font-size: 14px; } .box-header .composer-link { padding: 0 8px; } .album-info { padding: 18px; } .album-controls { grid-template-columns: 1fr 1fr 44px 44px; } }
