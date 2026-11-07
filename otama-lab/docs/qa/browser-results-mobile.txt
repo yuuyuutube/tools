@@ -63,6 +63,22 @@ PASS: vertical slider accessibility
 PASS: rail prevents touch scrolling via CSS
 PASS: range prevents touch scrolling via CSS
 PASS: no horizontal page overflow
+PASS: focus mode enters and enables audio from its gesture
+PASS: focus mode hides graphs, readouts and labels
+PASS: focus mode only keeps its exit control visible
+PASS: focus mode fits the viewport without overflow
+PASS: performance interface prevents accidental text selection
+PASS: exit button is accessible
+PASS: focus touch hold produces a playing expression
+PASS: fast focus glissando reaches the high endpoint near the head
+PASS: hidden graphs stay idle during performance
+PASS: focus release closes the mouth and stops playing
+PASS: focus viewport cannot scroll
+PASS: short landscape-height stage fits without scrolling
+PASS: exit stops a held note
+PASS: exit restores readouts and the latest graph values
+PASS: Escape exits and disables audio safely
+PASS: rapid mode toggles never leave a late playing note
 PASS: native Web Audio starts while keyboard is held
 PASS: native audio output has a nonzero waveform
 PASS: native oscillator glides to requested frequency
@@ -75,4 +91,4 @@ PASS: lostpointercapture: real synth starts on synthetic touch hold
 PASS: lostpointercapture: real synth stops
 PASS: window blur stops native synth
 PASS: emergency stop and disabling leave no voice
-77/77 passed
+93/93 passed

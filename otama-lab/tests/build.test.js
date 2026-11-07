@@ -6,7 +6,7 @@ const root = new URL('../', import.meta.url);
 
 test('entry uses a parseable classic script with no module loading requirement', async () => {
   const html = await readFile(new URL('index.html', root), 'utf8');
-  assert.match(html, /<script defer src="\.\/app\.bundle\.js"><\/script>/);
+  assert.match(html, /<script defer src="\.\/app\.bundle\.js\?v=[a-f0-9]{12}"><\/script>/);
   assert.doesNotMatch(html, /type="module"/);
   const bundle = await readFile(new URL('app.bundle.js', root), 'utf8');
   assert.doesNotThrow(() => new Script(bundle));

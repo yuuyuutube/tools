@@ -4,6 +4,7 @@ import { BASE, TOP, frequencyAt, positionAt, pitchOf, semitonesFrom } from '../s
 const frame = document.querySelector('#app');
 const list = document.querySelector('#results');
 const failures = [];
+document.querySelector('#run').disabled = false;
 function check(name, condition) {
   const li = document.createElement('li'); li.className = condition ? 'pass' : 'fail';
   li.textContent = `${condition ? 'PASS' : 'FAIL'}: ${name}`; list.append(li);
@@ -96,7 +97,7 @@ document.querySelector('#run').addEventListener('click', async () => {
   strip.setPointerCapture = capture; strip.hasPointerCapture = has;
   $('pos').setPointerCapture = rangeCapture;
   check('decorative copy has been removed', !doc.querySelector('.hero, .rail-caption, .character-caption, .footer-sign, .eyebrow'));
-  check('all action icons are SVG', doc.querySelectorAll('button .icon use').length === 4);
+  check('all action icons are SVG', [...doc.querySelectorAll('button')].every(button => button.querySelector('.icon use')));
   check('favicon and OG image configured', !!doc.querySelector('link[rel="icon"][type="image/svg+xml"]') && doc.querySelector('meta[property="og:image"]').content.endsWith('/assets/og.png'));
 
   key('keydown', 'Home'); key('keyup', 'Home'); key('keydown', 'ArrowUp', true); key('keyup', 'ArrowUp', true);
@@ -105,6 +106,39 @@ document.querySelector('#run').addEventListener('click', async () => {
   check('rail prevents touch scrolling via CSS', win.getComputedStyle(strip).touchAction === 'none');
   check('range prevents touch scrolling via CSS', win.getComputedStyle($('pos')).touchAction === 'none');
   check('no horizontal page overflow', doc.documentElement.scrollWidth <= doc.documentElement.clientWidth);
+  const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
+  const mode = $('focus-mode');
+  mode.click(); await pause(120);
+  check('focus mode enters and enables audio from its gesture', doc.documentElement.classList.contains('focus-mode') && $('sound').getAttribute('aria-pressed') === 'true');
+  check('focus mode hides graphs, readouts and labels', ['.visualization', '.readouts', '.tickmarks', '.experiment', 'footer'].every(selector => win.getComputedStyle(doc.querySelector(selector)).display === 'none'));
+  check('focus mode only keeps its exit control visible', [...doc.querySelectorAll('button')].filter(button => button.getClientRects().length).length === 1 && mode.getClientRects().length > 0);
+  check('focus mode fits the viewport without overflow', doc.documentElement.scrollHeight <= doc.documentElement.clientHeight && doc.documentElement.scrollWidth <= doc.documentElement.clientWidth);
+  check('performance interface prevents accidental text selection', win.getComputedStyle(doc.querySelector('.page')).userSelect === 'none');
+  check('exit button is accessible', mode.getAttribute('aria-pressed') === 'true' && mode.getAttribute('aria-label') === '離開專注演奏');
+  const hiddenFrequency = $('frequency-plot').dataset.frequency;
+  let focusRect = $('track').getBoundingClientRect();
+  pointer(strip, 'pointerdown', 'touch', 100, focusRect.left + 5, focusRect.top);
+  await pause(60);
+  check('focus touch hold produces a playing expression', $('face').classList.contains('playing'));
+  for (let i = 0; i <= 200; i++) pointer(win, 'pointermove', 'touch', 100, focusRect.left - 60, focusRect.top + focusRect.height * i / 200);
+  check('fast focus glissando reaches the high endpoint near the head', strip.getAttribute('aria-valuenow') === '100.00' && $('finger').style.bottom === '0%');
+  check('hidden graphs stay idle during performance', $('frequency-plot').dataset.frequency === hiddenFrequency);
+  pointer(win, 'pointerup', 'touch', 100, focusRect.left - 60, focusRect.bottom);
+  await pause(80);
+  check('focus release closes the mouth and stops playing', !$('face').classList.contains('playing'));
+  win.scrollTo(0, 100);
+  check('focus viewport cannot scroll', win.scrollY === 0);
+  frame.style.height = '320px'; await pause(100);
+  check('short landscape-height stage fits without scrolling', doc.documentElement.scrollHeight <= doc.documentElement.clientHeight && $('face').getBoundingClientRect().bottom <= doc.documentElement.clientHeight);
+  frame.style.height = '600px'; await pause(100);
+  key('keydown', ' '); await pause(60);
+  mode.click(); await pause(80);
+  check('exit stops a held note', !$('face').classList.contains('playing'));
+  check('exit restores readouts and the latest graph values', !doc.documentElement.classList.contains('focus-mode') && $('hz').textContent === TOP.toFixed(1) && Number($('frequency-plot').dataset.frequency) === TOP);
+  mode.click(); await pause(60); key('keydown', 'Escape');
+  check('Escape exits and disables audio safely', !doc.documentElement.classList.contains('focus-mode') && $('sound').getAttribute('aria-pressed') === 'false');
+  mode.click(); mode.click(); await pause(100);
+  check('rapid mode toggles never leave a late playing note', !doc.documentElement.classList.contains('focus-mode') && !$('face').classList.contains('playing'));
   const audioResult = await audioReady;
   if (audioResult instanceof Error) {
     check('native Web Audio can start from a user gesture', false);

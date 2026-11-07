@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0c1719">
   <meta name="description" content="拖曳虛擬 Otamatone，聽見滑音，同步觀察頻率、音名、音程與三種位置映射模型。">
   <title>OTAMA LAB — 音高實驗室</title>
@@ -24,8 +24,8 @@
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="./src/styles.css">
-  <script defer src="./app.bundle.js"></script>
+  <link rel="stylesheet" href="./src/styles.css?v=4defa1723d75">
+  <script defer src="./app.bundle.js?v=c802db63fd42"></script>
 </head>
 <body>
 <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
@@ -33,11 +33,13 @@
   <symbol id="icon-muted" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Zm5 4 6 6m0-6-6 6"/></symbol>
   <symbol id="icon-stop" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/></symbol>
   <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="icon-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 9l12-2"/><ellipse cx="6" cy="18" rx="3" ry="3"/><ellipse cx="18" cy="16" rx="3" ry="3"/></symbol>
+  <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
   <symbol id="icon-up" viewBox="0 0 24 24"><path d="M12 20V4m-6 6 6-6 6 6"/></symbol>
 </defs></svg>
 <a class="skip" href="#strip">跳至虛擬琴頸</a>
 <main class="page">
-  <header class="masthead"><a href="./" class="wordmark">OTAMA<span>LAB</span></a><h1>音高實驗室</h1></header>
+  <header class="masthead"><a href="./" class="wordmark">OTAMA<span>LAB</span></a><h1>音高實驗室</h1><button class="btn mode-button" id="focus-mode" type="button" aria-pressed="false" aria-label="專注演奏（開啟聲音）" title="專注演奏（開啟聲音）"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-music"/></svg><span>專注演奏</span></button></header>
   <div class="lab-layout">
     <section class="card instrument" aria-labelledby="instrument-title">
       <h2 id="instrument-title">虛擬琴頸</h2>

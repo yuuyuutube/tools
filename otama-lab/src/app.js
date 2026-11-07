@@ -2,9 +2,11 @@ import { BASE, TOP, MODELS, clamp, frequencyAt, positionAt, pitchOf, semitonesFr
 import { Synth } from './audio.js';
 import { bindInstrument } from './instrument.js';
 import { PitchPlot } from './visualization.js';
+import { bindFocusMode } from './focus.js';
 const $ = id => document.getElementById(id);
 let position = .35, model = 'inverse', reference = BASE, sounding = false;
 let soundRequest = 0, pendingEnable = false;
+let focused = false, instrumentHeld = false, audioEnableTask = null, focusSession = 0;
 const plots = [new PitchPlot($('frequency-plot'), 'frequency'), new PitchPlot($('pitch-plot'), 'pitch')];
 function soundButton(label, enabled) {
   $('sound-label').textContent = label;
@@ -20,6 +22,13 @@ const synth = new Synth({ onState(playing, error) {
 } });
 function render() {
   const f = frequencyAt(position, model), pitch = pitchOf(f);
+  $('finger').style.bottom = `${(1 - position) * 100}%`;
+  synth.setFrequency(f);
+  if (focused) {
+    $('strip').setAttribute('aria-valuenow', (position * 100).toFixed(2));
+    $('strip').setAttribute('aria-valuetext', `${pitch.note}，${f.toFixed(1)} 赫茲，${signed(pitch.cents)} cents`);
+    return; // Hidden plots/readouts catch up on exit; keep fast gestures inexpensive.
+  }
   $('hz').textContent = f.toFixed(1);
   $('note').textContent = pitch.note;
   $('cents').textContent = `${signed(pitch.cents)} cents`;
@@ -29,7 +38,6 @@ function render() {
   const description = `${(position * 100).toFixed(1)}%，${pitch.note}，${f.toFixed(1)} 赫茲，${signed(pitch.cents)} cents`;
   $('strip').setAttribute('aria-valuenow', (position * 100).toFixed(2));
   for (const id of ['strip', 'pos']) $(id).setAttribute('aria-valuetext', description);
-  $('finger').style.bottom = `${(1 - position) * 100}%`;
   $('graph-position').textContent = `x = ${position.toFixed(3)}`;
   $('graph-hz').textContent = `${f.toFixed(1)} Hz`;
   $('graph-semitones').textContent = `${semitonesFrom(f).toFixed(2)} 半音`;
@@ -42,10 +50,14 @@ function render() {
   $('octave-help').textContent = octaveAvailable ? '頻率 × 2 = +12 半音 = 1 個八度。' : '此基準的兩倍超出 C6；請先在較低處重新標記。';
   $('sensitivity').textContent = sensitivityAt(position, model).toFixed(1);
   for (const plot of plots) plot.update(position, f, reference);
-  synth.setFrequency(f);
 }
 function setPosition(value) { position = clamp(value); render(); }
-const instrument = bindInstrument({ strip: $('strip'), track: $('track'), range: $('pos'), getPosition: () => position, onPosition: setPosition, onStart: () => synth.play(), onStop: () => synth.stop() });
+const instrument = bindInstrument({ strip: $('strip'), track: $('track'), range: $('pos'), getPosition: () => position, onPosition: setPosition, onStart() {
+  instrumentHeld = true;
+  if (focused && !synth.enabled) {
+    void ensureSound().then(enabled => { if (enabled && instrumentHeld && focused) synth.play(); });
+  } else synth.play();
+}, onStop() { instrumentHeld = false; synth.stop(); } });
 function changeModel() {
   instrument.stop();
   model = $('model').value;
@@ -65,31 +77,57 @@ function changeModel() {
 $('model').addEventListener('change', changeModel);
 $('mark').addEventListener('click', () => { instrument.stop(); reference = frequencyAt(position, model); render(); });
 $('octave').addEventListener('click', () => { instrument.stop(); setPosition(positionAt(reference * 2, model)); });
-$('sound').addEventListener('click', async () => {
+async function setSoundEnabled(enable) {
   const request = ++soundRequest;
-  const enable = !(synth.enabled || pendingEnable);
   pendingEnable = enable;
-  instrument.stop();
   $('sound').setAttribute('aria-pressed', String(enable));
   soundButton(enable ? '啟動中…' : '開啟聲音', false);
   try {
     await synth.setEnabled(enable);
-    if (request !== soundRequest) return;
+    if (request !== soundRequest) return false;
     pendingEnable = false;
     $('sound').setAttribute('aria-pressed', String(synth.enabled));
     soundButton(synth.enabled ? '關閉聲音' : '開啟聲音', synth.enabled);
     audioStatus();
+    return synth.enabled;
   } catch (error) {
-    if (request !== soundRequest) return;
+    if (request !== soundRequest) return false;
     pendingEnable = false;
     $('sound').setAttribute('aria-pressed', 'false');
     soundButton('重試聲音', false);
     audioStatus(error.message);
+    return false;
   }
+}
+function ensureSound() {
+  if (!audioEnableTask) {
+    const task = setSoundEnabled(true);
+    audioEnableTask = task;
+    void task.finally(() => { if (audioEnableTask === task) audioEnableTask = null; });
+  }
+  return audioEnableTask;
+}
+$('sound').addEventListener('click', () => {
+  instrument.stop();
+  void setSoundEnabled(!(synth.enabled || pendingEnable));
+});
+const focus = bindFocusMode({
+  button: $('focus-mode'), strip: $('strip'),
+  onEnter() {
+    instrument.stop(); focused = true;
+    const session = ++focusSession;
+    void ensureSound().then(enabled => {
+      if (!enabled && focus.active && session === focusSession) {
+        const message = $('audio-status').textContent;
+        focus.exit(); audioStatus(message);
+      }
+    });
+  },
+  onExit() { ++focusSession; instrument.stop(); focused = false; render(); },
 });
 // Emergency stop also invalidates a not-yet-completed enable gesture.
 function emergencyStop() {
-  ++soundRequest; pendingEnable = false;
+  ++soundRequest; pendingEnable = false; audioEnableTask = null;
   instrument.stop(); synth.setEnabled(false);
   $('sound').setAttribute('aria-pressed', 'false');
   soundButton('開啟聲音', false); audioStatus();

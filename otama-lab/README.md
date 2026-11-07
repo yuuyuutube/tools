@@ -18,6 +18,8 @@ python3 -m http.server 4187 --bind 127.0.0.1
 
 - 滑鼠／觸控：整個奶油色琴頸與綠色指示器都是操作區；向下、靠近頭部提高音高。可滑出琴頸，放開即停止。
 - 下方水平滑桿也可拖曳。滑軌與滑桿使用一致的 Pointer Events 與停止處理，操作時不應滾動頁面。
+- Header 的 SVG 音符「專注演奏」按鈕可切換滿版演奏模式，自動開啟聲音；只顯示琴頸、臉與退出按鈕。手機畫面鎖定捲動並隨可見 viewport／旋轉調整高度，右上角或 Esc 可退出，退出會停止目前發聲。
+- 演奏介面與控制項禁止文字選取，避免快速拖曳時誤選；公式與展開的模擬說明仍可複製。
 - 先按「開啟聲音」，再按住琴頸、滑桿或鍵盤發聲。聲音開關本身不會持續播放。
 - 方向鍵移動 1%；Shift + 方向鍵微調 0.1%；Page Up / Down 移動 10%；Home / End 到端點。Space / Enter 按住發聲。
 - 放開、取消、失去捕捉、視窗失焦或分頁隱藏會停止。Esc／停止按鈕同時關閉聲音開關。
@@ -54,9 +56,10 @@ npm test
 - `audio.js`：Web Audio 合成、手勢啟動、非同步競態防護。
 - `visualization.js`：雙 SVG 圖表、響應式座標、基準點。
 - `app.js`：介面與狀態協調。
+- `focus.js`：專注演奏的視圖切換、viewport 高度與返回位置。
 - `styles.css`：保留角色美術、響應式布局、reduced motion。
 
-`build` 依固定依賴順序將小型 modules 合成為 classic IIFE `app.bundle.js`，並產出 `dist/`（HTML、bundle、CSS、assets、.nojekyll）。生成器只支援目前使用的 named relative imports 與具名宣告；加入其他 module 語法會明確失敗。修改 `src/` 後務必重新 build，並將更新的根目錄 bundle 一併提交。
+`build` 依固定依賴順序將小型 modules 合成為 classic IIFE `app.bundle.js`，並為 bundle / CSS 加上內容版本參數，避免新畫面搭配舊快取；另產出 `dist/`（HTML、bundle、CSS、assets、.nojekyll）。生成器只支援目前使用的 named relative imports 與具名宣告；加入其他 module 語法會明確失敗。修改 `src/` 後務必重新 build，並將更新的根目錄 bundle 一併提交。
 
 瀏覽器整合測試：開啟 `/tests/browser.html` 按 Run checks，會播放短暫合成音。測試頁本身使用 ES modules，因此需 HTTP。測試檔不進 dist。
 
