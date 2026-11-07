@@ -1,0 +1,60 @@
+PASS: inverse: Home C3
+PASS: inverse: End C6
+PASS: inverse: frequency / note / cents
+PASS: inverse: graph cursors share exact position and frequency
+PASS: inverse: octave ratio and interval
+PASS: inverse: reference position follows mapping
+PASS: inverse: octave out of range is disabled
+PASS: exponential: Home C3
+PASS: exponential: End C6
+PASS: exponential: frequency / note / cents
+PASS: exponential: graph cursors share exact position and frequency
+PASS: exponential: octave ratio and interval
+PASS: exponential: reference position follows mapping
+PASS: exponential: octave out of range is disabled
+PASS: linear: Home C3
+PASS: linear: End C6
+PASS: linear: frequency / note / cents
+PASS: linear: graph cursors share exact position and frequency
+PASS: linear: octave ratio and interval
+PASS: linear: reference position follows mapping
+PASS: linear: octave out of range is disabled
+PASS: mouse: captured motion outside rail clamps to C6
+PASS: mouse: release ignores subsequent motion
+PASS: mouse: cancellation clears drag
+PASS: touch: captured motion outside rail clamps to C6
+PASS: touch: release ignores subsequent motion
+PASS: touch: cancellation clears drag
+PASS: pen: captured motion outside rail clamps to C6
+PASS: pen: release ignores subsequent motion
+PASS: pen: cancellation clears drag
+PASS: thumb edge belongs to the interactive neck
+PASS: mouse: horizontal range reaches 100%
+PASS: mouse: horizontal range reaches 0%
+PASS: touch: horizontal range reaches 100%
+PASS: touch: horizontal range reaches 0%
+PASS: capture failure still drags outside the neck through window events
+PASS: capture fallback also stops after release
+PASS: second finger does not take over the first touch
+PASS: lost capture clears pointer state
+PASS: decorative copy has been removed
+PASS: all action icons are SVG
+PASS: favicon and OG image configured
+PASS: Shift fine step = 0.1%
+PASS: vertical slider accessibility
+PASS: rail prevents touch scrolling via CSS
+PASS: range prevents touch scrolling via CSS
+PASS: no horizontal page overflow
+PASS: native Web Audio starts while keyboard is held
+PASS: native audio output has a nonzero waveform
+PASS: native oscillator glides to requested frequency
+PASS: key release stops the voice and audio signal
+PASS: pointerup: real synth starts on synthetic touch hold
+PASS: pointerup: real synth stops
+PASS: pointercancel: real synth starts on synthetic touch hold
+PASS: pointercancel: real synth stops
+PASS: lostpointercapture: real synth starts on synthetic touch hold
+PASS: lostpointercapture: real synth stops
+PASS: window blur stops native synth
+PASS: emergency stop and disabling leave no voice
+59/59 passed
