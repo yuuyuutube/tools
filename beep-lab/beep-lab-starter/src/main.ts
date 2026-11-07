@@ -324,7 +324,7 @@ document.addEventListener('keydown', event => {
   if (musicKeys.has(event.key)) {
     event.preventDefault(); if (!event.repeat) beginPress(event.key, document.querySelector<HTMLElement>(`[data-key="${event.key}"]`) ?? undefined);
   } else if (['ArrowLeft', 'ArrowRight', 'Backspace', '.'].includes(event.key)) { event.preventDefault(); apply(event.key); }
-  else if (event.code === 'Space' && (event.target === enableSoundButton || (event.target instanceof HTMLElement && !!event.target.closest('#focus-toggle, #focus-exit, #selected-octave, #undo, #redo, #mode-classic, #mode-studio, .studio-actions button, .roll-resize')))) return;
+  else if (event.code === 'Space' && (event.target === enableSoundButton || (event.target instanceof HTMLElement && !!event.target.closest('#focus-toggle, #focus-exit, #selected-octave, #undo, #redo, #mode-classic, #mode-studio, .studio-actions button, .roll-resize, .rest-next')))) return;
   else if (event.code === 'Space') { event.preventDefault(); if (!event.repeat) $('#play').click(); }
   else if (event.key === 'Escape') { cancelPress(); stop(); }
 });

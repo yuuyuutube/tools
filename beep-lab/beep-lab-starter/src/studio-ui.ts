@@ -135,7 +135,7 @@ export function createStudio(container: HTMLElement, actions: {
   restLane.onpointermove=event=>{
     restLane.parentElement!.classList.toggle('is-hovered',event.pointerType!=='touch'&&!drag&&!move?.active);
     if(drag){roll.onpointermove?.call(roll,event);return;}
-    if(event.pointerType==='touch'||drag||move?.active||(event.target as HTMLElement).closest('.roll-note,.roll-resize')){restGhost.hidden=true;return;}
+    if(event.pointerType==='touch'||drag||move?.active||(event.target as HTMLElement).closest('.roll-note,.roll-resize,.rest-next')){restGhost.hidden=true;return;}
     const x=event.clientX-restLane.getBoundingClientRect().left-42;
     const index=columns.findIndex(col=>x>=col.left&&x<col.left+col.width);
     restGhost.hidden=index<0;
@@ -143,12 +143,12 @@ export function createStudio(container: HTMLElement, actions: {
   };
   restLane.onpointerleave=()=>{restGhost.hidden=true;restLane.parentElement!.classList.remove('is-hovered');};
   restLane.onclick=event=>{
-    if(performance.now()<suppressClickUntil||(event.target as HTMLElement).closest('.roll-note,.roll-resize'))return;
+    if(performance.now()<suppressClickUntil||(event.target as HTMLElement).closest('.roll-note,.roll-resize,.rest-next'))return;
     const x=event.clientX-restLane.getBoundingClientRect().left-42;
     const index=columns.findIndex(col=>x>=col.left&&x<col.left+col.width);
     if(index<0)return;
     const original=current.melody.events[index];
-    if(!original){actions.append({type:'rest',duration:4,dotted:false});return;}
+    if(!original)return;
     actions.select(index+1);actions.update({type:'rest',duration:original.duration,dotted:original.dotted});
   };
   return {
@@ -165,7 +165,7 @@ export function createStudio(container: HTMLElement, actions: {
       }
       let left=0;
       state.melody.events.forEach((event,index)=>{
-        const width=Math.max(56, 80*4/event.duration*(event.dotted?1.5:1));
+        const width=Math.max(56, 80*4/event.duration*(event.dotted?1.5:1)+16);
         columns.push({left,width});
         const step=noteStep(event);
         const button=document.createElement('button'); button.className='roll-note';
@@ -211,8 +211,8 @@ export function createStudio(container: HTMLElement, actions: {
       const totalWidth=`${Math.max(300,left+176)}px`;
       roll.style.width=restLane.style.width=totalWidth;
       restLane.style.transform=`translateX(${-previousScroll}px)`;
-      const addRest=document.createElement('button');addRest.className='rest-add';addRest.textContent='新增休止';addRest.setAttribute('aria-label','在結尾新增休止');
-      addRest.style.left=`${42+left+16}px`;addRest.onclick=event=>{event.stopPropagation();actions.append({type:'rest',duration:4,dotted:false});};restLane.append(addRest);
+      const addRest=document.createElement('button');addRest.className='rest-next';addRest.textContent='新增休止';addRest.setAttribute('aria-label','在下一音欄新增休止');
+      addRest.style.left=`${42+left}px`;addRest.onclick=event=>{event.stopPropagation();actions.append({type:'rest',duration:4,dotted:false});};restLane.append(addRest);
       const event=selected(); const step=event?noteStep(event):null;
       pitch.disabled=duration.disabled=dot.disabled=!event;
       container.querySelector<HTMLButtonElement>('#studio-delete')!.disabled=!event;
