@@ -7,7 +7,7 @@ export function createStudio(container: HTMLElement, actions: {
   append: (event: MusicEvent) => void; swap: (from: number, to: number) => void;
   insert: (event: MusicEvent) => void; remove: () => void;
 }) {
-  container.innerHTML = `<p class="studio-help">最後一欄點擊新增音符；底部固定列可加入休止。拖曳音塊交換位置，右側把手調整時值；Esc 取消。</p>
+  container.innerHTML = `<p class="studio-help">每格直線間距為四分音符。最後一欄點擊新增音符；底部固定列可加入休止。拖曳音塊交換位置，右側把手調整時值；Esc 取消。</p>
     <div class="roll-scroll" tabindex="0" aria-label="音高編輯區，可上下左右捲動"><div class="piano-roll"></div></div><div class="rest-viewport"><span class="rest-caption">休止</span><div class="rest-lane"></div></div>
     <div class="studio-fields"><label>音高<select id="studio-pitch"></select></label><label>時值<select id="studio-duration">${durations.map(d => `<option value="${d}">1/${d}</option>`).join('')}</select></label><label class="studio-dot"><input id="studio-dot" type="checkbox"/>附點</label></div>
     <div class="studio-actions"><button id="studio-add">新增音符</button><button id="studio-rest">新增休止</button><button id="studio-delete">刪除選取</button></div>`;
@@ -69,8 +69,10 @@ export function createStudio(container: HTMLElement, actions: {
   function clearDrag(commit: boolean) {
     const pending = drag; if (!pending) return;
     drag = undefined; roll.classList.remove('resizing'); ghost.hidden = true;
-    pending.label.style.width = `${Math.max(8,pending.width-4)}px`;
+    pending.label.style.width = `${Math.max(1,pending.width-2)}px`;
     pending.label.textContent = formatEvent(pending.original);
+    pending.label.parentElement!.style.width = `${pending.width}px`;
+    pending.handle.style.width = `${Math.min(24,pending.width)}px`;
     pending.handle.style.left = pending.left;
     pending.handle.title='拖曳調整時值；方向鍵縮短／延長';
     if (pending.handle.hasPointerCapture(pending.pointerId)) pending.handle.releasePointerCapture(pending.pointerId);
@@ -85,8 +87,10 @@ export function createStudio(container: HTMLElement, actions: {
       const width = Math.max(1,drag.width + event.clientX-drag.startX + scroll.scrollLeft-drag.startScroll);
       drag.next = resizeRhythm(drag.original,width);
       const size = 320/drag.next.duration*(drag.next.dotted?1.5:1);
-      drag.label.style.width = `${Math.max(8,size-4)}px`; drag.label.textContent = formatEvent(drag.next);
-      drag.handle.style.left = `${parseFloat(drag.label.parentElement!.style.left)+Math.max(8,size-4)-10}px`;
+      drag.label.parentElement!.style.width = `${size}px`;
+      drag.label.style.width = `${Math.max(1,size-2)}px`; drag.label.textContent = formatEvent(drag.next);
+      drag.handle.style.left = `${parseFloat(drag.label.parentElement!.style.left)+size-Math.min(24,size)}px`;
+      drag.handle.style.width=`${Math.min(24,size)}px`;
       drag.handle.title=`預覽 ${formatEvent(drag.next)}，放開套用`;
       return;
     }
@@ -165,14 +169,14 @@ export function createStudio(container: HTMLElement, actions: {
       }
       let left=0;
       state.melody.events.forEach((event,index)=>{
-        const width=Math.max(56, 80*4/event.duration*(event.dotted?1.5:1)+16);
+        const width=320/event.duration*(event.dotted?1.5:1);
         columns.push({left,width});
         const step=noteStep(event);
         const button=document.createElement('button'); button.className='roll-note';
         button.dataset.index=String(index); button.classList.toggle('selected',index===state.cursor-1);
         button.style.left=`${42+left}px`; button.style.top=step===null?'4px':`${(35-step)*24-10}px`;
-        button.style.width=`${Math.max(20,width-6)}px`;
-        const label=document.createElement('span'); label.className='roll-note-label'; label.textContent=formatEvent(event); label.style.width=`${Math.max(8,80*4/event.duration*(event.dotted?1.5:1)-4)}px`; button.append(label); button.setAttribute('aria-label',`選取第 ${index+1} 音 ${formatEvent(event)}`);
+        button.style.width=`${width}px`;
+        const label=document.createElement('span'); label.className='roll-note-label'; label.textContent=formatEvent(event); label.style.width=`${Math.max(1,width-2)}px`; button.append(label); button.setAttribute('aria-label',`選取第 ${index+1} 音 ${formatEvent(event)}`);
         button.setAttribute('aria-pressed',String(index===state.cursor-1));
         button.onclick=()=>{if(performance.now()>=suppressClickUntil)actions.select(index+1);};
         attachMove(button,index);
@@ -181,7 +185,7 @@ export function createStudio(container: HTMLElement, actions: {
         if(index===state.cursor-1) {
           const handle=document.createElement('button'); handle.className='roll-resize';
           const barWidth=320/event.duration*(event.dotted?1.5:1);
-          handle.style.left=`${42+left+Math.max(8,barWidth-4)-10}px`; handle.style.top=button.style.top;
+          handle.style.left=`${42+left+barWidth-Math.min(24,barWidth)}px`; handle.style.top=`${parseFloat(button.style.top)+24}px`; handle.style.width=`${Math.min(24,barWidth)}px`;
           handle.setAttribute('aria-label',`拖曳調整第 ${index+1} 音時值，方向鍵亦可調整`);
           handle.title='拖曳調整時值；方向鍵縮短／延長';
           handle.innerHTML='<svg width="12" height="20" viewBox="0 0 12 20" aria-hidden="true"><path d="M4 5v10m4-10v10" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>';

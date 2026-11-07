@@ -62,7 +62,7 @@ $('#app').innerHTML = `
       </div>
     </section>
     <section class="below"><details class="guide"><summary>操作說明 ${icon('chevron')}</summary><div class="guide-body">
-<p>Studio 最後的「下一個音符」欄可預覽並點擊新增。休止列固定在圖下方，不受音高區上下捲動影響。拖曳音塊本體可與目標音符交換位置，或選取後按 Alt＋左右鍵。滑鼠移到既有欄位則會出現虛線音高預覽。拖曳選取音右側把手可改時值，放開套用、Esc 取消；把手也支援左右方向鍵。音高／時值欄位可精確調整。復原／重做跨兩個模式共用；快捷鍵 Ctrl／⌘ Z、Ctrl／⌘ Shift Z。載入其他作品會重設編輯紀錄。專注模式使用 Classic 鍵盤。</p>
+<p>Studio 每格直線間距代表一個四分音符；音符與休止符依累積時值排列，附點會增加一半寬度。最後的「下一個音符」欄可預覽並點擊新增。休止列固定在圖下方，不受音高區上下捲動影響。拖曳音塊本體可與目標音符交換位置，或選取後按 Alt＋左右鍵。滑鼠移到既有欄位則會出現虛線音高預覽。拖曳選取音右側把手可改時值，放開套用、Esc 取消；把手也支援左右方向鍵。音高／時值欄位可精確調整。復原／重做跨兩個模式共用；快捷鍵 Ctrl／⌘ Z、Ctrl／⌘ Shift Z。載入其他作品會重設編輯紀錄。專注模式使用 Classic 鍵盤。</p>
       <div class="guide-grid">
         <section class="guide-section" aria-labelledby="guide-notes"><h3 id="guide-notes">輸入音符</h3>
           <dl class="key-reference">
