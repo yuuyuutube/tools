@@ -52,3 +52,20 @@ it('preserves selected card art across sharing and editing, without carrying unr
 it('preserves rhythm composition in shared links',()=>{
   expect(new URL(shareUrl(sample(),'https://example.com/?art=rhythm')).searchParams.get('art')).toBe('rhythm');
 });
+
+import {createShareSnapshot} from '../src/music-core/share';
+it('shares the current style by default, with a concrete Composer fallback',()=>{
+  const current=createShareSnapshot(sample(),'https://example.com/?view=card&art=terrain','current');
+  expect(current.style).toBe('terrain');expect(new URL(current.url).searchParams.get('art')).toBe('terrain');
+  expect(createShareSnapshot(sample(),'https://example.com/','current').style).toBe('weave');
+});
+it('draws a concrete random style once, without mutating the input melody or current URL',()=>{
+  const song=sample(),before=structuredClone(song),base='https://example.com/?view=card&art=terrain';
+  const result=createShareSnapshot(song,base,'random',()=>.95);
+  expect(result.style).toBe('windows');expect(new URL(result.url).searchParams.get('art')).toBe('windows');expect(result.url).not.toContain('art=random');expect(song).toEqual(before);expect(base).toContain('art=terrain');
+});
+it('redraws to a different style and keeps the melody snapshot unchanged',()=>{
+  const song=sample(),first=createShareSnapshot(song,'https://example.com/','random',()=>0);
+  const second=createShareSnapshot(song,'https://example.com/','random',()=>0,first.style);
+  expect(second.style).not.toBe(first.style);expect(new URL(second.url).hash).toBe(new URL(first.url).hash);
+});

@@ -1,3 +1,4 @@
+import { cardArtStyles, resolveArtStyle, type CardArtStyle } from '../art-styles';
 import { createMelody, durations, isMelody, MAX_EVENTS, MAX_TITLE, MAX_BPM, MIN_BPM, type Melody } from './model';
 import { noteFromStep, noteStep } from './studio';
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
@@ -42,4 +43,12 @@ export function readSharedMelody(hash: string): Melody {
 }
 export function editUrl(melody: Melody, base: string): string {
   const url = new URL(shareUrl(melody,base)); url.searchParams.delete('view');url.searchParams.set('edit','1'); return url.href;
+}
+
+export function createShareSnapshot(melody:Melody,base:string,mode:'current'|'random',random=Math.random,exclude?:CardArtStyle) {
+  const source=new URL(base);
+  const choices=cardArtStyles.filter(style=>style!==exclude);
+  const style=mode==='random'?choices[Math.min(choices.length-1,Math.max(0,Math.floor(random()*choices.length)))]:resolveArtStyle(source.searchParams.get('art'));
+  source.searchParams.set('art',style);
+  return {style,url:shareUrl(melody,source.href)};
 }
