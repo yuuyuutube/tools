@@ -384,3 +384,6 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
 .specimen-note { transition: filter .2s ease; }
 .specimen-note.art-playing { filter: brightness(1.22) saturate(1.25); }
 @media(prefers-reduced-motion:reduce) { .specimen-note { transition: none; } }
+.window-note { transition: filter .2s ease; }
+.window-note.art-playing { filter: brightness(1.2) saturate(1.12); }
+@media(prefers-reduced-motion:reduce) { .window-note { transition: none; } }

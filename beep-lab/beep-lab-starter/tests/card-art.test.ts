@@ -39,8 +39,8 @@ describe('sound constellation',()=>{
     expect(points).toHaveLength(2);expect(points[1].connected).toBe(false);expect(points[1].x).toBeGreaterThan(points[0].x);expect(points[1].y).toBeLessThan(points[0].y);expect(points[0].radius).toBeGreaterThan(points[1].radius);
     expect(buildStars({...melody,title:'new'})).toEqual(points);
   });
-  it('resolves explicit styles, safe defaults and all six random outcomes',()=>{
-    expect(resolveArtStyle('stars')).toBe('stars');expect(resolveArtStyle('unknown')).toBe('weave');expect(resolveArtStyle('random',()=>.1)).toBe('weave');expect(resolveArtStyle('random',()=>.3)).toBe('stars');expect(resolveArtStyle('random',()=>.4)).toBe('rhythm');expect(resolveArtStyle('random',()=>.6)).toBe('terrain');expect(resolveArtStyle('random',()=>.75)).toBe('letterpress');expect(resolveArtStyle('random',()=>.95)).toBe('specimen');
+  it('resolves explicit styles, safe defaults and all seven random outcomes',()=>{
+    expect(resolveArtStyle('stars')).toBe('stars');expect(resolveArtStyle('unknown')).toBe('weave');expect(resolveArtStyle('random',()=>.1)).toBe('weave');expect(resolveArtStyle('random',()=>.2)).toBe('stars');expect(resolveArtStyle('random',()=>.35)).toBe('rhythm');expect(resolveArtStyle('random',()=>.5)).toBe('terrain');expect(resolveArtStyle('random',()=>.65)).toBe('letterpress');expect(resolveArtStyle('random',()=>.8)).toBe('specimen');expect(resolveArtStyle('random',()=>.95)).toBe('windows');
   });
 });
 
