@@ -101,3 +101,7 @@ npm run release
 開發原始碼保留在 `beep-lab-starter/`；發佈指令將 production bundle 與圖示放到上一層 `beep-lab/`，使靜態主機可直接服務 `/tools/beep-lab/`。只會替換這個工具生成的 `assets/`，不動 source。`.env.production` 指定正式分享 URL，若更換網域或掛載路徑，更新 SITE_URL 後重新發佈。
 
 測試頁 `tests/fixtures/audio-blocked.html`（dev server 專用）會故意阻擋前兩次啟用；加上 `?mode=pending` 可模擬音訊啟用無回應。它們不會被放入正式成品。
+
+### 專注模式直連
+
+分享 `https://yuuyuutube.github.io/tools/beep-lab/?focus=1`，開啟即進入專注模式。一般網址維持普通模式；手動切換會同步更新網址，退出會移除 focus 參數，保留其他 query 與 hash。連結只指定顯示模式，不會分享收藏，也不會自動播放聲音。

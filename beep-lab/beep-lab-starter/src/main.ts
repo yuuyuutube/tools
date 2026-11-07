@@ -85,10 +85,16 @@ let beforeFocusScroll = 0;
 function updateFocusViewport() {
   document.documentElement.style.setProperty('--focus-height', `${window.visualViewport?.height ?? window.innerHeight}px`);
 }
-function setFocusMode(enabled: boolean) {
+function setFocusMode(enabled: boolean, syncUrl = true) {
   cancelPress();
   if (enabled) beforeFocusScroll = window.scrollY;
   focusMode = enabled;
+  if (syncUrl) {
+    const url = new URL(window.location.href);
+    if (enabled) url.searchParams.set('focus', '1');
+    else url.searchParams.delete('focus');
+    window.history.replaceState(window.history.state, '', url);
+  }
   document.documentElement.classList.toggle('focus-mode', enabled);
   $('#focus-toggle').setAttribute('aria-pressed', String(enabled));
   updateFocusViewport();
@@ -329,3 +335,6 @@ function renderLibrary() {
 }
 renderScore(); renderLibrary();
 if (library.warning) notify(library.warning);
+
+setFocusMode(new URLSearchParams(window.location.search).get('focus') === '1', false);
+window.addEventListener('popstate', () => setFocusMode(new URLSearchParams(window.location.search).get('focus') === '1', false));
