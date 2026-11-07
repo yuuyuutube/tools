@@ -1,4 +1,8 @@
 const paths = {
+  share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m9 10 6-4M9 14l6 4"/>',
+  copy: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V3H3v13h5"/>',
+  close: '<path d="m6 6 12 12M18 6 6 18"/>',
+  edit: '<path d="m4 16-1 5 5-1L20 8l-4-4ZM14 6l4 4"/>',
   undo: '<path d="m9 5-5 5 5 5M4 10h9a7 7 0 0 1 7 7"/>',
   redo: '<path d="m15 5 5 5-5 5m5-5h-9a7 7 0 0 0-7 7"/>',
   expand: '<path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/>',

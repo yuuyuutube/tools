@@ -1,4 +1,6 @@
 import './style.css';
+import { createShareDialog } from './share-dialog';
+import { readSharedMelody } from './music-core/share';
 import { EditHistory } from './music-core/history';
 import { appendStudioEvent, updateSelected, swapStudioEvents } from './music-core/studio';
 import { createStudio } from './studio-ui';
@@ -58,7 +60,7 @@ $('#app').innerHTML = `
       <div class="settings-panel">
         <div class="tempo-row"><label for="tempo">速度 <span>BPM</span></label><input id="tempo" type="range" min="40" max="240" step="1" value="120" /><input id="tempo-number" type="number" inputmode="numeric" min="40" max="240" step="1" value="120" aria-label="每分鐘拍數" enterkeyhint="done" /></div>
         <p id="status" class="status" role="status" aria-live="polite">按 1–7 輸入音符，長按可加入附點。</p>
-        <div class="workspace-actions"><button id="save" class="save-button">${icon('save')}<span>儲存</span></button><button id="new">${icon('add')}<span>新旋律</span></button><button id="demo">${icon('load')}<span>示範</span></button></div>
+        <div class="workspace-actions"><button id="save" class="save-button">${icon('save')}<span>儲存</span></button><button id="share">${icon('share')}<span>分享</span></button><button id="new">${icon('add')}<span>新旋律</span></button><button id="demo">${icon('load')}<span>示範</span></button></div>
       </div>
     </section>
     <section class="below"><details class="guide"><summary>操作說明 ${icon('chevron')}</summary><div class="guide-body">
@@ -93,6 +95,8 @@ $('#app').innerHTML = `
   <dialog id="confirm-dialog" aria-labelledby="confirm-title"><form method="dialog"><h2 id="confirm-title">確認操作</h2><p id="confirm-text"></p><div class="dialog-actions"><button value="cancel">取消</button><button value="confirm" class="save-button">確認</button></div></form></dialog>
 `;
 let studioSelection = false;
+const shareDialog=createShareDialog(()=>({...state.melody,title:titleInput.value.trim()}),stop);
+$('#share').onclick=()=>{try{shareDialog.open();}catch(error){notify((error as Error).message);}};
 const studio = createStudio($('#studio-panel'), {
   beginEdit() { stop(); },
   refresh() { renderScore(); },
@@ -328,7 +332,7 @@ document.querySelectorAll<HTMLButtonElement>('[data-key]').forEach(button => {
 const musicKeys = new Set('0123456789*#'.split(''));
 function textTarget(target: EventTarget | null) { return target instanceof HTMLElement && (target.matches('input, textarea, select') || target.isContentEditable); }
 document.addEventListener('keydown', event => {
-  if(event.defaultPrevented)return;
+  if(event.defaultPrevented||document.querySelector('.share-dialog[open]'))return;
   if(event.key==='Escape'&&viewMode==='studio'&&!$<HTMLDialogElement>('#confirm-dialog').open) {
     cancelPress(); stop(); studioSelection=false; renderScore(); return;
   }
@@ -420,6 +424,11 @@ function renderLibrary() {
   });
 }
 renderScore(); renderLibrary();
+if(location.hash.startsWith('#melody=')) {
+  try {load(readSharedMelody(location.hash),false);notify('已載入分享旋律，修改後可儲存自己的版本。');}
+  catch(error){notify((error as Error).message);}
+  const clean=new URL(location.href);clean.hash='';clean.searchParams.delete('edit');window.history.replaceState(null,'',clean);
+}
 if (library.warning) notify(library.warning);
 
 setFocusMode(new URLSearchParams(window.location.search).get('focus') === '1', false);
