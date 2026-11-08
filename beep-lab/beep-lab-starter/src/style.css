@@ -571,3 +571,5 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
 #repair-progress-warning:empty { display: none; }
 #repair-next-level { min-height: 48px; padding: 0 22px; margin-top: 16px; max-width: 100%; }
 .repair-success-copy { overflow-wrap: anywhere; }
+
+.repair-score-caption { font-size: 12px; color: var(--muted); margin: 14px 0 8px; line-height: 1.7; }

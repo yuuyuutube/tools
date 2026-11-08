@@ -37,7 +37,7 @@ app.innerHTML=`<header class="site-header repair-header"><img src="./favicon.svg
   <section data-pane="3" aria-label="步驟三：修復樂譜" hidden>
     <p class="repair-mission"></p>
     <div class="repair-compare"><button data-audio="reference">${icon('volume')}<span>聽原曲</span></button><button data-audio="candidate">${icon('play')}<span>聽我的版本</span></button></div>
-    <section class="repair-panel" aria-label="修復編輯區"><div class="repair-edit-intro"><p class="repair-edit-instruction">點音符試聽，再調整音高。</p><button id="repair-hint">需要提示</button></div><p id="repair-hint-text" role="status" aria-live="polite"></p><div class="repair-score" role="group" aria-label="選擇要修復的音符"></div><div class="repair-pitch-field"><label for="repair-pitch" id="repair-pitch-label">第 1 音的音高</label><select id="repair-pitch"></select></div>
+    <section class="repair-panel" aria-label="修復編輯區"><div class="repair-edit-intro"><p class="repair-edit-instruction">點音符試聽，再調整音高。</p><button id="repair-hint">需要提示</button></div><p id="repair-hint-text" role="status" aria-live="polite"></p><p id="repair-score-caption" class="repair-score-caption">我的版本</p><div class="repair-score" role="group" aria-label="選擇要修復的音符"></div><div class="repair-pitch-field"><label for="repair-pitch" id="repair-pitch-label">把第 1 音的音高調整為：</label><select id="repair-pitch"></select></div>
       <details class="repair-rhythm"><summary>節奏設定</summary><div class="repair-fields"><label>時值<select id="repair-duration">${durations.map(value=>`<option value="${value}">1/${value}</option>`).join('')}</select></label><label><input type="checkbox" id="repair-dot"/>附點</label></div></details>
       <div class="repair-edit-actions"><button id="repair-undo">${icon('undo')}<span>復原</span></button><button id="repair-redo">${icon('redo')}<span>重做</span></button><button id="repair-reset">還原起始樂譜</button></div>
     </section>
@@ -108,7 +108,14 @@ function renderFlow(focus=false){
   $('#repair-reference-help').hidden=flow.heardReference;$('#repair-damaged-help').hidden=flow.heardDamaged;
   if(focus){$('#repair-stage-title').focus({preventScroll:true});window.scrollTo(0,0);}
 }
-function idle(){document.querySelectorAll('[data-audio]').forEach(button=>button.setAttribute('aria-pressed','false'));document.querySelectorAll('.repair-note.sounding').forEach(note=>note.classList.remove('sounding'));$('#repair-stop').hidden=true;}
+function maskReferenceScore(masked:boolean){
+  $('#repair-score-caption').textContent=masked?'我的版本 · 正在聽原曲，音符暫時隱藏':'我的版本';
+  document.querySelectorAll<HTMLButtonElement>('.repair-note').forEach((button,index)=>{
+    const code=formatEvent(state.melody.events[index]);button.querySelector('strong')!.textContent=masked?'──':code;
+    button.setAttribute('aria-label',masked?`第 ${index+1} 音，原曲播放中，點選編輯我的版本`:`第 ${index+1} 音 ${code}`);
+  });
+}
+function idle(){maskReferenceScore(false);document.querySelectorAll('[data-audio]').forEach(button=>button.setAttribute('aria-pressed','false'));document.querySelectorAll('.repair-note.sounding').forEach(note=>note.classList.remove('sounding'));$('#repair-stop').hidden=true;}
 function audioMessage(text:string){$('#repair-audio').textContent=text;$('.repair-audio-bar').hidden=!text;}
 function stop(){audioAttempt++;engine.stop();idle();audioMessage('');}
 engine.onEnd=()=>{idle();audioMessage('播放結束。');};
@@ -116,7 +123,7 @@ engine.onPosition=index=>document.querySelectorAll('.repair-note').forEach((note
 async function listen(kind:'reference'|'damaged'|'candidate'){
   stop();const token=++audioAttempt;const melody=kind==='reference'?level.target:kind==='damaged'?level.damaged:state.melody;
   try{await engine.playMelody(melody);if(token!==audioAttempt)return;$('#repair-enable').hidden=true;
-    if(engine.isPlaying){document.querySelectorAll(`[data-audio="${kind}"]`).forEach(button=>button.setAttribute('aria-pressed','true'));$('#repair-stop').hidden=false;audioMessage(kind==='reference'?'正在播放原曲':kind==='damaged'?'正在播放錯誤版':'正在播放你的修復版本');if(kind!=='candidate'){flow=markRepairHeard(flow,kind);renderFlow();}}
+    if(engine.isPlaying){maskReferenceScore(kind==='reference');document.querySelectorAll(`[data-audio="${kind}"]`).forEach(button=>button.setAttribute('aria-pressed','true'));$('#repair-stop').hidden=false;audioMessage(kind==='reference'?'正在播放原曲':kind==='damaged'?'正在播放錯誤版':'正在播放你的修復版本');if(kind!=='candidate'){flow=markRepairHeard(flow,kind);renderFlow();}}
   }catch(error){if(token!==audioAttempt)return;audioMessage(error instanceof AudioActivationError?error.message:'無法播放，請再試一次。');$('#repair-enable').hidden=error instanceof AudioActivationError&&!error.recoverable;}
 }
 document.querySelectorAll<HTMLButtonElement>('[data-audio]').forEach(button=>button.onclick=()=>void listen(button.dataset.audio as 'reference'|'damaged'|'candidate'));
@@ -134,7 +141,7 @@ function renderEditor(){
     button.onkeydown=key=>{if(key.key==='ArrowLeft'||key.key==='ArrowRight'){key.preventDefault();stop();state={...state,cursor:Math.max(1,Math.min(state.melody.events.length,state.cursor+(key.key==='ArrowLeft'?-1:1)))};renderEditor();document.querySelectorAll<HTMLButtonElement>('.repair-note')[state.cursor-1]?.focus();void previewSelected();}};
     score.append(button);
   });
-  const event=state.melody.events[state.cursor-1];pitch.value=String(noteStep(event)??'rest');duration.value=String(event.duration);dot.checked=event.dotted;$('#repair-pitch-label').textContent=`第 ${state.cursor} 音的音高`;
+  const event=state.melody.events[state.cursor-1];pitch.value=String(noteStep(event)??'rest');duration.value=String(event.duration);dot.checked=event.dotted;$('#repair-pitch-label').textContent=`把第 ${state.cursor} 音的音高調整為：`;
   $<HTMLButtonElement>('#repair-undo').disabled=!history.canUndo;$<HTMLButtonElement>('#repair-redo').disabled=!history.canRedo;
   const review=$('.repair-review-score');review.replaceChildren();state.melody.events.forEach(event=>{const note=document.createElement('span');note.textContent=formatEvent(event);review.append(note);});
 }
