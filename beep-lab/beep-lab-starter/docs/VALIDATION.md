@@ -181,3 +181,7 @@
 瀏覽器完成：原曲／修復版播放、錯誤提交、提示、將第三音改正後通關、故意改錯時值被拒、復原後通關、重置／復原／重做、分享修復作品及帶回 Composer，音符正確且為未儲存新作品。
 
 實際從 root 依共用導覽走 Composer → 示範卡片 → 音樂盒 → 鈴聲考古 → Composer，每頁導覽均存在；示範不依賴收藏。Studio 專注模式仍只有 editor-panel 且導覽隱藏。375px 考古頁寬度 375px，四個導覽入口及八音編輯區不溢出，console 無錯誤，已檢視手機截圖。
+
+## 頁尾導覽
+
+106 項測試、release build 與 diff 檢查通過。瀏覽器確認 main 前一元素為 Header、後一元素為 footer，nav 位於 footer；透過頁尾逐頁走通編曲器、示範卡片、音樂盒與考古。375px 頁面無橫向溢出，頁尾在 main 下方 24px；Studio 專注時 footer display none，只有 editor-panel，body 高度等於 viewport。console 無錯誤，已檢視手機截圖。

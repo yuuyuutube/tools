@@ -188,3 +188,7 @@ Esc 在 Studio 拖曳取消已 preventDefault 時不退出專注；一般 Esc �
 首關使用自製原創八事件旋律「回聲小徑」，只破壞第三音音高；target 與 damaged 是分離副本。compareRepair 比對 canonical 音高／休止、時值、附點、數量及 BPM，忽略 ID／標題／時間戳；不比較音訊檔或依畫面字串判定。使用共同 Melody、AudioEngine、updateSelected 及 EditHistory；固定事件數，以選取音符與表單修復，提供三層漸進提示、明確成功／錯誤、復原／重做與可復原的重置。通關後分享或透過原分享格式載入 Composer 為新作品，不自動寫入收藏。關卡進度只在本頁，暫不儲存通關紀錄。
 
 navigation.ts 集中四個現有入口，各頁在 Header 後插入同一組導覽與 aria-current。分享卡片入口為 view=card&demo=1，無 hash 時使用原有示範旋律；壞分享 hash 仍呈現錯誤，不以示範掩蓋。導覽切換同分頁，保留 Composer beforeunload 的未儲存保護；Studio／Classic 專注模式均隱藏導覽。既有 URL 與分享資料格式不變，不額外建立裝飾性首頁。根目錄或任一卡片網址皆可作朋友入口；本機收藏與標籤依舊不對外共享。
+
+## 導覽移至頁尾
+
+使用者認為 Header 下方導覽干擾當前操作，授權選擇 footer 或漢堡選單。本次選擇低調的頁尾文字連結：navigation.ts 在 main 後建立語意 footer，四個入口及 aria-current 保留，目前頁僅用細底線，不使用大塊高亮。保留 44px 觸控高度與鍵盤焦點樣式；頁尾不固定、不覆蓋主功能。專注模式隱藏整個 footer，避免空白邊框或額外捲軸。沒有新增選單開關或裝飾文案。

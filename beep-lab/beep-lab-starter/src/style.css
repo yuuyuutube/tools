@@ -462,11 +462,12 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
   .focus-mode.studio-mode .studio-actions { grid-area: actions; align-self: center; margin: 4px 0; }
 }
 
-.lab-nav { max-width: 1000px; margin: 0 auto; padding: 0 28px 16px; display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid #d6d9ce; }
-.lab-nav a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; color: var(--muted); text-decoration: none; font-size: 13px; border-radius: 4px; }
-.lab-nav a[aria-current="page"] { background: #e1e7d7; color: var(--ink); }
+.lab-footer { max-width: 1000px; margin: 24px auto 0; padding: 12px 28px max(24px, env(safe-area-inset-bottom)); border-top: 1px solid #dedfd5; }
+.lab-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+.lab-nav a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 12px; color: var(--muted); text-decoration: none; font-size: 12px; border-radius: 3px; }
+.lab-nav a[aria-current="page"] { color: var(--ink); text-decoration: underline; text-decoration-color: #adb6a1; text-underline-offset: 4px; }
 .lab-nav a:hover { background: #e6eadf; }
-.focus-mode .lab-nav { display: none; }
+.focus-mode .lab-footer, .focus-mode .lab-nav { display: none; }
 .repair-header h1 { font-size: 20px; }
 .repair-main { max-width: 780px; padding-top: 28px; }
 .repair-heading > span { color: var(--muted); font-size: 12px; }
@@ -496,4 +497,4 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
 .repair-complete p { font-size: 13px; line-height: 1.7; }
 .repair-complete > div { display: flex; flex-wrap: wrap; gap: 10px; }
 .repair-complete button { padding: 0 14px; }
-@media(max-width:750px) { .lab-nav { padding: 0 16px 12px; gap: 2px; } .lab-nav a { padding: 0 10px; font-size: 12px; } .repair-header h1 { font-size: 16px; } .repair-panel { padding: 16px; } .repair-note { min-width: 58px; } }
+@media(max-width:750px) { .lab-footer { padding: 12px 16px max(20px, env(safe-area-inset-bottom)); } .lab-nav { gap: 2px; } .lab-nav a { padding: 0 8px; } .repair-header h1 { font-size: 16px; } .repair-panel { padding: 16px; } .repair-note { min-width: 58px; } }

@@ -8,5 +8,6 @@ export type LabPage=typeof LAB_PAGES[number]['id'];
 export function mountLabNavigation(current:LabPage) {
   const nav=document.createElement('nav');nav.className='lab-nav';nav.setAttribute('aria-label','BEEP LAB 工具導覽');
   LAB_PAGES.forEach(page=>{const link=document.createElement('a');link.href=page.href;link.textContent=page.label;if(page.id===current)link.setAttribute('aria-current','page');nav.append(link);});
-  document.querySelector('.site-header')!.after(nav);
+  const footer=document.createElement('footer');footer.className='lab-footer';footer.append(nav);
+  document.querySelector('main')!.after(footer);
 }

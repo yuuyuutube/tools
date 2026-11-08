@@ -1,0 +1,1 @@
+import{h as a}from"./share-dialog-CMm_6unR.js";function n(){const e=a("Little signals");e.tempoBpm=132;const o=["c","e","g","e","d","f","a","g","e","d","c"];return e.events=o.map((s,t)=>({type:"note",pitch:s,octave:2,sharp:!1,duration:t===10?2:8,dotted:t===7})),e.events.splice(4,0,{type:"rest",duration:8,dotted:!1}),e}export{n as d};
