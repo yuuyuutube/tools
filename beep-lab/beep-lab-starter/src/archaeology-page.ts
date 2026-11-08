@@ -75,7 +75,7 @@ function renderLevels(){
   $('.repair-attribution').textContent=level.attribution;$('#repair-progress-warning').textContent=progress.warning??'';
   $('#repair-intro-difference').textContent=`這段旋律${level.difference}`;$('#repair-damaged-difference').textContent=level.difference;
   $('.repair-mission').textContent=`目標：把你的樂譜改成和原曲一樣。${level.mission}`;
-  $('.repair-edit-instruction').textContent=level.kind==='rhythm'?'點音符試聽，再調整時值。休止符不發聲。':'點音符試聽，再調整音高。';
+  $('.repair-edit-instruction').textContent=level.kind==='rhythm'?'點音符試聽，再調整時值。休止符不發聲。':level.kind==='mixed'?'點音符試聽，再調整音高與時值。':'點音符試聽，再調整音高。';
   $('.repair-success-copy').textContent=currentPraise;
   const completed=levels.filter(value=>progress.completed.includes(value.id)).length;
   $('.repair-success-note').textContent=completed===levels.length?`本批 ${levels.length} 關全數修復！新關卡將陸續加入。`:`「${level.target.title}」修復完成！已修復 ${completed} / ${levels.length} 關。`;
@@ -88,7 +88,7 @@ function persistProgress(){
 function resetLevel(index:number,focus=true){
   stop();levelIndex=index;level=levels[index];state={melody:structuredClone(level.damaged),cursor:1,octave:2};flow=newRepairFlow();history.clear();hints=0;currentPraise='';
   $('#repair-hint-text').textContent='';$('#repair-hint').textContent='需要提示';$('#repair-result').textContent='';$('#repair-result').removeAttribute('data-passed');
-  $<HTMLDetailsElement>('.repair-rhythm').open=level.kind==='rhythm';
+  $<HTMLDetailsElement>('.repair-rhythm').open=level.kind!=='pitch';
   persistProgress();const url=new URL(location.href);url.searchParams.set('level',level.id);window.history.replaceState(null,'',url);
   renderEditor();renderFlow(focus);
 }
@@ -168,4 +168,4 @@ $('#repair-replay').onclick=()=>resetLevel(levelIndex);
 const share=createShareDialog(()=>state.melody,stop);$('#repair-share').onclick=()=>{try{share.open();}catch(error){audioMessage((error as Error).message);}};
 window.addEventListener('blur',stop);window.addEventListener('pagehide',stop);document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
 document.addEventListener('keydown',event=>{if(document.querySelector('dialog[open]'))return;if(event.key==='Escape')stop();if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='z'&&!(event.target instanceof HTMLElement&&event.target.matches('input,select,textarea'))){event.preventDefault();restore(event.shiftKey?'redo':'undo');}});
-idle();$<HTMLDetailsElement>('.repair-rhythm').open=level.kind==='rhythm';renderEditor();renderFlow();
+idle();$<HTMLDetailsElement>('.repair-rhythm').open=level.kind!=='pitch';renderEditor();renderFlow();

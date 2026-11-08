@@ -38,15 +38,28 @@ describe('cross-page navigation',()=>{
   });
 });
 
-describe('three classic repair levels',()=>{
+describe('classic repair levels',()=>{
   it('ships the intended melodies, with independent, precisely scoped damage',()=>{
-    const levels=repairLevels();expect(levels.map(value=>value.id)).toEqual(['nokia','ode-to-joy','fate']);
-    expect(levels.map(value=>compareRepair(value.target,value.damaged).pitchErrors)).toEqual([[2],[4,10],[]]);
-    expect(levels.map(value=>compareRepair(value.target,value.damaged).rhythmErrors)).toEqual([[],[],[0,4]]);
+    const levels=repairLevels();expect(levels.map(value=>value.id)).toEqual(['nokia','ode-to-joy','fate','fur-elise','alla-turca','nachtmusik']);
+    expect(levels.map(value=>compareRepair(value.target,value.damaged).pitchErrors)).toEqual([[2],[4,10],[],[1,3],[2],[0,10]]);
+    expect(levels.map(value=>compareRepair(value.target,value.damaged).rhythmErrors)).toEqual([[],[],[0,4],[],[6],[]]);
     for(const value of levels){expect(isMelody(value.target)).toBe(true);expect(isMelody(value.damaged)).toBe(true);expect(compareRepair(value.target,structuredClone(value.target)).passed).toBe(true);expect(value.hints).toHaveLength(3);}
   });
   it('retains the fifth symphony opening rest, short-short-short and sustained ending',()=>{
     const fifth=repairLevels()[2].target.events;expect(fifth[0]).toEqual({type:'rest',duration:8,dotted:false});
     expect(fifth.slice(1,4).map(value=>value.duration)).toEqual([8,8,8]);expect(fifth[4].duration).toBe(2);expect(fifth.at(-1)).toMatchObject({duration:1,dotted:false});
   });
+});
+
+it('requires both corrections for the mixed Turkish March challenge',()=>{
+  const value=repairLevels()[4];const candidate=structuredClone(value.damaged);candidate.events[2]=structuredClone(value.target.events[2]);
+  expect(compareRepair(value.target,candidate)).toMatchObject({passed:false,pitchErrors:[],rhythmErrors:[6]});
+  candidate.events[6]=structuredClone(value.target.events[6]);expect(compareRepair(value.target,candidate).passed).toBe(true);
+});
+it('changes only the intended octaves in Eine kleine Nachtmusik',()=>{
+  const value=repairLevels()[5];for(const index of [0,10]){
+    expect(value.target.events[index]).toMatchObject({duration:4,sharp:false});
+    const correct=value.target.events[index],wrong=value.damaged.events[index];
+    if(correct.type==='note'&&wrong.type==='note'){expect(correct.pitch).toBe(wrong.pitch);expect(correct.octave-wrong.octave).toBe(1);}else throw new Error('Expected notes');
+  }
 });
