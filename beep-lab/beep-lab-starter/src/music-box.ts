@@ -1,3 +1,4 @@
+import { createRemoveDialog } from './remove-dialog';
 import { removedSongs, removeSong, restoreLastSong, REMOVED_KEY } from './music-core/removed-songs';
 import { ensureStarterLibrary } from './music-core/starter-library';
 import { mountLabNavigation } from './navigation';
@@ -73,6 +74,12 @@ function download(song:Melody,button:HTMLButtonElement) {
   } catch {status.textContent='此瀏覽器無法產生 WAV，請改用新版 Safari 或 Chrome。';finish();}
 }
 const restoreButton=document.querySelector<HTMLButtonElement>('#box-restore')!;
+const removal=createRemoveDialog(id=>{
+  removeSong(localStorage,id);render();
+},(id,removed)=>{
+  if(removed){status.textContent='作品已移除，可按「復原最近移除」還原。';restoreButton.focus();}
+  else {const buttons=document.querySelectorAll<HTMLButtonElement>('.album-remove');Array.from(buttons).find(button=>button.dataset.songId===id)?.focus();}
+});
 restoreButton.onclick=()=>{try{const restored=restoreLastSong(localStorage);render();status.textContent=restored?`已復原「${restored.title}」。`:'';}catch(error){status.textContent=(error as Error).message;}};
 function render() {
   stop();observer?.disconnect();artworks.clear();playButtons.clear();tagButtons.clear();
@@ -109,7 +116,7 @@ function render() {
     const edit=document.createElement('a');const editLocation=new URL(location.href);editLocation.search='';editLocation.hash='';editLocation.searchParams.set('song',song.id);edit.href=editLocation.href;edit.innerHTML=icon('edit');edit.setAttribute('aria-label',`編輯 ${song.title}`);edit.title='編輯';
     const share=document.createElement('button');share.innerHTML=icon('share');share.setAttribute('aria-label',`分享 ${song.title}`);share.title='分享';share.onclick=()=>{sharingSong=song;try{sharing.open();}catch(error){status.textContent=(error as Error).message;}};
     const remove=document.createElement('button');remove.innerHTML=icon('trash');remove.setAttribute('aria-label',`移除 ${song.title}`);remove.title='移除（可復原）';remove.className='album-remove';remove.disabled=!library.writable;
-    remove.onclick=()=>{stop();if(!confirm(`移除「${song.title}」？之後可按「復原最近移除」還原。`))return;try{removeSong(localStorage,song.id);render();status.textContent=`已移除「${song.title}」，可按「復原最近移除」還原。`;restoreButton.focus();}catch(error){status.textContent=(error as Error).message;}};
+    remove.dataset.songId=song.id;remove.onclick=()=>{stop();removal.open(song);};
     heading.append(remove);controls.append(playButton,wav,edit,share);info.append(heading,meta,badges,controls);album.append(cover,info);grid.append(album);
     if(observer){pending.set(cover,draw);observer.observe(cover);}else draw();
   });
