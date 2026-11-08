@@ -451,11 +451,64 @@ function bindPitchCapture({ button, clock, resultButton, dialog, image, duration
   };
 }
 
+// src/live/mini-otama.js
+
+const MINI_OTAMA_MEDIA = '(min-width: 900px) and (hover: hover) and (pointer: fine)';
+
+// Visual simulation only: follow detected Hz using the virtual instrument's
+// default inverse-inspired mapping. This is not a measured DX finger position.
+function miniOtamaPitch(frequencyHz) {
+  if (!Number.isFinite(frequencyHz) || frequencyHz <= 0) return null;
+  const range = RANGES['g3-d6'];
+  return {
+    frequencyHz,
+    position: positionAt(frequencyHz, 'inverse', range),
+    limit: frequencyHz < range.base ? 'low' : frequencyHz > range.top ? 'high' : 'none',
+  };
+}
+
+function bindMiniOtama({ button, panel, finger, face, onResize, media = window.matchMedia(MINI_OTAMA_MEDIA) }) {
+  // Keep already cached HTML without the new controls usable.
+  if (!button || !panel) return { update() {}, stop() {} };
+  let enabled = false, latest = null, sounding = false;
+  const paint = () => {
+    if (panel.hidden) return;
+    finger.hidden = !latest;
+    if (latest) {
+      finger.style.bottom = `${(1 - latest.position) * 100}%`;
+      panel.dataset.limit = latest.limit;
+    }
+    face.classList.toggle('playing', sounding);
+  };
+  const render = () => {
+    const visible = enabled && media.matches;
+    button.hidden = !media.matches;
+    button.setAttribute('aria-pressed', String(visible));
+    button.setAttribute('aria-label', visible ? '收起虛擬琴頸' : '顯示虛擬琴頸');
+    button.title = `${visible ? '收起' : '顯示'}虛擬琴頸（Simulation，G3–D6）`;
+    panel.hidden = !visible;
+    document.documentElement.classList.toggle('mini-otama-open', visible);
+    paint(); onResize();
+  };
+  button.addEventListener('click', () => { enabled = !enabled; render(); });
+  media.addEventListener('change', render);
+  render();
+  return {
+    update(frequencyHz) {
+      const pitch = miniOtamaPitch(frequencyHz);
+      if (pitch) latest = pitch;
+      sounding = Boolean(pitch); paint();
+    },
+    stop() { sounding = false; paint(); },
+  };
+}
+
 // src/live/app.js
 
 const liveElement = id => document.getElementById(id);
 const timeline = new PitchTimeline(liveElement('timeline'), liveElement('timeline-empty'));
 const stability = new PitchStability();
+const miniOtama = bindMiniOtama({ button: liveElement('mini-otama-toggle'), panel: liveElement('mini-otama'), finger: liveElement('mini-finger'), face: liveElement('mini-face'), onResize: () => timeline.draw() });
 // A cached pre-capture HTML page may fetch the latest bundle on a cache miss.
 // Keep its original analyser usable until the HTML itself is refreshed.
 const capture = liveElement('recording-preview') ? bindPitchCapture({
@@ -480,6 +533,7 @@ function resetReadout() {
   liveElement('live-needle').hidden = true;
   updateLevel(0);
   liveElement('live-face').classList.remove('playing');
+  miniOtama.stop();
   stability.reset();
 }
 const microphone = new MicrophoneInput({
@@ -508,6 +562,7 @@ const microphone = new MicrophoneInput({
   onFrame(frame) {
     timeline.add(frame);
     capture.add(frame);
+    miniOtama.update(frame.frequencyHz);
     const movement = stability.update(frame);
     updateLevel(Math.max(0, Math.min(1, (20 * Math.log10(Math.max(1e-6, frame.rms)) + 60) / 60)), frame.clipped);
     liveElement('live-face').classList.toggle('playing', frame.frequencyHz !== null);

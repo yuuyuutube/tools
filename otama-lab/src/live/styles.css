@@ -36,3 +36,24 @@ html.live-focus{overflow:hidden;overscroll-behavior:none}.live-focus body{positi
 .live-focus .focus-live-status[data-error=true]{position:static;width:auto;height:auto;clip-path:none;white-space:normal;margin:6px 0 0;color:var(--coral);font-size:12px;line-height:1.5;text-align:center}
 @media(max-height:400px){.live-focus .capture-controls{min-height:60px;padding-top:4px}.live-focus .record-group{flex-direction:row;gap:8px}}
 @media(max-width:420px){.record-group{gap:6px}.recording-clock{font-size:10px}.preview-actions{padding:14px}.preview-header{padding:14px}.preview-image-wrap{padding:0 10px}.preview-actions .btn{font-size:12px}}
+
+/* Optional desktop-only pitch follower, using the original character artwork. */
+.mini-otama,.mini-otama-toggle{display:none}
+.mini-otama[hidden],.mini-otama-toggle[hidden]{display:none!important}
+@media(min-width:900px) and (hover:hover) and (pointer:fine){
+  .live-focus .mini-otama-toggle{display:inline-flex;width:44px;padding:10px}
+  .mini-otama-toggle[aria-pressed=true]{background:var(--panel);border-color:var(--lime);color:var(--lime)}
+  .live-focus.mini-otama-open .timeline-card{display:grid;grid-template-columns:128px minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto auto;column-gap:16px}
+  .live-focus.mini-otama-open .timeline-wrap{grid-column:2;grid-row:1;min-width:0}
+  .live-focus.mini-otama-open .focus-live-status{grid-column:2;grid-row:2}
+  .live-focus.mini-otama-open .capture-controls{grid-column:2;grid-row:3}
+  .live-focus.mini-otama-open .mini-otama{display:flex;flex-direction:column;align-items:center;justify-content:center;grid-column:1;grid-row:1/-1;min-height:0;align-self:stretch;pointer-events:none;--mini-neck-height:clamp(60px,calc(var(--live-focus-height,100dvh) - 180px),260px)}
+  .mini-neck{display:flex;align-items:center;gap:9px}
+  .mini-range{height:calc(var(--mini-neck-height) - 32px);display:flex;flex-direction:column;justify-content:space-between;color:var(--muted);font:10px ui-monospace,monospace}
+  .mini-otama .rail{height:var(--mini-neck-height);width:62px;border-width:6px;border-radius:32px;cursor:default;box-shadow:inset 3px 0 6px #afbaaf}
+  .mini-otama .strip{inset:10px 8px}.mini-otama .finger{width:46px;height:18px;border-width:2px;box-shadow:none}
+  .mini-otama .face{margin:0 auto -8px;transform:rotate(-5deg) scale(.78);flex-shrink:0}
+  .mini-caption{font:9px ui-monospace,monospace;color:var(--muted);margin-top:3px}
+  .mini-otama[data-limit=low] .mini-range span:first-child,.mini-otama[data-limit=high] .mini-range span:last-child{color:var(--coral)}
+  .mini-otama[data-limit=low] .finger,.mini-otama[data-limit=high] .finger{background:var(--coral)}
+}

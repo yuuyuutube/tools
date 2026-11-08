@@ -155,3 +155,14 @@ npm run build
 - 測試宿主偶有不屬於專案的 MutationObserver.observe 訊息；產品程式沒有使用 MutationObserver。瀏覽器 PASS 紀錄與預覽保存於 docs/qa/capture-*。
 
 尚未驗證：本次新介面在實體 iOS／Android 的觸控、背景行為及原生分享選單；真實分享未向任何第三方傳送檔案。圖片分享測試以 stub 驗證 File 與取消行為，不宣稱已完成手機原生分享。錄製只保存衍生音高，不錄製聲音。
+
+## 2026-11-08 · 桌機音高跟隨小琴頸
+
+- Node 49 / 49 通過，包含固定 G3–D6 的 1001 個 inverse 模擬位置、連續非標準音、超出音域的視覺限制與無效輸入不產生位置。
+- 新增瀏覽器桌機 23 / 23：預設收起、SVG／ARIA 開關、左側獨立欄位不遮圖、原角色造型、Simulation、唯讀琴頸、原生合成音訊經 Worker／YIN 追蹤 A4、+37 cents、G3／D6、82.41／1900 Hz、收起仍記住新音高、靜音／關麥克風保留位置並閉嘴、進出模式保留偏好，以及展開時錄製 PNG 的相容性。
+- 390×844 與 844×390 的手機／窄 viewport 各 7 / 7 通過：按鈕、角色均隱藏，主要麥克風分析與錄製仍可用，沒有頁面溢出。這是瀏覽器尺寸測試，不宣稱實體手機測試。
+- 另以實際 viewport resize 驗證：桌機展開後縮到 390px 隱藏，回到 1280px 恢復展開且位置完全相同；紀錄在 docs/qa/mini-otama-resize.json。桌機 Space 可切換 aria-pressed，基本鍵盤操作正常。
+- 既有錄製流程 24 / 24、舊快取 HTML 搭配新 bundle 的音高分析 31 / 31 通過。
+- 所有音高測試輸入均為原生 Web Audio 合成 MediaStream，無實體麥克風或喇叭輸出，不是 DX 測量資料。
+- `src/analysis/yin.js`、`src/input/microphone.js`、`src/analysis/stability.js`、pitch-worker.js、既有虛擬演奏 bundle、PNG 匯出與錄製模組皆未修改；靈敏度、原始 Hz／cents 與時間線範圍不受小琴頸限制。
+- 尚未驗證：實體桌機麥克風、實體觸控與粗指標裝置的自動隱藏、螢幕閱讀器。本功能使用 width + hover + pointer 的實際能力查詢，並在 CSS 與 JS 同時控制可見性。

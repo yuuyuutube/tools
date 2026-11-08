@@ -4,10 +4,12 @@ import { PitchStability } from '../analysis/stability.js';
 import { PitchTimeline } from './timeline.js';
 import { bindLiveFocus } from './focus.js';
 import { bindPitchCapture } from './capture.js';
+import { bindMiniOtama } from './mini-otama.js';
 
 const liveElement = id => document.getElementById(id);
 const timeline = new PitchTimeline(liveElement('timeline'), liveElement('timeline-empty'));
 const stability = new PitchStability();
+const miniOtama = bindMiniOtama({ button: liveElement('mini-otama-toggle'), panel: liveElement('mini-otama'), finger: liveElement('mini-finger'), face: liveElement('mini-face'), onResize: () => timeline.draw() });
 // A cached pre-capture HTML page may fetch the latest bundle on a cache miss.
 // Keep its original analyser usable until the HTML itself is refreshed.
 const capture = liveElement('recording-preview') ? bindPitchCapture({
@@ -32,6 +34,7 @@ function resetReadout() {
   liveElement('live-needle').hidden = true;
   updateLevel(0);
   liveElement('live-face').classList.remove('playing');
+  miniOtama.stop();
   stability.reset();
 }
 const microphone = new MicrophoneInput({
@@ -60,6 +63,7 @@ const microphone = new MicrophoneInput({
   onFrame(frame) {
     timeline.add(frame);
     capture.add(frame);
+    miniOtama.update(frame.frequencyHz);
     const movement = stability.update(frame);
     updateLevel(Math.max(0, Math.min(1, (20 * Math.log10(Math.max(1e-6, frame.rms)) + 60) / 60)), frame.clipped);
     liveElement('live-face').classList.toggle('playing', frame.frequencyHz !== null);

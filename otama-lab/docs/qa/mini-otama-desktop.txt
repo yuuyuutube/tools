@@ -1,0 +1,23 @@
+PASS: normal page hides the mini Otama button and panel
+PASS: panel starts collapsed and has no invented pitch marker
+PASS: toggle visibility follows desktop pointer and width requirements
+PASS: desktop can expand the panel with an accessible SVG toggle
+PASS: left panel has reserved space without covering the graph
+PASS: original face and complete neck are retained
+PASS: range and Simulation distinction are present
+PASS: mini neck is visual-only and does not become a second input
+PASS: original pitch readout remains A4 with zero cents
+PASS: A4 moves the marker to the matching continuous inverse position
+PASS: off-note input moves continuously without semitone snapping
+PASS: G3 is the upper end of the neck
+PASS: D6 is the lower end near the face
+PASS: below G3 clamps only the visual marker
+PASS: above D6 clamps only the visual marker
+PASS: reopening shows the latest heard pitch, including while hidden
+PASS: silence closes the mouth while retaining the last pitch position
+PASS: recording with mini panel still fits the focused viewport
+PASS: recorded PNG export remains independent of the character panel
+PASS: microphone stop preserves the marker and returns the face to rest
+PASS: leaving focus hides the panel without affecting the normal page
+PASS: returning to focus preserves the chosen panel and last pitch
+PASS: viewport has no horizontal or vertical scroll surface

@@ -41,6 +41,14 @@ python3 -m http.server 4187 --bind 127.0.0.1
 
 PNG 使用本機 Canvas 產生，1440px 寬、最多 1432px 高，只有音高與時間刻度及軌跡，沒有裝飾標語。沒有音高的錄製不產生假軌跡或空白下載。圖片在按分享之前已完成產生，以保留使用者手勢；依 [Web Share API](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share)／[canShare](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/canShare) 檢查圖片分享支援，不支援時保留 PNG 下載。分享取消不會丟失結果。下載／分享選單的實際行為依瀏覽器與裝置而異。
 
+### 桌機音高跟隨琴頸
+
+軌跡專注模式中，900px 以上且支援 hover／fine pointer 的桌機環境會顯示 SVG Otama 按鈕。預設收起，按下後在最左側留出一欄，顯示沿用原始臉部美術的小琴頸；手機／窄畫面會連同按鈕隱藏，回到桌機尺寸保留本次展開偏好。
+
+固定 **G3–D6**，沿用虛擬演奏預設的反比靈感 **Simulation**（`positionAt(f, 'inverse', RANGES['g3-d6'])`）。上端為 G3，靠近頭部的下端為 D6；按實際偵測頻率連續移動，不吸附音符。這是音高視覺對照，不是 DX 的實測按壓位置，也不會發出聲音。
+
+尚未偵測到音高時不預填指示器。有音高時張嘴；靜音、無可信音高或關閉麥克風時，嘴巴恢復、指示器留在最後一次音高。低於 G3／高於 D6 時只將小琴頸限制在兩端，端點與指示器以珊瑚色提示；主要 Hz、軌跡、錄製資料保持完整。收起後仍記住新音高，重新展開會顯示最新位置。
+
 ## 音域
 
 一般模式的「音域」只有兩個選項，與映射模型分開設定：
@@ -111,12 +119,15 @@ npm test
 - `analysis/stability.js`：獨立的音高穩定度，不改寫原始 Hz。
 - `live/timeline.js` / `live/app.js` / `live/styles.css`：12 秒歷史與獨立真琴分析頁。
 - `live/focus.js`：軌跡專注模式、可見 viewport 與返回位置。
+- `live/mini-otama.js`：桌機小琴頸的純位置映射、跟隨與顯示偏好，不介入音訊分析。
 - `live/recording.js`：60 秒純音高資料與 12 秒分行，不保存音訊。
 - `live/export.js` / `live/capture.js`：本機 Canvas PNG、預覽、下載與檔案分享生命週期。
 
 `build` 依固定依賴順序將小型 modules 合成為 classic IIFE `app.bundle.js`、`live.bundle.js` 與 `pitch-worker.js`，並為 bundle／Worker／CSS 加上內容版本參數；另產出 `dist/`（兩頁 HTML、bundles、Worker、CSS、assets、.nojekyll）。所有路徑相對於頁面，可部署 Pages 子路徑。生成器只支援目前使用的 named relative imports 與具名宣告；加入其他 module 語法會明確失敗。對已快取的舊版演奏頁，程式會補齊缺少的音域元件。修改 `src/` 後務必重新 build，並提交更新的根目錄 bundles／Worker。
 
 瀏覽器整合測試：開啟 `/tests/browser.html` 按 Run checks，會播放短暫合成音。測試頁本身使用 ES modules，因此需 HTTP。測試檔不進 dist。
+
+小琴頸測試：`/tests/mini-otama-browser.html`，依目前 viewport 檢查桌機跟隨或手機隱藏；以原生合成音訊通過正式偵測管線，不是 DX 實測。
 
 軌跡錄製測試：`/tests/capture-browser.html`，包含短段完整流程及獨立的真實 60 秒自動停止檢查。使用原生合成音訊與 stub 分享 API，不存取實體麥克風或真的分享檔案。
 

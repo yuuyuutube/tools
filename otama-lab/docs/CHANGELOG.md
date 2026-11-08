@@ -89,3 +89,13 @@ Commit：`feat(otama-lab): add standalone live microphone pitch lab`
 - 新增錄製純函式、匯出與瀏覽器整合測試，包含真實一分鐘計時與五行圖片逐行像素檢查。
 
 Commit：`feat(otama-lab): add focused pitch capture and PNG sharing`
+
+## 2026-11-08 · 桌機音高跟隨小琴頸
+
+- 在軌跡專注模式加入桌機限定的 SVG Otama 切換按鈕，預設收起；左側展開獨立欄位，圖表與控制列不被覆蓋。
+- 沿用原臉、眼睛、嘴巴與琴頸造型，固定 G3–D6；高音靠近頭部，以既有 inverse-inspired Simulation 連續對照實際偵測頻率。
+- 未偵測前不顯示假位置，靜音／關麥克風保留最後音高並閉嘴；收起時繼續記住音高，超出音域僅限制小琴頸顯示。
+- 手機／窄畫面隱藏按鈕及角色，回到桌機保留本次選擇與位置。沒有新增聲音輸出、音高吸附或分析參數。
+- 加入映射純函式與桌機／手機瀏覽器測試；驗證新面板與 PNG 錄製相容。
+
+Commit：`feat(otama-lab): add desktop pitch-following mini Otama`

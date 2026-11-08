@@ -1,0 +1,7 @@
+PASS: normal page hides the mini Otama button and panel
+PASS: panel starts collapsed and has no invented pitch marker
+PASS: toggle visibility follows desktop pointer and width requirements
+PASS: mobile focus contains neither a toggle nor a visible character
+PASS: original pitch readout remains A4 with zero cents
+PASS: microphone analysis stays usable while the mini feature is hidden
+PASS: viewport has no horizontal or vertical scroll surface

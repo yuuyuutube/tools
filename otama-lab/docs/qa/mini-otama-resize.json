@@ -1,0 +1,11 @@
+{
+  "narrow": {
+    "toggle": false,
+    "panel": false
+  },
+  "wide": {
+    "toggle": true,
+    "panel": true,
+    "positionPreserved": true
+  }
+}
