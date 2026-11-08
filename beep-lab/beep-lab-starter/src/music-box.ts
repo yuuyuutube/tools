@@ -1,3 +1,4 @@
+import { mountLabNavigation } from './navigation';
 import { createTagDialog } from './tag-dialog';
 import { readTags,saveSongTags,filterSongs,tagOptions,TAGS_KEY,type TagResult } from './music-core/tags';
 import { AudioActivationError, AudioEngine } from './audio-engine/player';
@@ -12,6 +13,7 @@ import { icon } from './icons';
 const app=document.querySelector<HTMLElement>('#app')!;
 document.title='POCKET MUSIC BOX';
 app.innerHTML=`<header class="site-header box-header"><img src="./favicon.svg" width="32" height="32" alt=""/><h1>POCKET MUSIC BOX</h1><a class="composer-link" href="./">${icon('add')}<span>編新旋律</span></a></header><main class="box-main"><div class="box-toolbar"><p id="box-count"></p><button id="box-stop" disabled>${icon('stop')}<span>停止</span></button></div><p class="box-storage-note">作品儲存於此瀏覽器。</p><p id="box-status" class="box-status" role="status" aria-live="polite"></p><button id="box-enable" hidden>${icon('volume')}<span>啟用聲音</span></button><div id="box-warning" role="status"></div><div class="box-organizer"><label for="box-search">搜尋</label><input id="box-search" type="search" placeholder="搜尋曲名或標籤" autocomplete="off"/><div class="box-filters" role="group" aria-label="標籤篩選"></div></div><div class="album-grid"></div></main>`;
+mountLabNavigation('box');
 const status=document.querySelector<HTMLElement>('#box-status')!;
 const stopButton=document.querySelector<HTMLButtonElement>('#box-stop')!;
 const enableButton=document.querySelector<HTMLButtonElement>('#box-enable')!;

@@ -173,3 +173,11 @@
 ## Studio 專注模式
 
 101 項測試及 release build 通過。瀏覽器桌面確認只有 editor-panel 顯示、Studio class 保留且 body overflow hidden。375×812：body 與 document 高均 812、寬 375，音高區高 403px，底部播放控制位於視窗內；新增兩音與休止正常。812×375：body 寬高與視窗一致、音高區高 119px，新增／播放／退出按鈕均在視窗內。退出與 Esc 保留 Studio 和三個事件，body 恢復 static；Classic 專注仍顯示 editor-panel 與 keypad-panel。console 無錯誤，已檢視手機截圖。
+
+## M3.1 首關與全站串連
+
+106 項測試及 release build 通過。新增首關恰有一音高損壞、正確修復／節奏錯誤、休止／八度／時值／數量／速度判定、target 不被修改，以及四頁全部入口在 GitHub Pages 子路徑可互通、卡片具 demo 入口的測試。
+
+瀏覽器完成：原曲／修復版播放、錯誤提交、提示、將第三音改正後通關、故意改錯時值被拒、復原後通關、重置／復原／重做、分享修復作品及帶回 Composer，音符正確且為未儲存新作品。
+
+實際從 root 依共用導覽走 Composer → 示範卡片 → 音樂盒 → 鈴聲考古 → Composer，每頁導覽均存在；示範不依賴收藏。Studio 專注模式仍只有 editor-panel 且導覽隱藏。375px 考古頁寬度 375px，四個導覽入口及八音編輯區不溢出，console 無錯誤，已檢視手機截圖。

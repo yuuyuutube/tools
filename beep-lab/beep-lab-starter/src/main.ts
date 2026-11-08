@@ -1,3 +1,4 @@
+import { mountLabNavigation } from './navigation';
 import './style.css';
 import { createShareDialog } from './share-dialog';
 import { readSharedMelody } from './music-core/share';
@@ -34,7 +35,7 @@ const keys: { key: string; pitch?: string; label: string; symbol?: IconName }[] 
   { key: '0', label: '休止', symbol: 'rest' }, { key: '#', label: '升音', symbol: 'sharp' },
 ];
 $('#app').innerHTML = `
-  <header class="site-header"><img src="./favicon.svg" width="32" height="32" alt="" /><h1>BEEP COMPOSER</h1><a class="box-nav" href="?view=box" target="_blank" rel="noopener">音樂盒</a><div class="mode-switch" role="group" aria-label="編輯模式"><button id="mode-classic" aria-pressed="true">Classic</button><button id="mode-studio" aria-pressed="false">Studio</button></div><button id="focus-toggle" aria-label="進入專注模式" title="專注模式" aria-pressed="false">${icon('expand')}</button></header>
+  <header class="site-header"><img src="./favicon.svg" width="32" height="32" alt="" /><h1>BEEP COMPOSER</h1><div class="mode-switch" role="group" aria-label="編輯模式"><button id="mode-classic" aria-pressed="true">Classic</button><button id="mode-studio" aria-pressed="false">Studio</button></div><button id="focus-toggle" aria-label="進入專注模式" title="專注模式" aria-pressed="false">${icon('expand')}</button></header>
   <main>
     <section class="instrument" aria-label="單音編曲器">
       <div class="editor-panel">
@@ -93,6 +94,7 @@ $('#app').innerHTML = `
   </main>
   <dialog id="confirm-dialog" aria-labelledby="confirm-title"><form method="dialog"><h2 id="confirm-title">確認操作</h2><p id="confirm-text"></p><div class="dialog-actions"><button value="cancel">取消</button><button value="confirm" class="save-button">確認</button></div></form></dialog>
 `;
+mountLabNavigation('composer');
 let studioSelection = false;
 const shareDialog=createShareDialog(()=>({...state.melody,title:titleInput.value.trim()}),stop);
 $('#share').onclick=()=>{try{shareDialog.open();}catch(error){notify((error as Error).message);}};

@@ -180,3 +180,11 @@ WAV 為無依賴、可測試的 PCM 合成器，沿用 frequency／eventSeconds 
 使用者要求 Studio 進入全螢幕樣式時只剩 editor-panel，body 不出現捲軸。本次移除進入專注模式時強制切 Classic 的邏輯，保留目前 viewMode，不再需要 modeBeforeFocus。Studio 使用單一 minmax(0,1fr) 編輯區，固定視窗並限制整頁 overflow，音高圖以剩餘高度提供內部捲動。隱藏重複游標／附點工具及說明，保留 Studio 表單、固定休止列、播放與退出按鈕；短橫向將欄位與新增操作並排。Classic 原版面保持 editor＋keypad。
 
 Esc 在 Studio 拖曳取消已 preventDefault 時不退出專注；一般 Esc 退出並停止播放，不再繼續觸發取消選取。退出保留 Studio 與歌曲。既有 ?focus=1 直連仍依初始 Classic 模式進入，不擴充新的模式網址參數。
+
+## M3.1：鈴聲考古首關與共用導覽
+
+使用者授權先做一關聽音修復，並要求朋友只拿一個網址即可逛所有現有頁面。本次僅製作第一關，不提前建立其餘四關或未來作品。
+
+首關使用自製原創八事件旋律「回聲小徑」，只破壞第三音音高；target 與 damaged 是分離副本。compareRepair 比對 canonical 音高／休止、時值、附點、數量及 BPM，忽略 ID／標題／時間戳；不比較音訊檔或依畫面字串判定。使用共同 Melody、AudioEngine、updateSelected 及 EditHistory；固定事件數，以選取音符與表單修復，提供三層漸進提示、明確成功／錯誤、復原／重做與可復原的重置。通關後分享或透過原分享格式載入 Composer 為新作品，不自動寫入收藏。關卡進度只在本頁，暫不儲存通關紀錄。
+
+navigation.ts 集中四個現有入口，各頁在 Header 後插入同一組導覽與 aria-current。分享卡片入口為 view=card&demo=1，無 hash 時使用原有示範旋律；壞分享 hash 仍呈現錯誤，不以示範掩蓋。導覽切換同分頁，保留 Composer beforeunload 的未儲存保護；Studio／Classic 專注模式均隱藏導覽。既有 URL 與分享資料格式不變，不額外建立裝飾性首頁。根目錄或任一卡片網址皆可作朋友入口；本機收藏與標籤依舊不對外共享。

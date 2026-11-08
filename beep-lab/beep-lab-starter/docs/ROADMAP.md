@@ -9,7 +9,7 @@
 | M0.3 | Composer — Studio Mode | M0.1 | 視覺化編輯、Undo/Redo、與 Classic 共用歌曲資料 |
 | M1 | BEEP CARD（已實作） | M0.1 | 用同一歌曲資料產生能分享、播放的卡片；不自動播放 |
 | M2 | POCKET MUSIC BOX（核心功能已實作） | M0.1 | 收藏、標籤、試聽、WAV 匯出；不同音色可後加 |
-| M3 | RINGTONE ARCHAEOLOGY | M0.1 | 5 關可完整通關，聽音修復與明確判定 |
+| M3 | RINGTONE ARCHAEOLOGY（首關已實作，五關待擴充） | M0.1 | 5 關可完整通關，聽音修復與明確判定 |
 | M4 | BEEP BEEP FACTORY | M3 核心可選 | 3 個完整委託、可解釋的規則評分、荒謬評語 |
 | M5 | PLEASE HOLD | M4 共用委託概念 | 15–30 分鐘可通關的互動敘事小品 |
 | M6 | BEEP GARDEN | M0.1 | 旋律決定植物形態，可播放並匯出靜態圖 |
