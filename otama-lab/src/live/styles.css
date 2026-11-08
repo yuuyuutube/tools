@@ -2,3 +2,37 @@
 @media(max-width:850px){.masthead .lab-link+.mode-button span{display:none}.masthead .lab-link+.mode-button{width:44px;padding:10px}.live-layout{grid-template-columns:270px minmax(0,1fr)}.live-readout{padding:20px}.live-readout .value{font-size:32px}.timeline-card{padding:20px 15px}}
 @media(max-width:650px){.masthead:has(.lab-link) h1{display:none}.masthead{gap:12px}.lab-link{font-size:12px;padding:9px 10px}.live-layout{grid-template-columns:1fr}.live-readout{display:grid;grid-template-columns:76px minmax(0,1fr);column-gap:16px;padding:22px}.live-readout h2{grid-column:1/-1}.live-readout .face{width:115px;transform:rotate(-5deg) scale(.72);transform-origin:center;margin:14px -19px 0;grid-row:2/4;align-self:center}.live-readout .readouts{border:0;padding-top:14px;grid-column:2}.live-readout .readouts>div+div{padding-left:12px}.live-readout .value{font-size:28px}.live-readout .tuner{grid-column:2;margin-top:0}.live-quality{grid-column:1/-1;grid-template-columns:1fr 1fr;margin:22px 0 18px;padding-top:18px;border-top:1px solid var(--edge)}.live-quality>div{display:flex;gap:12px;align-items:center}.live-quality dt{margin:0}.live-quality dd{font-size:15px}.mic-control,.mic-status,.level-row{grid-column:1/-1}.mic-status{min-height:22px}.timeline-card{padding:22px 15px}.timeline-wrap{margin-top:16px;margin-bottom:10px}.live-page .masthead h1{display:block;font-size:13px}.live-page .masthead .lab-link span{display:none}.live-page .masthead .lab-link{width:44px;padding:10px}}
 @media(max-width:360px){.live-page .masthead h1{display:none}.live-readout{column-gap:10px;grid-template-columns:64px minmax(0,1fr);padding:18px}.live-readout .face{grid-row:2;transform:rotate(-5deg) scale(.65);margin-left:-25px}.live-readout .readouts{grid-template-columns:1fr;gap:3px}.live-readout .readouts>div{display:flex;align-items:baseline;gap:8px;border:0;padding:0}.live-readout .readouts>div+div{padding:0}.live-readout .section-label{font-size:11px}.live-readout .value{font-size:26px;white-space:nowrap}.live-readout .tuner{grid-column:1/-1;margin-top:10px}.live-quality>div{gap:8px}.live-quality dt{font-size:11px}}
+
+/* Capture controls share the same microphone and pitch stream in both views. */
+.timeline-actions,.capture-controls,.record-group,.focus-input{display:flex;align-items:center;gap:8px}
+.capture-controls{flex-wrap:wrap;padding:16px 0;margin-top:auto}
+.record-group{min-width:0}.record-button .record-mark{fill:var(--coral);stroke:var(--coral)}
+.record-button[aria-pressed=true]{border-color:var(--coral);color:var(--coral)}
+.recording-clock{font:11px ui-monospace,monospace;color:var(--coral);white-space:nowrap;font-variant-numeric:tabular-nums}
+.focus-input,.focus-exit,.focus-live-status{display:none}.result-button[hidden],.recording-clock[hidden]{display:none}
+.capture-mic{width:44px;padding:10px}.capture-mic[aria-pressed=true]{background:var(--lime);border-color:var(--lime);color:var(--bg)}
+.capture-mic[aria-busy=true]{border-style:dashed}.capture-mic[data-state=error]{border-color:var(--coral);color:var(--coral)}
+.compact-level{width:30px;height:5px;border-radius:4px;overflow:hidden;background:var(--edge)}
+.compact-level i{display:block;width:100%;height:100%;background:var(--lime);transform:scaleX(0);transform-origin:left}
+.compact-level[data-clipped=true] i{background:var(--coral)}
+.recording-preview{color:var(--txt);background:var(--panel);border:1px solid var(--edge);border-radius:16px;padding:0;width:min(920px,calc(100% - 24px));max-height:calc(100dvh - 24px);overflow:hidden;-webkit-user-select:none;user-select:none}
+.recording-preview[open]{display:flex;flex-direction:column}.recording-preview::backdrop{background:#061011d9}
+.preview-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;flex-shrink:0}.preview-header p{font:12px ui-monospace,monospace;color:var(--muted);margin:6px 0 0}
+.preview-header .btn{width:44px;padding:10px}.preview-image-wrap{overflow:auto;min-height:0;padding:0 18px;overscroll-behavior:contain;touch-action:pan-x pan-y pinch-zoom}
+.recording-image{display:block;width:100%;height:auto;border-radius:6px}.recording-image[hidden]{display:none}
+.preview-status{font-size:12px;line-height:1.8;color:var(--muted);padding:0 20px;margin:10px 0 0;flex-shrink:0}.preview-status:empty{display:none}
+.preview-actions{display:flex;flex-wrap:wrap;gap:8px;padding:16px 20px 20px;flex-shrink:0}.preview-actions a{text-decoration:none}.preview-actions [aria-disabled=true]{opacity:.45;pointer-events:none}.discard-button{margin-left:auto}
+/* A CSS viewport mode works on mobile without requiring browser fullscreen. */
+html.live-focus{overflow:hidden;overscroll-behavior:none}.live-focus body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}
+.live-focus .page{max-width:none;padding:0;height:var(--live-focus-height,100dvh);overflow:hidden}
+.live-focus .masthead,.live-focus .live-readout,.live-focus footer,.live-focus .skip{display:none}.live-focus .live-layout{display:contents}
+.live-focus .timeline-card{display:flex;flex-direction:column;width:100%;height:100%;background:var(--bg);border:0;border-radius:0;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));overflow:hidden}
+.live-focus .timeline-card>.section-top,.live-focus .timeline-caption{display:none}
+.live-focus .timeline-wrap{flex:1;min-height:0;margin:0;overflow:hidden;touch-action:none}.live-focus .timeline{height:100%;min-height:0}
+.live-focus .capture-controls{flex-shrink:0;min-height:76px;margin:0;padding:8px 0 0;gap:6px;flex-wrap:nowrap;justify-content:space-between}
+.live-focus .focus-input{display:flex;gap:6px}.live-focus .focus-exit{display:inline-flex;width:44px;padding:10px}
+.live-focus .record-button,.live-focus .result-button{width:44px;padding:10px}.live-focus .record-button span,.live-focus .result-button span{display:none}
+.live-focus .record-group{flex-direction:column;gap:5px}.live-focus .focus-live-status{display:block}
+.live-focus .focus-live-status[data-error=true]{position:static;width:auto;height:auto;clip-path:none;white-space:normal;margin:6px 0 0;color:var(--coral);font-size:12px;line-height:1.5;text-align:center}
+@media(max-height:400px){.live-focus .capture-controls{min-height:60px;padding-top:4px}.live-focus .record-group{flex-direction:row;gap:8px}}
+@media(max-width:420px){.record-group{gap:6px}.recording-clock{font-size:10px}.preview-actions{padding:14px}.preview-header{padding:14px}.preview-image-wrap{padding:0 10px}.preview-actions .btn{font-size:12px}}

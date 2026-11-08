@@ -10,7 +10,7 @@ async function bundleModules(modules) {
   for (const name of modules) {
     const source = await readFile(new URL(`src/${name}.js`, root), 'utf8');
     const code = source.replace(/^import \{[^\n]+\} from ['"]\.{1,2}\/[^'"]+['"];\r?\n/gm, '')
-      .replace(/^export (?=(?:const|let|function|class)\b)/gm, '');
+      .replace(/^export (?=(?:const|let|function|class|async function)\b)/gm, '');
     if (/^\s*(?:import|export)\b/m.test(code)) throw new Error(`Unsupported module syntax in ${name}.js`);
     chunks.push(`// src/${name}.js\n${code}`);
   }
@@ -28,7 +28,7 @@ const html = (await readFile(htmlPath, 'utf8'))
 await writeFile(htmlPath, html);
 const worker = await bundleModules(['analysis/yin', 'analysis/pitch-worker']);
 await writeFile(new URL('pitch-worker.js', root), worker);
-const live = (await bundleModules(['pitch', 'input/microphone', 'analysis/stability', 'live/timeline', 'live/app']))
+const live = (await bundleModules(['pitch', 'input/microphone', 'analysis/stability', 'live/timeline', 'live/recording', 'live/export', 'live/focus', 'live/capture', 'live/app']))
   .replace("'./pitch-worker.js'", `'./pitch-worker.js?v=${versionOf(worker)}'`);
 await writeFile(new URL('live.bundle.js', root), live);
 const liveCss = await readFile(new URL('src/live/styles.css', root), 'utf8');

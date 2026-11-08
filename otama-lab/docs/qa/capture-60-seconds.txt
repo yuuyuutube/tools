@@ -1,0 +1,17 @@
+PASS: recording requires an active microphone
+PASS: focus shows only the graph and compact controls
+PASS: focus has no horizontal or vertical scroll surface
+PASS: graph uses available viewport height
+PASS: focus controls are SVG and prevent selection
+PASS: focus microphone shares the original capture and exact pitch behavior
+PASS: compact volume meter responds to the same input
+PASS: record control becomes available after microphone starts
+PASS: recording has visible timer and stop control
+PASS: real 60-second deadline stops capture automatically
+PASS: recording limit preserves microphone and focus mode
+PASS: complete minute exports five rows rather than last 12 seconds
+PASS: full-minute PNG contains actual trajectory in row 1
+PASS: full-minute PNG contains actual trajectory in row 2
+PASS: full-minute PNG contains actual trajectory in row 3
+PASS: full-minute PNG contains actual trajectory in row 4
+PASS: full-minute PNG contains actual trajectory in row 5

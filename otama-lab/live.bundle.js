@@ -197,7 +197,7 @@ class PitchTimeline {
   clear() { this.history.clear(); this.draw(); }
   add(frame) { this.history.add(frame); this.draw(); }
   draw() {
-    const history = this.history, width = Math.max(300, this.svg.clientWidth || 700), height = 310;
+    const history = this.history, width = Math.max(240, this.svg.clientWidth || 700), height = Math.max(100, this.svg.clientHeight || 310);
     const left = 44, right = width - 12, top = 18, bottom = height - 32;
     const voiced = history.points.filter(point => point.midi !== null);
     let low = 55, high = 86;
@@ -228,17 +228,257 @@ class PitchTimeline {
   }
 }
 
+// src/live/recording.js
+const RECORDING_LIMIT_MS = 60000;
+const RECORDING_ROW_MS = 12000;
+
+// Only derived pitch data is retained. No microphone samples or audio recording.
+class PitchRecording {
+  constructor() { this.active = false; this.frames = []; }
+  start(timestampMs) { this.startMs = timestampMs; this.frames = []; this.active = true; }
+  elapsed(timestampMs) { return Math.max(0, Math.min(RECORDING_LIMIT_MS, timestampMs - this.startMs)); }
+  add(frame) {
+    if (!this.active) return;
+    const timeMs = frame.timestampMs - this.startMs;
+    if (!Number.isFinite(timeMs) || timeMs < 0 || timeMs > RECORDING_LIMIT_MS) return;
+    if (this.frames.length && timeMs <= this.frames.at(-1).timeMs) return;
+    this.frames.push({ timeMs, frequencyHz: Number.isFinite(frame.frequencyHz) && frame.frequencyHz > 0 ? frame.frequencyHz : null });
+  }
+  finish(timestampMs) {
+    if (!this.active) return null;
+    this.active = false;
+    const durationMs = this.elapsed(timestampMs);
+    const frames = this.frames.filter(frame => frame.timeMs <= durationMs).map(frame => Object.freeze({ ...frame }));
+    this.frames = [];
+    return Object.freeze({ durationMs, frames: Object.freeze(frames), hasPitch: frames.some(frame => frame.frequencyHz !== null) });
+  }
+}
+
+function recordingRows(recording) {
+  const rows = [];
+  for (let startMs = 0; startMs < Math.max(1, recording.durationMs); startMs += RECORDING_ROW_MS) {
+    const endMs = Math.min(recording.durationMs, startMs + RECORDING_ROW_MS);
+    const segments = []; let segment = null, previous = null;
+    for (const frame of recording.frames) {
+      if (frame.timeMs < startMs || frame.timeMs > endMs) continue;
+      if (frame.frequencyHz === null) { segment = null; previous = null; continue; }
+      if (!segment || frame.timeMs - previous.timeMs > 200) { segment = []; segments.push(segment); }
+      segment.push(frame); previous = frame;
+    }
+    rows.push({ startMs, endMs, segments });
+  }
+  return rows;
+}
+
+const recordingClock = elapsed => {
+  const seconds = Math.floor(Math.max(0, Math.min(RECORDING_LIMIT_MS, elapsed)) / 1000);
+  return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+};
+
+// src/live/export.js
+
+function drawPitchRecording(recording, canvas) {
+  const rows = recordingRows(recording), width = 1440, rowHeight = 280;
+  canvas.width = width; canvas.height = 32 + rows.length * rowHeight;
+  const context = canvas.getContext('2d');
+  if (!context) throw new Error('無法產生圖片，請重新開啟錄製結果再試一次。');
+  context.fillStyle = '#0c1719'; context.fillRect(0, 0, canvas.width, canvas.height);
+  const midis = recording.frames.filter(frame => frame.frequencyHz !== null).map(frame => pitchOf(frame.frequencyHz).midi);
+  let low = midis.length ? Math.floor(Math.min(...midis) - 2) : 55;
+  let high = midis.length ? Math.ceil(Math.max(...midis) + 2) : 86;
+  if (high - low < 6) { low = Math.floor((high + low) / 2 - 3); high = low + 6; }
+  const left = 100, right = width - 40;
+  const spanMs = Math.min(RECORDING_ROW_MS, Math.max(1, recording.durationMs));
+  for (const [rowIndex, row] of rows.entries()) {
+    const top = 24 + rowIndex * rowHeight, bottom = top + 218;
+    const x = timeMs => left + (timeMs - row.startMs) / spanMs * (right - left);
+    const y = frequency => bottom - (pitchOf(frequency).midi - low) / (high - low) * (bottom - top);
+    const endX = x(row.endMs), step = Math.max(1, Math.ceil((high - low) / 5));
+    context.font = '18px system-ui, sans-serif';
+    for (let midi = Math.ceil(low / step) * step; midi <= high; midi += step) {
+      const frequency = 440 * 2 ** ((midi - 69) / 12), py = y(frequency);
+      context.strokeStyle = '#30494a'; context.lineWidth = 1;
+      context.beginPath(); context.moveTo(left, py); context.lineTo(endX, py); context.stroke();
+      context.fillStyle = '#a3b8ae'; context.textAlign = 'right';
+      context.fillText(pitchOf(frequency).note, left - 18, py + 6);
+    }
+    const tickMs = spanMs <= 3000 ? 1000 : spanMs <= 6000 ? 2000 : 3000;
+    const ticks = [];
+    for (let timeMs = row.startMs; timeMs <= row.endMs; timeMs += tickMs) ticks.push(timeMs);
+    if (!ticks.length || row.endMs - ticks.at(-1) > spanMs * .07) ticks.push(row.endMs);
+    else if (ticks.length > 1) ticks[ticks.length - 1] = row.endMs;
+    context.fillStyle = '#a3b8ae'; context.font = '18px ui-monospace, monospace';
+    for (const timeMs of ticks) {
+      context.textAlign = timeMs === row.startMs ? 'left' : timeMs === row.endMs ? 'right' : 'center';
+      context.fillText(`${Number((timeMs / 1000).toFixed(1))} s`, x(timeMs), bottom + 30);
+    }
+    // A short final row ends at the actual stop time, with no invented silence.
+    context.save(); context.beginPath(); context.rect(left - 3, top - 3, Math.max(6, endX - left + 6), bottom - top + 6); context.clip();
+    context.strokeStyle = context.fillStyle = '#c8f16e'; context.lineWidth = 3;
+    context.lineCap = context.lineJoin = 'round';
+    for (const segment of row.segments) {
+      if (segment.length === 1) {
+        context.beginPath(); context.arc(x(segment[0].timeMs), y(segment[0].frequencyHz), 2.5, 0, 2 * Math.PI); context.fill();
+      } else {
+        context.beginPath();
+        segment.forEach((point, index) => context[index ? 'lineTo' : 'moveTo'](x(point.timeMs), y(point.frequencyHz)));
+        context.stroke();
+      }
+    }
+    context.restore();
+  }
+  return canvas;
+}
+
+async function pitchRecordingPng(recording) {
+  const canvas = drawPitchRecording(recording, document.createElement('canvas'));
+  return new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('圖片產生失敗，請重新開啟錄製結果再試一次。')), 'image/png'));
+}
+
+function canSharePitchFile(file, nav = navigator) {
+  try { return typeof nav.share === 'function' && typeof nav.canShare === 'function' && nav.canShare({ files: [file] }); }
+  catch { return false; }
+}
+
+// src/live/focus.js
+function bindLiveFocus({ enter, exit, onResize }) {
+  const root = document.documentElement;
+  let active = false, scrollY = 0;
+  const resize = () => {
+    if (active) root.style.setProperty('--live-focus-height', `${window.visualViewport?.height || window.innerHeight}px`);
+    onResize();
+  };
+  const setActive = next => {
+    if (active === next) return;
+    if (next) scrollY = window.scrollY;
+    active = next; root.classList.toggle('live-focus', active);
+    enter.setAttribute('aria-pressed', String(active));
+    if (active) { resize(); exit.focus({ preventScroll: true }); }
+    else {
+      root.style.removeProperty('--live-focus-height');
+      window.scrollTo({ top: scrollY, behavior: 'instant' });
+      enter.focus({ preventScroll: true }); onResize();
+    }
+  };
+  enter.addEventListener('click', () => setActive(true));
+  exit.addEventListener('click', () => setActive(false));
+  window.addEventListener('resize', resize);
+  window.visualViewport?.addEventListener('resize', resize);
+  return { get active() { return active; }, exit: () => setActive(false) };
+}
+
+// src/live/capture.js
+
+// UI capture lifecycle is independent of both microphone audio and 12 s history.
+function bindPitchCapture({ button, clock, resultButton, dialog, image, duration, status, download, share, discard, close }) {
+  const recording = new PitchRecording();
+  let timer = null, deadline = null, listening = false, result = null, file = null, imageURL = null, revision = 0;
+  const setStatus = text => { if (status.textContent !== text) status.textContent = text; };
+  const renderControls = () => {
+    button.disabled = !listening && !recording.active;
+    button.setAttribute('aria-pressed', String(recording.active));
+    button.setAttribute('aria-label', recording.active ? '結束錄製' : '開始錄製音高軌跡（最長 60 秒）');
+    button.title = button.disabled ? '請先開啟麥克風' : recording.active ? '結束錄製' : '開始錄製音高軌跡（最長 60 秒）';
+    button.querySelector('use').setAttribute('href', recording.active ? '#live-stop' : '#live-record');
+    button.querySelector('span').textContent = recording.active ? '結束錄製' : '開始錄製';
+    clock.hidden = !recording.active;
+    resultButton.hidden = !result || recording.active;
+  };
+  const releaseImage = () => {
+    revision++; file = null;
+    if (imageURL) URL.revokeObjectURL(imageURL);
+    imageURL = null; image.removeAttribute('src'); download.removeAttribute('href');
+    download.setAttribute('aria-disabled', 'true'); share.disabled = true;
+  };
+  async function showResult() {
+    if (!result) return;
+    const snapshot = result;
+    duration.textContent = `${(snapshot.durationMs / 1000).toFixed(1)} 秒`;
+    image.alt = `${(snapshot.durationMs / 1000).toFixed(1)} 秒的音高軌跡，半音等距，A4 = 440 Hz`;
+    image.hidden = !snapshot.hasPitch || !imageURL;
+    if (document.hidden) return; // The result button keeps it available on return.
+    if (!dialog.open) { try { dialog.showModal(); } catch { return; } }
+    if (!snapshot.hasPitch) { setStatus('這段沒有偵測到音高，請確認收音後再試一次。'); return; }
+    if (file) { image.hidden = false; return; }
+    const request = ++revision; setStatus('正在產生圖片…');
+    try {
+      const blob = await pitchRecordingPng(snapshot);
+      if (request !== revision || result !== snapshot) return;
+      const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+      file = new File([blob], `otama-pitch-${stamp}.png`, { type: 'image/png' });
+      imageURL = URL.createObjectURL(blob); image.src = imageURL; image.hidden = false;
+      download.href = imageURL; download.download = file.name; download.setAttribute('aria-disabled', 'false');
+      share.disabled = !canSharePitchFile(file);
+      setStatus(share.disabled ? '可下載 PNG；此瀏覽器不支援圖片分享。' : '');
+    } catch (error) { if (request === revision) setStatus(error.message); }
+  }
+  function finish() {
+    if (!recording.active) return;
+    clearInterval(timer); clearTimeout(deadline); timer = deadline = null;
+    const snapshot = recording.finish(performance.now());
+    releaseImage(); result = snapshot; renderControls();
+    showResult();
+  }
+  function updateClock() {
+    if (!recording.active) return;
+    const elapsed = recording.elapsed(performance.now());
+    clock.textContent = `${recordingClock(elapsed)} / 01:00`;
+    if (elapsed >= RECORDING_LIMIT_MS) finish();
+  }
+  button.addEventListener('click', () => {
+    if (recording.active) { finish(); return; }
+    if (!listening) return;
+    if (dialog.open) dialog.close();
+    recording.start(performance.now()); renderControls(); updateClock();
+    timer = setInterval(updateClock, 100); deadline = setTimeout(finish, RECORDING_LIMIT_MS);
+  });
+  resultButton.addEventListener('click', showResult);
+  close.addEventListener('click', () => dialog.close());
+  discard.addEventListener('click', () => { result = null; releaseImage(); dialog.close(); renderControls(); });
+  download.addEventListener('click', event => { if (!file) event.preventDefault(); });
+  share.addEventListener('click', async () => {
+    if (!file) return;
+    share.disabled = true;
+    try { await navigator.share({ files: [file] }); setStatus(''); }
+    catch (error) { if (error.name !== 'AbortError') setStatus('無法開啟分享，請下載 PNG。'); }
+    finally { share.disabled = !file || !canSharePitchFile(file); }
+  });
+  renderControls();
+  return {
+    add(frame) { recording.add(frame); if (recording.active && frame.timestampMs - recording.startMs >= RECORDING_LIMIT_MS) finish(); },
+    setListening(active) { listening = active; if (!active) finish(); renderControls(); },
+    get active() { return recording.active; },
+  };
+}
+
 // src/live/app.js
 
 const liveElement = id => document.getElementById(id);
 const timeline = new PitchTimeline(liveElement('timeline'), liveElement('timeline-empty'));
 const stability = new PitchStability();
+// A cached pre-capture HTML page may fetch the latest bundle on a cache miss.
+// Keep its original analyser usable until the HTML itself is refreshed.
+const capture = liveElement('recording-preview') ? bindPitchCapture({
+  button: liveElement('record-pitch'), clock: liveElement('recording-clock'), resultButton: liveElement('recording-result'),
+  dialog: liveElement('recording-preview'), image: liveElement('recording-image'), duration: liveElement('recording-duration'),
+  status: liveElement('recording-status'), download: liveElement('recording-download'), share: liveElement('recording-share'),
+  discard: liveElement('recording-discard'), close: liveElement('recording-close'),
+}) : { setListening() {}, add() {} };
+const liveFocus = liveElement('timeline-focus') ? bindLiveFocus({ enter: liveElement('timeline-focus'), exit: liveElement('timeline-exit'), onResize: () => timeline.draw() }) : { active: false };
+const compactLevel = liveElement('focus-level');
+function updateLevel(value, clipped = false) {
+  liveElement('input-level').value = value;
+  if (!compactLevel) return;
+  compactLevel.setAttribute('aria-valuenow', String(Math.round(value * 100)));
+  compactLevel.dataset.clipped = String(clipped);
+  compactLevel.querySelector('i').style.transform = `scaleX(${value})`;
+}
 let announcementTime = -Infinity;
 function resetReadout() {
   for (const id of ['live-hz', 'live-note', 'live-confidence', 'live-stability']) liveElement(id).textContent = '—';
   liveElement('live-cents').textContent = '— cents';
   liveElement('live-needle').hidden = true;
-  liveElement('input-level').value = 0;
+  updateLevel(0);
   liveElement('live-face').classList.remove('playing');
   stability.reset();
 }
@@ -246,21 +486,30 @@ const microphone = new MicrophoneInput({
   workerURL: new URL('./pitch-worker.js?v=d9376a234289', document.baseURI),
   onState(state, message) {
     const active = state === 'listening', pending = state === 'requesting';
-    const button = liveElement('microphone');
-    button.setAttribute('aria-pressed', String(active));
-    button.setAttribute('aria-busy', String(pending));
-    button.dataset.state = state;
+    for (const id of ['microphone', 'focus-microphone']) {
+      const button = liveElement(id), label = pending ? '取消啟動麥克風' : active ? '關閉麥克風' : '開啟麥克風';
+      if (!button) continue;
+      button.setAttribute('aria-pressed', String(active)); button.setAttribute('aria-busy', String(pending));
+      button.setAttribute('aria-label', label); button.title = label; button.dataset.state = state;
+    }
     liveElement('mic-label').textContent = pending ? '取消啟動' : active ? '關閉麥克風' : '開啟麥克風';
     liveElement('mic-icon').setAttribute('href', active || pending ? '#live-stop' : '#live-mic');
+    liveElement('focus-mic-icon')?.setAttribute('href', active || pending ? '#live-mic' : '#live-mic-off');
     liveElement('mic-status').textContent = message;
     liveElement('mic-status').dataset.error = String(state === 'error');
+    if (liveElement('focus-live-status')) {
+      liveElement('focus-live-status').textContent = message;
+      liveElement('focus-live-status').dataset.error = String(state === 'error');
+    }
+    capture.setListening(active);
     if (!active) { resetReadout(); liveElement('pitch-announcement').textContent = ''; }
     if (active) { timeline.clear(); stability.reset(); }
   },
   onFrame(frame) {
     timeline.add(frame);
+    capture.add(frame);
     const movement = stability.update(frame);
-    liveElement('input-level').value = Math.max(0, Math.min(1, (20 * Math.log10(Math.max(1e-6, frame.rms)) + 60) / 60));
+    updateLevel(Math.max(0, Math.min(1, (20 * Math.log10(Math.max(1e-6, frame.rms)) + 60) / 60)), frame.clipped);
     liveElement('live-face').classList.toggle('playing', frame.frequencyHz !== null);
     liveElement('live-needle').hidden = !frame.frequencyHz;
     liveElement('live-confidence').textContent = frame.frequencyHz ? `${Math.round(frame.confidence * 100)}%` : '—';
@@ -285,14 +534,20 @@ const microphone = new MicrophoneInput({
     }
   },
 });
-liveElement('microphone').addEventListener('click', () => {
+const toggleMicrophone = () => {
   if (['requesting', 'listening'].includes(microphone.state)) microphone.stop();
   else microphone.start();
-});
+};
+for (const id of ['microphone', 'focus-microphone']) liveElement(id)?.addEventListener('click', toggleMicrophone);
 liveElement('clear-history').addEventListener('click', () => timeline.clear());
 window.addEventListener('pagehide', () => microphone.stop());
 document.addEventListener('visibilitychange', () => { if (document.hidden) microphone.stop('頁面已暫停，請重新開啟麥克風'); });
-document.addEventListener('keydown', event => { if (event.key === 'Escape') microphone.stop(); });
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape' || liveElement('recording-preview')?.open) return;
+  if (liveFocus.active) { event.preventDefault(); liveFocus.exit(); }
+  else microphone.stop();
+});
 window.addEventListener('resize', () => timeline.draw());
+if (window.ResizeObserver) new ResizeObserver(() => timeline.draw()).observe(liveElement('timeline'));
 
 })();

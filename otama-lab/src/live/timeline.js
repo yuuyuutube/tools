@@ -24,7 +24,7 @@ export class PitchTimeline {
   clear() { this.history.clear(); this.draw(); }
   add(frame) { this.history.add(frame); this.draw(); }
   draw() {
-    const history = this.history, width = Math.max(300, this.svg.clientWidth || 700), height = 310;
+    const history = this.history, width = Math.max(240, this.svg.clientWidth || 700), height = Math.max(100, this.svg.clientHeight || 310);
     const left = 44, right = width - 12, top = 18, bottom = height - 32;
     const voiced = history.points.filter(point => point.midi !== null);
     let low = 55, high = 86;

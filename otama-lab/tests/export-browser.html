@@ -1,0 +1,10 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PNG export visual check — synthetic data</title><style>body{margin:20px;background:#142528;color:#eff6e9;font:14px system-ui}a{display:inline-block;color:#c8f16e;padding:14px 0}img{display:block;width:100%;max-width:1000px;height:auto}</style><h1>PNG visual check</h1><p>Synthetic test data only — not a DX measurement or microphone recording.</p><a id="download">Preparing PNG…</a><img id="export-image" alt="Synthetic pitch export test"><script type="module">
+import { PitchRecording } from '../src/live/recording.js';
+import { pitchRecordingPng } from '../src/live/export.js';
+const recording = new PitchRecording(); recording.start(0);
+for (let time = 0; time <= 60000; time += 40) recording.add({ timestampMs: time, frequencyHz: time % 12000 > 10000 ? null : 330 * 2 ** ((3 * Math.sin(time / 1800) + .35 * Math.sin(time / 32)) / 12) });
+const blob = await pitchRecordingPng(recording.finish(60000));
+const url = URL.createObjectURL(blob), link = document.getElementById('download');
+link.href = url; link.download = 'synthetic-pitch-export.png'; link.textContent = 'Download test PNG';
+document.getElementById('export-image').src = url;
+</script></html>

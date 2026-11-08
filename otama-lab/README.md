@@ -28,6 +28,19 @@ python3 -m http.server 4187 --bind 127.0.0.1
 
 麥克風頁需透過 **HTTPS 或 localhost** 開啟，不能依賴雙擊本機 HTML；以瀏覽器使用者手勢啟動 AudioContext。背景噪音、和弦、強泛音與設備處理都可能造成倍頻／半頻誤判，仍待實體 DX 和 iOS／Android 驗證。演算法依據 [YIN 原論文 DOI](https://doi.org/10.1121/1.1458024)，API 參考 [getUserMedia](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia) 與 [AnalyserNode](https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode)。
 
+## 軌跡專注模式與錄製
+
+在真琴分析頁的「音高軌跡」右上角，按四角圖示進入專注模式。畫面填滿可見 viewport，保留圖示麥克風開關、小音量條、錄製／停止與退出；沒有清除按鈕。手機直／橫向皆以可見高度調整，無頁面捲動或文字誤選。退出或 Esc 只切換視圖，麥克風與正在錄製的資料會繼續；一般模式的 Esc 仍關閉麥克風。
+
+1. 開啟麥克風後，按圓點開始錄製音高軌跡。
+2. 計時顯示 `00:18 / 01:00`；隨時可停止，滿 **60 秒**自動結束。
+3. 預覽整段軌跡，按「下載 PNG」或「分享」。每 12 秒一行，最多五行；共用同一組半音音高刻度、保留滑音／顫音與未偵測片段的斷線，最後一行在實際停止時間結束。
+4. 關閉預覽會保留結果，可由圖片圖示重新開啟；「捨棄這段」釋放結果圖片。下一段完成後取代上一段，重新整理／關閉頁面不保留資料。
+
+錄製保存的是衍生音高資料，**不錄製聲音**。畫面的最近 12 秒歷史與完整錄製資料分開，清除即時軌跡不會刪除錄製。關閉麥克風、裝置中斷或切到背景會停止錄製並保留當段；背景停止的結果可在回到頁面後按圖片圖示開啟。滿時自動停止錄製時，麥克風會繼續分析。
+
+PNG 使用本機 Canvas 產生，1440px 寬、最多 1432px 高，只有音高與時間刻度及軌跡，沒有裝飾標語。沒有音高的錄製不產生假軌跡或空白下載。圖片在按分享之前已完成產生，以保留使用者手勢；依 [Web Share API](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share)／[canShare](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/canShare) 檢查圖片分享支援，不支援時保留 PNG 下載。分享取消不會丟失結果。下載／分享選單的實際行為依瀏覽器與裝置而異。
+
 ## 音域
 
 一般模式的「音域」只有兩個選項，與映射模型分開設定：
@@ -97,10 +110,15 @@ npm test
 - `analysis/yin.js` / `pitch-worker.js`：純音高偵測與背景 Worker。
 - `analysis/stability.js`：獨立的音高穩定度，不改寫原始 Hz。
 - `live/timeline.js` / `live/app.js` / `live/styles.css`：12 秒歷史與獨立真琴分析頁。
+- `live/focus.js`：軌跡專注模式、可見 viewport 與返回位置。
+- `live/recording.js`：60 秒純音高資料與 12 秒分行，不保存音訊。
+- `live/export.js` / `live/capture.js`：本機 Canvas PNG、預覽、下載與檔案分享生命週期。
 
 `build` 依固定依賴順序將小型 modules 合成為 classic IIFE `app.bundle.js`、`live.bundle.js` 與 `pitch-worker.js`，並為 bundle／Worker／CSS 加上內容版本參數；另產出 `dist/`（兩頁 HTML、bundles、Worker、CSS、assets、.nojekyll）。所有路徑相對於頁面，可部署 Pages 子路徑。生成器只支援目前使用的 named relative imports 與具名宣告；加入其他 module 語法會明確失敗。對已快取的舊版演奏頁，程式會補齊缺少的音域元件。修改 `src/` 後務必重新 build，並提交更新的根目錄 bundles／Worker。
 
 瀏覽器整合測試：開啟 `/tests/browser.html` 按 Run checks，會播放短暫合成音。測試頁本身使用 ES modules，因此需 HTTP。測試檔不進 dist。
+
+軌跡錄製測試：`/tests/capture-browser.html`，包含短段完整流程及獨立的真實 60 秒自動停止檢查。使用原生合成音訊與 stub 分享 API，不存取實體麥克風或真的分享檔案。
 
 真琴頁整合測試：`/tests/live-browser.html` 的 Run checks 以原生 Web Audio 產生的測試 MediaStream 通過正式控制器、Worker、YIN 與 UI；不存取實體麥克風，也不播放聲音。測試頁明確標示為合成訊號，不能當作 DX 實測。
 

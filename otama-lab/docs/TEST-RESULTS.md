@@ -142,3 +142,16 @@ npm run build
 - 瀏覽器測試宿主偶有不屬於本專案的 MutationObserver.observe 錯誤（專案沒有使用 MutationObserver）；正式頁需另檢查 console。QA PASS／FAIL 保存在 docs/qa/live-*.txt。
 
 尚未驗證：真實 DX 演奏、真實麥克風與背景環境的倍頻／半頻誤判、iOS Safari／Android Chrome 的實際權限與背景中斷、實體觸控裝置、VoiceOver／TalkBack。本次窄螢幕檢查是瀏覽器 viewport，不宣稱為真實手機測試。下一步優先用 DX 實測調整偵測條件，再進 Phase 3 位置量測。
+
+## 2026-11-08 · 軌跡專注模式、60 秒錄製與 PNG
+
+- 使用者已以真琴回報既有音高軌跡與靈敏度合適。本次 `src/analysis/yin.js`、`src/input/microphone.js`、`src/analysis/stability.js`、pitch-worker.js 與虛擬演奏 bundle 無變更，保持原分析參數。
+- Node 47 / 47：60 秒全段保留（1501 個 40ms 樣本）、拒絕開始前／重複／逆序／超時資料、非標準音與空白片段、12 秒分行及末行實際停止時間、不可變快照、新舊錄製獨立、60 秒計時上限、分享能力 fallback、圖片刻度與五行輸出。
+- 瀏覽器短段流程：桌面、320px 與 844×390 各 24 / 24 通過。涵蓋：麥克風共用、專注模式無捲動、可用高度、SVG／user-select、Esc 保留分析、音量與 clipping、開始／停止與計時、真實 PNG bytes／尺寸／檔名、分享與取消（stub）、重開／捨棄、無訊號不產生假圖、關閉麥克風及背景中斷時保留結果。
+- 真實 60 秒測試 17 / 17：未加速計時，確認自動停止、顯示 60.0 秒、麥克風與專注狀態保留、1440×1432 五行 PNG，並逐行檢查軌跡像素存在。這是原生 Web Audio 合成 MediaStream 經正式 Worker／YIN 的測試，不是 DX 實測。
+- 原本 Live Lab 的 31 項音高追蹤檢查維持，另以舊 HTML 搭配新 bundle 檢查快取相容；舊頁缺少新按鈕時仍能分析，重新整理 HTML 後才顯示新功能。
+- 實際 viewport：390×844 的 scrollWidth / scrollHeight 為 390 / 844、圖表高度 748px；捲動嘗試後 scrollY=0。844×390 橫向高度 390、控制列底部 382、viewBox 820×310，沒有溢出。320px 尺寸也執行完整錄製流程。
+- 匯出 PNG 的實際下載與視覺檢查使用 top-level tests/export-browser.html，範例 docs/qa/synthetic-pitch-export.png 已明確標示合成測試來源，不是 DX 測量。測試宿主不支援 embedded iframe 的 Blob media download，因此 iframe 中另以 PNG 簽名、解碼、尺寸與連結驗證；top-level PNG media 下載成功。
+- 測試宿主偶有不屬於專案的 MutationObserver.observe 訊息；產品程式沒有使用 MutationObserver。瀏覽器 PASS 紀錄與預覽保存於 docs/qa/capture-*。
+
+尚未驗證：本次新介面在實體 iOS／Android 的觸控、背景行為及原生分享選單；真實分享未向任何第三方傳送檔案。圖片分享測試以 stub 驗證 File 與取消行為，不宣稱已完成手機原生分享。錄製只保存衍生音高，不錄製聲音。

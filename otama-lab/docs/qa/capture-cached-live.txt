@@ -1,0 +1,31 @@
+PASS: no automatic microphone capture on load
+PASS: empty initial timeline contains no invented measurements
+PASS: no horizontal overflow at current viewport
+PASS: controls disable selection and use SVG icons
+PASS: capture requests audio only with music-friendly preferred constraints
+PASS: real Web Audio signal passes through real Worker into Hz readout
+PASS: nearest note and cents agree with detected frequency
+PASS: microphone state and character respond to signal
+PASS: confidence reflects periodic signal
+PASS: steady pitch becomes stable after observation window
+PASS: timeline plots continuous detected samples
+PASS: off-note input is preserved instead of snapped
+PASS: tuner follows signed cents
+PASS: real input is not limited to virtual G3–D6 range
+PASS: four-digit high-frequency readout does not overflow
+PASS: glissando changes timeline pitch continuously
+PASS: 5 Hz vibrato stays continuous with measurable pitch movement (431.9–448.1 Hz)
+PASS: vibrato is movement, not low signal quality
+PASS: silence clears note, cents, confidence, needle and face
+PASS: clear removes previous pitch without stopping microphone
+PASS: stop releases captured track immediately
+PASS: stop resets readouts and control state
+PASS: capture requests audio only with music-friendly preferred constraints
+PASS: permission denial has an actionable in-page message
+PASS: capture requests audio only with music-friendly preferred constraints
+PASS: pending request is cancellable
+PASS: late permission response after cancel stops its track
+PASS: capture requests audio only with music-friendly preferred constraints
+PASS: fresh gesture can restart after cancellation and denial
+PASS: leaving page stops captured tracks
+PASS: page retains no horizontal overflow after detection
