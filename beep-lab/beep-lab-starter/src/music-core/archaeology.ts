@@ -24,11 +24,11 @@ export function repairLevels():RepairLevel[]{return [
     difference:'有兩個音高和原曲不同',mission:'找出並修好兩個錯音，時值與附點不用改。',
     hints:['兩個錯音分別在第 5 音與第 11 音。','第 5 音應和第 4 音相同；第 11 音應和第 8 音相同。','把第 5 音調成 G2、第 11 音調成 D2，兩個都維持 1/4。'],
   },events=>{events[4]=noteFromStep(21,events[4]);events[10]=noteFromStep(16,events[10]);}),
-  level('fate','第五號交響曲',108,'8- 8g1 8g1 8g1 2#d1 8- 8f1 8f1 8f1 1d1',{
-    kind:'rhythm',attribution:'貝多芬《第五號交響曲》開頭 · 延長記號採固定時值',
-    difference:'有兩個地方的長短和原曲不同',mission:'修好一個休止符與一個長音的時值，音高先不用改。',
-    hints:['先比較第 1 格的休止符，以及第 5 音的長音。','開頭要短暫停頓；第 5 音要比三個短音長得多。','第 1 格休止符設成 1/8，第 5 音設成 1/2，兩個都不加附點。'],
-  },events=>{events[0].duration=4;events[4].duration=4;}),
+  level('can-can','康康舞曲',144,'4g1 4g1 8a1 8c2 8b1 8a1 4d2 4d2 8d2 8e2 8b1 8c2 4a1 4a1 8a1 8c2 8b1 8a1',{
+    kind:'rhythm',attribution:'奧芬巴哈《康康舞曲》主題 · G 大調單音節選',
+    difference:'有兩個音的長短和原曲不同',mission:'修好一個太短的音與一個太長的音，音高不用改。',
+    hints:['比較第 1 音與第 3 音的長短。','第 1 音應和第 2 音一樣長；第 3 音應和後面的短音一樣短。','第 1 音設成 1/4，第 3 音設成 1/8，兩個都不加附點。'],
+  },events=>{events[0].duration=8;events[2].duration=4;}),
   level('fur-elise','給愛麗絲',72,'16e2 16#d2 16e2 16#d2 16e2 16b1 16d2 16c2 8a1 16- 16c1 16e1 16a1 8b1 16- 16e1 16#g1 16b1 8c2',{
     kind:'pitch',attribution:'貝多芬《給愛麗絲》開頭 · 右手旋律節選',
     difference:'有兩個音高和原曲不同',mission:'修好開頭半音交替中的兩個錯音，節奏不用改。',
@@ -49,11 +49,11 @@ export function repairLevels():RepairLevel[]{return [
     difference:'有三個地方的節奏和原曲不同',mission:'修好一個被拉長的短音，並找回兩個長音遺失的附點。',
     hints:['比較第 2 音的長短，以及第 7、15 音的延長感。','第 2 音應和後面兩個音一樣短；兩次出現的 B2 長音都少了附點。','第 2 音設成 1/8、不加附點；第 7、15 音維持 1/4，勾選附點。'],
   },events=>{events[1].duration=4;events[6].dotted=false;events[14].dotted=false;}),
-  level('swan-lake','天鵝湖',96,'1g2 4c2 4d2 4#d2 4f2 2.g2 4#d2 2.g2 4#d2',{
-    kind:'mixed',attribution:'柴可夫斯基《天鵝湖》主題 · C 小調簡化移調版',
-    difference:'有一個音高與兩個節奏和原曲不同',mission:'最後挑戰：修好一個錯音、一個長音的時值，以及一個遺失的附點。',
-    hints:['留意第 1 音的長度、第 4 音的音高，以及第 8 音的附點。','開頭 G2 應持續四拍；第 4 音比 D2 高半音；第 8 音應和第 6 音一樣長。','第 1 音設成 1/1；第 4 音調成 D#2；第 8 音維持 1/2 並加附點。'],
-  },events=>{events[0].duration=2;events[3]=noteFromStep(14,events[3]);events[7].dotted=false;}),
+  level('william-tell','威廉泰爾',112,'16d1 16d1 8d1 16d1 16d1 8d1 16d1 16d1 8g1 8a1 8b1 16d1 16d1 8d1 16d1 16d1 8g1 8b1 8a1 8#f1 8d1 16d1 16d1',{
+    kind:'mixed',attribution:'羅西尼《威廉泰爾序曲》快板 · G 大調單音改編',
+    difference:'有兩個音高與一個時值和原曲不同',mission:'最後挑戰：修好兩個錯音，並找回開頭短音的節奏。',
+    hints:['時值問題在第 1 音；音高問題在第 9、20 音。','開頭兩個 D1 應同樣短；第 9 音應和第 17 音同高，第 20 音比 F1 高半音。','第 1 音設成 1/16、不加附點；第 9 音調成 G1，第 20 音調成 F#1。'],
+  },events=>{events[0].duration=8;events[8]=noteFromStep(5,events[8]);events[19]=noteFromStep(5,events[19]);}),
 ];}
 export function firstRepairLevel(){return repairLevels()[0];}
 export function compareRepair(target:Melody,candidate:Melody) {

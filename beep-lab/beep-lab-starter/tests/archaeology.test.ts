@@ -40,14 +40,16 @@ describe('cross-page navigation',()=>{
 
 describe('classic repair levels',()=>{
   it('ships the intended melodies, with independent, precisely scoped damage',()=>{
-    const levels=repairLevels();expect(levels.map(value=>value.id)).toEqual(['nokia','ode-to-joy','fate','fur-elise','alla-turca','nachtmusik','spring','swan-lake']);
-    expect(levels.map(value=>compareRepair(value.target,value.damaged).pitchErrors)).toEqual([[2],[4,10],[],[1,3],[2],[0,10],[],[3]]);
-    expect(levels.map(value=>compareRepair(value.target,value.damaged).rhythmErrors)).toEqual([[],[],[0,4],[],[6],[],[1,6,14],[0,7]]);
+    const levels=repairLevels();expect(levels.map(value=>value.id)).toEqual(['nokia','ode-to-joy','can-can','fur-elise','alla-turca','nachtmusik','spring','william-tell']);
+    expect(levels.map(value=>compareRepair(value.target,value.damaged).pitchErrors)).toEqual([[2],[4,10],[],[1,3],[2],[0,10],[],[8,19]]);
+    expect(levels.map(value=>compareRepair(value.target,value.damaged).rhythmErrors)).toEqual([[],[],[0,2],[],[6],[],[1,6,14],[0]]);
     for(const value of levels){expect(isMelody(value.target)).toBe(true);expect(isMelody(value.damaged)).toBe(true);expect(compareRepair(value.target,structuredClone(value.target)).passed).toBe(true);expect(value.hints).toHaveLength(3);}
   });
-  it('retains the fifth symphony opening rest, short-short-short and sustained ending',()=>{
-    const fifth=repairLevels()[2].target.events;expect(fifth[0]).toEqual({type:'rest',duration:8,dotted:false});
-    expect(fifth.slice(1,4).map(value=>value.duration)).toEqual([8,8,8]);expect(fifth[4].duration).toBe(2);expect(fifth.at(-1)).toMatchObject({duration:1,dotted:false});
+  it('provides new IDs for replacement songs, keeping old completions from earning new credit',()=>{
+    const levels=repairLevels();expect(levels[2].id).toBe('can-can');expect(levels[7].id).toBe('william-tell');
+    expect(levels.some(value=>value.id==='fate'||value.id==='swan-lake')).toBe(false);
+    expect(levels[2].target.events.slice(0,6).map(value=>value.duration)).toEqual([4,4,8,8,8,8]);
+    expect(levels[7].target.events.slice(0,3).map(value=>value.duration)).toEqual([16,16,8]);
   });
 });
 

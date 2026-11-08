@@ -62,8 +62,12 @@ app.innerHTML=`<header class="site-header repair-header"><img src="./favicon.svg
 mountLabNavigation('archaeology');
 const levels=repairLevels();
 let progress:RepairProgress;try{progress=readRepairProgress(localStorage);}catch{progress={completed:[],current:'nokia',writable:false,warning:'瀏覽器無法儲存闖關進度；仍可遊玩。'};}
-const requested=new URLSearchParams(location.search).get('level');
-let levelIndex=Math.max(0,levels.findIndex(value=>value.id===(requested??progress.current))),level=levels[levelIndex];
+const retiredLevels:Record<string,string>={'fate':'can-can','swan-lake':'william-tell'};
+const rawRequested=new URLSearchParams(location.search).get('level');
+const requested=rawRequested?retiredLevels[rawRequested]??rawRequested:null;
+if(rawRequested&&requested!==rawRequested){const url=new URL(location.href);url.searchParams.set('level',requested!);window.history.replaceState(null,'',url);}
+const savedLevel=retiredLevels[progress.current]??progress.current;
+let levelIndex=Math.max(0,levels.findIndex(value=>value.id===(requested??savedLevel))),level=levels[levelIndex];
 let currentPraise='',previousPraise='';
 let state:EditorState={melody:structuredClone(level.damaged),cursor:1,octave:2},flow=newRepairFlow();
 const history=new EditHistory(),engine=new AudioEngine();let audioAttempt=0,hints=0;

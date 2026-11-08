@@ -8,6 +8,7 @@ describe('completion certificate',()=>{
     expect(canIssueCertificate(ids.slice(0,7),ids)).toBe(false);expect(canIssueCertificate([...ids.slice(0,7),'unknown'],ids)).toBe(false);
     expect(canIssueCertificate(Array(8).fill(ids[0]),ids)).toBe(false);expect(canIssueCertificate([],[])).toBe(false);
     expect(canIssueCertificate(ids,ids)).toBe(true);
+    expect(canIssueCertificate([...ids.filter(id=>id!=='can-can'&&id!=='william-tell'),'fate','swan-lake'],ids)).toBe(false);
   });
   it('uses the device calendar date, including local midnight and single-digit months',()=>{
     expect(certificateDetails(' 小悠 ',8,new Date(2026,10,8,0,5))).toMatchObject({name:'小悠',levelCount:8,dateLabel:'2026 年 11 月 08 日',dateISO:'2026-11-08'});

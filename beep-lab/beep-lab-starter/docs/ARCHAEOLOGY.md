@@ -6,14 +6,12 @@
 |---|---|---|
 | nokia | Nokia Tune | A 大調鈴聲片段，156 BPM。第 3 音 F#1 被改為 F1。 |
 | ode-to-joy | 歡樂頌 | 第九號交響曲主題前四小節移調 C 大調，112 BPM。第 5 音 G2→A2、第 11 音 D2→E2。 |
-| fate | 第五號交響曲開頭 | C 小調，108 四分音符 BPM（教學慢速）。保留起始八分休止、三短一長；第 1 格八分休止被改為四分，第 5 音二分音符被改為四分。 |
 
 ## 核對來源與改編邊界
 
 - Nokia Tune 的來源及使用歷史：[Microsoft Devices Blog](https://blogs.windows.com/devices/2009/01/21/history-of-nokia-part-3-grand-valse/)。
 - 塔雷加《Gran Vals》原譜：[公開掃描 PDF，第 2 頁第 3 行](https://gitarrengold.de/wp-content/uploads/2013/03/Gran-Vals-Francisco-Tarrega.pdf)。只取高聲部旋律；採熟悉的鈴聲收尾 A，並非原吉他譜後續銜接的 E。不使用原機錄音，也不宣稱音色與節奏處理完全複製特定韌體。
 - 歡樂頌：[Mutopia 公開領域譜例](https://www.mutopiaproject.org/ftp/BeethovenLv/ode/ode-let.pdf)。只取前四小節主旋律，移調成 C 大調，保留末句附點四分、八分與二分音符。
-- 第五號交響曲：[BYU 出版物收錄的原管弦樂譜，第 16 頁](https://rsc.byu.edu/sites/default/files/pub_content/pdf/Ludwig%20Van%20Beethoven.pdf)。取弦樂主題前五小節；最後兩個連結的二分 D 合併為一個全音符。延長記號不採自由速度，播放採固定時值；原譜 E♭ 以模型支援的等音 D# 表示。無複製出版物內的圖像、文字或錄音。
 
 ## 第二批：第 4～6 關
 
@@ -43,7 +41,6 @@
 ## 第三批：第 7～8 關
 
 - `spring`：《四季・春》開頭，E 大調、132 BPM，保留弱起與兩次重複句。第 2 音的 1/8 拉長為 1/4，第 7、15 音的附點被移除。核對 [Mutopia 第一小提琴原始譜](https://github.com/MutopiaProject/MutopiaProject/blob/master/ftp/VivaldiA/O8/spring/spring-lys/spring1a.ly)，依 E 大調解析 F#/G#/D#。
-- `swan-lake`：《天鵝湖》主題前四小節，C 小調、96 BPM 簡化移調版。第 1 音全音符縮成二分，第 4 音 D#2 改為 D2，第 8 音附點被移除。核對 [Gilbert DeBenedetti 的旋律譜例](https://www.gmajormusictheory.org/Freebies/FirstPieces/0SwanLake/0SwanLake.pdf)，音域提高八度以符合共用模型；降 E 以等音 D# 表示，不使用譜例圖像或錄音。
 
 ## 全通關證書
 
@@ -61,4 +58,12 @@
 
 證書使用獨立的 32 句讚美池，與逐關讚美分開。每次成功產生抽一句且避開上一句，繪進 PNG；相同圖片的下載、預覽、分享不重抽。文字依實際字寬換行，保留姓名、日期與印章的空間。
 
-第三關《第五號交響曲》暫時保留，等待使用者從備選曲目中決定替換曲。
+
+## 曲目替換：康康舞曲與威廉泰爾
+
+使用者決定移除《第五號交響曲》《天鵝湖》，第 3、8 關分別換為：
+
+- `can-can`：《康康舞曲》G 大調主題前段，144 BPM。第 1 音四分縮成八分、第 3 音八分拉長成四分。核對 [Gilbert DeBenedetti 譜例](https://gmajormusictheory.org/Freebies/Primer/pCancan/pCancan.pdf) 的前三小節，將雙手輪流呈現的主旋律串成單音，音域提高八度。
+- `william-tell`：《威廉泰爾序曲》快板奔跑主題，G 大調、112 BPM。第 1 音十六分拉長成八分、第 9 音 G1 改 F1、第 20 音 F#1 改 F1。核對 [公開琴譜](https://musescore.org/sites/musescore.org/files/2018-10/rossini_william_tell.pdf) 第一頁第 7 小節尾起拍至第 11 小節；取主旋律，所有時值減半作單音鈴聲改編。沒有使用原譜圖片、伴奏或錄音。
+
+新曲使用新 ID。舊的 `fate`／`swan-lake` 直連及上次選關值分別導向新曲，其他六關的進度保留。舊曲完成 ID 保留在本機歷史但不計入新八關，也不自動視為新曲已通關；證書須完成目前八首曲目。
