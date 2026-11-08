@@ -1,15 +1,15 @@
 import {describe,it,expect} from 'vitest';
-import {firstRepairLevel,compareRepair} from '../src/music-core/archaeology';
+import {firstRepairLevel,repairLevels,compareRepair} from '../src/music-core/archaeology';
 import {noteFromStep} from '../src/music-core/studio';
 import {isMelody} from '../src/music-core/model';
 import {LAB_PAGES} from '../src/navigation';
 describe('first ringtone repair level',()=>{
   it('starts with exactly one damaged pitch and an otherwise valid original melody',()=>{
-    const {target,damaged,hints}=firstRepairLevel();expect(isMelody(target)).toBe(true);expect(isMelody(damaged)).toBe(true);expect(target.events).toHaveLength(8);
+    const {target,damaged,hints}=firstRepairLevel();expect(isMelody(target)).toBe(true);expect(isMelody(damaged)).toBe(true);expect(target.events).toHaveLength(13);
     expect(compareRepair(target,damaged)).toMatchObject({passed:false,pitchErrors:[2],rhythmErrors:[],countMismatch:false,tempoMismatch:false});expect(hints).toHaveLength(3);
   });
   it('passes only when the musical content is repaired, independent of local identity',()=>{
-    const {target,damaged}=firstRepairLevel();damaged.events[2]=noteFromStep(19,damaged.events[2]);
+    const {target,damaged}=firstRepairLevel();damaged.events[2]=noteFromStep(6,damaged.events[2]);
     expect(compareRepair(target,{...damaged,id:'my-copy',title:'my title'}).passed).toBe(true);
     damaged.events[0].dotted=true;expect(compareRepair(target,damaged)).toMatchObject({passed:false,rhythmErrors:[0]});
   });
@@ -35,5 +35,18 @@ describe('cross-page navigation',()=>{
       expect(url.searchParams.get('view')).toBe(destination.id==='composer'?null:destination.id);
     }
     const card=new URL(LAB_PAGES.find(page=>page.id==='card')!.href,'https://example.com/tools/beep-lab/');expect(card.searchParams.get('demo')).toBe('birthday');
+  });
+});
+
+describe('three classic repair levels',()=>{
+  it('ships the intended melodies, with independent, precisely scoped damage',()=>{
+    const levels=repairLevels();expect(levels.map(value=>value.id)).toEqual(['nokia','ode-to-joy','fate']);
+    expect(levels.map(value=>compareRepair(value.target,value.damaged).pitchErrors)).toEqual([[2],[4,10],[]]);
+    expect(levels.map(value=>compareRepair(value.target,value.damaged).rhythmErrors)).toEqual([[],[],[0,4]]);
+    for(const value of levels){expect(isMelody(value.target)).toBe(true);expect(isMelody(value.damaged)).toBe(true);expect(compareRepair(value.target,structuredClone(value.target)).passed).toBe(true);expect(value.hints).toHaveLength(3);}
+  });
+  it('retains the fifth symphony opening rest, short-short-short and sustained ending',()=>{
+    const fifth=repairLevels()[2].target.events;expect(fifth[0]).toEqual({type:'rest',duration:8,dotted:false});
+    expect(fifth.slice(1,4).map(value=>value.duration)).toEqual([8,8,8]);expect(fifth[4].duration).toBe(2);expect(fifth.at(-1)).toMatchObject({duration:1,dotted:false});
   });
 });

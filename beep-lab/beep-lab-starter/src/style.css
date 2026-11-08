@@ -471,8 +471,8 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
 
 .repair-header h1 { font-size: 20px; }
 .repair-main { max-width: 780px; padding-top: 20px; }
-.repair-level-label { display: flex; gap: 10px; align-items: center; font-size: 12px; color: var(--muted); }
-.repair-level-label > span { border-left: 1px solid var(--line); padding-left: 10px; }
+.repair-level-label { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; font-size: 12px; line-height: 1.7; color: var(--muted); }
+.repair-level-label > span + span { border-left: 1px solid var(--line); padding-left: 10px; }
 .repair-steps { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 6px; padding: 0; margin: 24px 0 30px; list-style: none; }
 .repair-steps button { width: 100%; display: flex; flex-direction: column; gap: 8px; min-height: 76px; border: 0; border-radius: 0; padding: 4px 0 10px; font-size: 11px; color: var(--muted); border-bottom: 3px solid #d9dece; }
 .repair-step-dot { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; border: 1px solid #c7cebd; font: 12px monospace; }
@@ -561,3 +561,13 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
 .repair-secondary-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 16px; margin-top: 24px; }
 .repair-secondary-actions button { min-height: 44px; padding: 0 8px; background: transparent; border-color: transparent; color: var(--muted); font-size: 12px; }
 .repair-secondary-actions button:hover { border-color: var(--line); background: #e9ebe2; }
+
+.repair-level-picker { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+.repair-level-picker label, #repair-progress-count { color: var(--muted); font-size: 12px; }
+.repair-level-picker select { flex: 1; min-width: 160px; max-width: 320px; min-height: 44px; padding: 0 8px; border: 1px solid var(--line); border-radius: 4px; color: var(--ink); background: #faf9f0; font: inherit; font-size: 13px; }
+.repair-level-picker select:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+.repair-attribution { font-size: 12px; line-height: 1.7; color: var(--muted); margin: 6px 0 24px; }
+#repair-progress-warning { color: #9b4a2d; font-size: 12px; line-height: 1.7; }
+#repair-progress-warning:empty { display: none; }
+#repair-next-level { min-height: 48px; padding: 0 22px; margin-top: 16px; max-width: 100%; }
+.repair-success-copy { overflow-wrap: anywhere; }
