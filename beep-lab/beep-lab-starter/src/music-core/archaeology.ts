@@ -44,6 +44,16 @@ export function repairLevels():RepairLevel[]{return [
     difference:'有兩個音的八度和原曲不同',mission:'找出兩個八度偏低的音，保留音名與時值，把它們升高一個八度。',
     hints:['比較第 1 音與第 11 音的高低。','第 1 音應與第 4 音同高；第 11 音應比目前版本高一個八度。','把第 1 音調成 G2、第 11 音調成 D3，兩個都維持 1/4。'],
   },events=>{events[0]=noteFromStep(7,events[0]);events[10]=noteFromStep(14,events[10]);}),
+  level('spring','四季・春',132,'8e2 8#g2 8#g2 8#g2 16#f2 16e2 4.b2 16b2 16a2 8#g2 8#g2 8#g2 16#f2 16e2 4.b2 16b2 16a2 8#g2 16a2 16b2 8a2 8#g2 8#f2 8#d2 8b1 8e2',{
+    kind:'rhythm',attribution:'韋瓦第《四季・春》開頭 · E 大調單音節選',
+    difference:'有三個地方的節奏和原曲不同',mission:'修好一個被拉長的短音，並找回兩個長音遺失的附點。',
+    hints:['比較第 2 音的長短，以及第 7、15 音的延長感。','第 2 音應和後面兩個音一樣短；兩次出現的 B2 長音都少了附點。','第 2 音設成 1/8、不加附點；第 7、15 音維持 1/4，勾選附點。'],
+  },events=>{events[1].duration=4;events[6].dotted=false;events[14].dotted=false;}),
+  level('swan-lake','天鵝湖',96,'1g2 4c2 4d2 4#d2 4f2 2.g2 4#d2 2.g2 4#d2',{
+    kind:'mixed',attribution:'柴可夫斯基《天鵝湖》主題 · C 小調簡化移調版',
+    difference:'有一個音高與兩個節奏和原曲不同',mission:'最後挑戰：修好一個錯音、一個長音的時值，以及一個遺失的附點。',
+    hints:['留意第 1 音的長度、第 4 音的音高，以及第 8 音的附點。','開頭 G2 應持續四拍；第 4 音比 D2 高半音；第 8 音應和第 6 音一樣長。','第 1 音設成 1/1；第 4 音調成 D#2；第 8 音維持 1/2 並加附點。'],
+  },events=>{events[0].duration=2;events[3]=noteFromStep(14,events[3]);events[7].dotted=false;}),
 ];}
 export function firstRepairLevel(){return repairLevels()[0];}
 export function compareRepair(target:Melody,candidate:Melody) {

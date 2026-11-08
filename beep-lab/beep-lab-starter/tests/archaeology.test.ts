@@ -40,9 +40,9 @@ describe('cross-page navigation',()=>{
 
 describe('classic repair levels',()=>{
   it('ships the intended melodies, with independent, precisely scoped damage',()=>{
-    const levels=repairLevels();expect(levels.map(value=>value.id)).toEqual(['nokia','ode-to-joy','fate','fur-elise','alla-turca','nachtmusik']);
-    expect(levels.map(value=>compareRepair(value.target,value.damaged).pitchErrors)).toEqual([[2],[4,10],[],[1,3],[2],[0,10]]);
-    expect(levels.map(value=>compareRepair(value.target,value.damaged).rhythmErrors)).toEqual([[],[],[0,4],[],[6],[]]);
+    const levels=repairLevels();expect(levels.map(value=>value.id)).toEqual(['nokia','ode-to-joy','fate','fur-elise','alla-turca','nachtmusik','spring','swan-lake']);
+    expect(levels.map(value=>compareRepair(value.target,value.damaged).pitchErrors)).toEqual([[2],[4,10],[],[1,3],[2],[0,10],[],[3]]);
+    expect(levels.map(value=>compareRepair(value.target,value.damaged).rhythmErrors)).toEqual([[],[],[0,4],[],[6],[],[1,6,14],[0,7]]);
     for(const value of levels){expect(isMelody(value.target)).toBe(true);expect(isMelody(value.damaged)).toBe(true);expect(compareRepair(value.target,structuredClone(value.target)).passed).toBe(true);expect(value.hints).toHaveLength(3);}
   });
   it('retains the fifth symphony opening rest, short-short-short and sustained ending',()=>{

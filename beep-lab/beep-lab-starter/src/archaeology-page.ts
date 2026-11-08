@@ -1,3 +1,5 @@
+import { canIssueCertificate } from './certificate';
+import { createCertificateDialog } from './certificate-dialog';
 import { drawRepairPraise } from './repair-praise';
 import { readRepairProgress,saveRepairProgress,type RepairProgress } from './music-core/repair-progress';
 import { AudioActivationError,AudioEngine } from './audio-engine/player';
@@ -16,7 +18,7 @@ document.title='鈴聲考古 · BEEP LAB';
 const steps=[{title:'先聽原曲',short:'聽原曲'},{title:'再聽錯誤版',short:'聽錯誤版'},{title:'動手修復你的樂譜',short:'修復樂譜'},{title:'確認後，送出答案',short:'送出答案'},{title:'答對了，修復成功！',short:'通關'}];
 app.innerHTML=`<header class="site-header repair-header"><img src="./favicon.svg" width="32" height="32" alt=""/><h1>RINGTONE ARCHAEOLOGY</h1></header>
 <main class="repair-main">
-  <div class="repair-level-picker"><label for="repair-level-select">關卡</label><select id="repair-level-select"></select><span id="repair-progress-count"></span></div>
+  <div class="repair-level-picker"><label for="repair-level-select">關卡</label><select id="repair-level-select"></select><span id="repair-progress-count"></span><button id="repair-certificate-return" class="repair-certificate-return" hidden>通關證書</button></div>
   <div class="repair-level-label"><span id="repair-level-number"></span><span id="repair-level-title"></span></div><p class="repair-attribution"></p><p id="repair-progress-warning" role="status"></p>
   <ol class="repair-steps" aria-label="本關步驟">${steps.map((step,index)=>`<li><button data-step="${index+1}" aria-label="步驟 ${index+1}：${step.short}"><span class="repair-step-dot">${index+1}</span><span>${step.short}</span></button></li>`).join('')}</ol>
   <div class="repair-stage-heading"><p id="repair-step-count"></p><h2 id="repair-stage-title" tabindex="-1"></h2></div>
@@ -51,7 +53,7 @@ app.innerHTML=`<header class="site-header repair-header"><img src="./favicon.svg
     <div class="repair-stage-actions"><button data-go="3">返回修復</button><button id="repair-check" class="save-button">送出答案 ${icon('right')}</button></div>
   </section>
   <section data-pane="5" class="repair-complete" aria-label="步驟五：通關" hidden>
-    <div class="repair-success-mark">${icon('check')}</div><p class="repair-success-copy"></p><p class="repair-success-note"></p><button id="repair-next-level" class="save-button"></button>
+    <div class="repair-success-mark">${icon('check')}</div><p class="repair-success-copy"></p><p class="repair-success-note"></p><button id="repair-next-level" class="save-button"></button><div class="repair-certificate-reward" hidden><p>全八關修復完成，這張證書屬於你。</p><button id="repair-certificate" class="save-button">領取通關證書</button></div>
     <div class="repair-secondary-actions"><button id="repair-replay">再玩一次</button><button id="repair-share">${icon('share')}<span>分享修復作品</span></button></div><a id="repair-create" class="repair-create">帶去編曲器繼續創作 ${icon('right')}</a>
   </section>
 </main>`;
@@ -66,6 +68,8 @@ const history=new EditHistory(),engine=new AudioEngine();let audioAttempt=0,hint
 const $=<T extends HTMLElement=HTMLElement>(selector:string)=>document.querySelector<T>(selector)!;
 const pitch=$<HTMLSelectElement>('#repair-pitch'),duration=$<HTMLSelectElement>('#repair-duration'),dot=$<HTMLInputElement>('#repair-dot');
 pitch.innerHTML='<option value="rest">休止符</option>'+Array.from({length:36},(_,step)=>`<option value="${step}">${pitchSteps[step%12].toUpperCase()}${Math.floor(step/12)+1}</option>`).join('');
+const certificate=createCertificateDialog(()=>canIssueCertificate(progress.completed,levels.map(value=>value.id)),levels.length,stop);
+$('#repair-certificate').onclick=$('#repair-certificate-return').onclick=()=>certificate.open();
 function followingLevel(){return levelIndex+1<levels.length?levelIndex+1:levels.findIndex(value=>!progress.completed.includes(value.id));}
 function renderLevels(){
   const select=$<HTMLSelectElement>('#repair-level-select');select.replaceChildren();
@@ -78,6 +82,8 @@ function renderLevels(){
   $('.repair-edit-instruction').textContent=level.kind==='rhythm'?'點音符試聽，再調整時值。休止符不發聲。':level.kind==='mixed'?'點音符試聽，再調整音高與時值。':'點音符試聽，再調整音高。';
   $('.repair-success-copy').textContent=currentPraise;
   const completed=levels.filter(value=>progress.completed.includes(value.id)).length;
+  const allComplete=canIssueCertificate(progress.completed,levels.map(value=>value.id));
+  $('.repair-certificate-reward').hidden=!allComplete;$('#repair-certificate-return').hidden=!allComplete;
   $('.repair-success-note').textContent=completed===levels.length?`本批 ${levels.length} 關全數修復！新關卡將陸續加入。`:`「${level.target.title}」修復完成！已修復 ${completed} / ${levels.length} 關。`;
   const following=followingLevel();const next=$<HTMLButtonElement>('#repair-next-level');next.hidden=following<0;next.textContent=following>=0?`${following>levelIndex?'下一關':'繼續挑戰'}：${levels[following].target.title}`:'';
 }
@@ -109,7 +115,7 @@ function renderFlow(focus=false){
   if(focus){$('#repair-stage-title').focus({preventScroll:true});window.scrollTo(0,0);}
 }
 function maskReferenceScore(masked:boolean){
-  $('#repair-score-caption').textContent=masked?'我的版本 · 正在聽原曲，音符暫時隱藏':'我的版本';
+  $('#repair-score-caption').textContent=masked?'正在聽原曲，音符暫時隱藏':'我的版本';
   document.querySelectorAll<HTMLButtonElement>('.repair-note').forEach((button,index)=>{
     const code=formatEvent(state.melody.events[index]);button.querySelector('strong')!.textContent=masked?'──':code;
     button.setAttribute('aria-label',masked?`第 ${index+1} 音，原曲播放中，點選編輯我的版本`:`第 ${index+1} 音 ${code}`);

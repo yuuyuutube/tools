@@ -573,3 +573,19 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
 .repair-success-copy { overflow-wrap: anywhere; }
 
 .repair-score-caption { font-size: 12px; color: var(--muted); margin: 14px 0 8px; line-height: 1.7; }
+
+.repair-certificate-return { min-height: 44px; padding: 0 8px; color: var(--muted); font-size: 12px; border-color: transparent; }
+.repair-certificate-reward { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+.repair-certificate-reward p { font-size: 13px; color: var(--muted); line-height: 1.7; }
+.repair-certificate-reward button { min-height: 48px; padding: 0 22px; }
+.certificate-dialog { width: min(760px,calc(100% - 32px)); max-width: 760px; max-height: 90dvh; overflow-y: auto; }
+.certificate-form { margin-top: 22px; }
+.certificate-form label { display: block; margin-bottom: 8px; font-size: 13px; }
+.certificate-name-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.certificate-name-row input { flex: 1; min-width: 150px; min-height: 44px; padding: 10px; border: 1px solid var(--line); border-radius: 4px; background: #faf9f0; color: var(--ink); }
+.certificate-name-row button { padding: 0 16px; }
+.certificate-dialog .certificate-hint { color: var(--muted); font-size: 12px; }
+.certificate-preview { display: block; width: 100%; height: auto; margin-top: 20px; border: 1px solid var(--line); }
+.certificate-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.certificate-actions button { flex: 1; min-height: 44px; padding: 0 10px; font-size: 13px; }
+.certificate-status { min-height: 1.7em; }
