@@ -19,7 +19,6 @@ let dirty = false;
 const history = new EditHistory();
 let savedDigest: string | undefined;
 let viewMode: 'classic' | 'studio' = 'classic';
-let modeBeforeFocus: 'classic' | 'studio' = 'classic';
 function melodyDigest() { return JSON.stringify([state.melody.id, state.melody.title, state.melody.tempoBpm, state.melody.events]); }
 let muted = false;
 let library: ReturnType<typeof readLibrary>;
@@ -64,7 +63,7 @@ $('#app').innerHTML = `
       </div>
     </section>
     <section class="below"><details class="guide"><summary>操作說明 ${icon('chevron')}</summary><div class="guide-body">
-<p>Studio 點音符選取，點外部空白或按 Esc 取消選取。未選取時，下方欄位設定下一音；選取時只修改該音符，新增設定會另外保留。每格直線間距代表一個四分音符；音符與休止符依累積時值排列，附點會增加一半寬度。最後的「下一個音符」欄可預覽並點擊新增。休止列固定在圖下方，不受音高區上下捲動影響。拖曳音塊本體可與目標音符交換位置，或選取後按 Alt＋左右鍵。滑鼠移到既有欄位則會出現虛線音高預覽。拖曳選取音右側把手可改時值，放開套用、Esc 取消；把手也支援左右方向鍵。音高／時值欄位可精確調整。復原／重做跨兩個模式共用；快捷鍵 Ctrl／⌘ Z、Ctrl／⌘ Shift Z。載入其他作品會重設編輯紀錄。專注模式使用 Classic 鍵盤。</p>
+<p>Studio 點音符選取，點外部空白或按 Esc 取消選取。未選取時，下方欄位設定下一音；選取時只修改該音符，新增設定會另外保留。每格直線間距代表一個四分音符；音符與休止符依累積時值排列，附點會增加一半寬度。最後的「下一個音符」欄可預覽並點擊新增。休止列固定在圖下方，不受音高區上下捲動影響。拖曳音塊本體可與目標音符交換位置，或選取後按 Alt＋左右鍵。滑鼠移到既有欄位則會出現虛線音高預覽。拖曳選取音右側把手可改時值，放開套用、Esc 取消；把手也支援左右方向鍵。音高／時值欄位可精確調整。復原／重做跨兩個模式共用；快捷鍵 Ctrl／⌘ Z、Ctrl／⌘ Shift Z。載入其他作品會重設編輯紀錄。專注模式保留目前模式：Classic 顯示編輯器與鍵盤，Studio 只顯示編輯器。</p>
       <div class="guide-grid">
         <section class="guide-section" aria-labelledby="guide-notes"><h3 id="guide-notes">輸入音符</h3>
           <dl class="key-reference">
@@ -136,7 +135,7 @@ function updateFocusViewport() {
 }
 function setFocusMode(enabled: boolean, syncUrl = true) {
   cancelPress();
-  if (enabled) { beforeFocusScroll = window.scrollY; modeBeforeFocus = viewMode; setViewMode('classic'); }
+  if (enabled && !focusMode) beforeFocusScroll = window.scrollY;
   focusMode = enabled;
   if (syncUrl) {
     const url = new URL(window.location.href);
@@ -149,7 +148,6 @@ function setFocusMode(enabled: boolean, syncUrl = true) {
   updateFocusViewport();
   if (enabled) $('#focus-exit').focus({ preventScroll: true });
   else {
-    if (viewMode !== modeBeforeFocus) setViewMode(modeBeforeFocus);
     window.scrollTo(0, beforeFocusScroll);
     $('#focus-toggle').focus({ preventScroll: true });
   }
@@ -159,7 +157,7 @@ $('#focus-exit').onclick = () => setFocusMode(false);
 window.visualViewport?.addEventListener('resize', updateFocusViewport);
 window.addEventListener('resize', updateFocusViewport);
 document.addEventListener('keydown', event => {
-  if (event.key === 'Escape' && focusMode) { setFocusMode(false); stop(); }
+  if (event.key === 'Escape' && focusMode && !event.defaultPrevented) { event.preventDefault(); setFocusMode(false); stop(); }
 });
 function notify(message: string) { $('#status').textContent = message; }
 function renderAudioRecovery() {

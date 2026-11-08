@@ -440,3 +440,24 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
 .tag-suggestions { display: flex; flex-wrap: wrap; gap: 6px; }
 .tag-suggestions button { padding: 0 10px; font-size: 12px; border-style: dashed; }
 .tag-feedback { min-height: 20px; }
+
+/* Studio focus fills the viewport with one editor; only the pitch grid scrolls. */
+.focus-mode.studio-mode main { overflow: hidden; }
+.focus-mode.studio-mode .instrument { grid-template-areas: 'editor'; grid-template-columns: minmax(0,1fr); grid-template-rows: minmax(0,1fr); }
+.focus-mode.studio-mode .editor-panel { overflow: hidden; min-width: 0; padding: 8px; border: 0; }
+.focus-mode.studio-mode .keypad-panel, .focus-mode.studio-mode .edit-tools, .focus-mode.studio-mode .studio-help, .focus-mode.studio-mode .song-label, .focus-mode.studio-mode #song-title { display: none; }
+.focus-mode.studio-mode .lcd { flex: 0 0 auto; padding: 4px 12px 8px; }
+.focus-mode.studio-mode #studio-panel { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; margin-top: 8px; }
+.focus-mode.studio-mode .roll-scroll { flex: 1 1 0; height: auto; min-height: 0; }
+.focus-mode.studio-mode .rest-viewport, .focus-mode.studio-mode .studio-fields, .focus-mode.studio-mode .studio-actions { flex-shrink: 0; }
+.focus-mode.studio-mode .studio-fields { margin: 8px 0; }
+.focus-mode.studio-mode .studio-actions { margin-bottom: 8px; }
+.focus-mode.studio-mode .transport button { min-height: 44px; }
+@media(max-height:520px) and (min-width:600px) {
+  .focus-mode.studio-mode .lcd-footer { display: none; }
+  .focus-mode.studio-mode #studio-panel { display: grid; grid-template-columns: minmax(0,1fr) auto; grid-template-rows: minmax(0,1fr) 54px auto; grid-template-areas: 'roll roll' 'rest rest' 'fields actions'; column-gap: 12px; }
+  .focus-mode.studio-mode .roll-scroll { grid-area: roll; }
+  .focus-mode.studio-mode .rest-viewport { grid-area: rest; }
+  .focus-mode.studio-mode .studio-fields { grid-area: fields; margin: 4px 0; }
+  .focus-mode.studio-mode .studio-actions { grid-area: actions; align-self: center; margin: 4px 0; }
+}
