@@ -548,3 +548,7 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
 @media(max-width:750px) {
   [data-pane="3"] > .repair-stage-actions { position: sticky; bottom: 0; z-index: 3; padding: 10px 0 max(10px, env(safe-area-inset-bottom)); background: #f2f1e9; border-top: 1px solid #d6dbcc; }
 }
+
+.album-remove { width: 44px; padding: 0; flex-shrink: 0; }
+.album-remove .icon { width: 16px; height: 16px; }
+#box-restore { margin-bottom: 12px; }

@@ -1,3 +1,5 @@
+import { removedSongs, removeSong, restoreLastSong, REMOVED_KEY } from './music-core/removed-songs';
+import { ensureStarterLibrary } from './music-core/starter-library';
 import { mountLabNavigation } from './navigation';
 import { createTagDialog } from './tag-dialog';
 import { readTags,saveSongTags,filterSongs,tagOptions,TAGS_KEY,type TagResult } from './music-core/tags';
@@ -12,9 +14,10 @@ import { createShareDialog } from './share-dialog';
 import { icon } from './icons';
 const app=document.querySelector<HTMLElement>('#app')!;
 document.title='POCKET MUSIC BOX';
-app.innerHTML=`<header class="site-header box-header"><img src="./favicon.svg" width="32" height="32" alt=""/><h1>POCKET MUSIC BOX</h1><a class="composer-link" href="./">${icon('add')}<span>編新旋律</span></a></header><main class="box-main"><div class="box-toolbar"><p id="box-count"></p><button id="box-stop" disabled>${icon('stop')}<span>停止</span></button></div><p class="box-storage-note">作品儲存於此瀏覽器。</p><p id="box-status" class="box-status" role="status" aria-live="polite"></p><button id="box-enable" hidden>${icon('volume')}<span>啟用聲音</span></button><div id="box-warning" role="status"></div><div class="box-organizer"><label for="box-search">搜尋</label><input id="box-search" type="search" placeholder="搜尋曲名或標籤" autocomplete="off"/><div class="box-filters" role="group" aria-label="標籤篩選"></div></div><div class="album-grid"></div></main>`;
+app.innerHTML=`<header class="site-header box-header"><img src="./favicon.svg" width="32" height="32" alt=""/><h1>POCKET MUSIC BOX</h1><a class="composer-link" href="./">${icon('add')}<span>編新旋律</span></a></header><main class="box-main"><div class="box-toolbar"><p id="box-count"></p><button id="box-stop" disabled>${icon('stop')}<span>停止</span></button></div><p class="box-storage-note">作品儲存於此瀏覽器。</p><p id="box-status" class="box-status" role="status" aria-live="polite"></p><button id="box-enable" hidden>${icon('volume')}<span>啟用聲音</span></button><div id="box-warning" role="status"></div><button id="box-restore" hidden>復原最近移除</button><div class="box-organizer"><label for="box-search">搜尋</label><input id="box-search" type="search" placeholder="搜尋曲名或標籤" autocomplete="off"/><div class="box-filters" role="group" aria-label="標籤篩選"></div></div><div class="album-grid"></div></main>`;
 mountLabNavigation('box');
 const status=document.querySelector<HTMLElement>('#box-status')!;
+let starterWarning:string|undefined;
 const stopButton=document.querySelector<HTMLButtonElement>('#box-stop')!;
 const enableButton=document.querySelector<HTMLButtonElement>('#box-enable')!;
 const engine=new AudioEngine();let request=0;let playingId:string|undefined;let sharingSong:Melody;
@@ -69,14 +72,17 @@ function download(song:Melody,button:HTMLButtonElement) {
     worker.onerror=()=>{status.textContent='無法產生 WAV，請重新整理後再試。';finish();};worker.postMessage(structuredClone(song));
   } catch {status.textContent='此瀏覽器無法產生 WAV，請改用新版 Safari 或 Chrome。';finish();}
 }
+const restoreButton=document.querySelector<HTMLButtonElement>('#box-restore')!;
+restoreButton.onclick=()=>{try{const restored=restoreLastSong(localStorage);render();status.textContent=restored?`已復原「${restored.title}」。`:'';}catch(error){status.textContent=(error as Error).message;}};
 function render() {
   stop();observer?.disconnect();artworks.clear();playButtons.clear();tagButtons.clear();
   let library:LibraryResult;try{library=readLibrary(localStorage);}catch{library={songs:[],writable:false,warning:'瀏覽器無法讀取本機收藏。'};}
+  try{restoreButton.hidden=!removedSongs(localStorage).length;}catch{restoreButton.hidden=true;}
   const metadata=localTags();const options=tagOptions(library.songs,metadata.tags);
   if(selectedTag&& !options.some(option=>option.key===selectedTag))selectedTag=null;
   const songs=filterSongs(library.songs,metadata.tags,search.value,selectedTag);
   document.querySelector('#box-count')!.textContent=search.value.trim()||selectedTag!==null?`${songs.length} / ${library.songs.length} 首作品`:`${library.songs.length} 首作品`;
-  document.querySelector('#box-warning')!.textContent=[library.warning,metadata.warning].filter(Boolean).join(' ');
+  document.querySelector('#box-warning')!.textContent=[library.warning,metadata.warning,starterWarning].filter(Boolean).join(' ');
   document.querySelector<HTMLElement>('.box-organizer')!.hidden=!library.songs.length;
   const filters=document.querySelector('.box-filters')!;filters.replaceChildren();
   const untagged=library.songs.filter(song=>!(metadata.tags.get(song.id)?.length)).length;
@@ -102,14 +108,17 @@ function render() {
     const wav=document.createElement('button');wav.innerHTML=`${icon('load')}<span>WAV</span>`;wav.setAttribute('aria-label',`下載 ${song.title} 的 WAV`);wav.onclick=()=>download(song,wav);
     const edit=document.createElement('a');const editLocation=new URL(location.href);editLocation.search='';editLocation.hash='';editLocation.searchParams.set('song',song.id);edit.href=editLocation.href;edit.innerHTML=icon('edit');edit.setAttribute('aria-label',`編輯 ${song.title}`);edit.title='編輯';
     const share=document.createElement('button');share.innerHTML=icon('share');share.setAttribute('aria-label',`分享 ${song.title}`);share.title='分享';share.onclick=()=>{sharingSong=song;try{sharing.open();}catch(error){status.textContent=(error as Error).message;}};
-    controls.append(playButton,wav,edit,share);info.append(heading,meta,badges,controls);album.append(cover,info);grid.append(album);
+    const remove=document.createElement('button');remove.innerHTML=icon('trash');remove.setAttribute('aria-label',`移除 ${song.title}`);remove.title='移除（可復原）';remove.className='album-remove';remove.disabled=!library.writable;
+    remove.onclick=()=>{stop();if(!confirm(`移除「${song.title}」？之後可按「復原最近移除」還原。`))return;try{removeSong(localStorage,song.id);render();status.textContent=`已移除「${song.title}」，可按「復原最近移除」還原。`;restoreButton.focus();}catch(error){status.textContent=(error as Error).message;}};
+    heading.append(remove);controls.append(playButton,wav,edit,share);info.append(heading,meta,badges,controls);album.append(cover,info);grid.append(album);
     if(observer){pending.set(cover,draw);observer.observe(cover);}else draw();
   });
 }
-window.addEventListener('storage',event=>{if(event.key===STORAGE_KEY||event.key===TAGS_KEY||event.key===null){render();status.textContent='收藏已更新。';}});
+window.addEventListener('storage',event=>{if(event.key===STORAGE_KEY||event.key===TAGS_KEY||event.key===REMOVED_KEY||event.key===null){render();status.textContent='收藏已更新。';}});
 window.addEventListener('blur',stop);
 window.addEventListener('pagehide',()=>{stop();cancelDownload();observer?.disconnect();});
 window.addEventListener('pageshow',event=>{if(event.persisted)render();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.querySelector('dialog[open]')){stop();status.textContent='已停止。';}});
+try { starterWarning=ensureStarterLibrary(localStorage).warning; } catch { /* render reports unavailable storage */ }
 render();

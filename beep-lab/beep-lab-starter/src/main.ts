@@ -12,6 +12,7 @@ import { edit, type EditorState } from './music-core/editor';
 import { readLibrary, writeLibrary } from './music-core/storage';
 import { AudioActivationError, AudioEngine } from './audio-engine/player';
 import { demoMelody } from './demo';
+import { ensureStarterLibrary } from './music-core/starter-library';
 
 const $ = <T extends HTMLElement = HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
 const player = new AudioEngine();
@@ -23,7 +24,7 @@ let viewMode: 'classic' | 'studio' = 'classic';
 function melodyDigest() { return JSON.stringify([state.melody.id, state.melody.title, state.melody.tempoBpm, state.melody.events]); }
 let muted = false;
 let library: ReturnType<typeof readLibrary>;
-try { library = readLibrary(localStorage); }
+try { library = ensureStarterLibrary(localStorage); }
 catch { library = { songs: [], writable: false, warning: '瀏覽器禁止本機儲存；仍可編輯與播放。' }; }
 
 const keys: { key: string; pitch?: string; label: string; symbol?: IconName }[] = [

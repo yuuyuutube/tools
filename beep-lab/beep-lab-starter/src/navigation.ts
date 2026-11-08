@@ -1,6 +1,6 @@
 export const LAB_PAGES=[
   {id:'composer',label:'編曲器',href:'./'},
-  {id:'card',label:'分享卡片',href:'?view=card&demo=1'},
+  {id:'card',label:'分享卡片',href:'?view=card&demo=birthday'},
   {id:'box',label:'音樂盒',href:'?view=box'},
   {id:'archaeology',label:'鈴聲考古',href:'?view=archaeology'},
 ] as const;

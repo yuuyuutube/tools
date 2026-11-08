@@ -34,6 +34,6 @@ describe('cross-page navigation',()=>{
       expect(url.pathname).toBe('/tools/beep-lab/');expect(url.hash).toBe('');
       expect(url.searchParams.get('view')).toBe(destination.id==='composer'?null:destination.id);
     }
-    const card=new URL(LAB_PAGES.find(page=>page.id==='card')!.href,'https://example.com/tools/beep-lab/');expect(card.searchParams.get('demo')).toBe('1');
+    const card=new URL(LAB_PAGES.find(page=>page.id==='card')!.href,'https://example.com/tools/beep-lab/');expect(card.searchParams.get('demo')).toBe('birthday');
   });
 });
