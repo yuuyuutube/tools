@@ -557,3 +557,7 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
 .remove-song-title { font-weight: 600; overflow-wrap: anywhere; }
 .remove-feedback { color: #9b4a2d; }
 .remove-feedback:empty { display: none; }
+
+.repair-secondary-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 16px; margin-top: 24px; }
+.repair-secondary-actions button { min-height: 44px; padding: 0 8px; background: transparent; border-color: transparent; color: var(--muted); font-size: 12px; }
+.repair-secondary-actions button:hover { border-color: var(--line); background: #e9ebe2; }

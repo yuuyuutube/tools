@@ -33,3 +33,24 @@
 - 第 6～8 週：M6–M7
 
 用作品完成品質，而非週次，決定是否進入下一階段。
+
+## 鈴聲考古關卡選曲方向（2026-11-08，待逐批製作）
+
+使用者希望只使用經典手機鈴聲或辨識度高的古典名句。現有原創「回聲小徑」僅為流程驗證，正式首關將替換。
+
+建議首季 8 關，先製作 3 關驗證難度，再逐批補齊：
+
+1. Nokia Tune／Tárrega《Gran Vals》鈴聲片段：招牌手機旋律，修一個音高。
+2. Beethoven《歡樂頌》主題：級進與重複音，練旋律方向。
+3. Beethoven《第五號交響曲》開頭：短短短長，練節奏與休止。
+4. Beethoven《給愛麗絲》開頭：半音交替。
+5. Mozart《土耳其進行曲》開頭：快速音群。
+6. Mozart《G 大調弦樂小夜曲》開頭：跳進與八度。
+7. Vivaldi《四季・春》開頭：重複主題與節奏。
+8. Tchaikovsky《天鵝湖》主題：較長的樂句與混合修復。
+
+每關只取約 5–12 秒、可辨識的單音名句；逐一核對原譜、選定版本與必要的音域／節奏簡化，不以記憶猜譜。首批不代表已實作。
+
+後續手機鈴聲候選：iPhone Marimba、Samsung Over the Horizon；先評估單音辨識度、版本及素材使用條件，再排入。
+
+來源：Nokia Tune 歷史參照 [Microsoft Devices Blog](https://blogs.windows.com/devices/2009/01/21/history-of-nokia-part-3-grand-valse/)；Samsung 標誌旋律參照 [Samsung 官方介紹](https://news.samsung.com/global/over-the-horizon-the-evolution-of-the-samsung-galaxy-brand-sound)。

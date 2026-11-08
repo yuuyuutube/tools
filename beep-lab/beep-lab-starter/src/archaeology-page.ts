@@ -34,7 +34,7 @@ app.innerHTML=`<header class="site-header repair-header"><img src="./favicon.svg
   <section data-pane="3" aria-label="步驟三：修復樂譜" hidden>
     <p class="repair-mission">目標：把你的樂譜改成和原曲一樣。這一關只有一個音高出錯，節奏先不用改。</p>
     <div class="repair-compare"><button data-audio="reference">${icon('volume')}<span>聽原曲</span></button><button data-audio="candidate">${icon('play')}<span>聽我的版本</span></button></div>
-    <section class="repair-panel" aria-label="修復編輯區"><div class="repair-edit-intro"><p class="repair-edit-instruction">點選音符，再調整音高。</p><button id="repair-hint">需要提示</button></div><p id="repair-hint-text" role="status" aria-live="polite"></p><div class="repair-score" role="group" aria-label="選擇要修復的音符"></div><div class="repair-pitch-field"><label for="repair-pitch" id="repair-pitch-label">第 1 音的音高</label><select id="repair-pitch"></select></div>
+    <section class="repair-panel" aria-label="修復編輯區"><div class="repair-edit-intro"><p class="repair-edit-instruction">點音符試聽，再調整音高。</p><button id="repair-hint">需要提示</button></div><p id="repair-hint-text" role="status" aria-live="polite"></p><div class="repair-score" role="group" aria-label="選擇要修復的音符"></div><div class="repair-pitch-field"><label for="repair-pitch" id="repair-pitch-label">第 1 音的音高</label><select id="repair-pitch"></select></div>
       <details class="repair-rhythm"><summary>節奏設定</summary><div class="repair-fields"><label>時值<select id="repair-duration">${durations.map(value=>`<option value="${value}">1/${value}</option>`).join('')}</select></label><label><input type="checkbox" id="repair-dot"/>附點</label></div></details>
       <div class="repair-edit-actions"><button id="repair-undo">${icon('undo')}<span>復原</span></button><button id="repair-redo">${icon('redo')}<span>重做</span></button><button id="repair-reset">還原起始樂譜</button></div>
     </section>
@@ -49,7 +49,7 @@ app.innerHTML=`<header class="site-header repair-header"><img src="./favicon.svg
   </section>
   <section data-pane="5" class="repair-complete" aria-label="步驟五：通關" hidden>
     <div class="repair-success-mark">${icon('check')}</div><p class="repair-success-copy">你的旋律已經和原曲一樣。</p><p class="repair-success-note">第一關完成！目前開放這一關，後續關卡將陸續加入。</p>
-    <div class="repair-stage-actions"><button class="save-button" id="repair-replay">再玩一次</button><button id="repair-share">${icon('share')}<span>分享修復作品</span></button></div><a id="repair-create" class="repair-create">帶去編曲器繼續創作 ${icon('right')}</a>
+    <div class="repair-secondary-actions"><button id="repair-replay">再玩一次</button><button id="repair-share">${icon('share')}<span>分享修復作品</span></button></div><a id="repair-create" class="repair-create">帶去編曲器繼續創作 ${icon('right')}</a>
   </section>
 </main>`;
 mountLabNavigation('archaeology');
@@ -94,16 +94,23 @@ function renderEditor(){
   const score=$('.repair-score');score.replaceChildren();
   state.melody.events.forEach((event,index)=>{
     const button=document.createElement('button');button.className='repair-note';button.innerHTML=`<span>${index+1}</span><strong>${formatEvent(event)}</strong>`;button.setAttribute('aria-label',`第 ${index+1} 音 ${formatEvent(event)}`);button.setAttribute('aria-pressed',String(index===state.cursor-1));
-    button.onclick=()=>{stop();state={...state,cursor:index+1};renderEditor();pitch.focus();};
-    button.onkeydown=key=>{if(key.key==='ArrowLeft'||key.key==='ArrowRight'){key.preventDefault();stop();state={...state,cursor:Math.max(1,Math.min(state.melody.events.length,state.cursor+(key.key==='ArrowLeft'?-1:1)))};renderEditor();document.querySelectorAll<HTMLButtonElement>('.repair-note')[state.cursor-1]?.focus();}};
+    button.onclick=()=>{state={...state,cursor:index+1};renderEditor();pitch.focus();void previewSelected();};
+    button.onkeydown=key=>{if(key.key==='ArrowLeft'||key.key==='ArrowRight'){key.preventDefault();stop();state={...state,cursor:Math.max(1,Math.min(state.melody.events.length,state.cursor+(key.key==='ArrowLeft'?-1:1)))};renderEditor();document.querySelectorAll<HTMLButtonElement>('.repair-note')[state.cursor-1]?.focus();void previewSelected();}};
     score.append(button);
   });
   const event=state.melody.events[state.cursor-1];pitch.value=String(noteStep(event)??'rest');duration.value=String(event.duration);dot.checked=event.dotted;$('#repair-pitch-label').textContent=`第 ${state.cursor} 音的音高`;
   $<HTMLButtonElement>('#repair-undo').disabled=!history.canUndo;$<HTMLButtonElement>('#repair-redo').disabled=!history.canRedo;
   const review=$('.repair-review-score');review.replaceChildren();state.melody.events.forEach(event=>{const note=document.createElement('span');note.textContent=formatEvent(event);review.append(note);});
 }
+async function previewSelected(){
+  stop();const event=state.melody.events[state.cursor-1];
+  if(!event||event.type==='rest')return;
+  const token=++audioAttempt;
+  try{await engine.previewNote(event,state.melody.tempoBpm);if(token===audioAttempt)$('#repair-enable').hidden=true;}
+  catch(error){if(token!==audioAttempt)return;audioMessage(error instanceof AudioActivationError?error.message:'無法試聽，請再點一次音符。');$('#repair-enable').hidden=error instanceof AudioActivationError&&!error.recoverable;}
+}
 function invalidate(){const previous=flow.step;flow=invalidateRepair(flow);$('#repair-result').textContent='';$('#repair-result').removeAttribute('data-passed');renderFlow(previous!==flow.step);}
-function change(){stop();const timing={duration:Number(duration.value) as typeof durations[number],dotted:dot.checked};const event=pitch.value==='rest'?{type:'rest' as const,...timing}:noteFromStep(Number(pitch.value),timing);const result=updateSelected(state,event);history.record(state,result.state);state=result.state;invalidate();renderEditor();}
+function change(){stop();const timing={duration:Number(duration.value) as typeof durations[number],dotted:dot.checked};const event=pitch.value==='rest'?{type:'rest' as const,...timing}:noteFromStep(Number(pitch.value),timing);const result=updateSelected(state,event);history.record(state,result.state);state=result.state;invalidate();renderEditor();void previewSelected();}
 pitch.onchange=duration.onchange=dot.onchange=change;
 function restore(direction:'undo'|'redo'){stop();state=history[direction](state);invalidate();renderEditor();}
 $('#repair-undo').onclick=()=>restore('undo');$('#repair-redo').onclick=()=>restore('redo');
