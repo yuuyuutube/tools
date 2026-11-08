@@ -21,6 +21,7 @@ export class AudioEngine {
   isPlaying = false;
   onPosition: (index: number | null) => void = () => {};
   onEnd: () => void = () => {};
+  onProgress: (seconds:number|null,totalSeconds:number) => void = () => {};
   private activationAttempt = 0;
   availability: AudioAvailability = 'idle';
   onAvailability: (availability: AudioAvailability) => void = () => {};
@@ -139,6 +140,7 @@ export class AudioEngine {
     const update = () => {
       if (!this.context || generation !== this.generation) return;
       const elapsed = this.context.currentTime - start;
+      this.onProgress(Math.max(0,Math.min(total,elapsed)),total);
       if (elapsed >= total) { this.stop(); return; }
       const position = entries.findIndex(e => elapsed >= e.offset && elapsed < e.offset + e.duration);
       const current = position < 0 ? null : position;
@@ -162,6 +164,7 @@ export class AudioEngine {
     const wasPlaying = this.isPlaying;
     this.isPlaying = false;
     this.onPosition(null);
+    this.onProgress(null,0);
     if (wasPlaying) this.onEnd();
   }
 }

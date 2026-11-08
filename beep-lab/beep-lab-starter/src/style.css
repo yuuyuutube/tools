@@ -589,3 +589,16 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
 .certificate-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .certificate-actions button { flex: 1; min-height: 44px; padding: 0 10px; font-size: 13px; }
 .certificate-status { min-height: 1.7em; }
+
+.repair-timeline { margin: 0 0 22px; }
+.repair-timeline-label { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+.repair-time { font-variant-numeric: tabular-nums; }
+.repair-timeline-viewport { overflow-x: auto; padding: 0 1px; }
+.repair-timeline-track { position: relative; min-width: 100%; height: 66px; background-image: linear-gradient(to right,#c7ccbe 1px,transparent 1px); border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); }
+.repair-beat-tick { position: absolute; top: 4px; font: 10px/1 Arial,sans-serif; transform: translateX(-50%); color: var(--muted); }
+.repair-beat-tick.first { transform: none; left: 3px !important; }
+.repair-beat-tick.last { transform: translateX(-100%); }
+.repair-time-note { position: absolute; top: 29px; height: 20px; background: #8da28a; box-shadow: inset 0 0 0 1px #f2f1e9; border-radius: 4px; }
+.repair-time-note.rest { background: transparent; border: 1px dashed #8c9583; height: 16px; top: 31px; }
+.repair-playhead { position: absolute; top: 21px; bottom: 0; width: 2px; background: var(--orange); z-index: 2; pointer-events: none; }
+.repair-timeline { position: sticky; top: 0; z-index: 5; background: #f2f1e9; padding-top: 8px; padding-bottom: 4px; }

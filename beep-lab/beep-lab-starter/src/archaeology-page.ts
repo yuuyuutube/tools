@@ -1,3 +1,4 @@
+import { createRepairTimeline } from './repair-timeline';
 import { canIssueCertificate } from './certificate';
 import { createCertificateDialog } from './certificate-dialog';
 import { drawRepairPraise } from './repair-praise';
@@ -23,6 +24,7 @@ app.innerHTML=`<header class="site-header repair-header"><img src="./favicon.svg
   <ol class="repair-steps" aria-label="本關步驟">${steps.map((step,index)=>`<li><button data-step="${index+1}" aria-label="步驟 ${index+1}：${step.short}"><span class="repair-step-dot">${index+1}</span><span>${step.short}</span></button></li>`).join('')}</ol>
   <div class="repair-stage-heading"><p id="repair-step-count"></p><h2 id="repair-stage-title" tabindex="-1"></h2></div>
   <div class="repair-audio-bar" hidden><p id="repair-audio" role="status" aria-live="polite"></p><button id="repair-stop" aria-label="停止播放">${icon('stop')}</button><button id="repair-enable" hidden>${icon('volume')}<span>啟用聲音</span></button></div>
+  <div id="repair-playback-timeline"></div>
   <section data-pane="1" aria-label="步驟一：聽原曲">
     <p class="repair-stage-copy"><span id="repair-intro-difference"></span>。先聽正確版本，記住旋律，待會你要把錯誤版修回來。</p>
     <div class="repair-listen-card"><span>正確版本</span><button id="repair-reference" data-audio="reference">${icon('volume')}<span>播放原曲</span></button><p>留意旋律的高低與長短，可以重複聽。</p></div>
@@ -114,6 +116,8 @@ function renderFlow(focus=false){
   $('#repair-reference-help').hidden=flow.heardReference;$('#repair-damaged-help').hidden=flow.heardDamaged;
   if(focus){$('#repair-stage-title').focus({preventScroll:true});window.scrollTo(0,0);}
 }
+const playbackTimeline=createRepairTimeline($('#repair-playback-timeline'));
+engine.onProgress=(seconds,total)=>playbackTimeline.update(seconds,total);
 function maskReferenceScore(masked:boolean){
   $('#repair-score-caption').textContent=masked?'正在聽原曲，音符暫時隱藏':'我的版本';
   document.querySelectorAll<HTMLButtonElement>('.repair-note').forEach((button,index)=>{
@@ -127,7 +131,7 @@ function stop(){audioAttempt++;engine.stop();idle();audioMessage('');}
 engine.onEnd=()=>{idle();audioMessage('播放結束。');};
 engine.onPosition=index=>document.querySelectorAll('.repair-note').forEach((note,i)=>note.classList.toggle('sounding',i===index));
 async function listen(kind:'reference'|'damaged'|'candidate'){
-  stop();const token=++audioAttempt;const melody=kind==='reference'?level.target:kind==='damaged'?level.damaged:state.melody;
+  stop();const token=++audioAttempt;const melody=kind==='reference'?level.target:kind==='damaged'?level.damaged:state.melody;playbackTimeline.prepare(melody);
   try{await engine.playMelody(melody);if(token!==audioAttempt)return;$('#repair-enable').hidden=true;
     if(engine.isPlaying){maskReferenceScore(kind==='reference');document.querySelectorAll(`[data-audio="${kind}"]`).forEach(button=>button.setAttribute('aria-pressed','true'));$('#repair-stop').hidden=false;audioMessage(kind==='reference'?'正在播放原曲':kind==='damaged'?'正在播放錯誤版':'正在播放你的修復版本');if(kind!=='candidate'){flow=markRepairHeard(flow,kind);renderFlow();}}
   }catch(error){if(token!==audioAttempt)return;audioMessage(error instanceof AudioActivationError?error.message:'無法播放，請再試一次。');$('#repair-enable').hidden=error instanceof AudioActivationError&&!error.recoverable;}

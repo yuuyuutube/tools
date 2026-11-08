@@ -10,7 +10,7 @@ describe('completion certificate',()=>{
     expect(canIssueCertificate(ids,ids)).toBe(true);
   });
   it('uses the device calendar date, including local midnight and single-digit months',()=>{
-    expect(certificateDetails(' 小悠 ',8,new Date(2026,10,8,0,5))).toEqual({name:'小悠',levelCount:8,dateLabel:'2026 年 11 月 08 日',dateISO:'2026-11-08'});
+    expect(certificateDetails(' 小悠 ',8,new Date(2026,10,8,0,5))).toMatchObject({name:'小悠',levelCount:8,dateLabel:'2026 年 11 月 08 日',dateISO:'2026-11-08'});
     expect(certificateDetails('Yoyo',8,new Date(2027,0,1,23,59)).dateISO).toBe('2027-01-01');
   });
   it('normalizes names without interpreting user text as markup',()=>{

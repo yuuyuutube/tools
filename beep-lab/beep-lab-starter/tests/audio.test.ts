@@ -145,3 +145,12 @@ describe('audio lifecycle', () => {
   });
 
 });
+
+it('reports continuous playback progress from the audio clock, including silence, and clears on Stop',async()=>{
+  const player=new AudioEngine(),melody=createMelody();melody.events=[note,{type:'rest',duration:4,dotted:false},note];
+  const progress=vi.fn();player.onProgress=progress;await player.playMelody(melody);
+  expect(progress).toHaveBeenLastCalledWith(0,1.5);
+  Context.instances[0].currentTime=.79;vi.advanceTimersByTime(20);expect(progress).toHaveBeenLastCalledWith(.75,1.5);
+  player.stop();expect(progress).toHaveBeenLastCalledWith(null,0);
+  const count=progress.mock.calls.length;vi.advanceTimersByTime(100);expect(progress).toHaveBeenCalledTimes(count);
+});

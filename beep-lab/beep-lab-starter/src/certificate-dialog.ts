@@ -1,3 +1,4 @@
+import { drawCertificatePraise } from './certificate-praise';
 import { certificateDetails,drawCertificate,certificateBlob } from './certificate';
 import { icon } from './icons';
 export function createCertificateDialog(eligible:()=>boolean,levelCount:number,beforeOpen:()=>void) {
@@ -7,6 +8,7 @@ export function createCertificateDialog(eligible:()=>boolean,levelCount:number,b
   const input=dialog.querySelector<HTMLInputElement>('input')!,form=dialog.querySelector<HTMLFormElement>('form')!,generate=form.querySelector<HTMLButtonElement>('button')!;
   const preview=dialog.querySelector<HTMLImageElement>('img')!,status=dialog.querySelector<HTMLElement>('.certificate-status')!;
   const download=dialog.querySelector<HTMLButtonElement>('.certificate-download')!,share=dialog.querySelector<HTMLButtonElement>('.certificate-share')!;
+  let previousPraise='';
   let file:File|undefined,url:string|undefined,version=0;
   function invalidate(){version++;file=undefined;if(url)URL.revokeObjectURL(url);url=undefined;preview.hidden=true;preview.removeAttribute('src');download.disabled=share.disabled=true;}
   function downloadImage(){if(!url||!file)return;const link=document.createElement('a');link.href=url;link.download=file.name;document.body.append(link);link.click();link.remove();}
@@ -15,9 +17,9 @@ export function createCertificateDialog(eligible:()=>boolean,levelCount:number,b
     event.preventDefault();invalidate();const attempt=version;generate.disabled=true;status.textContent='正在產生證書…';
     try{
       if(!eligible())throw new Error('完成全部關卡後，就能領取通關證書。');
-      const details=certificateDetails(input.value,levelCount);const canvas=document.createElement('canvas');drawCertificate(canvas,details);const blob=await certificateBlob(canvas);
+      const details=certificateDetails(input.value,levelCount,new Date(),drawCertificatePraise(previousPraise));const canvas=document.createElement('canvas');drawCertificate(canvas,details);const blob=await certificateBlob(canvas);
       if(attempt!==version)return;
-      file=new File([blob],`BEEP-LAB-通關證書-${details.dateISO}.png`,{type:'image/png'});url=URL.createObjectURL(blob);preview.src=url;preview.alt=`${details.name}的鈴聲考古通關證書，${details.dateLabel}，完成 ${levelCount} 關`;preview.hidden=false;download.disabled=share.disabled=false;status.textContent='證書已完成，可以下載或分享圖片。';
+      previousPraise=details.praise;file=new File([blob],`BEEP-LAB-通關證書-${details.dateISO}.png`,{type:'image/png'});url=URL.createObjectURL(blob);preview.src=url;preview.alt=`${details.name}的鈴聲考古通關證書，${details.dateLabel}，完成 ${levelCount} 關。${details.praise}`;preview.hidden=false;download.disabled=share.disabled=false;status.textContent='證書已完成，可以下載或分享圖片。';
     }catch(error){if(attempt===version)status.textContent=(error as Error).message;}
     finally{generate.disabled=false;}
   };
