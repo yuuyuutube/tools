@@ -40,9 +40,9 @@ describe('cross-page navigation',()=>{
 
 describe('classic repair levels',()=>{
   it('ships the intended melodies, with independent, precisely scoped damage',()=>{
-    const levels=repairLevels();expect(levels.map(value=>value.id)).toEqual(['nokia','ode-to-joy','can-can','fur-elise','alla-turca','nachtmusik','spring','william-tell']);
-    expect(levels.map(value=>compareRepair(value.target,value.damaged).pitchErrors)).toEqual([[2],[4,10],[],[1,3],[2],[0,10],[],[8,19]]);
-    expect(levels.map(value=>compareRepair(value.target,value.damaged).rhythmErrors)).toEqual([[],[],[0,2],[],[6],[],[1,6,14],[0]]);
+    const levels=repairLevels();expect(levels.map(value=>value.id)).toEqual(['nokia','ode-to-joy','can-can','fur-elise','alla-turca','nachtmusik','spring','william-tell','mountain-king']);
+    expect(levels.map(value=>compareRepair(value.target,value.damaged).pitchErrors)).toEqual([[2],[4,10],[],[1,3],[2],[0,10],[],[8,19],[4,8]]);
+    expect(levels.map(value=>compareRepair(value.target,value.damaged).rhythmErrors)).toEqual([[],[],[0,2],[],[6],[],[1,6,14],[0],[25]]);
     for(const value of levels){expect(isMelody(value.target)).toBe(true);expect(isMelody(value.damaged)).toBe(true);expect(compareRepair(value.target,structuredClone(value.target)).passed).toBe(true);expect(value.hints).toHaveLength(3);}
   });
   it('provides new IDs for replacement songs, keeping old completions from earning new credit',()=>{

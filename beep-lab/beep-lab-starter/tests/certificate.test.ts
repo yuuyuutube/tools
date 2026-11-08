@@ -3,10 +3,10 @@ import {certificateDetails,canIssueCertificate} from '../src/certificate';
 import {repairLevels} from '../src/music-core/archaeology';
 describe('completion certificate',()=>{
   const ids=repairLevels().map(level=>level.id);
-  it('requires all eight actual level IDs, not the count of arbitrary completions',()=>{
-    expect(ids).toHaveLength(8);expect(canIssueCertificate(ids.slice(0,6),ids)).toBe(false);
-    expect(canIssueCertificate(ids.slice(0,7),ids)).toBe(false);expect(canIssueCertificate([...ids.slice(0,7),'unknown'],ids)).toBe(false);
-    expect(canIssueCertificate(Array(8).fill(ids[0]),ids)).toBe(false);expect(canIssueCertificate([],[])).toBe(false);
+  it('requires all nine actual level IDs, not the count of arbitrary completions',()=>{
+    expect(ids).toHaveLength(9);expect(canIssueCertificate(ids.slice(0,6),ids)).toBe(false);
+    expect(canIssueCertificate(ids.slice(0,8),ids)).toBe(false);expect(canIssueCertificate([...ids.slice(0,8),'unknown'],ids)).toBe(false);
+    expect(canIssueCertificate(Array(9).fill(ids[0]),ids)).toBe(false);expect(canIssueCertificate([],[])).toBe(false);
     expect(canIssueCertificate(ids,ids)).toBe(true);
     expect(canIssueCertificate([...ids.filter(id=>id!=='can-can'&&id!=='william-tell'),'fate','swan-lake'],ids)).toBe(false);
   });

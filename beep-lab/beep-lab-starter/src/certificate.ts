@@ -17,9 +17,9 @@ export function drawCertificate(canvas:HTMLCanvasElement,details:CertificateDeta
   const ink='#303e34',green='#5e7969',gold='#b79d60',red='#b44f36',paper='#f7f3e8';
   ctx.fillStyle=paper;ctx.fillRect(0,0,1600,1200);
   ctx.strokeStyle=gold;ctx.lineWidth=2;ctx.strokeRect(64,64,1472,1072);ctx.strokeStyle='#d9d4c3';ctx.lineWidth=1;ctx.strokeRect(82,82,1436,1036);
-  // Eight bars form a small restored melody motif, one for each challenge.
+  // One bar for each completed challenge.
   const heights=[28,52,40,72,60,88,64,44];
-  heights.forEach((height,index)=>{ctx.fillStyle=index===4?red:green;ctx.fillRect(650+index*40,160-height/2,18,height);});
+  Array.from({length:details.levelCount},(_,index)=>{const height=heights[index%heights.length];ctx.fillStyle=index===Math.floor(details.levelCount/2)?red:green;ctx.fillRect((1600-((details.levelCount-1)*40+18))/2+index*40,160-height/2,18,height);});
   ctx.textAlign='center';ctx.fillStyle=green;ctx.font='500 30px Arial, sans-serif';ctx.fillText('BEEP LAB',800,260);
   ctx.fillStyle=ink;ctx.font='600 70px "Songti TC", "Noto Serif CJK TC", serif';ctx.fillText('鈴聲考古・通關證書',800,370);
   ctx.font='28px sans-serif';ctx.fillStyle=green;ctx.fillText('頒予',800,460);

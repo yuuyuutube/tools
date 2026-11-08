@@ -55,7 +55,7 @@ app.innerHTML=`<header class="site-header repair-header"><img src="./favicon.svg
     <div class="repair-stage-actions"><button data-go="3">返回修復</button><button id="repair-check" class="save-button">送出答案 ${icon('right')}</button></div>
   </section>
   <section data-pane="5" class="repair-complete" aria-label="步驟五：通關" hidden>
-    <div class="repair-success-mark">${icon('check')}</div><p class="repair-success-copy"></p><p class="repair-success-note"></p><button id="repair-next-level" class="save-button"></button><div class="repair-certificate-reward" hidden><p>全八關修復完成，這張證書屬於你。</p><button id="repair-certificate" class="save-button">領取通關證書</button></div>
+    <div class="repair-success-mark">${icon('check')}</div><p class="repair-success-copy"></p><p class="repair-success-note"></p><button id="repair-next-level" class="save-button"></button><div class="repair-certificate-reward" hidden><p>全部關卡修復完成，這張證書屬於你。</p><button id="repair-certificate" class="save-button">領取通關證書</button></div>
     <div class="repair-secondary-actions"><button id="repair-replay">再玩一次</button><button id="repair-share">${icon('share')}<span>分享修復作品</span></button></div><a id="repair-create" class="repair-create">帶去編曲器繼續創作 ${icon('right')}</a>
   </section>
 </main>`;
@@ -90,7 +90,8 @@ function renderLevels(){
   const completed=levels.filter(value=>progress.completed.includes(value.id)).length;
   const allComplete=canIssueCertificate(progress.completed,levels.map(value=>value.id));
   $('.repair-certificate-reward').hidden=!allComplete;$('#repair-certificate-return').hidden=!allComplete;
-  $('.repair-success-note').textContent=completed===levels.length?`本批 ${levels.length} 關全數修復！新關卡將陸續加入。`:`「${level.target.title}」修復完成！已修復 ${completed} / ${levels.length} 關。`;
+  $('.repair-success-note').hidden=allComplete;
+  $('.repair-success-note').textContent=allComplete?'':`「${level.target.title}」修復完成！已修復 ${completed} / ${levels.length} 關。`;
   const following=followingLevel();const next=$<HTMLButtonElement>('#repair-next-level');next.hidden=following<0;next.textContent=following>=0?`${following>levelIndex?'下一關':'繼續挑戰'}：${levels[following].target.title}`:'';
 }
 function persistProgress(){

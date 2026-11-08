@@ -54,6 +54,11 @@ export function repairLevels():RepairLevel[]{return [
     difference:'有兩個音高與一個時值和原曲不同',mission:'最後挑戰：修好兩個錯音，並找回開頭短音的節奏。',
     hints:['時值問題在第 1 音；音高問題在第 9、20 音。','開頭兩個 D1 應同樣短；第 9 音應和第 17 音同高，第 20 音比 F1 高半音。','第 1 音設成 1/16、不加附點；第 9 音調成 G1，第 20 音調成 F#1。'],
   },events=>{events[0].duration=8;events[8]=noteFromStep(5,events[8]);events[19]=noteFromStep(5,events[19]);}),
+  level('mountain-king','山魔王的宮殿',138,'8b1 8#c2 8d2 8e2 8#f2 8d2 4#f2 8f2 8#c2 4f2 8e2 8c2 4e2 8b1 8#c2 8d2 8e2 8#f2 8d2 8#f2 8b2 8a2 8#f2 8d2 8#f2 2a2',{
+    kind:'mixed',attribution:'葛利格《山魔王的宮殿》主題 · 升高音域、固定速度單音節選',
+    difference:'有兩個音高與一個時值和原曲不同',mission:'修好兩個半音陷阱，並找回結尾長音的時值。',
+    hints:['音高問題在第 5、9 音，長短問題在最後的第 26 音。','第 5 音應和第 7 音同高；第 9 音應和第 2 音同高；最後一音要持續兩拍。','第 5 音調成 F#2、第 9 音調成 C#2；第 26 音設成 1/2、不加附點。'],
+  },events=>{events[4]=noteFromStep(17,events[4]);events[8]=noteFromStep(12,events[8]);events[25].duration=4;}),
 ];}
 export function firstRepairLevel(){return repairLevels()[0];}
 export function compareRepair(target:Melody,candidate:Melody) {
