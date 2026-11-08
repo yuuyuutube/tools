@@ -412,3 +412,31 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
 .box-empty { grid-column: 1/-1; border: 1px solid var(--line); padding: 36px; text-align: center; }
 @media(max-width:900px) { .album-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media(max-width:540px) { .album-grid { grid-template-columns: minmax(0,1fr); gap: 24px; } .box-header { gap: 4px; } .box-header h1 { font-size: 14px; } .box-header .composer-link { padding: 0 8px; } .album-info { padding: 18px; } .album-controls { grid-template-columns: 1fr 1fr 44px 44px; } }
+.box-organizer { margin: 0 0 24px; }
+.box-organizer > label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+#box-search { width: min(100%,460px); min-height: 44px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 4px; background: #faf8f2; color: var(--ink); font: inherit; }
+.box-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.box-filters button { padding: 0 12px; font-size: 12px; }
+.box-filters button[aria-pressed="true"] { border-color: #60775c; background: #dce5d0; }
+.album-heading { display: flex; align-items: flex-start; gap: 8px; }
+.album-heading h2 { flex: 1; min-width: 0; margin-top: 9px; }
+.album-tag-edit { padding: 0 7px; font-size: 11px; gap: 3px; flex-shrink: 0; }
+.album-tag-edit .icon { width: 15px; height: 15px; }
+.album-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.album-tags:not(:empty) { margin: 0 0 16px; }
+.album-tags span { font-size: 11px; padding: 4px 7px; border-radius: 3px; background: #e7ecdf; color: #54634d; overflow-wrap: anywhere; }
+.tag-dialog { width: min(460px,calc(100% - 32px)); }
+.tag-song-title { overflow-wrap: anywhere; }
+.tag-draft { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.tag-draft-chip { display: inline-flex; align-items: center; padding-left: 10px; background: #e4ead9; border-radius: 4px; font-size: 13px; max-width: 100%; }
+.tag-draft-chip > span { overflow-wrap: anywhere; }
+.tag-draft-chip button { width: 44px; border: 0; flex-shrink: 0; }
+.tag-draft-chip .icon { width: 15px; height: 15px; }
+.tag-empty, .tag-hint, .tag-feedback { font-size: 12px; color: var(--muted); line-height: 1.7; }
+.tag-add-form label { display: block; font-size: 12px; margin-bottom: 6px; }
+.tag-add-row { display: flex; gap: 8px; }
+.tag-add-row input { min-width: 0; flex: 1; min-height: 44px; border: 1px solid var(--line); border-radius: 3px; padding: 8px 10px; background: #faf8f2; color: var(--ink); font: inherit; }
+.tag-add-row button { padding: 0 12px; gap: 5px; }
+.tag-suggestions { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag-suggestions button { padding: 0 10px; font-size: 12px; border-style: dashed; }
+.tag-feedback { min-height: 20px; }
