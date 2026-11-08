@@ -468,33 +468,83 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
 .lab-nav a[aria-current="page"] { color: var(--ink); text-decoration: underline; text-decoration-color: #adb6a1; text-underline-offset: 4px; }
 .lab-nav a:hover { background: #e6eadf; }
 .focus-mode .lab-footer, .focus-mode .lab-nav { display: none; }
+
 .repair-header h1 { font-size: 20px; }
-.repair-main { max-width: 780px; padding-top: 28px; }
-.repair-heading > span { color: var(--muted); font-size: 12px; }
-.repair-heading h2 { font-size: 28px; margin: 10px 0; }
-.repair-heading p { font-size: 14px; line-height: 1.8; color: var(--muted); margin: 0 0 24px; }
-.repair-listen { display: grid; grid-template-columns: 1fr 1fr 44px; gap: 8px; }
-.repair-listen button { padding: 0 10px; font-size: 13px; }
-.repair-listen button[aria-pressed="true"] { background: #dce5cd; border-color: #758464; }
-#repair-audio { min-height: 21px; font-size: 12px; line-height: 1.7; color: var(--muted); }
-.repair-panel { border: 1px solid #bfc5b2; border-radius: 4px; background: #e8ebdd; padding: 20px; }
-.repair-panel h3 { font-size: 13px; margin: 0 0 16px; color: #5b674e; }
-.repair-score { display: flex; flex-wrap: wrap; gap: 8px; }
-.repair-note { min-width: 64px; padding: 0 10px; font: bold 14px monospace; background: #f5f3e8; }
-.repair-note[aria-pressed="true"] { border: 2px solid var(--orange); }
-.repair-note.sounding { background: #394a32; color: #fff; }
-.repair-fields { display: flex; flex-wrap: wrap; gap: 12px; margin: 20px 0 16px; }
-.repair-fields label { display: flex; align-items: center; gap: 7px; font-size: 12px; }
-.repair-fields select { min-height: 44px; padding: 0 8px; border: 1px solid var(--line); border-radius: 3px; background: #f8f6ee; color: var(--ink); font: inherit; }
+.repair-main { max-width: 780px; padding-top: 20px; }
+.repair-level-label { display: flex; gap: 10px; align-items: center; font-size: 12px; color: var(--muted); }
+.repair-level-label > span { border-left: 1px solid var(--line); padding-left: 10px; }
+.repair-steps { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 6px; padding: 0; margin: 24px 0 30px; list-style: none; }
+.repair-steps button { width: 100%; display: flex; flex-direction: column; gap: 8px; min-height: 76px; border: 0; border-radius: 0; padding: 4px 0 10px; font-size: 11px; color: var(--muted); border-bottom: 3px solid #d9dece; }
+.repair-step-dot { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; border: 1px solid #c7cebd; font: 12px monospace; }
+.repair-step-dot .icon { width: 16px; height: 16px; }
+.repair-steps button[aria-current="step"] { border-bottom-color: var(--orange); color: var(--ink); }
+.repair-steps button[aria-current="step"] .repair-step-dot { background: var(--orange); border-color: var(--orange); color: #fff; }
+.repair-steps button.completed .repair-step-dot { background: #dce6d1; border-color: #a6b69b; color: #46643e; }
+.repair-steps button:disabled { opacity: .5; }
+#repair-step-count { font-size: 12px; color: var(--muted); margin: 0 0 8px; }
+#repair-stage-title { font-size: 28px; margin: 0 0 18px; line-height: 1.3; }
+#repair-stage-title:focus { outline: none; }
+.repair-stage-copy, .repair-mission { font-size: 14px; line-height: 1.9; margin: 0 0 22px; color: #59614f; }
+.repair-mission { border-left: 3px solid #b8c5a8; padding-left: 12px; }
+.repair-listen-card { padding: 28px 24px; border: 1px solid #c2cdb3; background: #e8efdd; border-radius: 5px; display: flex; flex-direction: column; align-items: center; gap: 18px; text-align: center; }
+.repair-listen-card.damaged { background: #eee8dc; border-color: #d1c7b7; }
+.repair-listen-card > span { font-size: 12px; color: var(--muted); }
+.repair-listen-card > button { min-height: 64px; padding: 0 28px; gap: 12px; font-weight: bold; border-color: #899c78; background: #f9faf2; }
+.repair-listen-card > button .icon { width: 25px; height: 25px; }
+.repair-listen-card > p { font-size: 12px; line-height: 1.8; color: var(--muted); margin: 0; }
+[data-audio][aria-pressed="true"] { background: #d5dfc6; }
+.repair-next-help { font-size: 12px; color: var(--muted); margin: 16px 0 0; }
+.repair-stage-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+.repair-stage-actions button { min-height: 48px; padding: 0 18px; gap: 8px; }
+.repair-stage-actions .save-button { flex: 1; }
+.repair-compare { display: flex; gap: 8px; margin-bottom: 16px; }
+.repair-compare button { flex: 1; padding: 0 12px; font-size: 13px; }
+.repair-compare-button { margin-top: 14px; padding: 0 12px; font-size: 12px; }
+.repair-audio-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 16px; padding: 8px 12px; border-radius: 4px; background: #e9ecdf; }
+#repair-audio { flex: 1; margin: 0; font-size: 12px; line-height: 1.7; }
+#repair-stop { width: 44px; flex-shrink: 0; }
+#repair-enable { padding: 0 12px; }
+.repair-panel { border: 1px solid #bdc9ae; border-radius: 5px; background: #e8eddf; padding: 20px; }
+.repair-edit-instruction { font-size: 13px; line-height: 1.8; color: #53634c; margin: 0 0 16px; }
+.repair-score { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; }
+.repair-note { min-width: 0; display: flex; flex-direction: column; gap: 6px; min-height: 70px; padding: 8px 4px; background: #f8f7ee; border: 2px solid #c8cfbd; }
+.repair-note > span { font-size: 10px; color: var(--muted); }
+.repair-note strong { font: bold 15px monospace; }
+.repair-note[aria-pressed="true"] { border-color: var(--orange); background: #f3e6cf; }
+.repair-note.sounding { background: #d1dfc0; }
+.repair-pitch-field { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 20px; }
+.repair-pitch-field label { font-size: 13px; }
+.repair-pitch-field select { flex: 1; min-width: 90px; }
+.repair-panel select { min-height: 44px; padding: 0 10px; border: 1px solid #aebba0; border-radius: 3px; color: var(--ink); background: #faf9f0; font: inherit; }
+.repair-rhythm { margin-top: 16px; font-size: 12px; color: var(--muted); }
+.repair-rhythm summary { cursor: pointer; padding: 10px 0; }
+.repair-fields { display: flex; flex-wrap: wrap; gap: 16px; margin: 8px 0; }
+.repair-fields label { display: flex; align-items: center; gap: 8px; }
 .repair-fields input { width: 20px; height: 20px; accent-color: var(--orange); }
-.repair-edit-actions { display: flex; gap: 8px; }
-.repair-edit-actions button { padding: 0 12px; font-size: 12px; }
-.repair-submit { display: flex; gap: 10px; margin-top: 20px; }
-.repair-submit button { padding: 0 20px; }
-#repair-hint-text, #repair-result { font-size: 14px; line-height: 1.8; }
-#repair-result[data-passed="true"] { color: #46643e; }
-.repair-complete { padding: 16px 0; border-top: 1px solid var(--line); }
-.repair-complete p { font-size: 13px; line-height: 1.7; }
-.repair-complete > div { display: flex; flex-wrap: wrap; gap: 10px; }
-.repair-complete button { padding: 0 14px; }
-@media(max-width:750px) { .lab-footer { padding: 12px 16px max(20px, env(safe-area-inset-bottom)); } .lab-nav { gap: 2px; } .lab-nav a { padding: 0 8px; } .repair-header h1 { font-size: 16px; } .repair-panel { padding: 16px; } .repair-note { min-width: 58px; } }
+.repair-edit-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.repair-edit-actions button { padding: 0 10px; font-size: 11px; gap: 4px; }
+.repair-edit-actions button:last-child { margin-left: auto; }
+.repair-edit-intro { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.repair-edit-intro .repair-edit-instruction { flex: 1; margin: 0; }
+#repair-hint { padding: 0 10px; font-size: 12px; flex-shrink: 0; background: #f8f7ee; }
+#repair-hint-text, #repair-result { font-size: 13px; line-height: 1.8; }
+#repair-hint-text:empty, #repair-result:empty { display: none; }
+#repair-result:not(:empty) { padding: 14px; background: #f3e4d9; border-left: 3px solid #bb7c5b; }
+.repair-review-score { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.repair-review-score span { font: 12px monospace; padding: 4px; }
+.repair-complete { text-align: center; padding: 16px 0; }
+.repair-success-mark { display: flex; justify-content: center; align-items: center; width: 72px; height: 72px; border-radius: 50%; color: #46643e; background: #dfe8d2; margin: 0 auto 20px; }
+.repair-success-mark .icon { width: 36px; height: 36px; }
+.repair-success-copy { font-size: 18px; font-weight: bold; }
+.repair-success-note { font-size: 13px; line-height: 1.8; color: var(--muted); }
+.repair-create { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--muted); font-size: 12px; margin-top: 14px; text-decoration: none; }
+@media(max-width:750px) {
+  .lab-footer { padding: 12px 16px max(20px, env(safe-area-inset-bottom)); } .lab-nav { gap: 2px; } .lab-nav a { padding: 0 8px; }
+  .repair-header h1 { font-size: 16px; } .repair-main { padding-top: 16px; } .repair-steps { gap: 4px; margin: 20px 0 26px; } .repair-steps button { font-size: 10px; }
+  #repair-stage-title { font-size: 25px; } .repair-panel { padding: 16px; } .repair-edit-actions { gap: 5px; } .repair-edit-actions button { padding: 0 7px; }
+  .repair-listen-card { padding: 24px 16px; } .repair-stage-actions button { padding: 0 14px; font-size: 14px; }
+}
+
+@media(max-width:750px) {
+  [data-pane="3"] > .repair-stage-actions { position: sticky; bottom: 0; z-index: 3; padding: 10px 0 max(10px, env(safe-area-inset-bottom)); background: #f2f1e9; border-top: 1px solid #d6dbcc; }
+}
