@@ -388,6 +388,12 @@ a:focus-visible, textarea:focus-visible { outline: 3px solid var(--orange); outl
 .window-note.art-playing { filter: brightness(1.2) saturate(1.12); }
 @media(prefers-reduced-motion:reduce) { .window-note { transition: none; } }
 #share-art-mode { width: 100%; min-height: 44px; padding: 0 10px; border: 1px solid var(--line); border-radius: 3px; background: #f8f8f1; color: var(--ink); font: inherit; margin-bottom: 16px; }
+.share-art-row { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 18px; }
+.share-art-options #share-art-mode { margin-bottom: 8px; }
+.share-art-options .share-art-result { margin: 0; min-height: 44px; }
+.share-art-preview { width: 96px; flex-shrink: 0; aspect-ratio: 1; border-radius: 3px; overflow: hidden; border: 1px solid var(--line); }
+.share-art-preview .melody-art .art-playing { filter: none; }
+.share-art-options { flex: 1; min-width: 0; }
 .share-art-result { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: -6px 0 16px; font-size: 12px; color: var(--muted); }
 .reroll-art { padding: 0 10px; flex-shrink: 0; }
 

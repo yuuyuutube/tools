@@ -1,4 +1,5 @@
 import { cardArtStyles, resolveArtStyle, type CardArtStyle } from '../art-styles';
+import { drawTone, parseTone, resolveTone } from '../art-palettes';
 import { createMelody, durations, isMelody, MAX_EVENTS, MAX_TITLE, MAX_BPM, MIN_BPM, type Melody } from './model';
 import { noteFromStep, noteStep } from './studio';
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
@@ -32,8 +33,13 @@ export function decodeShare(payload: string): Melody {
   } catch { throw invalid(); }
 }
 export function shareUrl(melody: Melody, base: string): string {
-  const url = new URL(base); const art=url.searchParams.get('art');url.search = '?view=card';
-  if(art==='stars'||art==='weave'||art==='rhythm'||art==='terrain'||art==='letterpress'||art==='specimen'||art==='windows'||art==='random')url.searchParams.set('art',art); url.hash = `melody=${encodeShare(melody)}`;
+  const url = new URL(base); const art=url.searchParams.get('art'); const tone=url.searchParams.get('tone'); url.search = '?view=card';
+  if(art==='random')url.searchParams.set('art',art);
+  else if(cardArtStyles.includes(art as CardArtStyle)) {
+    url.searchParams.set('art',art!);
+    if(parseTone(tone,art as CardArtStyle)!==undefined)url.searchParams.set('tone',tone!);
+  }
+  url.hash = `melody=${encodeShare(melody)}`;
   if (url.href.length > MAX_SHARE_URL_LENGTH) throw new Error('分享網址太長，請縮短曲名或旋律後再試。');
   return url.href;
 }
@@ -45,10 +51,13 @@ export function editUrl(melody: Melody, base: string): string {
   const url = new URL(shareUrl(melody,base)); url.searchParams.delete('view');url.searchParams.set('edit','1'); return url.href;
 }
 
+/** Concrete art + palette for a share link. Random draws a new style (never `exclude`) and a random palette for it. */
 export function createShareSnapshot(melody:Melody,base:string,mode:'current'|'random',random=Math.random,exclude?:CardArtStyle) {
   const source=new URL(base);
   const choices=cardArtStyles.filter(style=>style!==exclude);
-  const style=mode==='random'?choices[Math.min(choices.length-1,Math.max(0,Math.floor(random()*choices.length)))]:resolveArtStyle(source.searchParams.get('art'));
-  source.searchParams.set('art',style);
-  return {style,url:shareUrl(melody,source.href)};
+  const art=source.searchParams.get('art');
+  const style=mode==='random'?choices[Math.min(choices.length-1,Math.max(0,Math.floor(random()*choices.length)))]:resolveArtStyle(art,random);
+  const tone=mode==='random'||art==='random'?drawTone(style,random):resolveTone(source.searchParams.get('tone'),style,melody);
+  source.searchParams.set('art',style);source.searchParams.set('tone',String(tone));
+  return {style,tone,url:shareUrl(melody,source.href)};
 }

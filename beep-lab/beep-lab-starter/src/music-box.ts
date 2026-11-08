@@ -8,7 +8,7 @@ import { AudioActivationError, AudioEngine } from './audio-engine/player';
 import { wavFilename } from './audio-engine/wav';
 import { eventSeconds, type Melody } from './music-core/model';
 import { readLibrary, STORAGE_KEY, type LibraryResult } from './music-core/storage';
-import { albumCoverStyle } from './album-cover';
+import { albumCoverStyle, albumCoverTone } from './album-cover';
 import { createCardArt } from './card-art';
 import { shareUrl } from './music-core/share';
 import { createShareDialog } from './share-dialog';
@@ -36,7 +36,7 @@ const tagEditor=createTagDialog((song,tags,expected)=>{
   saveSongTags(localStorage,song.id,tags,expected);render();status.textContent=`已更新「${song.title}」的標籤。`;
 },id=>(tagButtons.get(id)??search).focus());
 search.oninput=()=>render();
-function baseFor(song:Melody) {const url=new URL(location.href);url.searchParams.set('art',albumCoverStyle(song));return url.href;}
+function baseFor(song:Melody) {const url=new URL(location.href);url.searchParams.set('art',albumCoverStyle(song));url.searchParams.set('tone',String(albumCoverTone(song)));return url.href;}
 const sharing=createShareDialog(()=>sharingSong,stop,()=>baseFor(sharingSong));
 function resetPlayback() {
   playingId=undefined;stopButton.disabled=true;
@@ -103,7 +103,7 @@ function render() {
   songs.forEach(song=>{
     const album=document.createElement('article');album.className='album-card';
     const cover=document.createElement('a');cover.className='album-cover';try{cover.href=shareUrl(song,baseFor(song));}catch{const fallback=new URL(location.href);fallback.search='';fallback.hash='';fallback.searchParams.set('song',song.id);cover.href=fallback.href;}cover.setAttribute('aria-label',`開啟 ${song.title} 的卡片`);
-    const draw=()=>{const artwork=createCardArt(song,albumCoverStyle(song));cover.append(artwork.element);artworks.set(song.id,artwork);};
+    const draw=()=>{const artwork=createCardArt(song,albumCoverStyle(song),albumCoverTone(song));cover.append(artwork.element);artworks.set(song.id,artwork);};
     const info=document.createElement('div');info.className='album-info';
     const heading=document.createElement('div');heading.className='album-heading';
     const title=document.createElement('h2');title.textContent=song.title;

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Palette Preview</title>
+    <style>
+      :root { --ink: #2c312b; --muted: #6f7268; --line: #d8d2c4; --bg: #f7f5ee; }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.5 system-ui, -apple-system, "PingFang TC", sans-serif; }
+      header { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; padding: 14px 24px; background: #f7f5eef0; border-bottom: 1px solid var(--line); backdrop-filter: blur(6px); }
+      h1 { font-size: 16px; margin: 0; letter-spacing: .04em; }
+      header label { display: flex; gap: 8px; align-items: center; color: var(--muted); }
+      select, button { font: inherit; min-height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: 4px; background: #fff; color: var(--ink); }
+      button { cursor: pointer; }
+      main { padding: 8px 24px 64px; max-width: 1400px; margin: 0 auto; }
+      section { padding: 24px 0; border-bottom: 1px solid var(--line); }
+      h2 { font-size: 15px; margin: 0 0 14px; }
+      h2 small { color: var(--muted); font-weight: normal; margin-left: 8px; }
+      .row { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+      figure { margin: 0; }
+      figure svg { display: block; width: 100%; height: auto; aspect-ratio: 1; border-radius: 3px; box-shadow: 0 1px 3px #0000001a; }
+      figcaption { margin-top: 8px; display: flex; justify-content: space-between; align-items: baseline; }
+      figcaption b { font-weight: 600; }
+      figcaption span { color: var(--muted); font-size: 12px; }
+      .new figcaption b::after { content: "新"; margin-left: 6px; font-size: 11px; font-weight: normal; padding: 1px 5px; border-radius: 3px; background: #2c312b; color: #f7f5ee; }
+      .swatches { display: flex; margin-top: 6px; height: 18px; border-radius: 3px; overflow: hidden; outline: 1px solid #00000014; }
+      .swatches i { flex: 1; }
+      .shelf { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+      .shelf figcaption { font-size: 12px; flex-direction: column; gap: 0; }
+      /* Art rules copied from src/style.css so renders match the app */
+      .terrain-note { opacity: 0; pointer-events: none; }
+      .letterpress-art { isolation: isolate; }
+      .ink-plate { mix-blend-mode: multiply; }
+      @media (max-width: 600px) { header, main { padding-left: 16px; padding-right: 16px; } }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>卡片配色預覽</h1>
+      <label>旋律 <select id="melody"></select></label>
+      <label>檢視 <select id="mode"><option value="styles">各圖案全部配色</option><option value="shelf">隨機書架（模擬抽色）</option></select></label>
+      <button id="shuffle" hidden>再抽一次</button>
+    </header>
+    <main id="root"></main>
+    <script type="module" src="/src/palette-preview.ts"></script>
+  </body>
+</html>

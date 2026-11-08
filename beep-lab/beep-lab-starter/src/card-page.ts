@@ -6,10 +6,11 @@ import { readSharedMelody, editUrl } from './music-core/share';
 import { createShareDialog } from './share-dialog';
 import { icon } from './icons';
 import { createCardArt, resolveArtStyle } from './card-art';
+import { drawTone, paletteName, resolveTone } from './art-palettes';
 const app=document.querySelector<HTMLElement>('#app')!;
 document.title='BEEP CARD';
 document.documentElement.classList.add('card-mode');
-app.innerHTML=`<header class="site-header"><img src="./favicon.svg" width="32" height="32" alt=""/><span class="card-brand">BEEP CARD</span></header><main class="card-main"><article class="beep-card"><div class="card-art"></div><div class="art-controls"><label for="card-art-style">圖案</label><select id="card-art-style"><option value="weave">旋律織紋</option><option value="stars">聲音星圖</option><option value="rhythm">節奏構成</option><option value="terrain">聲音地形</option><option value="letterpress">旋律活版</option><option value="specimen">音符標本</option><option value="windows">聲音窗景</option></select></div><h1 class="card-title"></h1><p class="card-meta"></p><div class="card-score" aria-label="旋律音符"></div><div class="transport"><button id="card-play" class="play-button">${icon('play')}<span>播放</span></button><button id="card-stop">${icon('stop')}<span>停止</span></button><button id="card-mute" aria-label="靜音" aria-pressed="false">${icon('volume')}</button></div><p class="card-status" role="status" aria-live="polite">點播放聆聽旋律。</p><button id="card-enable" hidden>${icon('volume')}<span>啟用聲音</span></button><div class="card-actions"><a id="card-edit" class="save-button">${icon('edit')}<span>編輯這首</span></a><button id="card-share">${icon('share')}<span>分享</span></button></div></article></main>`;
+app.innerHTML=`<header class="site-header"><img src="./favicon.svg" width="32" height="32" alt=""/><span class="card-brand">BEEP CARD</span></header><main class="card-main"><article class="beep-card"><div class="card-art"></div><div class="art-controls"><label for="card-art-style">圖案</label><select id="card-art-style"><option value="weave">旋律織紋</option><option value="stars">聲音星圖</option><option value="rhythm">節奏構成</option><option value="terrain">聲音地形</option><option value="letterpress">旋律活版</option><option value="specimen">音符標本</option><option value="windows">聲音窗景</option></select><button id="card-tone" type="button">${icon('palette')}<span>換配色</span></button></div><h1 class="card-title"></h1><p class="card-meta"></p><div class="card-score" aria-label="旋律音符"></div><div class="transport"><button id="card-play" class="play-button">${icon('play')}<span>播放</span></button><button id="card-stop">${icon('stop')}<span>停止</span></button><button id="card-mute" aria-label="靜音" aria-pressed="false">${icon('volume')}</button></div><p class="card-status" role="status" aria-live="polite">點播放聆聽旋律。</p><button id="card-enable" hidden>${icon('volume')}<span>啟用聲音</span></button><div class="card-actions"><a id="card-edit" class="save-button">${icon('edit')}<span>編輯這首</span></a><button id="card-share">${icon('share')}<span>分享</span></button></div></article></main>`;
 mountLabNavigation('card');
 const melody:Melody|undefined=(()=>{
 try { return !location.hash&&['1','birthday'].includes(new URLSearchParams(location.search).get('demo')??'')?birthdayMelody():readSharedMelody(location.hash); }
@@ -24,12 +25,22 @@ catch(error) {
 })();
 if (melody) {
   const artSelect=document.querySelector<HTMLSelectElement>('#card-art-style')!;
-  let style=resolveArtStyle(new URLSearchParams(location.search).get('art'));
-  let artwork=createCardArt(melody,style);
+  const params=new URLSearchParams(location.search);
+  let style=resolveArtStyle(params.get('art'));
+  // A random-art link gets a random palette too; otherwise honour ?tone or the style's default colours.
+  let tone=params.get('art')==='random'?drawTone(style):resolveTone(params.get('tone'),style,melody);
+  let artwork=createCardArt(melody,style,tone);
   document.querySelector('.card-art')!.append(artwork.element);
-  function syncStyle() {artSelect.value=style;const url=new URL(location.href);url.searchParams.set('art',style);window.history.replaceState(null,'',url);document.querySelector<HTMLAnchorElement>('#card-edit')!.href=editUrl(melody!,url.href);}
+  const toneButton=document.querySelector<HTMLButtonElement>('#card-tone')!;
+  function syncStyle() {
+    artSelect.value=style;const url=new URL(location.href);url.searchParams.set('art',style);url.searchParams.set('tone',String(tone));window.history.replaceState(null,'',url);document.querySelector<HTMLAnchorElement>('#card-edit')!.href=editUrl(melody!,url.href);
+    toneButton.title=`配色：${paletteName(style,tone)}`;toneButton.setAttribute('aria-label',`換配色，目前為${paletteName(style,tone)}`);
+  }
+  function redraw() {stop();artwork=createCardArt(melody!,style,tone);document.querySelector('.card-art')!.replaceChildren(artwork.element);syncStyle();}
   syncStyle();
-  artSelect.onchange=()=>{stop();style=resolveArtStyle(artSelect.value);artwork=createCardArt(melody,style);document.querySelector('.card-art')!.replaceChildren(artwork.element);syncStyle();};
+  // Each pattern switch draws a fresh palette; the button only changes colours, never repeating the current one.
+  artSelect.onchange=()=>{style=resolveArtStyle(artSelect.value);tone=drawTone(style);redraw();};
+  toneButton.onclick=()=>{tone=drawTone(style,Math.random,tone);redraw();status.textContent=`已換成「${paletteName(style,tone)}」配色。`;};
   const engine=new AudioEngine();let muted=false;let attempt=0;
   const status=document.querySelector<HTMLElement>('.card-status')!;
   const play=document.querySelector<HTMLButtonElement>('#card-play')!;

@@ -6,17 +6,10 @@ import { createLetterpressArt } from './letterpress-art';
 import { createTerrainArt } from './terrain-art';
 import type { Melody } from './music-core/model';
 import { noteStep } from './music-core/studio';
-export const weavePalettes = [
-  {paper:'#f5efe3',thread:'#b5a78c',colors:['#264c49','#c35e45','#d5ad56','#547598','#d9a398']},
-  {paper:'#f2eee5',thread:'#b0a99c',colors:['#354d9b','#dc795e','#829a86','#d8bb69','#78576c']},
-  {paper:'#f3ecdf',thread:'#b3a58e',colors:['#365849','#ce7748','#86a4b1','#af7589','#d0ae59']},
-  {paper:'#f5eee8',thread:'#b8a899',colors:['#654b73','#b95848','#d4ac64','#537b7b','#d8a7a0']},
-] as const;
+import { defaultTone, recolorSvg, toneColorMap, weavePalettes } from './art-palettes';
+export { weavePalettes };
 export function buildWeave(melody: Melody) {
-  const signature=JSON.stringify([melody.tempoBpm,melody.events.map(event=>[noteStep(event),event.duration,event.dotted])]);
-  let seed=2166136261;
-  for(let i=0;i<signature.length;i++)seed=Math.imul(seed^signature.charCodeAt(i),16777619)>>>0;
-  const palette=weavePalettes[seed%weavePalettes.length];
+  const palette=weavePalettes[defaultTone(melody,'weave')];
   const lengths=melody.events.map(event=>4/event.duration*(event.dotted?1.5:1));
   const total=lengths.reduce((a,b)=>a+b,0)||1;
   const tiles:{index:number;x:number;y:number;width:number;height:number;color:string;notch:boolean}[]=[];
@@ -130,6 +123,12 @@ export function createRhythmArt(melody: Melody) {
   });
   return {element:svg,position(index:number|null){groups.forEach((items,i)=>items.forEach(group=>group.classList.toggle('art-playing',i===index)));}};
 }
-export function createCardArt(melody:Melody,style:CardArtStyle) {
+/** Draws the card art; `tone` picks a palette from art-palettes (omitted = the renderer's own colours). */
+export function createCardArt(melody:Melody,style:CardArtStyle,tone?:number) {
+  const art=drawCardArt(melody,style);
+  if(tone!==undefined&&tone!==defaultTone(melody,style))recolorSvg(art.element,toneColorMap(melody,style,tone));
+  return art;
+}
+function drawCardArt(melody:Melody,style:CardArtStyle) {
   return style==='windows'?createWindowArt(melody):style==='specimen'?createSpecimenArt(melody):style==='letterpress'?createLetterpressArt(melody):style==='terrain'?createTerrainArt(melody):style==='stars'?createStarArt(melody):style==='rhythm'?createRhythmArt(melody):createMelodyArt(melody);
 }

@@ -1,8 +1,10 @@
 import type { Melody } from './music-core/model';
-import { noteStep } from './music-core/studio';
 import { cardArtStyles } from './art-styles';
+import { melodySeed, paletteCount } from './art-palettes';
+/** Album covers stay stable per melody: the content hash picks both the art style and its palette. */
 export function albumCoverStyle(melody:Melody) {
-  const signature=JSON.stringify([melody.tempoBpm,melody.events.map(event=>[noteStep(event),event.duration,event.dotted])]);
-  let seed=2166136261;for(let i=0;i<signature.length;i++)seed=Math.imul(seed^signature.charCodeAt(i),16777619)>>>0;
-  return cardArtStyles[seed%cardArtStyles.length];
+  return cardArtStyles[melodySeed(melody)%cardArtStyles.length];
+}
+export function albumCoverTone(melody:Melody) {
+  return Math.floor(melodySeed(melody)/cardArtStyles.length)%paletteCount(albumCoverStyle(melody));
 }
