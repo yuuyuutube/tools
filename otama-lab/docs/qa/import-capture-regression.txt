@@ -1,0 +1,32 @@
+Pitch capture checks
+
+Synthetic native audio only. No physical microphone, audio recording, speaker output or actual file sharing. The 60-second check uses a real clock.
+
+Run capture checksRun real 60-second limit
+
+24/24 passed; 0 failed. Short take. Synthetic audio; share API stubbed.
+
+PASS: recording requires an active microphone
+PASS: focus shows only the graph and compact controls
+PASS: focus has no horizontal or vertical scroll surface
+PASS: graph uses available viewport height
+PASS: focus controls are SVG and prevent selection
+PASS: focus microphone shares the original capture and exact pitch behavior
+PASS: compact volume meter responds to the same input
+PASS: record control becomes available after microphone starts
+PASS: Escape leaves focus without interrupting the microphone
+PASS: compact meter marks excessive input without changing detection settings
+PASS: recording has visible timer and stop control
+PASS: manual stop opens a bounded preview dialog
+PASS: short take produces a real high-resolution PNG
+PASS: download points to PNG bytes with an explicit filename
+PASS: sharing receives the PNG File without regeneration during the gesture
+PASS: cancelling share preserves download and preview
+PASS: closing and reopening retains the same completed image
+PASS: discard clears only the completed take
+PASS: silent take reports no pitch instead of exporting fake data
+PASS: turning off microphone ends and preserves the current take
+PASS: unsupported sharing retains PNG download
+PASS: exiting focus preserves completed result and restores the normal page
+PASS: background interruption stops microphone and retains a result without opening a hidden dialog
+PASS: retained result can be exported after returning to the page

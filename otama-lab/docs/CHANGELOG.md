@@ -99,3 +99,15 @@ Commit：`feat(otama-lab): add focused pitch capture and PNG sharing`
 - 加入映射純函式與桌機／手機瀏覽器測試；驗證新面板與 PNG 錄製相容。
 
 Commit：`feat(otama-lab): add desktop pitch-following mini Otama`
+
+## 2026-11-11 · 演奏檔案匯入與合成音重播
+
+- 一般／專注模式新增 SVG 匯入按鈕；接受新 PNG 或版本化 `.otama.json`，不必先取得麥克風權限。
+- PNG 外觀不變，新增標準 iTXt 音高資料；JSON 作為獨立備份。保留原始小數 Hz、時間、null 停頓；只保存衍生音高，不保存原始音訊。
+- 錄製與匯入共用結果視窗：播放／停止、拖曳進度、目前音名／Hz、分行游標、PNG／JSON 下載與 PNG 分享。無音高不製造聲音或假圖。
+- 新增獨立格式、音訊排程與重播介面模組；匯入限制大小、版本、時長、筆數、頻率／時間順序，檢查 PNG CRC。錯誤檔案不取代既有結果。
+- 音訊由使用者手勢啟動，以 Web Audio 預先排程連續滑音與靜音；重播先停止收音，關閉／背景／離頁／中斷會停止，取消等待中的 resume 不會晚到發聲。修正原生 dialog 關閉事件晚到打斷重新播放的競態。
+- 極窄專注模式縮短音量條與間距，保留所有按鈕至少 44px；介面維持 SVG、user-select:none 與原角色。YIN、麥克風分析參數、虛擬演奏與 Worker 沒有更改。
+- 舊 PNG／截圖曲線辨識與 WAV 匯出留待後續，不宣稱能還原原始音色。補充原始 PNG／JSON 保存方式與限制。
+
+Commit：`feat(otama-lab): import pitch PNG and JSON with synthesized replay`

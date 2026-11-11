@@ -1,5 +1,13 @@
 import { pitchOf } from '../pitch.js';
 import { recordingRows, RECORDING_ROW_MS } from './recording.js';
+import { embedPitchPng } from './format.js';
+
+export function recordingCursor(recording, timeMs) {
+  const time = Math.max(0, Math.min(timeMs, recording.durationMs));
+  const rows = Math.max(1, Math.ceil(recording.durationMs / RECORDING_ROW_MS));
+  const row = Math.min(rows - 1, Math.floor(time / RECORDING_ROW_MS));
+  return { x: 100 + (time - row * RECORDING_ROW_MS) / Math.min(RECORDING_ROW_MS, Math.max(1, recording.durationMs)) * 1300, top: 24 + row * 280, bottom: 242 + row * 280, height: 32 + rows * 280 };
+}
 
 export function drawPitchRecording(recording, canvas) {
   const rows = recordingRows(recording), width = 1440, rowHeight = 280;
@@ -56,7 +64,8 @@ export function drawPitchRecording(recording, canvas) {
 
 export async function pitchRecordingPng(recording) {
   const canvas = drawPitchRecording(recording, document.createElement('canvas'));
-  return new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('圖片產生失敗，請重新開啟錄製結果再試一次。')), 'image/png'));
+  const blob = await new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('圖片產生失敗，請重新開啟錄製結果再試一次。')), 'image/png'));
+  return new Blob([embedPitchPng(new Uint8Array(await blob.arrayBuffer()), recording)], { type: 'image/png' });
 }
 
 export function canSharePitchFile(file, nav = navigator) {

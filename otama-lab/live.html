@@ -20,13 +20,15 @@
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
   <link rel="stylesheet" href="./src/styles.css?v=4ce5bf8809f7">
-  <link rel="stylesheet" href="./src/live/styles.css?v=a4da31105f13">
-  <script defer src="./live.bundle.js?v=a08961153ebc"></script>
+  <link rel="stylesheet" href="./src/live/styles.css?v=497fe0a0b157">
+  <script defer src="./live.bundle.js?v=139a13dc92ba"></script>
 </head>
 <body>
 <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
   <symbol id="live-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2m-7 9v3m-4 0h8"/></symbol>
   <symbol id="live-stop" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/></symbol>
+  <symbol id="live-play" viewBox="0 0 24 24"><path d="m8 4 12 8-12 8Z"/></symbol>
+  <symbol id="live-import" viewBox="0 0 24 24"><path d="M12 16V3m-5 8 5 5 5-5M4 15v6h16v-6"/></symbol>
   <symbol id="live-back" viewBox="0 0 24 24"><path d="m12 5-7 7 7 7M5 12h15"/></symbol>
   <symbol id="live-mic-off" viewBox="0 0 24 24"><path d="m3 3 18 18M9 9v3a3 3 0 0 0 5 2M9 5a3 3 0 0 1 6 0v6M5 10v2a7 7 0 0 0 12 5m2-5v-2m-7 9v3m-4 0h8"/></symbol>
   <symbol id="live-focus" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
@@ -67,19 +69,23 @@
         <button id="mini-otama-toggle" class="btn mini-otama-toggle" type="button" aria-label="顯示虛擬琴頸" aria-controls="mini-otama" aria-pressed="false" title="顯示虛擬琴頸（Simulation，G3–D6）" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-otama"/></svg></button>
         <div class="record-group"><button id="record-pitch" class="btn record-button" type="button" aria-label="開始錄製音高軌跡（最長 60 秒）" aria-pressed="false" disabled><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-record"/></svg><span>開始錄製</span></button><output id="recording-clock" class="recording-clock" aria-label="錄製時間，上限一分鐘" hidden>00:00 / 01:00</output></div>
         <button id="recording-result" class="btn result-button" type="button" aria-label="查看錄製結果" title="查看錄製結果" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-image"/></svg><span>查看錄製</span></button>
+        <button id="import-pitch" class="btn import-button" type="button" aria-label="匯入演奏 PNG 或 JSON" title="匯入演奏 PNG 或 JSON"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-import"/></svg><span>匯入演奏</span></button>
+        <input id="pitch-file" type="file" accept=".png,.json,image/png,application/json" hidden>
         <button id="timeline-exit" class="btn focus-exit" type="button" aria-label="離開軌跡專注模式" title="離開軌跡專注模式（Esc）"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-close"/></svg></button>
       </div>
+      <p id="import-status" class="import-status" role="status"></p>
       <p class="timeline-caption">滑音會連成斜線，顫音會形成波浪。未偵測到音高時斷線，音高範圍自動縮放。</p>
     </section>
   </div>
-  <footer><details class="simulation-info"><summary>分析方式與限制</summary><p>音訊只在此裝置即時分析，不錄音、不上傳，也不回播。錄製僅保存音高軌跡，可匯出圖片。使用 YIN 單音基頻估計（60–2000 Hz），不限制在虛擬琴的音域，也不吸附標準音。十二平均律，A4 = 440 Hz。</p><p>訊號品質表示週期性估計，並非準確率；穩定度依最近 0.6 秒的音高變化判斷。背景噪音、和弦與過強的泛音可能造成誤判。左側虛擬琴頸以 G3–D6 的反比靈感映射對照音高（Simulation），不是 DX 實測按壓位置。此頁尚不儲存 DX 位置量測資料。</p></details></footer>
+  <footer><details class="simulation-info"><summary>分析方式與限制</summary><p>音訊只在此裝置即時分析，不錄音、不上傳。錄製僅保存音高軌跡，最長 60 秒。新版匯出的原始 PNG 與 JSON 可匯入，用合成音重播音高、滑音與停頓，不是原始錄音。圖片經截圖或平台轉存後可能遺失演奏資料，建議另存 JSON。使用 YIN 單音基頻估計（60–2000 Hz），不限制在虛擬琴的音域，也不吸附標準音。十二平均律，A4 = 440 Hz。</p><p>訊號品質表示週期性估計，並非準確率；穩定度依最近 0.6 秒的音高變化判斷。背景噪音、和弦與過強的泛音可能造成誤判。左側虛擬琴頸以 G3–D6 的反比靈感映射對照音高（Simulation），不是 DX 實測按壓位置。此頁尚不儲存 DX 位置量測資料。</p></details></footer>
   <noscript><p class="card">請啟用 JavaScript，才能使用麥克風音高分析。</p></noscript>
 </main>
 <dialog id="recording-preview" class="recording-preview" aria-labelledby="recording-title" aria-describedby="recording-duration recording-status">
   <div class="preview-header"><div><h2 id="recording-title">錄製結果</h2><p id="recording-duration"></p></div><button id="recording-close" class="btn" type="button" aria-label="關閉錄製結果" title="關閉錄製結果" autofocus><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-close"/></svg></button></div>
-  <div class="preview-image-wrap"><img id="recording-image" class="recording-image" alt="音高軌跡" hidden></div>
+  <div class="preview-image-wrap"><div class="recording-sheet"><img id="recording-image" class="recording-image" alt="音高軌跡" hidden><svg id="replay-cursor" class="replay-cursor" aria-hidden="true" hidden><line/></svg></div></div>
+  <div class="replay-controls"><div class="replay-top"><button id="recording-play" class="btn" type="button" aria-label="合成音重播" aria-pressed="false" disabled><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-play"/></svg><span>播放</span></button><output id="replay-time" aria-live="off" aria-label="重播進度">0.0 / 0.0 s</output><output id="replay-note" aria-live="off" aria-label="重播音高">—</output></div><input id="recording-seek" type="range" min="0" max="1" step="1" value="0" aria-label="重播位置" disabled><p>合成音重播</p></div>
   <p id="recording-status" class="preview-status" role="status"></p>
-  <div class="preview-actions"><a id="recording-download" class="btn primary" aria-disabled="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-download"/></svg>下載 PNG</a><button id="recording-share" class="btn" type="button" disabled><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-share"/></svg>分享</button><button id="recording-discard" class="btn discard-button" type="button">捨棄這段</button></div>
+  <div class="preview-actions"><a id="recording-download" class="btn primary" aria-disabled="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-download"/></svg>下載 PNG</a><a id="recording-json" class="btn" aria-disabled="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-download"/></svg>JSON</a><button id="recording-share" class="btn" type="button" disabled><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-share"/></svg>分享</button><button id="recording-discard" class="btn discard-button" type="button">捨棄這段</button></div>
 </dialog>
 </body>
 </html>

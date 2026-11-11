@@ -17,6 +17,9 @@ const capture = liveElement('recording-preview') ? bindPitchCapture({
   dialog: liveElement('recording-preview'), image: liveElement('recording-image'), duration: liveElement('recording-duration'),
   status: liveElement('recording-status'), download: liveElement('recording-download'), share: liveElement('recording-share'),
   discard: liveElement('recording-discard'), close: liveElement('recording-close'),
+  jsonDownload: liveElement('recording-json'), importButton: liveElement('import-pitch'), input: liveElement('pitch-file'), importStatus: liveElement('import-status'),
+  replayControls: { play: liveElement('recording-play'), seek: liveElement('recording-seek'), time: liveElement('replay-time'), note: liveElement('replay-note'), cursor: liveElement('replay-cursor') },
+  beforePlay: () => microphone.stop('合成音重播時暫停收音'),
 }) : { setListening() {}, add() {} };
 const liveFocus = liveElement('timeline-focus') ? bindLiveFocus({ enter: liveElement('timeline-focus'), exit: liveElement('timeline-exit'), onResize: () => timeline.draw() }) : { active: false };
 const compactLevel = liveElement('focus-level');
@@ -91,6 +94,7 @@ const microphone = new MicrophoneInput({
   },
 });
 const toggleMicrophone = () => {
+  capture.stopPlayback?.();
   if (['requesting', 'listening'].includes(microphone.state)) microphone.stop();
   else microphone.start();
 };

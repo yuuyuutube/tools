@@ -275,7 +275,111 @@ const recordingClock = elapsed => {
   return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
 };
 
+// src/live/format.js
+
+// Versioned, pitch-only interchange. Never executes imported text or decodes an
+// imported image: PNG is a carrier for the same validated JSON document.
+const PITCH_FILE_LIMIT = 8 * 1024 * 1024;
+const PITCH_TEXT_LIMIT = 600000;
+const pitchKeyword = 'otama-lab.recording';
+const pngSignature = [137, 80, 78, 71, 13, 10, 26, 10];
+const pitchEncoder = new TextEncoder();
+const pitchDecoder = new TextDecoder('utf-8', { fatal: true });
+
+function parsePitchDocument(text) {
+  if (typeof text !== 'string' || text.length > PITCH_TEXT_LIMIT) throw new Error('演奏資料過大。');
+  let data;
+  try { data = JSON.parse(text); } catch { throw new Error('無法讀取演奏資料，請選擇 OTAMA LAB 匯出的 PNG 或 JSON。'); }
+  if (data?.format !== 'otama-lab.pitch' || data.version !== 1 || data.tuningHz !== 440) throw new Error('不支援這份演奏資料的格式或版本。');
+  if (!Number.isFinite(data.durationMs) || data.durationMs <= 0 || data.durationMs > RECORDING_LIMIT_MS || !Array.isArray(data.frames) || data.frames.length > 6000) throw new Error('演奏資料必須在 60 秒內，且包含有效的音高軌跡。');
+  let previous = -1;
+  const frames = data.frames.map(frame => {
+    if (!frame || !Number.isFinite(frame.timeMs) || frame.timeMs < 0 || frame.timeMs > data.durationMs || frame.timeMs <= previous || !(frame.frequencyHz === null || (Number.isFinite(frame.frequencyHz) && frame.frequencyHz >= 20 && frame.frequencyHz <= 20000))) throw new Error('演奏資料含有無效的時間或頻率。');
+    previous = frame.timeMs;
+    return Object.freeze({ timeMs: frame.timeMs, frequencyHz: frame.frequencyHz });
+  });
+  return Object.freeze({ durationMs: data.durationMs, frames: Object.freeze(frames), hasPitch: frames.some(frame => frame.frequencyHz !== null) });
+}
+
+function pitchDocument(recording) {
+  const text = JSON.stringify({ format: 'otama-lab.pitch', version: 1, tuningHz: 440, durationMs: recording.durationMs, frames: recording.frames });
+  parsePitchDocument(text);
+  return text;
+}
+
+function pngCrc(bytes) {
+  let crc = 0xffffffff;
+  for (const byte of bytes) {
+    crc ^= byte;
+    for (let bit = 0; bit < 8; bit++) crc = (crc >>> 1) ^ ((crc & 1) ? 0xedb88320 : 0);
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function pitchPngChunks(bytes) {
+  if (bytes.length > PITCH_FILE_LIMIT || !pngSignature.every((byte, i) => bytes[i] === byte)) throw new Error('不是有效的 PNG 圖片。');
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), chunks = [];
+  let offset = 8, ended = false, imageData = false;
+  while (offset + 12 <= bytes.length) {
+    const length = view.getUint32(offset), end = offset + 12 + length;
+    if (end > bytes.length || chunks.length > 10000) throw new Error('PNG 圖片不完整或過於複雜。');
+    const type = String.fromCharCode(...bytes.subarray(offset + 4, offset + 8));
+    if (!/^[A-Za-z]{4}$/.test(type) || pngCrc(bytes.subarray(offset + 4, end - 4)) !== view.getUint32(end - 4)) throw new Error('PNG 資料已損壞，請使用原始檔案。');
+    if (!chunks.length && (type !== 'IHDR' || length !== 13)) throw new Error('PNG 缺少圖片標頭。');
+    if (type === 'IDAT') imageData = true;
+    chunks.push({ type, offset, end, data: bytes.subarray(offset + 8, end - 4) });
+    offset = end;
+    if (type === 'IEND') { ended = length === 0; break; }
+  }
+  if (!ended || !imageData || offset !== bytes.length) throw new Error('PNG 圖片不完整。');
+  return chunks;
+}
+
+function embedPitchPng(bytes, recording) {
+  const chunks = pitchPngChunks(bytes);
+  const payload = pitchEncoder.encode(`${pitchKeyword}\0\0\0\0\0${pitchDocument(recording)}`);
+  const chunk = new Uint8Array(payload.length + 12), view = new DataView(chunk.buffer);
+  view.setUint32(0, payload.length); chunk.set(pitchEncoder.encode('iTXt'), 4); chunk.set(payload, 8);
+  view.setUint32(chunk.length - 4, pngCrc(chunk.subarray(4, chunk.length - 4)));
+  const end = chunks.at(-1).offset, result = new Uint8Array(bytes.length + chunk.length);
+  result.set(bytes.subarray(0, end)); result.set(chunk, end); result.set(bytes.subarray(end), end + chunk.length);
+  return result;
+}
+
+function extractPitchPng(bytes) {
+  let documentText = null;
+  for (const chunk of pitchPngChunks(bytes)) {
+    if (chunk.type !== 'iTXt') continue;
+    const data = chunk.data, separator = data.indexOf(0);
+    if (separator < 0 || String.fromCharCode(...data.subarray(0, Math.min(separator, 80))) !== pitchKeyword) continue;
+    if (documentText !== null || data.length > PITCH_TEXT_LIMIT + 100 || data[separator + 1] !== 0 || data[separator + 2] !== 0) throw new Error('PNG 的演奏資料無法讀取。');
+    const languageEnd = data.indexOf(0, separator + 3), translatedEnd = data.indexOf(0, languageEnd + 1);
+    if (languageEnd < 0 || translatedEnd < 0) throw new Error('PNG 的演奏資料不完整。');
+    try { documentText = pitchDecoder.decode(data.subarray(translatedEnd + 1)); } catch { throw new Error('PNG 的演奏資料文字已損壞。'); }
+  }
+  if (documentText === null) throw new Error('這張 PNG 沒有演奏資料。請使用新版 OTAMA LAB 匯出的原始 PNG 或 JSON；截圖、舊圖片或經轉存的圖片可能無法重播。');
+  return parsePitchDocument(documentText);
+}
+
+async function importPitchFile(file) {
+  if (!file || file.size > PITCH_FILE_LIMIT) throw new Error('請選擇 8 MB 以內的 PNG 或 JSON。');
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  if (bytes.length > PITCH_FILE_LIMIT) throw new Error('檔案過大。');
+  if (pngSignature.every((byte, i) => bytes[i] === byte)) return extractPitchPng(bytes);
+  if (bytes.length > PITCH_TEXT_LIMIT) throw new Error('JSON 演奏資料過大。');
+  let text;
+  try { text = pitchDecoder.decode(bytes); } catch { throw new Error('請選擇 OTAMA LAB 匯出的 PNG 或 JSON。'); }
+  return parsePitchDocument(text);
+}
+
 // src/live/export.js
+
+function recordingCursor(recording, timeMs) {
+  const time = Math.max(0, Math.min(timeMs, recording.durationMs));
+  const rows = Math.max(1, Math.ceil(recording.durationMs / RECORDING_ROW_MS));
+  const row = Math.min(rows - 1, Math.floor(time / RECORDING_ROW_MS));
+  return { x: 100 + (time - row * RECORDING_ROW_MS) / Math.min(RECORDING_ROW_MS, Math.max(1, recording.durationMs)) * 1300, top: 24 + row * 280, bottom: 242 + row * 280, height: 32 + rows * 280 };
+}
 
 function drawPitchRecording(recording, canvas) {
   const rows = recordingRows(recording), width = 1440, rowHeight = 280;
@@ -332,12 +436,144 @@ function drawPitchRecording(recording, canvas) {
 
 async function pitchRecordingPng(recording) {
   const canvas = drawPitchRecording(recording, document.createElement('canvas'));
-  return new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('圖片產生失敗，請重新開啟錄製結果再試一次。')), 'image/png'));
+  const blob = await new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('圖片產生失敗，請重新開啟錄製結果再試一次。')), 'image/png'));
+  return new Blob([embedPitchPng(new Uint8Array(await blob.arrayBuffer()), recording)], { type: 'image/png' });
 }
 
 function canSharePitchFile(file, nav = navigator) {
   try { return typeof nav.share === 'function' && typeof nav.canShare === 'function' && nav.canShare({ files: [file] }); }
   catch { return false; }
+}
+
+// src/live/playback.js
+// Reconstruct continuous pitch, not the original microphone waveform or timbre.
+function pitchSegments(recording) {
+  const segments = []; let segment = null;
+  for (let i = 0; i < recording.frames.length; i++) {
+    const frame = recording.frames[i], previous = recording.frames[i - 1];
+    if (frame.frequencyHz === null) { segment = null; continue; }
+    if (!segment || frame.timeMs - previous.timeMs > 200) { segment = { frames: [], endMs: 0 }; segments.push(segment); }
+    segment.frames.push(frame);
+    const next = recording.frames[i + 1];
+    segment.endMs = Math.min(recording.durationMs, next && next.timeMs - frame.timeMs <= 200 ? next.timeMs : frame.timeMs + 100);
+  }
+  return segments;
+}
+
+function pitchAtPlayback(segments, timeMs) {
+  for (const segment of segments) {
+    if (timeMs < segment.frames[0].timeMs || timeMs >= segment.endMs) continue;
+    const frames = segment.frames;
+    let lo = 0, hi = frames.length - 1;
+    while (lo < hi) { const mid = Math.ceil((lo + hi) / 2); if (frames[mid].timeMs <= timeMs) lo = mid; else hi = mid - 1; }
+    const a = frames[lo], b = frames[lo + 1];
+    return b ? a.frequencyHz * (b.frequencyHz / a.frequencyHz) ** ((timeMs - a.timeMs) / (b.timeMs - a.timeMs)) : a.frequencyHz;
+  }
+  return null;
+}
+
+class PitchPlayer {
+  constructor({ Context, onProgress = () => {}, onState = () => {} } = {}) {
+    this.Context = Context; this.onProgress = onProgress; this.onState = onState;
+    this.context = null; this.voice = null; this.generation = 0; this.active = false; this.tick = null;
+  }
+  async play(recording, offsetMs = 0) {
+    this.stop();
+    const request = this.generation; this.active = true; this.onState(true);
+    try {
+      const Context = this.Context || globalThis.AudioContext || globalThis.webkitAudioContext;
+      if (!Context) throw new Error('此瀏覽器不支援合成音重播。');
+      if (!this.context || this.context.state === 'closed') {
+        const ctx = this.context = new Context();
+        ctx.addEventListener('statechange', () => { if (this.context === ctx && ctx.state !== 'running' && this.active) this.stop(); });
+      }
+      await this.context.resume(); // Invoked from the play button's user gesture.
+      if (request !== this.generation) return;
+      if (this.context.state !== 'running') throw new Error('音訊未能啟動，請再按一次播放。');
+      const ctx = this.context, osc = ctx.createOscillator(), filter = ctx.createBiquadFilter(), gain = ctx.createGain();
+      const segments = pitchSegments(recording), offset = Math.max(0, Math.min(recording.durationMs, offsetMs)), origin = ctx.currentTime + .025;
+      osc.type = 'sawtooth'; filter.type = 'lowpass'; filter.frequency.value = 1150; gain.gain.value = 0;
+      osc.connect(filter).connect(gain).connect(ctx.destination);
+      const at = time => origin + (time - offset) / 1000;
+      for (const segment of segments) {
+        const start = Math.max(offset, segment.frames[0].timeMs), end = segment.endMs;
+        if (end <= start) continue;
+        osc.frequency.setValueAtTime(pitchAtPlayback([segment], start), at(start));
+        gain.gain.setValueAtTime(0, at(start));
+        gain.gain.linearRampToValueAtTime(.045, at(Math.min(start + 6, (start + end) / 2)));
+        for (const frame of segment.frames) if (frame.timeMs > start && frame.timeMs < end) osc.frequency.exponentialRampToValueAtTime(frame.frequencyHz, at(frame.timeMs));
+        gain.gain.setValueAtTime(.045, at(Math.max((start + end) / 2, end - 6)));
+        gain.gain.linearRampToValueAtTime(0, at(end));
+      }
+      this.voice = { osc, filter, gain }; osc.start(origin); osc.stop(at(recording.durationMs) + .02);
+      osc.onended = () => { osc.disconnect(); filter.disconnect(); gain.disconnect(); if (this.voice?.osc === osc) this.stop(); };
+      const update = () => {
+        if (request !== this.generation) return;
+        const time = Math.min(recording.durationMs, offset + Math.max(0, ctx.currentTime - origin) * 1000);
+        this.onProgress(time, pitchAtPlayback(segments, time));
+        if (time >= recording.durationMs) this.stop();
+        else this.tick = requestAnimationFrame(update);
+      };
+      update();
+    } catch (error) { if (request === this.generation) { this.stop(); this.onState(false, error.message); } }
+  }
+  stop() {
+    ++this.generation; this.active = false;
+    if (this.tick !== null) cancelAnimationFrame(this.tick); this.tick = null;
+    const voice = this.voice; this.voice = null;
+    if (voice) {
+      const now = this.context.currentTime;
+      voice.gain.gain.cancelScheduledValues(now); voice.gain.gain.setValueAtTime(0, now);
+      voice.osc.stop(now + .005);
+    }
+    this.onState(false);
+  }
+}
+
+// src/live/replay.js
+
+function bindPitchReplay({ play, seek, time, note, cursor, dialog, beforePlay, onError }) {
+  if (!play) return { load() {}, stop() {} }; // Cached pre-import HTML.
+  let recording = null, position = 0;
+  const display = (timeMs, frequency = null) => {
+    position = timeMs; seek.value = String(timeMs);
+    time.textContent = `${(timeMs / 1000).toFixed(1)} / ${((recording?.durationMs || 0) / 1000).toFixed(1)} s`;
+    seek.setAttribute('aria-valuetext', `${(timeMs / 1000).toFixed(1)} 秒`);
+    note.textContent = frequency ? `${pitchOf(frequency).note} · ${frequency.toFixed(1)} Hz` : '—';
+    cursor.hidden = !recording?.hasPitch;
+    if (!recording) return;
+    const point = recordingCursor(recording, timeMs), line = cursor.querySelector('line');
+    cursor.setAttribute('viewBox', `0 0 1440 ${point.height}`);
+    line.setAttribute('x1', point.x); line.setAttribute('x2', point.x);
+    line.setAttribute('y1', point.top); line.setAttribute('y2', point.bottom);
+  };
+  const player = new PitchPlayer({ onProgress: display, onState(active, error) {
+    play.setAttribute('aria-pressed', String(active));
+    play.setAttribute('aria-label', active ? '停止重播' : '合成音重播');
+    play.title = active ? '停止重播' : '合成音重播';
+    play.querySelector('use').setAttribute('href', active ? '#live-stop' : '#live-play');
+    play.querySelector('span').textContent = active ? '停止' : '播放';
+    if (error) onError(error);
+  } });
+  play.addEventListener('click', () => {
+    if (player.active) { player.stop(); return; }
+    if (!recording?.hasPitch) return;
+    beforePlay();
+    player.play(recording, position >= recording.durationMs ? 0 : position);
+  });
+  seek.addEventListener('input', () => { player.stop(); display(Number(seek.value)); });
+  // Native close is queued; don't let an old close event stop a reopened take.
+  dialog.addEventListener('close', () => { if (!dialog.open) player.stop(); });
+  dialog.addEventListener('cancel', () => player.stop());
+  window.addEventListener('pagehide', () => player.stop());
+  document.addEventListener('visibilitychange', () => { if (document.hidden) player.stop(); });
+  return {
+    stop: () => player.stop(),
+    load(snapshot) {
+      player.stop(); recording = snapshot; play.disabled = seek.disabled = !snapshot?.hasPitch;
+      seek.max = String(snapshot?.durationMs || 1); display(0);
+    },
+  };
 }
 
 // src/live/focus.js
@@ -370,10 +606,12 @@ function bindLiveFocus({ enter, exit, onResize }) {
 // src/live/capture.js
 
 // UI capture lifecycle is independent of both microphone audio and 12 s history.
-function bindPitchCapture({ button, clock, resultButton, dialog, image, duration, status, download, share, discard, close }) {
+function bindPitchCapture({ button, clock, resultButton, dialog, image, duration, status, download, share, discard, close, jsonDownload, importButton, input, importStatus, replayControls, beforePlay = () => {} }) {
   const recording = new PitchRecording();
   let timer = null, deadline = null, listening = false, result = null, file = null, imageURL = null, revision = 0;
+  let jsonURL = null, importRevision = 0, importing = false;
   const setStatus = text => { if (status.textContent !== text) status.textContent = text; };
+  const replay = bindPitchReplay({ ...replayControls, dialog, beforePlay, onError: setStatus });
   const renderControls = () => {
     button.disabled = !listening && !recording.active;
     button.setAttribute('aria-pressed', String(recording.active));
@@ -383,16 +621,24 @@ function bindPitchCapture({ button, clock, resultButton, dialog, image, duration
     button.querySelector('span').textContent = recording.active ? '結束錄製' : '開始錄製';
     clock.hidden = !recording.active;
     resultButton.hidden = !result || recording.active;
+    if (importButton) importButton.disabled = recording.active || importing;
   };
   const releaseImage = () => {
+    replay.load(null);
     revision++; file = null;
     if (imageURL) URL.revokeObjectURL(imageURL);
+    if (jsonURL) URL.revokeObjectURL(jsonURL);
+    jsonURL = null; jsonDownload?.removeAttribute('href'); jsonDownload?.setAttribute('aria-disabled', 'true');
     imageURL = null; image.removeAttribute('src'); download.removeAttribute('href');
     download.setAttribute('aria-disabled', 'true'); share.disabled = true;
   };
   async function showResult() {
     if (!result) return;
     const snapshot = result;
+    if (jsonDownload && !jsonURL) {
+      jsonURL = URL.createObjectURL(new Blob([pitchDocument(snapshot)], { type: 'application/json' }));
+      jsonDownload.href = jsonURL; jsonDownload.download = 'otama-pitch.otama.json'; jsonDownload.setAttribute('aria-disabled', 'false');
+    }
     duration.textContent = `${(snapshot.durationMs / 1000).toFixed(1)} 秒`;
     image.alt = `${(snapshot.durationMs / 1000).toFixed(1)} 秒的音高軌跡，半音等距，A4 = 440 Hz`;
     image.hidden = !snapshot.hasPitch || !imageURL;
@@ -416,7 +662,7 @@ function bindPitchCapture({ button, clock, resultButton, dialog, image, duration
     if (!recording.active) return;
     clearInterval(timer); clearTimeout(deadline); timer = deadline = null;
     const snapshot = recording.finish(performance.now());
-    releaseImage(); result = snapshot; renderControls();
+    releaseImage(); result = snapshot; replay.load(result); renderControls();
     showResult();
   }
   function updateClock() {
@@ -428,13 +674,28 @@ function bindPitchCapture({ button, clock, resultButton, dialog, image, duration
   button.addEventListener('click', () => {
     if (recording.active) { finish(); return; }
     if (!listening) return;
+    ++importRevision; importing = false; replay.stop();
     if (dialog.open) dialog.close();
     recording.start(performance.now()); renderControls(); updateClock();
     timer = setInterval(updateClock, 100); deadline = setTimeout(finish, RECORDING_LIMIT_MS);
   });
   resultButton.addEventListener('click', showResult);
-  close.addEventListener('click', () => dialog.close());
+  close.addEventListener('click', () => { replay.stop(); dialog.close(); });
   discard.addEventListener('click', () => { result = null; releaseImage(); dialog.close(); renderControls(); });
+  importButton?.addEventListener('click', () => input.click());
+  input?.addEventListener('change', async () => {
+    const selected = input.files?.[0]; input.value = '';
+    if (!selected || recording.active) return;
+    const request = ++importRevision; importing = true; renderControls();
+    importStatus.textContent = '正在讀取演奏資料…';
+    try {
+      const snapshot = await importPitchFile(selected);
+      if (request !== importRevision || recording.active) return;
+      releaseImage(); result = snapshot; replay.load(result); renderControls();
+      importStatus.textContent = ''; await showResult();
+    } catch (error) { if (request === importRevision) importStatus.textContent = error.message; }
+    finally { if (request === importRevision) { importing = false; renderControls(); } }
+  });
   download.addEventListener('click', event => { if (!file) event.preventDefault(); });
   share.addEventListener('click', async () => {
     if (!file) return;
@@ -445,6 +706,7 @@ function bindPitchCapture({ button, clock, resultButton, dialog, image, duration
   });
   renderControls();
   return {
+    stopPlayback: () => replay.stop(),
     add(frame) { recording.add(frame); if (recording.active && frame.timestampMs - recording.startMs >= RECORDING_LIMIT_MS) finish(); },
     setListening(active) { listening = active; if (!active) finish(); renderControls(); },
     get active() { return recording.active; },
@@ -516,6 +778,9 @@ const capture = liveElement('recording-preview') ? bindPitchCapture({
   dialog: liveElement('recording-preview'), image: liveElement('recording-image'), duration: liveElement('recording-duration'),
   status: liveElement('recording-status'), download: liveElement('recording-download'), share: liveElement('recording-share'),
   discard: liveElement('recording-discard'), close: liveElement('recording-close'),
+  jsonDownload: liveElement('recording-json'), importButton: liveElement('import-pitch'), input: liveElement('pitch-file'), importStatus: liveElement('import-status'),
+  replayControls: { play: liveElement('recording-play'), seek: liveElement('recording-seek'), time: liveElement('replay-time'), note: liveElement('replay-note'), cursor: liveElement('replay-cursor') },
+  beforePlay: () => microphone.stop('合成音重播時暫停收音'),
 }) : { setListening() {}, add() {} };
 const liveFocus = liveElement('timeline-focus') ? bindLiveFocus({ enter: liveElement('timeline-focus'), exit: liveElement('timeline-exit'), onResize: () => timeline.draw() }) : { active: false };
 const compactLevel = liveElement('focus-level');
@@ -590,6 +855,7 @@ const microphone = new MicrophoneInput({
   },
 });
 const toggleMicrophone = () => {
+  capture.stopPlayback?.();
   if (['requesting', 'listening'].includes(microphone.state)) microphone.stop();
   else microphone.start();
 };

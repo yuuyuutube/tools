@@ -24,7 +24,7 @@ python3 -m http.server 4187 --bind 127.0.0.1
 - 自行實作 YIN 的差分、累積平均正規化、閾值與拋物線內插；約 60–2000 Hz，不套用虛擬琴的 G3–D6 範圍、不吸附標準音。未找到可信週期不回傳猜測值。
 - 4096 samples（取樣率高於 60 kHz 時 8192），每個結果後約 40 ms 再分析；單一 Worker、最多一筆在途工作，避免累積延遲。FFT frame 是分析視窗，不表示以最大頻譜峰值判斷基頻。
 - 品質為 `1 − CMND` 的週期性指標，不是準確率。穩定度要求至少 250 ms／5 個樣本，最近 600 ms 的音高全距 ≤25 cents 才標示穩定；滑音／顫音會顯示變動中，與品質分開。
-- 只在記憶體保留音高歷史，不錄音、不上傳、不回播；沒有音訊連到喇叭。沒有 DX 位置量測或假實測資料。
+- 只在記憶體保留音高歷史，不錄音、不上傳、不監聽回播；麥克風不連到喇叭，只有按下演奏結果的播放按鈕才輸出合成音。沒有 DX 位置量測或假實測資料。
 
 麥克風頁需透過 **HTTPS 或 localhost** 開啟，不能依賴雙擊本機 HTML；以瀏覽器使用者手勢啟動 AudioContext。背景噪音、和弦、強泛音與設備處理都可能造成倍頻／半頻誤判，仍待實體 DX 和 iOS／Android 驗證。演算法依據 [YIN 原論文 DOI](https://doi.org/10.1121/1.1458024)，API 參考 [getUserMedia](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia) 與 [AnalyserNode](https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode)。
 
@@ -34,12 +34,24 @@ python3 -m http.server 4187 --bind 127.0.0.1
 
 1. 開啟麥克風後，按圓點開始錄製音高軌跡。
 2. 計時顯示 `00:18 / 01:00`；隨時可停止，滿 **60 秒**自動結束。
-3. 預覽整段軌跡，按「下載 PNG」或「分享」。每 12 秒一行，最多五行；共用同一組半音音高刻度、保留滑音／顫音與未偵測片段的斷線，最後一行在實際停止時間結束。
+3. 預覽整段軌跡，可用合成音播放，並按「下載 PNG」、「JSON」或「分享」。每 12 秒一行，最多五行；共用同一組半音音高刻度、保留滑音／顫音與未偵測片段的斷線，最後一行在實際停止時間結束。
 4. 關閉預覽會保留結果，可由圖片圖示重新開啟；「捨棄這段」釋放結果圖片。下一段完成後取代上一段，重新整理／關閉頁面不保留資料。
 
 錄製保存的是衍生音高資料，**不錄製聲音**。畫面的最近 12 秒歷史與完整錄製資料分開，清除即時軌跡不會刪除錄製。關閉麥克風、裝置中斷或切到背景會停止錄製並保留當段；背景停止的結果可在回到頁面後按圖片圖示開啟。滿時自動停止錄製時，麥克風會繼續分析。
 
 PNG 使用本機 Canvas 產生，1440px 寬、最多 1432px 高，只有音高與時間刻度及軌跡，沒有裝飾標語。沒有音高的錄製不產生假軌跡或空白下載。圖片在按分享之前已完成產生，以保留使用者手勢；依 [Web Share API](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share)／[canShare](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/canShare) 檢查圖片分享支援，不支援時保留 PNG 下載。分享取消不會丟失結果。下載／分享選單的實際行為依瀏覽器與裝置而異。
+
+### 匯入與合成音重播
+
+音高軌跡控制列的「匯入演奏」（專注模式中為 SVG 圖示）接受本工具匯出的 **原始 PNG** 或 **`.otama.json` / `.json`**，不需要開麥克風。匯入後共用錄製結果視窗：播放／停止、進度拖曳、音名／Hz、對應行的游標、PNG／JSON 下載與圖片分享。剛錄製的結果也能直接重播。
+
+- 新 PNG 以標準、未壓縮的 `iTXt` chunk（keyword `otama-lab.recording`）附帶同一份版本化 JSON；圖片像素與外觀不變。匯入時重新繪製經驗證的軌跡，不使用任意匯入圖片作為可信音高來源。
+- JSON schema v1：`format: "otama-lab.pitch"`、`version: 1`、`tuningHz: 440`、`durationMs`、`frames: [{timeMs, frequencyHz}]`。時間與頻率保留原精度；`frequencyHz: null` 為無可信音高。音名／cents 不重複保存。
+- 合成器使用 sawtooth + lowpass，依時間排程；音高以對數內插保留滑音、顫音和非標準音，null／超過 200ms 的缺口不連線。這是**音高重播，不是原始 DX 錄音或音色重現**。
+- 重播前停止麥克風並釋放 tracks，避免喇叭再被錄進去；關閉預覽、捨棄、切到背景、離頁或音訊中斷會停止合成音。快速關閉、重開或取消尚未完成的音訊啟動不會晚到發聲。
+- 檔案上限 8 MB、JSON 600,000 字元、最長 60 秒／6,000 筆。檢查 PNG 結構、CRC、版本、A4 基準、時間順序與頻率範圍（20–20,000 Hz）；匯入錯誤保留原有結果，錄製中不可匯入。麥克風偵測範圍仍維持 60–2000 Hz。
+- 舊版 PNG／截圖沒有原始音高資料，本版不辨識圖片曲線；會提示改用新版原始 PNG 或 JSON。分享平台或圖片編輯器可能移除附帶資料，**保留原始 PNG，並下載 JSON 作為備份**。尚未加入 WAV 匯出。
+- 所有讀寫、繪圖與合成音只在本機完成，沒有上傳。匯入會取代記憶體中的上一份結果；重新整理會清除，請先下載保存。
 
 ### 桌機音高跟隨琴頸
 
@@ -121,11 +133,15 @@ npm test
 - `live/focus.js`：軌跡專注模式、可見 viewport 與返回位置。
 - `live/mini-otama.js`：桌機小琴頸的純位置映射、跟隨與顯示偏好，不介入音訊分析。
 - `live/recording.js`：60 秒純音高資料與 12 秒分行，不保存音訊。
-- `live/export.js` / `live/capture.js`：本機 Canvas PNG、預覽、下載與檔案分享生命週期。
+- `live/format.js`：版本化 JSON、PNG iTXt、CRC 與匯入驗證。
+- `live/export.js` / `live/capture.js`：本機 PNG、匯入／錄製結果、下載與分享生命週期。
+- `live/playback.js` / `live/replay.js`：連續音高與停頓的音訊排程、播放進度與游標。
 
 `build` 依固定依賴順序將小型 modules 合成為 classic IIFE `app.bundle.js`、`live.bundle.js` 與 `pitch-worker.js`，並為 bundle／Worker／CSS 加上內容版本參數；另產出 `dist/`（兩頁 HTML、bundles、Worker、CSS、assets、.nojekyll）。所有路徑相對於頁面，可部署 Pages 子路徑。生成器只支援目前使用的 named relative imports 與具名宣告；加入其他 module 語法會明確失敗。對已快取的舊版演奏頁，程式會補齊缺少的音域元件。修改 `src/` 後務必重新 build，並提交更新的根目錄 bundles／Worker。
 
 瀏覽器整合測試：開啟 `/tests/browser.html` 按 Run checks，會播放短暫合成音。測試頁本身使用 ES modules，因此需 HTTP。測試檔不進 dist。
+
+匯入測試：`/tests/import-browser.html`，以明確標示的合成音高驗證 PNG／JSON 往返、原生 Web Audio 音高／靜音、進度、重播與麥克風互斥、錯誤檔案、完整一分鐘五行、專注模式與窄畫面。合成音接到 MediaStream destination，不經喇叭；另有 `tests/synthetic-pitch.otama.json`（6 秒）與 `tests/synthetic-pitch.png`（60 秒）可手動選檔試玩，兩者皆為合成測試資料。
 
 小琴頸測試：`/tests/mini-otama-browser.html`，依目前 viewport 檢查桌機跟隨或手機隱藏；以原生合成音訊通過正式偵測管線，不是 DX 實測。
 

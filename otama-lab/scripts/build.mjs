@@ -28,7 +28,7 @@ const html = (await readFile(htmlPath, 'utf8'))
 await writeFile(htmlPath, html);
 const worker = await bundleModules(['analysis/yin', 'analysis/pitch-worker']);
 await writeFile(new URL('pitch-worker.js', root), worker);
-const live = (await bundleModules(['pitch', 'input/microphone', 'analysis/stability', 'live/timeline', 'live/recording', 'live/export', 'live/focus', 'live/capture', 'live/mini-otama', 'live/app']))
+const live = (await bundleModules(['pitch', 'input/microphone', 'analysis/stability', 'live/timeline', 'live/recording', 'live/format', 'live/export', 'live/playback', 'live/replay', 'live/focus', 'live/capture', 'live/mini-otama', 'live/app']))
   .replace("'./pitch-worker.js'", `'./pitch-worker.js?v=${versionOf(worker)}'`);
 await writeFile(new URL('live.bundle.js', root), live);
 const liveCss = await readFile(new URL('src/live/styles.css', root), 'utf8');
