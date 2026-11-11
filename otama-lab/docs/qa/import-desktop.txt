@@ -12,7 +12,7 @@ PASS: PNG export embeds exact continuous frequencies, times and rests
 PASS: JSON download is a versioned portable pitch-only document
 PASS: PNG remains a valid ordinary image at original dimensions
 PASS: native synthesized audio reproduces a nonstandard pitch within 5 cents
-PASS: progress and graph cursor move together
+PASS: progress and a visible graph cursor move together
 PASS: rest is actually silent in the audio graph
 PASS: glissando is continuous rather than snapped to notes
 PASS: replay ends at the actual duration

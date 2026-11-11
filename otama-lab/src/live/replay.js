@@ -10,7 +10,7 @@ export function bindPitchReplay({ play, seek, time, note, cursor, dialog, before
     time.textContent = `${(timeMs / 1000).toFixed(1)} / ${((recording?.durationMs || 0) / 1000).toFixed(1)} s`;
     seek.setAttribute('aria-valuetext', `${(timeMs / 1000).toFixed(1)} 秒`);
     note.textContent = frequency ? `${pitchOf(frequency).note} · ${frequency.toFixed(1)} Hz` : '—';
-    cursor.hidden = !recording?.hasPitch;
+    cursor.toggleAttribute('hidden', !recording?.hasPitch);
     if (!recording) return;
     const point = recordingCursor(recording, timeMs), line = cursor.querySelector('line');
     cursor.setAttribute('viewBox', `0 0 1440 ${point.height}`);

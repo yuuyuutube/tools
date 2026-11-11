@@ -173,8 +173,8 @@ npm run build
 - 匯入瀏覽器流程桌面 1280×900、320×740（iframe 288px）、844×390（iframe 812px）各 **25 / 25**。以合成音高資料驗證：JSON 匯入、新 PNG 匯出後再匯入、逐筆 Hz／時間／null 無損、有效圖片解碼與尺寸、JSON 下載、原生 Web Audio 非標準 445.123Hz（誤差 <5 cents）、真正的靜音段、連續滑音、播放進度／游標、自然結束、快速關閉與重開、拖曳進度、背景停止、錯誤檔案保留既有結果、SVG-only 專注控制與至少 44px 觸控目標、無頁面捲動、結果動作不超出 viewport。
 - 合成器測試將 Web Audio 輸出接到原生 MediaStream destination，透過真實 AnalyserNode／YIN 量測，沒有喇叭或實體麥克風。另以原生合成麥克風輸入驗證：重播前 tracks 立即 ended；完整 60 秒／1501 筆資料匯入後仍為五行 1440×1432，游標可定位第五行。這是合成測試資料，不是 DX 實測。
 - 既有錄製流程 **24 / 24**、舊 HTML 搭配新版 bundle 的音高分析 **31 / 31**。本輪未重跑真實 60 秒錄製計時（計時模組未更改，前輪已通過）；本輪另外驗證了完整一分鐘資料的 PNG／JSON 匯入往返。
-- 實際使用瀏覽器檔案選擇器匯入 `tests/synthetic-pitch.otama.json` 成功，出現 6 秒的完整結果、重播與下載。PNG 另經 top-level 原生 media download 保存為 `tests/synthetic-pitch.png`（60 秒、含新 metadata），不只檢查 Blob URL。
-- 測試發現並修正 dialog 的原生 close 事件晚到競態，以及極窄畫面新增控制項後按鈕被壓縮的問題。穩定版本測試的 console 沒有 warning／error。
+- 實際使用瀏覽器檔案選擇器匯入 `tests/synthetic-pitch.otama.json` 成功，出現 6 秒的完整結果、重播與下載。正式 GitHub Pages 已透過原生檔案選擇器成功匯入完整 PNG，實際點擊播放與停止正常，console 無 warning／error。PNG 另經 top-level 原生 media download 保存為 `tests/synthetic-pitch.png`（60 秒、含新 metadata），不只檢查 Blob URL。
+- 測試發現並修正 dialog 的原生 close 事件晚到競態，以及極窄畫面新增控制項後按鈕被壓縮的問題。正式站截圖另發現 SVG 不支援 HTMLElement.hidden 的顯示差異，改用 hidden attribute，並將游標實際可見性加入測試。穩定版本測試的 console 沒有 warning／error。
 - 原始 YIN、分析閾值、麥克風管線、Worker、既有虛擬演奏 bundle 沒有變更。測試紀錄在 `docs/qa/import-*.txt`。
 
 尚未驗證：實體 iOS／Android 的原生檔案選擇器、下載／分享平台是否保留 PNG iTXt、音訊手勢／背景中斷與實體觸控，VoiceOver／TalkBack。本輪窄畫面為瀏覽器 viewport，不等同實體手機。原生分享仍由既有 stub 測試，沒有向第三方分享檔案。舊 PNG 曲線辨識與 WAV 匯出尚未實作；不將合成音稱為 DX 原始錄音。

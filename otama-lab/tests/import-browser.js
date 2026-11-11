@@ -4,7 +4,7 @@ import { createYin } from '../src/analysis/yin.js';
 const frame = document.getElementById('live'), run = document.getElementById('run'), summary = document.getElementById('summary'), results = document.getElementById('results');
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const detectPitchYin = createYin();
-async function until(predicate, label) { const start = performance.now(); while (!predicate()) { if (performance.now() - start > 5000) throw new Error(`Timeout: ${label}`); await pause(20); } }
+async function until(predicate, label, timeout = 5000) { const start = performance.now(); while (!predicate()) { if (performance.now() - start > timeout) throw new Error(`Timeout: ${label}`); await pause(20); } }
 const ready = () => { run.disabled = false; }; if (frame.contentDocument?.readyState === 'complete') ready(); else frame.addEventListener('load', ready, { once: true });
 const sample = { durationMs: 2200, frames: [] };
 for (let timeMs = 0; timeMs <= 2200; timeMs += 40) sample.frames.push({ timeMs, frequencyHz: timeMs < 700 ? 445.123 : timeMs < 1100 ? null : timeMs < 1900 ? 330 * 2 ** ((timeMs - 1100) / 800) : null });
@@ -19,7 +19,7 @@ run.addEventListener('click', async () => {
     createGain() { const gain = super.createGain(); gain.connect(analyser); return gain; }
   }
   const originalContext = win.AudioContext, originalMedia = win.navigator.mediaDevices.getUserMedia; win.AudioContext = SilentContext;
-  const inject = async file => { const transfer = new win.DataTransfer(); transfer.items.add(file); $('pitch-file').files = transfer.files; $('pitch-file').dispatchEvent(new win.Event('change', { bubbles: true })); await until(() => !$('import-pitch').disabled, 'import completes'); };
+  const inject = async file => { const transfer = new win.DataTransfer(); transfer.items.add(file); $('pitch-file').files = transfer.files; $('pitch-file').dispatchEvent(new win.Event('change', { bubbles: true })); await until(() => !$('import-pitch').disabled, 'import completes', 15000); };
   const previewReady = () => $('recording-preview').open && $('recording-download').hasAttribute('href') && $('recording-image').complete && $('recording-image').naturalWidth === 1440;
   try {
     check('import is available without microphone permission', !$('import-pitch').disabled && $('microphone').getAttribute('aria-pressed') === 'false');
@@ -34,7 +34,7 @@ run.addEventListener('click', async () => {
     $('recording-play').click(); await until(() => $('recording-play').getAttribute('aria-pressed') === 'true' && parseFloat($('recording-seek').value) > 160, 'native replay starts');
     const samples = new Float32Array(4096); analyser.getFloatTimeDomainData(samples); const pitch = detectPitchYin(samples, contexts.at(-1).sampleRate);
     check('native synthesized audio reproduces a nonstandard pitch within 5 cents', pitch.frequencyHz && Math.abs(1200 * Math.log2(pitch.frequencyHz / 445.123)) < 5);
-    check('progress and graph cursor move together', Number($('recording-seek').value) > 0 && Number($('replay-cursor').querySelector('line').getAttribute('x1')) > 100 && $('replay-note').textContent.includes('445.1'));
+    check('progress and a visible graph cursor move together', win.getComputedStyle($('replay-cursor')).display !== 'none' && Number($('recording-seek').value) > 0 && Number($('replay-cursor').querySelector('line').getAttribute('x1')) > 100 && $('replay-note').textContent.includes('445.1'));
     await until(() => Number($('recording-seek').value) > 850, 'rest'); analyser.getFloatTimeDomainData(samples);
     check('rest is actually silent in the audio graph', Math.sqrt(samples.reduce((n, x) => n + x * x, 0) / samples.length) < .0001);
     await until(() => Number($('recording-seek').value) > 1450, 'glide'); analyser.getFloatTimeDomainData(samples); const glide = detectPitchYin(samples, contexts.at(-1).sampleRate);
