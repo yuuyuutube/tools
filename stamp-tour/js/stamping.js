@@ -2,7 +2,7 @@
    station = 1..3 在某一站；station = 0 是「卡片首頁」（還沒到任何一站） */
 import { CONFIG, ROT } from './config.js';
 import { COPY } from './copy.js';
-import { ART_SETS, artId, shapeOf, stationName, drawGuides } from './art.js';
+import { ART_SETS, artId, setArt, shapeOf, stationName, drawGuides } from './art.js';
 import { CARD, printCv, inkCv, genMask, composite, simplifyPath } from './print.js';
 import { drawCardExtras } from './cardface.js';
 import { say } from './attendant.js';
@@ -14,7 +14,7 @@ let stage, ctx, loupe, lctx, topEl, stackEl, devEl;
 let W = 0, H = 0, DPR = 1, k = 1;
 let card = {}, pad = {}, rest = {}, fc = {};
 const faceCache = {};
-let hooks = { onReset: () => {}, onStationChange: () => {}, onArtToggle: () => {} };
+let hooks = { onReset: () => {}, onStationChange: () => {}, onArtToggle: () => {}, onGoStation: n => enterStation(n) };
 
 const app = {
   active: false,
@@ -60,6 +60,7 @@ export function loadImpressions(list) {
 export function getCardRect() { layout(); return { ...card, k }; }
 
 export function show() { app.active = true; document.body.classList.add('scene-stamp'); }
+export const refreshDev = () => updateDev();
 export function hide() { app.active = false; document.body.classList.remove('scene-stamp'); }
 
 export function enterStation(n, lines) {
@@ -160,7 +161,7 @@ function updateDev() {
     const b = document.createElement('button');
     b.textContent = n; b.className = n === app.station ? 'cur' : '';
     if (app.layers.some(L => L.station === n)) { const i = document.createElement('i'); i.style.background = CONFIG.INKS[n].ink; b.appendChild(i); }
-    b.addEventListener('click', () => { if (!app.active || ['pressing', 'lifting', 'out'].includes(app.phase)) return; enterStation(n); });
+    b.addEventListener('click', () => { if (!app.active || ['pressing', 'lifting', 'out'].includes(app.phase)) return; hooks.onGoStation(n); });
     devEl.appendChild(b);
   }
   const labels = { arrow: '箭頭', hop: '跳動', both: '兩者', none: '無' }, order = ['arrow', 'hop', 'both', 'none'];
@@ -175,9 +176,13 @@ function updateDev() {
   // 圖案組切換：換一組就換一張新卡（舊卡上的章是用舊圖案蓋的）
   const ab = document.createElement('button');
   ab.textContent = ART_SETS[artId()].label; ab.style.width = 'auto'; ab.style.padding = '0 8px';
+  ab.className = 'art';
   ab.addEventListener('click', () => {
+    const ids = Object.keys(ART_SETS), next = ids[(ids.indexOf(artId()) + 1) % ids.length];
+    // 入口、簽名時還沒有卡：直接換掉等一下要發的卡的圖案組（日期章蓋下、卡發出去之後就不能換）
+    if (document.body.classList.contains('scene-open')) { if (store.hasCard()) return; setArt(next); hooks.onArtToggle(next); updateDev(); return; }
     if (!app.active || ['pressing', 'lifting', 'out'].includes(app.phase)) return;
-    const ids = Object.keys(ART_SETS); hooks.onArtToggle(ids[(ids.indexOf(artId()) + 1) % ids.length]);
+    hooks.onArtToggle(next);
     app.phase = 'out'; app.outT = performance.now(); ptrs.clear(); g.mode = null;
   });
   devEl.appendChild(ab);
