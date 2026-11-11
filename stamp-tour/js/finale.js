@@ -76,11 +76,12 @@ export async function runFinale({ getCard, art, onSeal }) {
   placeCord(hand.x, hand.y + REST);
   cord.classList.add('in');
   setMood('happy');
-  await sayFor(COPY.finale.arrive);
+  const pulled = pullCord();                      // 繩子一出現就能拉（不用等站務員講完）
+  await Promise.race([sayFor(COPY.finale.arrive), pulled]);
   setMood('');
 
   /* ========== 3. 拉繩子 → 砰！ ========== */
-  await pullCord();
+  await pulled;
   sfx('bang'); sfx('gong'); setTimeout(() => sfx('fanfare'), 380);
   cord.classList.add('gone');
   popper.animate([
@@ -137,20 +138,22 @@ export async function runFinale({ getCard, art, onSeal }) {
   function pullCord() {
     return new Promise(res => {
       let id = null, nagged = false, stopRoll = () => {};
+      const ac = new AbortController(), on = { signal: ac.signal };   // 拉完就拆掉：隱形的拉環剛好在完成章旁邊，不能再搶走手指
+      const done = () => { id = null; cord.classList.remove('held'); stopRoll(); ac.abort(); res(); };
       const tilt = d => { popper.style.transform = `rotate(${ANG + clamp(d * .12, 0, 9)}deg)`; };
       tilt(0);
       ring.addEventListener('pointerdown', e => {
         e.preventDefault(); if (id !== null) return;
         id = e.pointerId; try { ring.setPointerCapture(id); } catch (_) {}
         cord.classList.add('held'); stopRoll(); stopRoll = roll();   // 拉著的時候，鼓聲越來越快
-      });
+      }, on);
       ring.addEventListener('pointermove', e => {
         if (e.pointerId !== id) return;
         const dx = e.clientX - hand.x, dy = Math.max(8, e.clientY - hand.y);
         const len = Math.hypot(dx, dy), d = len - REST;
         placeCord(hand.x + dx, hand.y + dy); tilt(d);
-        if (d >= PULL) { id = null; cord.classList.remove('held'); stopRoll(); res(); }
-      });
+        if (d >= PULL) done();
+      }, on);
       const up = e => {
         if (e.pointerId !== id) return;
         id = null; cord.classList.remove('held'); stopRoll();
@@ -164,7 +167,7 @@ export async function runFinale({ getCard, art, onSeal }) {
         requestAnimationFrame(spring);
         if (!nagged) { nagged = true; say(COPY.finale.pullMore); }
       };
-      ring.addEventListener('pointerup', up); ring.addEventListener('pointercancel', up);
+      ring.addEventListener('pointerup', up, on); ring.addEventListener('pointercancel', up, on);
     });
   }
 }
