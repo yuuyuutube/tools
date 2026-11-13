@@ -38,11 +38,22 @@ const liveHtml = (await readFile(liveHtmlPath, 'utf8'))
   .replace(/href="\.\/src\/styles\.css(?:\?v=[a-f0-9]+)?"/, `href="./src/styles.css?v=${versionOf(css)}"`)
   .replace(/href="\.\/src\/live\/styles\.css(?:\?v=[a-f0-9]+)?"/, `href="./src/live/styles.css?v=${versionOf(liveCss)}"`);
 await writeFile(liveHtmlPath, liveHtml);
+const wah = await bundleModules(['pitch', 'wah/audio', 'wah/input', 'wah/spectrum', 'wah/app']);
+await writeFile(new URL('wah.bundle.js', root), wah);
+const wahCss = await readFile(new URL('src/wah/styles.css', root), 'utf8');
+const wahHtmlPath = new URL('wah.html', root);
+const wahHtml = (await readFile(wahHtmlPath, 'utf8'))
+  .replace(/src="\.\/wah\.bundle\.js(?:\?v=[a-f0-9]+)?"/, `src="./wah.bundle.js?v=${versionOf(wah)}"`)
+  .replace(/href="\.\/src\/styles\.css(?:\?v=[a-f0-9]+)?"/, `href="./src/styles.css?v=${versionOf(css)}"`)
+  .replace(/href="\.\/src\/wah\/styles\.css(?:\?v=[a-f0-9]+)?"/, `href="./src/wah/styles.css?v=${versionOf(wahCss)}"`);
+await writeFile(wahHtmlPath, wahHtml);
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
-for (const path of ['index.html', 'live.html', 'app.bundle.js', 'live.bundle.js', 'pitch-worker.js', 'assets']) await cp(new URL(path, root), new URL(path, output), { recursive: true });
+for (const path of ['index.html', 'live.html', 'wah.html', 'app.bundle.js', 'live.bundle.js', 'wah.bundle.js', 'pitch-worker.js', 'assets']) await cp(new URL(path, root), new URL(path, output), { recursive: true });
 await mkdir(new URL('src/live/', output), { recursive: true });
 await cp(new URL('src/styles.css', root), new URL('src/styles.css', output));
 await cp(new URL('src/live/styles.css', root), new URL('src/live/styles.css', output));
+await mkdir(new URL('src/wah/', output), { recursive: true });
+await cp(new URL('src/wah/styles.css', root), new URL('src/wah/styles.css', output));
 await writeFile(new URL('.nojekyll', output), '');
-console.log('Built virtual / live bundles, pitch worker and dist/. Live microphone needs HTTPS or localhost.');
+console.log('Built virtual / live / wah bundles, pitch worker and dist/. Live microphone needs HTTPS or localhost.');

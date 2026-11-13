@@ -1,0 +1,33 @@
+Pitch import and replay checks
+
+Explicit synthetic pitch data. Native Web Audio is routed to a MediaStream destination, never to speakers or a physical microphone.
+
+Run import checks
+
+25/25 passed; 0 failed. Native audio, synthetic data, no physical microphone.
+
+PASS: import is available without microphone permission
+PASS: JSON import opens image preview and enables replay
+PASS: PNG export embeds exact continuous frequencies, times and rests
+PASS: JSON download is a versioned portable pitch-only document
+PASS: PNG remains a valid ordinary image at original dimensions
+PASS: native synthesized audio reproduces a nonstandard pitch within 5 cents
+PASS: progress and a visible graph cursor move together
+PASS: rest is actually silent in the audio graph
+PASS: glissando is continuous rather than snapped to notes
+PASS: replay ends at the actual duration
+PASS: closing preview stops playback immediately
+PASS: seek moves the playhead without starting audio
+PASS: background transition stops playback
+PASS: an exported PNG can be imported and replayed without any other file
+PASS: legacy PNG explains missing data and preserves previous take
+PASS: unsupported file versions produce a useful error
+PASS: corrupted PNG is rejected instead of played
+PASS: focus import control is visible, SVG-only and has a touch target
+PASS: focus remains free of page scrollbars with the extra control
+PASS: focus import opens the same bounded, usable result dialog
+PASS: all result actions stay within the viewport
+PASS: microphone never activates merely by importing or replaying
+PASS: replay stops active microphone tracks before output begins
+PASS: a full minute imports all five rows and every frame
+PASS: seeking follows the matching row of a full-length graph

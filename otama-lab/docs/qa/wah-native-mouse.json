@@ -1,0 +1,11 @@
+{
+  "neckDrag": {
+    "frequencyHz": 1107.3,
+    "releaseStopped": true
+  },
+  "mouthDrag": {
+    "opening": "0%",
+    "sustain": "true",
+    "playing": true
+  }
+}

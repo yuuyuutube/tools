@@ -39,9 +39,11 @@
 
 完成門檻：實體 DX 一輪粗／精測、匯入匯出 round trip、不穩定／靜音不誤收、重測與刪除一致、模型比較不混淆來源。
 
-## Phase 4 — Wah Lab
+## Phase 4 — Wah Lab（虛擬 Wah／即時頻譜已實作）
 
-新增 `src/audio/wah.js`（近似濾波模型）與 `src/analysis/spectrum.js`（FFT、頻譜／聲譜圖）。合成音：oscillator → filter / Wah → gain → output；分析 tap 與嘴巴開合控制各自獨立。輸入模型不應為了模擬音色改寫 fundamental frequency。
+2026-11-14：獨立 `wah.html` 已完成原角色捏嘴、雙指琴頸／嘴巴、持續發聲、近似共振音色與原生即時 FFT 頻譜。`src/wah/audio.js`、`src/wah/input.js`、`src/wah/spectrum.js`、`src/wah/app.js` 分開負責音訊、輸入、視覺與介面。嘴巴不改基頻；靜音／取消／背景與 late resume 有安全停止。
+
+尚待：聲譜圖、真實 DX 麥克風開嘴／閉嘴比較與保存量測條件，可由共用分析模組擴充。合成音：oscillator → filter / Wah → gain → output；分析 tap 與嘴巴開合控制各自獨立。輸入模型不應為了模擬音色改寫 fundamental frequency。
 
 以嘴巴開合操作濾波頻率與共振，標記為 **Approximate Wah Simulation**。分別顯示音高（f₀）和音色（頻譜能量分布）；麥克風比較真實 DX 開嘴／閉嘴，保存真實錄音來源與量測條件。對頻譜採樣率、FFT window、更新率與 dB 參考明確說明。
 

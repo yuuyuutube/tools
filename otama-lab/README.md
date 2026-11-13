@@ -6,6 +6,7 @@
 
 - 正式網址：<https://yuuyuutube.github.io/tools/otama-lab/>
 - 真琴分析：<https://yuuyuutube.github.io/tools/otama-lab/live.html>
+- Wah Lab：<https://yuuyuutube.github.io/tools/otama-lab/wah.html>
 - 本機可直接開啟 `index.html`，或建置後的 `dist/index.html`。
 - 開發／執行瀏覽器測試時，在此資料夾啟動 HTTP server：
 
@@ -60,6 +61,22 @@ PNG 使用本機 Canvas 產生，1440px 寬、最多 1432px 高，只有音高�
 固定 **G3–D6**，沿用虛擬演奏預設的反比靈感 **Simulation**（`positionAt(f, 'inverse', RANGES['g3-d6'])`）。上端為 G3，靠近頭部的下端為 D6；按實際偵測頻率連續移動，不吸附音符。這是音高視覺對照，不是 DX 的實測按壓位置，也不會發出聲音。
 
 尚未偵測到音高時不預填指示器。有音高時張嘴；靜音、無可信音高或關閉麥克風時，嘴巴恢復、指示器留在最後一次音高。低於 G3／高於 D6 時只將小琴頸限制在兩端，端點與指示器以珊瑚色提示；主要 Hz、軌跡、錄製資料保持完整。收起後仍記住新音高，重新展開會顯示最新位置。
+
+## Wah Lab（虛擬音色實驗）
+
+獨立的 `wah.html`，虛擬演奏與真琴分析頁的 SVG 嘴巴按鈕可進入。沿用原始奶油色角色，固定 G3–D6 的反比靈感 Simulation，靠近頭部為高音；頁面填滿可見高度，不捲動、不誤選文字。
+
+- 按住琴頸滑音，第一個演奏手勢會嘗試啟動聲音；放手即停止。
+- 另一指按住臉，向下拖開嘴、向上拖閉嘴，放開閉嘴。兩指先後順序不限，各自追蹤 Pointer ID，不要求第二指為 `isPrimary`；額外手指不搶走控制。pointer capture 失敗仍有 window fallback。
+- 桌機可開啟「持續發聲」，再用單一滑鼠改變音高與嘴巴；再按一次停止。下方嘴巴滑桿也能保留開合值。
+- 琴頸方向鍵／Home／End／Page Up／Page Down；Shift 微調，Space／Enter 按住發聲。W 按住開嘴、放開閉嘴；嘴巴控制可用方向鍵及 Home／End。SVG 聲音開關可明確靜音／重試；使用者手動靜音後，普通琴頸手勢不會自動解除。
+- Esc、blur、背景、離頁、音訊中斷及開啟說明時安全停止；已放手或取消後晚到的音訊啟動不建立 voice。開啟聲音開關只解鎖音訊，不會自行持續演奏。
+
+音訊為獨立 **Approximate Wah Simulation**：一個鋸齒波振盪器，並聯兩組帶通共振與少量低通原始音，最後經包絡音量與 AnalyserNode 輸出。嘴巴只改共振中心（400→1000 Hz、850→3000 Hz），不改振盪器基頻；琴頸才改 Hz。這是趣味近似模型，不完整重現 DX 聲學，也不使用麥克風或真實錄音。
+
+即時頻譜來自實際合成輸出，不使用預先畫好的曲線。4096 點 FFT、Blackman 窗、平滑 0.55、取樣率依 AudioContext，80–8000 Hz 對數軸、−96 至 −12 dBFS；160 個顯示頻帶各取實際 FFT bin 最大值。dB 為瀏覽器數位幅值參考，未校正成環境聲壓；峰值不等於基頻。珊瑚色虛線表示琴頸設定的 f₀，正常更新最多約 30fps，reduced-motion 為 8fps，停止時清空並取消動畫。FFT 參考 [W3C Web Audio AnalyserNode](https://www.w3.org/TR/webaudio-1.0/#fft-windowing-and-smoothing-over-time)。
+
+本版不含聲譜圖或真琴開／閉嘴比較，後續仍可由獨立麥克風與頻譜模組擴充。
 
 ## 音域
 
@@ -136,10 +153,16 @@ npm test
 - `live/format.js`：版本化 JSON、PNG iTXt、CRC 與匯入驗證。
 - `live/export.js` / `live/capture.js`：本機 PNG、匯入／錄製結果、下載與分享生命週期。
 - `live/playback.js` / `live/replay.js`：連續音高與停頓的音訊排程、播放進度與游標。
+- `wah/audio.js`：獨立振盪器、Wah 共振近似與音訊生命週期。
+- `wah/input.js`：琴頸／嘴巴的獨立 pointer IDs 與鍵盤控制。
+- `wah/spectrum.js`：真實 FFT 頻帶、SVG 圖與 reduced-motion 排程。
+- `wah/app.js` / `wah/styles.css`：Wah 演奏頁、持續發聲、靜音／錯誤處理與手機 viewport。
 
-`build` 依固定依賴順序將小型 modules 合成為 classic IIFE `app.bundle.js`、`live.bundle.js` 與 `pitch-worker.js`，並為 bundle／Worker／CSS 加上內容版本參數；另產出 `dist/`（兩頁 HTML、bundles、Worker、CSS、assets、.nojekyll）。所有路徑相對於頁面，可部署 Pages 子路徑。生成器只支援目前使用的 named relative imports 與具名宣告；加入其他 module 語法會明確失敗。對已快取的舊版演奏頁，程式會補齊缺少的音域元件。修改 `src/` 後務必重新 build，並提交更新的根目錄 bundles／Worker。
+`build` 依固定依賴順序將小型 modules 合成為 classic IIFE `app.bundle.js`、`live.bundle.js`、`wah.bundle.js` 與 `pitch-worker.js`，並為 bundle／Worker／CSS 加上內容版本參數；另產出 `dist/`（三頁 HTML、bundles、Worker、CSS、assets、.nojekyll）。所有路徑相對於頁面，可部署 Pages 子路徑。生成器只支援目前使用的 named relative imports 與具名宣告；加入其他 module 語法會明確失敗。對已快取的舊版演奏頁，程式會補齊缺少的音域元件。修改 `src/` 後務必重新 build，並提交更新的根目錄 bundles／Worker。
 
 瀏覽器整合測試：開啟 `/tests/browser.html` 按 Run checks，會播放短暫合成音。測試頁本身使用 ES modules，因此需 HTTP。測試檔不進 dist。
+
+Wah 測試：`/tests/wah-browser.html`，原生 Web Audio 輸出重新導向 MediaStream destination，不使用實體麥克風或喇叭；合成 pointer 測試雙指先後順序、取消、持續發聲、靜音與背景停止。以真實波形／FFT 驗證嘴巴改變泛音而基頻保持。
 
 匯入測試：`/tests/import-browser.html`，以明確標示的合成音高驗證 PNG／JSON 往返、原生 Web Audio 音高／靜音、進度、重播與麥克風互斥、錯誤檔案、完整一分鐘五行、專注模式與窄畫面。合成音接到 MediaStream destination，不經喇叭；另有 `tests/synthetic-pitch.otama.json`（6 秒）與 `tests/synthetic-pitch.png`（60 秒）可手動選檔試玩，兩者皆為合成測試資料。
 
@@ -155,7 +178,7 @@ npm test
 
 ## GitHub Pages
 
-目前專案位於 `yuuyuutube/tools` repository 的 `otama-lab/`，兩頁 HTML、三個生成的 JS、`src/styles.css`、`src/live/styles.css` 與 `assets/` 已能作為 Pages 子目錄直接發布。沿用 repository 原有的 Pages 設定，無需將 dist 放到根目錄、也不覆蓋其他工具。
+目前專案位於 `yuuyuutube/tools` repository 的 `otama-lab/`，三頁 HTML、四個生成的 JS、`src/styles.css`、`src/live/styles.css`、`src/wah/styles.css` 與 `assets/` 已能作為 Pages 子目錄直接發布。沿用 repository 原有的 Pages 設定，無需將 dist 放到根目錄、也不覆蓋其他工具。
 
 若將此資料夾作為獨立 repository：在 Settings → Pages 選 GitHub Actions，使用本專案 `.github/workflows/pages.yml` 即可將 dist 部署成獨立網站。若保留 monorepo 結構，GitHub 不會執行這個巢狀 workflow；請沿用 repository 原有發布流程。換網址時需同步更新 canonical、og:url、og:image 與 twitter:image。
 

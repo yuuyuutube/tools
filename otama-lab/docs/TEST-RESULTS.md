@@ -178,3 +178,16 @@ npm run build
 - 原始 YIN、分析閾值、麥克風管線、Worker、既有虛擬演奏 bundle 沒有變更。測試紀錄在 `docs/qa/import-*.txt`。
 
 尚未驗證：實體 iOS／Android 的原生檔案選擇器、下載／分享平台是否保留 PNG iTXt、音訊手勢／背景中斷與實體觸控，VoiceOver／TalkBack。本輪窄畫面為瀏覽器 viewport，不等同實體手機。原生分享仍由既有 stub 測試，沒有向第三方分享檔案。舊 PNG 曲線辨識與 WAV 匯出尚未實作；不將合成音稱為 DX 原始錄音。
+
+## 2026-11-14 · 獨立 Wah Lab
+
+- `node scripts/build.mjs` 成功，新增 versioned Wah classic bundle 與 CSS，dist 含三頁與四個生成 JS；子路徑使用相對 URL。Node **61 / 61**：原有 54 項加上 Wah 映射、基頻獨立、釋放／pending resume／靜音／重疊播放／中斷、實際頻帶最大值、reduced-motion 的 8fps 與停止動畫、雙 pointer 先後順序／額外手指／取消、部署產物與 SVG／Simulation 檢查。
+- Wah 原生瀏覽器檢查：每個尺寸 **33 / 33** 通過；桌面 1280×900（iframe 1248px）、320×740（iframe 288px）、844×390（iframe 812px）、568×320（iframe 536px）。測試包含第一手勢啟動、嘴巴單獨操作不發聲、兩種起手順序且第二指非 primary、第三指不搶控制、嘴巴放手／cancel 不影響琴頸、琴頸外放手／cancel／lost capture 停止、G3／D6 方向、持續發聲／原生 range／Space＋W 鍵盤、明確靜音後不自動解除、說明／背景／Esc 停止，以及 pending resume 晚到不建立 oscillator。
+- Web Audio 真實波形與 FFT 檢查：固定 +37 cents A4，閉嘴約 449.509 Hz、開嘴約 449.505 Hz；頻譜重心由約 564 Hz 升到約 1042 Hz，實際泛音分布改變，f₀ 標記及 oscillator 頻率維持。閉／開嘴波形峰值約 0.031／0.037，沒有 clipping。這些為合成音測試，不是 DX 實測。
+- 測試將原生合成輸出接到原生 MediaStream destination，無實體麥克風或喇叭；Pointer Events 為合成事件，不能當作實機多點觸控或原生 capture 驗證。
+- 另以實際滑鼠從琴頸內拖到外側，Hz 連續移動至約 1107.3（C♯6），放手停止；持續發聲下實際拖曳臉部，放手閉嘴而聲音維持，再按持續按鈕停止。紀錄見 `docs/qa/wah-native-mouse.json`。
+- 390×844、320×740 實際 viewport 截圖已檢查：保留原奶油臉、原眼睛／粉嘴、足夠琴頸空間；320px 的 scrollWidth／scrollHeight = 320／740，無頁面捲動。窄畫面標題與 44px 圖示目標另列入檢查。reduced-motion 排程以純單元驗證，未改 OS 設定。
+- 原虛擬演奏瀏覽器 **154 / 154**、真琴頁 PNG／JSON 匯入重播 **25 / 25** 回歸通過。
+- 既有演奏、真琴偵測、錄製、PNG／JSON 匯入與重播源碼／bundles 沒有修改；兩頁僅新增 Wah SVG 入口與相符的窄畫面導航樣式。
+
+尚未驗證：實體 iOS Safari／Android Chrome 多點觸控、裝置音訊中斷／手勢限制、VoiceOver／TalkBack、實體 DX Wah 或麥克風比較。本版是 Approximate Wah Simulation，不含聲譜圖或真琴音色量測。

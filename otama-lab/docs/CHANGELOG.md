@@ -111,3 +111,15 @@ Commit：`feat(otama-lab): add desktop pitch-following mini Otama`
 - 舊 PNG／截圖曲線辨識與 WAV 匯出留待後續，不宣稱能還原原始音色。補充原始 PNG／JSON 保存方式與限制。
 
 Commit：`feat(otama-lab): import pitch PNG and JSON with synthesized replay`
+
+## 2026-11-14 · 獨立 Wah Lab
+
+- 新增 `wah.html`：沿用原角色、G3–D6 琴頸、捏嘴控制、嘴巴滑桿、持續發聲與實際合成音頻譜，保持乾淨、無裝飾文案與 SVG 操作圖示。
+- 獨立雙 pointer 輸入，第二指不受 isPrimary 限制；琴頸／嘴巴皆有捕捉與 window fallback，支援兩種起手順序、鍵盤與安全取消。
+- 獨立 Web Audio WahSynth：鋸齒波、並聯兩組共振帶通與少量低通原音混合；嘴巴改音色，琴頸改基頻。明確標示 Approximate Wah Simulation，未宣稱重現 DX 聲學。
+- 原生 FFT、對數 Hz 軸、dBFS 刻度與固定基頻標記；靜音不畫假頻譜，停止取消動畫，reduced-motion 降低更新率。
+- 手機依 visualViewport 直／橫向重排，不捲動、不誤選；桌機持續發聲方便單一滑鼠控制嘴巴。資訊視窗集中操作、鍵盤與模擬限制。
+- 兩個既有頁面新增 Wah 入口；建置新增版本化 Wah classic bundle／CSS／dist，沿用 GitHub Pages 子路徑與既有無文字分享圖。
+- 原虛擬演奏、真琴偵測、錄製／匯入與重播音訊模組保持原狀。本版未加入聲譜圖或真琴 Wah 比較。
+
+Commit：`feat(otama-lab): add playful standalone Wah Lab`
