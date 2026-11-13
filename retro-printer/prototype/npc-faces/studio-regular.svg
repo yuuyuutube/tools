@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="240" height="240" role="img" aria-labelledby="studio-regular-title studio-regular-desc" data-character="studio-regular" data-mood="neutral">
+  <title id="studio-regular-title">隔壁桌常客</title>
+  <desc id="studio-regular-desc">戴粉紅針織帽的文青長髮男，頭髮微捲、兩邊都有眉毛，臉型是略方的圓角矩形。</desc>
+  <!-- Handwritten SVG. Face proportions and facial marks follow stamp-tour/js/attendant.js. -->
+  <style>
+    .eyes { transform-origin:60px 58px; animation:npc-blink 4.2s infinite; }
+    .happy, .mouth-open { opacity:0; }
+    svg[data-mood="happy"] .eyes { opacity:0; }
+    svg[data-mood="happy"] .happy { opacity:1; }
+    svg[data-talking="true"] .mouth-open { animation:npc-mouth .26s steps(1) infinite; }
+    svg[data-talking="true"] .mouth-closed { animation:npc-mouth .26s steps(1) infinite reverse; }
+    @keyframes npc-blink { 0%,93%,100% { transform:scaleY(1); } 95.5% { transform:scaleY(.1); } }
+    @keyframes npc-mouth { 0% { opacity:1; } 50% { opacity:0; } }
+    @media (prefers-reduced-motion:reduce) { .eyes { animation:none; } svg[data-talking="true"] .mouth-open, svg[data-talking="true"] .mouth-closed { animation:none; } }
+  </style>
+  <!-- Long wavy hair sits behind a softly squared face. -->
+  <path class="hair-back" d="M31 25 C20 24 14 32 18 41 C11 45 13 53 17 57
+    C10 64 14 73 17 77 C10 85 14 94 21 97 C15 105 23 112 31 108
+    C35 116 46 112 49 104 L73 104 C77 114 87 115 91 107
+    C101 110 109 102 103 95 C111 89 107 80 103 76 C109 68 105 61 102 57
+    C108 49 104 40 98 37 C101 28 91 21 84 25 C70 14 47 13 31 25 Z" fill="#302C29"/>
+  <path class="face" d="M45 29 H75 Q94 29 94 48 V83 Q94 102 75 102
+    H45 Q26 102 26 83 V48 Q26 29 45 29 Z" fill="#F3E3CF"/>
+  <!-- Two softly curled locks frame the forehead; neither covers the eyebrows. -->
+  <path class="hair-front" d="M29 35 C36 29 46 31 49 38 C49 44 44 47 39 44
+    C34 43 34 49 36 53 C29 54 25 47 29 42 C24 40 25 37 29 35 Z" fill="#302C29"/>
+  <path class="hair-front" d="M79 34 C87 29 96 34 94 41 C99 45 96 53 90 55
+    C87 51 90 47 88 44 C84 47 79 44 80 40 C82 39 83 36 79 34 Z" fill="#302C29"/>
+  <!-- Sparse waves keep the long silhouette readable at small sizes. -->
+  <g class="hair-waves" fill="none" stroke="#62554E" stroke-width="1.8" stroke-linecap="round">
+    <path d="M22 62 C18 68 25 71 21 77 C18 82 22 87 25 88"/>
+    <path d="M98 62 C103 69 96 73 100 79 C104 85 98 90 96 93"/>
+    <path d="M29 97 Q25 103 31 104"/>
+    <path d="M86 102 Q90 107 94 102"/>
+  </g>
+  <path d="M27 31 Q25 12 42 10 L69 8 Q88 9 91 29 L93 38 L28 40 Z" fill="#D95A89"/>
+  <path d="M25 28 Q57 23 94 29 L95 40 Q61 35 25 41 Z" fill="#FF8AB5"/>
+  <!-- Ribbing is deliberately sparse, at the same line weight as the mouth. -->
+  <g fill="none" stroke="#D95A89" stroke-width="2" stroke-linecap="round">
+    <path d="M32 31 L32 36"/><path d="M39 30 L39 35"/><path d="M46 29 L46 34"/>
+    <path d="M53 29 L53 34"/><path d="M60 29 L60 34"/>
+  </g>
+  <!-- A tiny paper scrap gets caught in the hat. -->
+  <path d="M75 27 L84 29 L82 38 L73 36 Z" fill="#F7F4EE"/>
+  <path d="M77 30 L81 31 L80 34 L76 33 Z" fill="#FFE800"/>
+  <g class="eyebrows" fill="none" stroke="#24221F" stroke-width="2" stroke-linecap="round">
+    <path d="M45 49 Q50 46 54 48"/>
+    <path d="M66 48 Q71 46 75 49"/>
+  </g>
+  <g class="eyes">
+    <circle cx="50" cy="58" r="2.8" fill="#24221F"/>
+    <circle cx="70" cy="58" r="2.8" fill="#24221F"/>
+  </g>
+  <g class="happy" fill="none" stroke="#24221F" stroke-width="2.4" stroke-linecap="round">
+    <path d="M46 60 Q50 54.5 54 60"/><path d="M66 60 Q70 54.5 74 60"/>
+  </g>
+  <path class="mouth-closed" d="M55 72 Q61 77 67 70" fill="none" stroke="#24221F" stroke-width="2.4" stroke-linecap="round"/>
+  <path class="mouth-open" d="M54.5 71 Q60 83 65.5 71 Z" fill="#24221F"/>
+</svg>

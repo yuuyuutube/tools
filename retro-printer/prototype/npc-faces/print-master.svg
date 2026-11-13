@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="240" height="240" role="img" aria-labelledby="print-master-title print-master-desc" data-character="print-master" data-mood="neutral">
+  <title id="print-master-title">絹印師傅</title>
+  <desc id="print-master-desc">戴群青工作帽、鬢角花白，留著一撮小灰鬍子，沒有畫嘴巴的絹印師傅。</desc>
+  <!-- Handwritten SVG. Face proportions and facial marks follow stamp-tour/js/attendant.js. -->
+  <style>
+    .eyes { transform-origin:60px 58px; animation:npc-blink 4.2s infinite; }
+    .happy, .mouth-open { opacity:0; }
+    svg[data-mood="happy"] .eyes { opacity:0; }
+    svg[data-mood="happy"] .happy { opacity:1; }
+    svg[data-talking="true"] .mouth-open { animation:npc-mouth .26s steps(1) infinite; }
+    svg[data-talking="true"] .mouth-closed { animation:npc-mouth .26s steps(1) infinite reverse; }
+    @keyframes npc-blink { 0%,93%,100% { transform:scaleY(1); } 95.5% { transform:scaleY(.1); } }
+    @keyframes npc-mouth { 0% { opacity:1; } 50% { opacity:0; } }
+    .moustache { transform-origin:60px 72px; }
+    svg[data-character="print-master"][data-talking="true"] .moustache { animation:npc-moustache .3s ease-in-out infinite; }
+    @keyframes npc-moustache {
+      0%,100% { transform:translateY(0); }
+      35% { transform:translateY(-.7px); }
+      70% { transform:translateY(.25px); }
+    }
+    @media (prefers-reduced-motion:reduce) { svg[data-character="print-master"][data-talking="true"] .moustache { animation:none; } }
+    @media (prefers-reduced-motion:reduce) { .eyes { animation:none; } svg[data-talking="true"] .mouth-open, svg[data-talking="true"] .mouth-closed { animation:none; } }
+  </style>
+  <!-- Same bun-shaped face and eye coordinates as the station attendant. -->
+  <path d="M20 70 C20 40 38 26 60 26 C82 26 100 40 100 70 C100 94 84 104 60 104 C36 104 20 94 20 70 Z" fill="#F3E3CF"/>
+  <!-- Short grey sideburns, a soft work cap, and a rolled ultramarine brim. -->
+  <path d="M22 48 Q23 33 33 30 L32 46 L24 57 Z" fill="#A09E92"/>
+  <path d="M88 30 Q98 35 98 48 L96 57 L88 46 Z" fill="#A09E92"/>
+  <path d="M25 34 L29 20 Q32 9 57 9 Q82 7 89 20 L94 35 Z" fill="#253A80"/>
+  <path d="M26 29 Q59 23 93 29 L94 40 Q60 35 25 41 Z" fill="#304CA6"/>
+  <path d="M36 29 L38 34 L42 32 L41 27 Z" fill="#FF48B0"/>
+  <path d="M79 31 L83 32 L82 36 L78 34 Z" fill="#FFE800"/>
+  <!-- One real-looking ink stain, drawn with two simple flat shapes. -->
+  <path d="M84 75 Q89 72 92 76 L90 82 Q85 84 83 80 Z" fill="#304CA6"/>
+  <circle cx="80" cy="84" r="1.5" fill="#304CA6"/>
+<g fill="none" stroke="#767366" stroke-width="2" stroke-linecap="round"><path d="M46 50 L54 50"/><path d="M66 50 L74 50"/></g>
+  <g class="eyes">
+    <circle cx="50" cy="58" r="2.8" fill="#24221F"/>
+    <circle cx="70" cy="58" r="2.8" fill="#24221F"/>
+  </g>
+  <g class="happy" fill="none" stroke="#24221F" stroke-width="2.4" stroke-linecap="round">
+    <path d="M46 60 Q50 54.5 54 60"/><path d="M66 60 Q70 54.5 74 60"/>
+  </g>
+  <!-- A little two-part grey moustache. No mouth is drawn underneath. -->
+  <g class="moustache" fill="#8A877A">
+    <path d="M59 69 C55 67 52 71 49 74 C53 77 58 76 59 72 Z"/>
+    <path d="M61 69 C65 67 68 71 71 74 C67 77 62 76 61 72 Z"/>
+  </g>
+</svg>
