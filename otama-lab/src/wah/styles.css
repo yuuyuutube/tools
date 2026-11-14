@@ -27,3 +27,21 @@
 @media(max-width:700px) and (min-height:501px){.wah-header{padding-top:max(12px,env(safe-area-inset-top))}}
 @media(max-height:600px) and (min-width:701px),(max-height:500px){.wah-header{padding-top:max(8px,env(safe-area-inset-top))}}
 @media(max-height:360px){.wah-header{padding:4px 0;padding-top:max(4px,env(safe-area-inset-top))}.wah-layout{padding:4px 12px 0;gap:20px}.wah-controls{gap:4px}.wah-spectrum-panel{padding-top:4px}#wah-spectrum{max-height:54px}.wah-face-control{height:92px}.wah-footer>p:first-child{font-size:10px}}
+
+/* Keep all four controls reachable on narrow screens. */
+@media(max-width:700px) and (min-height:501px){.wah-header{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;gap:0 8px}.wah-header .wordmark{grid-column:1;grid-row:1;align-self:end}.wah-header .wah-title{grid-column:1;grid-row:2;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 6px}.wah-header .wah-title h1{display:block}.wah-header nav{grid-column:2;grid-row:1/3}}
+@media(max-width:360px){.wah-header{column-gap:4px}.wah-header nav{gap:2px}.wah-header .wordmark{font-size:13px}.wah-header .wah-title{flex-wrap:wrap;column-gap:4px}.wah-header .wah-title>span{font-size:7px}}
+.wah-key-hint{display:none}@media(hover:hover) and (pointer:fine){.wah-key-hint{display:inline}}
+/* Full-viewport play stage, using the same live instrument and audio controls. */
+.wah-focus .wah-page{max-width:none;display:block;padding:0;touch-action:none}
+.wah-focus .wah-header{position:fixed;z-index:5;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));margin:0;padding:0;border:0;display:flex}
+.wah-focus .wah-header>:not(nav),.wah-focus #wah-info,.wah-focus .wah-header a,.wah-focus .wah-readout,.wah-focus .wah-mouth-field,.wah-focus .wah-spectrum-panel,.wah-focus .wah-endpoints{display:none}
+.wah-focus .wah-header nav{display:flex;gap:8px;margin:0}.wah-focus .icon-button{background:var(--bg)}
+.wah-focus .wah-layout{height:100%;display:flex;justify-content:center;gap:0;padding:max(74px,calc(env(safe-area-inset-top) + 74px)) max(20px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left))}
+.wah-focus .wah-instrument{height:100%;width:200px;justify-content:center;gap:8px;padding:0}
+.wah-focus .wah-neck-wrap{width:96px;max-height:620px}.wah-focus .rail{width:96px}.wah-focus .strip{inset:18px}
+.wah-focus .wah-face-control{height:144px;width:170px}.wah-focus .wah-face-control .face{transform:rotate(-5deg) scale(calc(1.25 - var(--mouth-opening,0)*.06),1.25)}
+.wah-focus .wah-controls{display:contents}.wah-focus #wah-sustain{position:fixed;z-index:5;top:max(12px,env(safe-area-inset-top));right:calc(max(12px,env(safe-area-inset-right)) + 104px);width:44px;min-width:44px;height:44px;min-height:44px;padding:10px}
+.wah-focus #wah-sustain span,.wah-focus #wah-play-help{display:none}
+.wah-focus .wah-footer{position:fixed;left:12px;right:12px;bottom:max(8px,env(safe-area-inset-bottom));padding:0;pointer-events:none}
+@media(max-height:400px){.wah-focus .wah-layout{padding-top:68px;padding-bottom:max(8px,env(safe-area-inset-bottom))}.wah-focus .wah-instrument{gap:6px}.wah-focus .wah-face-control{height:100px}.wah-focus .wah-face-control .face{transform:rotate(-5deg) scale(.9)}}

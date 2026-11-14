@@ -42,7 +42,8 @@ wahRun.addEventListener('click', async () => {
     check('mouth alone opens without starting any audio', $('mouth-percent').textContent === '100%' && contexts.size === 0);
     pointer(win, 'pointerup', 2, initialFace); check('mouth springs closed on release', $('mouth-percent').textContent === '0%');
     const frequency = 440 * 2 ** (37 / 1200), at = neckAt(frequency);
-    pointer($('wah-neck'), 'pointerdown', 11, at); await wahUntil(isPlaying, 'first gesture audio'); await wahPause(260);
+    pointer($('wah-neck'), 'pointerdown', 11, at); await wahUntil(isPlaying, 'first gesture audio');
+    await wahUntil(() => measure().pitch !== null && $('spectrum-trace').getAttribute('d').length > 500, 'native audio graph warmup'); await wahPause(120);
     const closed = measure();
     check('first neck gesture starts real continuous nonstandard pitch', closed.rms > .001 && Math.abs(1200 * Math.log2(closed.pitch / frequency)) < 5 && $('wah-note').textContent === 'A4' && $('wah-cents').textContent === '+37 cents');
     check('live spectrum comes from native FFT values', $('spectrum-trace').getAttribute('d').length > 500 && $('spectrum-empty').hidden && Array.from(closed.bins).some(value => value > -60));
@@ -92,6 +93,42 @@ wahRun.addEventListener('click', async () => {
     $('wah-sustain').click(); await wahUntil(isPlaying, 'escape setup'); doc.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     check('Escape stops sound, resets mouth and cancels sustain', !isPlaying() && $('mouth-percent').textContent === '0%' && $('wah-sustain').getAttribute('aria-pressed') === 'false');
     check('frequency spectrum stays actual and frame loop stops when idle', $('spectrum-trace').getAttribute('d') === '' && !$('spectrum-empty').hidden);
+    for (const id of ['wah-sustain', 'mouth-opening', 'wah-sound', 'wah-focus']) {
+      $(id).focus(); $(id).dispatchEvent(new win.KeyboardEvent('keydown', { key: 'w', code: 'KeyW', bubbles: true, cancelable: true }));
+      check(`W works with focus on ${id}`, $('mouth-percent').textContent === '100%');
+      doc.dispatchEvent(new win.KeyboardEvent('keyup', { key: 'w', code: 'KeyW', bubbles: true, cancelable: true }));
+    }
+    $('wah-focus').click();
+    check('focus mode enters without automatic sound and records mode=play', doc.documentElement.classList.contains('wah-focus') && !isPlaying() && new URL(win.location.href).searchParams.get('mode') === 'play');
+    check('focus shows only the instrument and three SVG controls', win.getComputedStyle(doc.querySelector('.wah-readout')).display === 'none' && win.getComputedStyle(doc.querySelector('.wah-spectrum-panel')).display === 'none' && $('wah-sound').getClientRects().length > 0 && $('wah-focus').getClientRects().length > 0 && $('wah-sustain').getClientRects().length > 0 && win.getComputedStyle($('wah-sustain').querySelector('span')).display === 'none' && $('wah-sustain').getAttribute('aria-label') === '持續發聲');
+    check('focus is scrollbar-free in the current viewport', doc.documentElement.scrollWidth === doc.documentElement.clientWidth && doc.documentElement.scrollHeight === doc.documentElement.clientHeight);
+    check('focus instrument and touch targets stay in view', ['wah-neck', 'wah-mouth', 'wah-sound', 'wah-focus', 'wah-sustain'].every(id => { const r = $(id).getBoundingClientRect(); return r.top >= 0 && r.bottom <= doc.documentElement.clientHeight + 1 && r.left >= 0 && r.right <= doc.documentElement.clientWidth + 1 && r.width >= 44; }));
+    $('wah-sustain').click(); await wahUntil(isPlaying, 'focus sustain'); $('wah-sustain').focus();
+    $('wah-sustain').dispatchEvent(new win.KeyboardEvent('keydown', { key: 'w', code: 'KeyW', bubbles: true, cancelable: true }));
+    check('sustain plus held W opens mouth in focus without changing pitch', isPlaying() && $('mouth-percent').textContent === '100%' && $('wah-note').textContent === 'A4');
+    check('hidden spectrum does not keep painting during focus performance', $('spectrum-trace').getAttribute('d') === '');
+    $('wah-sustain').dispatchEvent(new win.KeyboardEvent('keydown', { key: 'w', code: 'KeyW', repeat: true, bubbles: true, cancelable: true }));
+    doc.dispatchEvent(new win.KeyboardEvent('keyup', { key: 'w', code: 'KeyW', bubbles: true, cancelable: true }));
+    check('W release closes mouth while sustained audio continues', isPlaying() && $('mouth-percent').textContent === '0%');
+    $('wah-sustain').click();
+    pointer($('wah-neck'), 'pointerdown', 81, neckAt(440)); await wahUntil(isPlaying, 'focus multitouch');
+    pointer($('wah-mouth'), 'pointerdown', 82, { ...faceAt(), isPrimary: false });
+    doc.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'w', code: 'KeyW', bubbles: true, cancelable: true }));
+    pointer(win, 'pointerup', 82);
+    check('held W keeps mouth open when the face pointer releases', isPlaying() && $('mouth-percent').textContent === '100%');
+    doc.dispatchEvent(new win.KeyboardEvent('keyup', { key: 'w', code: 'KeyW', bubbles: true, cancelable: true })); pointer(win, 'pointerup', 81);
+    check('focus multitouch and keyboard both release safely', !isPlaying() && $('mouth-percent').textContent === '0%');
+    $('wah-sustain').click(); await wahUntil(isPlaying, 'focus exit stop'); $('wah-focus').click();
+    check('exiting focus stops sound and restores the normal controls', !doc.documentElement.classList.contains('wah-focus') && !isPlaying() && $('wah-sustain').getAttribute('aria-pressed') === 'false' && win.getComputedStyle(doc.querySelector('.wah-spectrum-panel')).display !== 'none' && !new URL(win.location.href).searchParams.has('mode'));
+    $('wah-focus').click(); $('wah-sustain').click(); await wahUntil(isPlaying, 'focus escape');
+    doc.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+    check('Escape exits focus and clears held audio state', !doc.documentElement.classList.contains('wah-focus') && !isPlaying());
+    const directFrame = document.getElementById('wah-direct');
+    await wahUntil(() => directFrame.contentDocument?.documentElement.classList.contains('wah-focus'), 'direct focus URL');
+    const directDoc = directFrame.contentDocument, directWin = directFrame.contentWindow;
+    check('direct mode=play opens focus silently', directDoc.getElementById('wah-focus').getAttribute('aria-pressed') === 'true' && directDoc.getElementById('wah-sound').getAttribute('aria-pressed') === 'false' && !directDoc.getElementById('wah-face').classList.contains('playing'));
+    directDoc.getElementById('wah-focus').click();
+    check('exiting direct focus preserves other query parameters and anchor', new URL(directWin.location.href).searchParams.get('keep') === 'test' && directWin.location.hash === '#neck' && !new URL(directWin.location.href).searchParams.has('mode'));
     document.getElementById('metrics')?.remove(); const metrics = document.createElement('pre'); metrics.id = 'metrics'; metrics.textContent = JSON.stringify({ viewport: [doc.documentElement.clientWidth, doc.documentElement.clientHeight], closed: { pitch: closed.pitch, centroid: closed.centroid, peak: closed.peak }, open: { pitch: open.pitch, centroid: open.centroid, peak: open.peak } }, null, 2); document.body.append(metrics);
   } catch (error) { check(error.stack || error.message, false); }
   finally {

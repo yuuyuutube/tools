@@ -14,8 +14,8 @@
   <meta property="og:image" content="https://yuuyuutube.github.io/tools/otama-lab/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg"><link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png"><link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="./src/styles.css?v=941ac5d3dcbe"><link rel="stylesheet" href="./src/wah/styles.css?v=f9b5b0b34dd4">
-  <script defer src="./wah.bundle.js?v=d0ea47d9b23c"></script>
+  <link rel="stylesheet" href="./src/styles.css?v=941ac5d3dcbe"><link rel="stylesheet" href="./src/wah/styles.css?v=efd825bc3f93">
+  <script defer src="./wah.bundle.js?v=53dfee205688"></script>
 </head>
 <body>
 <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
@@ -24,11 +24,12 @@
   <symbol id="wah-back" viewBox="0 0 24 24"><path d="m12 5-7 7 7 7M5 12h15"/></symbol>
   <symbol id="wah-info-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></symbol>
   <symbol id="wah-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 9l12-2"/><ellipse cx="6" cy="18" rx="3" ry="3"/><ellipse cx="18" cy="16" rx="3" ry="3"/></symbol>
+  <symbol id="wah-focus-icon" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
   <symbol id="wah-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
 </defs></svg>
 <a class="skip" href="#wah-neck">跳至虛擬琴頸</a>
 <main class="page wah-page">
-  <header class="masthead wah-header"><a href="./" class="wordmark">OTAMA<span>LAB</span></a><div class="wah-title"><h1>Wah Lab</h1><span>Simulation</span></div><nav aria-label="Wah 操作"><button id="wah-sound" class="btn icon-button" type="button" aria-label="開啟聲音" aria-pressed="false" aria-describedby="wah-status" title="開啟聲音"><svg class="icon" aria-hidden="true"><use id="wah-sound-icon" href="#wah-muted"/></svg></button><button id="wah-info" class="btn icon-button" type="button" aria-label="操作與模擬說明" title="操作與模擬說明"><svg class="icon" aria-hidden="true"><use href="#wah-info-icon"/></svg></button><a href="./" class="btn icon-button" aria-label="返回虛擬演奏" title="返回虛擬演奏"><svg class="icon" aria-hidden="true"><use href="#wah-back"/></svg></a></nav></header>
+  <header class="masthead wah-header"><a href="./" class="wordmark">OTAMA<span>LAB</span></a><div class="wah-title"><h1>Wah Lab</h1><span>Simulation</span></div><nav aria-label="Wah 操作"><button id="wah-sound" class="btn icon-button" type="button" aria-label="開啟聲音" aria-pressed="false" aria-describedby="wah-status" title="開啟聲音"><svg class="icon" aria-hidden="true"><use id="wah-sound-icon" href="#wah-muted"/></svg></button><button id="wah-focus" class="btn icon-button" type="button" aria-label="專注演奏" aria-pressed="false" title="專注演奏"><svg class="icon" aria-hidden="true"><use href="#wah-focus-icon"/></svg></button><button id="wah-info" class="btn icon-button" type="button" aria-label="操作與模擬說明" title="操作與模擬說明"><svg class="icon" aria-hidden="true"><use href="#wah-info-icon"/></svg></button><a href="./" class="btn icon-button" aria-label="返回虛擬演奏" title="返回虛擬演奏"><svg class="icon" aria-hidden="true"><use href="#wah-back"/></svg></a></nav></header>
   <div class="wah-layout">
     <section class="wah-instrument" aria-label="Wah 虛擬 Otamatone">
       <div class="wah-neck-wrap"><div class="wah-endpoints" aria-hidden="true"><span>G3</span><span>D6</span></div><div id="wah-neck" class="rail" role="slider" tabindex="0" aria-label="虛擬琴頸，向下靠近頭部提高音高" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-describedby="wah-play-help"><div id="wah-track" class="strip"><div id="wah-finger" class="finger"></div></div></div></div>
@@ -41,9 +42,9 @@
       <section class="wah-spectrum-panel" aria-labelledby="wah-spectrum-title"><h2 id="wah-spectrum-title">合成音頻譜</h2><div class="wah-spectrum-wrap"><svg id="wah-spectrum" viewBox="0 0 410 160" role="img" aria-labelledby="wah-spectrum-title wah-spectrum-desc"><desc id="wah-spectrum-desc">實際合成音的 FFT 頻譜。橫軸 80–8000 Hz，對數等距；縱軸 −96 至 −12 dBFS。綠線是各頻帶的 FFT 最大值，珊瑚色虛線為琴頸控制的基頻 f₀。嘴巴改變音色，不改變合成器基頻。</desc><g class="spectrum-grid" aria-hidden="true"><path d="M42 31H392M42 65H392M42 98H392M42 132H392"/><text x="34" y="35">−24</text><text x="34" y="69">−48</text><text x="34" y="102">−72</text><text x="34" y="136">−96</text><text x="4" y="12">dBFS</text><text x="59" y="152">100</text><text x="142" y="152">300</text><text x="233" y="152">1k</text><text x="317" y="152">3k</text><text x="392" y="152" text-anchor="end">8k Hz</text></g><line id="fundamental" class="fundamental" y1="16" y2="132"/><path id="spectrum-trace" class="spectrum-trace" d=""/></svg><p id="spectrum-empty">等待合成音</p></div><p class="spectrum-key"><i></i>基頻 f₀</p></section>
     </section>
   </div>
-  <footer class="wah-footer"><p id="wah-play-help">按住琴頸發聲；捏住臉往下拖開嘴，放開閉嘴。</p><p id="wah-status" class="wah-status" role="status">聲音已關閉</p></footer>
+  <footer class="wah-footer"><p id="wah-play-help">按住琴頸發聲；捏住臉往下拖開嘴，放開閉嘴。<span class="wah-key-hint"> 按住 W 開嘴，放開閉嘴。</span></p><p id="wah-status" class="wah-status" role="status">聲音已關閉</p></footer>
   <noscript><p>請啟用 JavaScript，才能演奏與觀看頻譜。</p></noscript>
 </main>
-<dialog id="wah-help-dialog" class="wah-help" aria-labelledby="wah-help-title"><div class="wah-help-header"><h2 id="wah-help-title">操作與模擬</h2><button id="wah-help-close" class="btn icon-button" type="button" aria-label="關閉說明" autofocus><svg class="icon" aria-hidden="true"><use href="#wah-close"/></svg></button></div><p>手機可同時用一指滑琴頸、一指捏嘴巴，兩指的先後順序都可以。捏住臉時往下拖開嘴、往上拖閉嘴，放開會閉嘴。</p><p>桌機可按「持續發聲」固定發聲，再用滑鼠改變琴頸與嘴巴；再按一次停止。嘴巴滑桿可保留開合位置。</p><p>琴頸：方向鍵移動、Shift 微調、Home／End 到兩端；按住 Space／Enter 發聲。按住 W 開嘴、放開閉嘴；嘴巴控制也支援方向鍵和 Home／End。Esc、離頁或切到背景會停止。</p><p><strong>Approximate Wah Simulation</strong>：鋸齒波、兩組共振帶通濾波與少量原始音混合，用來玩音色變化，不完整重現 DX 聲學。嘴巴不改變振盪器基頻。琴頸 G3–D6，以反比靈感 Simulation 映射，不是 DX 實測位置。</p><p>頻譜取自實際合成輸出：4096 點 FFT、Blackman 窗、平滑係數 0.55，取樣率依裝置 AudioContext 決定。80–8000 Hz 對數軸，各顯示頻帶取最大 FFT bin；dBFS 是瀏覽器數位 FFT 幅值，未校正成環境聲壓。音色改變時泛音強弱會變，最強峰不一定是基頻。此頁不使用麥克風、不錄音、不上傳。</p></dialog>
+<dialog id="wah-help-dialog" class="wah-help" aria-labelledby="wah-help-title"><div class="wah-help-header"><h2 id="wah-help-title">操作與模擬</h2><button id="wah-help-close" class="btn icon-button" type="button" aria-label="關閉說明" autofocus><svg class="icon" aria-hidden="true"><use href="#wah-close"/></svg></button></div><p>手機可同時用一指滑琴頸、一指捏嘴巴，兩指的先後順序都可以。捏住臉時往下拖開嘴、往上拖閉嘴，放開會閉嘴。</p><p>四角圖示可切換專注演奏，只保留琴頸、臉、聲音／持續發聲開關與退出。Esc 可退出；也可用 wah.html?mode=play 直接開啟，需手勢才能發聲。</p><p>桌機可按「持續發聲」固定發聲，再用滑鼠改變琴頸與嘴巴；再按一次停止。嘴巴滑桿可保留開合位置。</p><p>琴頸：方向鍵移動、Shift 微調、Home／End 到兩端；按住 Space／Enter 發聲。按過「持續發聲」、聲音按鈕或滑桿後，仍可按住 W 開嘴、放開閉嘴；嘴巴控制也支援方向鍵和 Home／End。Esc、離頁或切到背景會停止。</p><p><strong>Approximate Wah Simulation</strong>：鋸齒波、兩組共振帶通濾波與少量原始音混合，用來玩音色變化，不完整重現 DX 聲學。嘴巴不改變振盪器基頻。琴頸 G3–D6，以反比靈感 Simulation 映射，不是 DX 實測位置。</p><p>頻譜取自實際合成輸出：4096 點 FFT、Blackman 窗、平滑係數 0.55，取樣率依裝置 AudioContext 決定。80–8000 Hz 對數軸，各顯示頻帶取最大 FFT bin；dBFS 是瀏覽器數位 FFT 幅值，未校正成環境聲壓。音色改變時泛音強弱會變，最強峰不一定是基頻。此頁不使用麥克風、不錄音、不上傳。</p></dialog>
 </body>
 </html>

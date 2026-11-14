@@ -38,7 +38,7 @@ const liveHtml = (await readFile(liveHtmlPath, 'utf8'))
   .replace(/href="\.\/src\/styles\.css(?:\?v=[a-f0-9]+)?"/, `href="./src/styles.css?v=${versionOf(css)}"`)
   .replace(/href="\.\/src\/live\/styles\.css(?:\?v=[a-f0-9]+)?"/, `href="./src/live/styles.css?v=${versionOf(liveCss)}"`);
 await writeFile(liveHtmlPath, liveHtml);
-const wah = await bundleModules(['pitch', 'wah/audio', 'wah/input', 'wah/spectrum', 'wah/app']);
+const wah = await bundleModules(['pitch', 'wah/audio', 'wah/input', 'wah/spectrum', 'wah/keyboard', 'wah/focus', 'wah/app']);
 await writeFile(new URL('wah.bundle.js', root), wah);
 const wahCss = await readFile(new URL('src/wah/styles.css', root), 'utf8');
 const wahHtmlPath = new URL('wah.html', root);

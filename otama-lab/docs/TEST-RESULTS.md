@@ -191,3 +191,13 @@ npm run build
 - 既有演奏、真琴偵測、錄製、PNG／JSON 匯入與重播源碼／bundles 沒有修改；兩頁僅新增 Wah SVG 入口與相符的窄畫面導航樣式。
 
 尚未驗證：實體 iOS Safari／Android Chrome 多點觸控、裝置音訊中斷／手勢限制、VoiceOver／TalkBack、實體 DX Wah 或麥克風比較。本版是 Approximate Wah Simulation，不含聲譜圖或真琴音色量測。
+
+## 2026-11-14 · Wah 專注模式與可靠的 W 按住開嘴
+
+- Node **64 / 64** 通過。新增 W 重複按鍵／焦點轉移／實體鍵碼／釋放／失焦／背景／明確停止、瀏覽器捷徑／文字／IME／對話框排除，以及專注模式 reflow 前停止、Query String／anchor 保留、Esc 與快取缺少按鈕的相容性檢查。
+- Wah 瀏覽器整合增加至 **50 項**，保留原有雙指／原生波形與 FFT／基頻不變驗證，增加四個演奏控制上使用 W、專注模式三個 SVG 控制、可見 viewport／44px 目標、不捲動、持續發聲＋W、按鍵重複、W 優先於指標釋放、模式切換／Esc 停止、隱藏頻譜不繪圖及 `?mode=play` 靜音直連、退出保留其他 query／anchor。
+- 四個尺寸各 **50 / 50**：桌面 1280×900、320×740（iframe 288px）、844×390、568×320。另以 390×844 產品頁確認 scrollWidth／scrollHeight = 390／844，臉部底端 832px 在畫面內。瀏覽器鍵盤與多指為合成事件；音訊為真正 Web Audio，導向 MediaStream destination，未使用實體麥克風或喇叭。不是 DX 測量。
+- 初次音訊測試遇到原生音訊裝置／FFT 暖機未完成，將固定等待改為等待真實波形與頻譜準備完成；沒有修改合成器、濾波或 pitch mapping。
+- 一般 Wah 音訊、琴頸雙指模組與其他頁面 bundles 保持不變。測試宿主偶有無來源的 MutationObserver 訊息，產品程式沒有使用它；正式頁另檢查 console。
+
+尚未驗證：實體 iOS／Android 多點觸控、原生鍵盤／IME 裝置組合、VoiceOver／TalkBack。viewport 與合成事件檢查不等同實機測試。

@@ -72,6 +72,14 @@ PNG 使用本機 Canvas 產生，1440px 寬、最多 1432px 高，只有音高�
 - 琴頸方向鍵／Home／End／Page Up／Page Down；Shift 微調，Space／Enter 按住發聲。W 按住開嘴、放開閉嘴；嘴巴控制可用方向鍵及 Home／End。SVG 聲音開關可明確靜音／重試；使用者手動靜音後，普通琴頸手勢不會自動解除。
 - Esc、blur、背景、離頁、音訊中斷及開啟說明時安全停止；已放手或取消後晚到的音訊啟動不建立 voice。開啟聲音開關只解鎖音訊，不會自行持續演奏。
 
+### Wah 專注演奏
+
+右上角四角 SVG 圖示切換專注模式，只保留放大的琴頸、臉與三個圖示控制：持續發聲、聲音、退出。手機無捲動與誤選文字；一般模式的數值／頻譜隱藏，且暫停 FFT 繪圖。模式切換及 Esc 退出會安全停止當下演奏、釋放 pointer 與待完成的音訊啟動，保留音高位置。
+
+直連：<https://yuuyuutube.github.io/tools/otama-lab/wah.html?mode=play>。網址不自動發聲，第一次按琴頸、持續發聲或聲音開關才啟動音訊；退出只移除 mode，保留其他 query／anchor。
+
+**桌機：開啟「持續發聲」後，按住 W 開嘴、放開閉嘴。** W 在琴頸、臉、持續發聲／聲音／模式按鈕或嘴巴滑桿有焦點時均可使用。支援 `KeyW` 實體鍵碼與 W 字元；自動重複不切換狀態，按住 W 時優先保持開嘴。釋放、失焦、背景、離頁、模式切換或 Esc 都會清除。Ctrl／Command／Alt 捷徑、文字編輯與說明對話框不攔截。
+
 音訊為獨立 **Approximate Wah Simulation**：一個鋸齒波振盪器，並聯兩組帶通共振與少量低通原始音，最後經包絡音量與 AnalyserNode 輸出。嘴巴只改共振中心（400→1000 Hz、850→3000 Hz），不改振盪器基頻；琴頸才改 Hz。這是趣味近似模型，不完整重現 DX 聲學，也不使用麥克風或真實錄音。
 
 即時頻譜來自實際合成輸出，不使用預先畫好的曲線。4096 點 FFT、Blackman 窗、平滑 0.55、取樣率依 AudioContext，80–8000 Hz 對數軸、−96 至 −12 dBFS；160 個顯示頻帶各取實際 FFT bin 最大值。dB 為瀏覽器數位幅值參考，未校正成環境聲壓；峰值不等於基頻。珊瑚色虛線表示琴頸設定的 f₀，正常更新最多約 30fps，reduced-motion 為 8fps，停止時清空並取消動畫。FFT 參考 [W3C Web Audio AnalyserNode](https://www.w3.org/TR/webaudio-1.0/#fft-windowing-and-smoothing-over-time)。
@@ -156,6 +164,8 @@ npm test
 - `wah/audio.js`：獨立振盪器、Wah 共振近似與音訊生命週期。
 - `wah/input.js`：琴頸／嘴巴的獨立 pointer IDs 與鍵盤控制。
 - `wah/spectrum.js`：真實 FFT 頻帶、SVG 圖與 reduced-motion 排程。
+- `wah/keyboard.js`：跨演奏控制的 W 按住／放開、文字與瀏覽器捷徑排除。
+- `wah/focus.js`：專注模式、Query String、模式切換與 Esc 返回。
 - `wah/app.js` / `wah/styles.css`：Wah 演奏頁、持續發聲、靜音／錯誤處理與手機 viewport。
 
 `build` 依固定依賴順序將小型 modules 合成為 classic IIFE `app.bundle.js`、`live.bundle.js`、`wah.bundle.js` 與 `pitch-worker.js`，並為 bundle／Worker／CSS 加上內容版本參數；另產出 `dist/`（三頁 HTML、bundles、Worker、CSS、assets、.nojekyll）。所有路徑相對於頁面，可部署 Pages 子路徑。生成器只支援目前使用的 named relative imports 與具名宣告；加入其他 module 語法會明確失敗。對已快取的舊版演奏頁，程式會補齊缺少的音域元件。修改 `src/` 後務必重新 build，並提交更新的根目錄 bundles／Worker。

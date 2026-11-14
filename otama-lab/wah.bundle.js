@@ -281,11 +281,61 @@ class WahSpectrum {
   }
 }
 
+// src/wah/keyboard.js
+// Hold-to-open works from buttons and the mouth range too, without intercepting
+// browser shortcuts, text editing, IME composition or the help dialog.
+function bindWahMouthKey({ onChange, isDialogOpen = () => false, documentTarget = document, windowTarget = window }) {
+  let held = false;
+  const isMouthKey = event => event.code === 'KeyW' || event.key?.toLowerCase() === 'w';
+  const stop = () => { if (held) { held = false; onChange(false); } };
+  documentTarget.addEventListener('keydown', event => {
+    if (!isMouthKey(event) || event.ctrlKey || event.metaKey || event.altKey || event.isComposing || isDialogOpen()) return;
+    if (event.target?.isContentEditable || event.target?.closest?.('textarea,select,input:not([type="range"]),[contenteditable=""],[contenteditable="true"],[role="textbox"]')) return;
+    event.preventDefault();
+    if (held || event.repeat) return;
+    held = true; onChange(true);
+  });
+  documentTarget.addEventListener('keyup', event => {
+    if (!isMouthKey(event) || !held) return;
+    event.preventDefault(); stop();
+  });
+  windowTarget.addEventListener('blur', stop); windowTarget.addEventListener('pagehide', stop);
+  documentTarget.addEventListener('visibilitychange', () => { if (documentTarget.hidden) stop(); });
+  return { stop, get held() { return held; } };
+}
+
+// src/wah/focus.js
+// CSS viewport mode, shared controls and no fullscreen permission or autoplay.
+function bindWahFocus({ button, neck, onChange = () => {} }) {
+  if (!button) return { enter() {}, exit() {}, get active() { return false; } };
+  let active = false;
+  const setActive = next => {
+    if (active === next) return;
+    onChange(next); // Release pointers and pending audio before moving the stage.
+    active = next;
+    document.documentElement.classList.toggle('wah-focus', active);
+    button.setAttribute('aria-pressed', String(active));
+    const label = active ? '離開專注演奏' : '專注演奏';
+    button.setAttribute('aria-label', label); button.title = active ? `${label}（Esc）` : label;
+    button.querySelector('use').setAttribute('href', active ? '#wah-close' : '#wah-focus-icon');
+    const url = new URL(window.location.href);
+    if (active) url.searchParams.set('mode', 'play');
+    else if (url.searchParams.get('mode') === 'play') url.searchParams.delete('mode');
+    try { window.history.replaceState(window.history.state, '', url); } catch { /* Restricted file viewer. */ }
+    (active ? neck : button).focus({ preventScroll: true });
+  };
+  button.addEventListener('click', () => setActive(!active));
+  document.addEventListener('keydown', event => {
+    if (active && event.key === 'Escape' && !document.querySelector('dialog[open]')) { event.preventDefault(); setActive(false); }
+  });
+  return { enter: () => setActive(true), exit: () => setActive(false), get active() { return active; } };
+}
+
 // src/wah/app.js
 
 const wahElement = id => document.getElementById(id);
 let wahPosition = positionAt(440, 'inverse'), mouthOpening = 0, neckHeld = false, sustained = false;
-let manuallyMuted = false, enabling = null, soundRevision = 0, pendingSound = false, wHeld = false;
+let manuallyMuted = false, enabling = null, soundRevision = 0, pendingSound = false, wHeld = false, wahFocused = false;
 const spectrum = new WahSpectrum({ svg: wahElement('wah-spectrum'), trace: wahElement('spectrum-trace'), fundamental: wahElement('fundamental'), empty: wahElement('spectrum-empty'), getAnalyser: () => synth.analyser });
 function soundControls(error = '') {
   const enabled = synth.enabled;
@@ -300,7 +350,7 @@ function soundControls(error = '') {
 }
 const synth = new WahSynth({ onState(playing, error) {
   wahElement('wah-face').classList.toggle('playing', playing);
-  if (playing) spectrum.start(); else spectrum.clear();
+  if (playing && !wahFocused) spectrum.start(); else spectrum.clear();
   soundControls(error);
 } });
 function renderWahPosition(value) {
@@ -314,7 +364,7 @@ function renderWahPosition(value) {
   wahElement('wah-neck').setAttribute('aria-valuetext', `${pitch.note}，${hz.toFixed(1)} 赫茲，${signed(pitch.cents)} cents`);
 }
 function renderMouth(value) {
-  mouthOpening = clamp(value); synth.setOpening(mouthOpening);
+  mouthOpening = wHeld ? 1 : clamp(value); synth.setOpening(mouthOpening);
   wahElement('wah-face').style.setProperty('--mouth-opening', mouthOpening);
   const amount = String(Math.round(mouthOpening * 100));
   wahElement('mouth-opening').value = mouthOpening * 100; wahElement('mouth-percent').textContent = `${amount}%`;
@@ -322,7 +372,9 @@ function renderMouth(value) {
 }
 function renderSustain() {
   wahElement('wah-sustain').setAttribute('aria-pressed', String(sustained));
-  wahElement('wah-sustain').querySelector('span').textContent = sustained ? '停止持續發聲' : '持續發聲';
+  const label = sustained ? '停止持續發聲' : '持續發聲';
+  wahElement('wah-sustain').setAttribute('aria-label', label); wahElement('wah-sustain').title = label;
+  wahElement('wah-sustain').querySelector('span').textContent = label;
 }
 async function enableWahSound() {
   const request = ++soundRevision;
@@ -356,8 +408,9 @@ const wahInput = bindWahInput({ neck: wahElement('wah-neck'), track: wahElement(
 });
 function stopWah() {
   ++soundRevision; pendingSound = false; enabling = null; sustained = false; neckHeld = false; wHeld = false;
-  renderSustain(); wahInput.stop(); void synth.setEnabled(false); spectrum.clear(); soundControls();
+  mouthKey.stop(); renderSustain(); wahInput.stop(); void synth.setEnabled(false); spectrum.clear(); soundControls();
 }
+const mouthKey = bindWahMouthKey({ isDialogOpen: () => wahElement('wah-help-dialog').open, onChange(held) { wHeld = held; renderMouth(held ? 1 : 0); } });
 wahElement('wah-sound').addEventListener('click', () => {
   if (synth.enabled && !pendingSound) { manuallyMuted = true; stopWah(); return; }
   manuallyMuted = false;
@@ -375,15 +428,13 @@ wahElement('wah-info').addEventListener('click', () => { stopWah(); wahElement('
 wahElement('wah-help-close').addEventListener('click', () => wahElement('wah-help-dialog').close());
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') stopWah();
-  if (event.key.toLowerCase() === 'w' && !wahElement('wah-help-dialog').open && ['wah-neck', 'wah-mouth', ''].includes(event.target.id)) {
-    event.preventDefault(); wHeld = true; renderMouth(1);
-  }
 });
-document.addEventListener('keyup', event => { if (event.key.toLowerCase() === 'w' && wHeld) { wHeld = false; renderMouth(0); } });
+const wahFocus = bindWahFocus({ button: wahElement('wah-focus'), neck: wahElement('wah-neck'), onChange(active) { wahFocused = active; stopWah(); } });
 window.addEventListener('blur', stopWah); window.addEventListener('pagehide', stopWah);
 document.addEventListener('visibilitychange', () => { if (document.hidden) stopWah(); });
 const wahResize = () => document.documentElement.style.setProperty('--wah-height', `${window.visualViewport?.height || window.innerHeight}px`);
 window.addEventListener('resize', wahResize); window.visualViewport?.addEventListener('resize', wahResize);
 wahResize(); renderWahPosition(wahPosition); renderMouth(0); renderSustain(); soundControls();
+if (new URLSearchParams(window.location.search).get('mode') === 'play') wahFocus.enter();
 
 })();

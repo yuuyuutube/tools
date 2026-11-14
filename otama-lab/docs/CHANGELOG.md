@@ -123,3 +123,13 @@ Commit：`feat(otama-lab): import pitch PNG and JSON with synthesized replay`
 - 原虛擬演奏、真琴偵測、錄製／匯入與重播音訊模組保持原狀。本版未加入聲譜圖或真琴 Wah 比較。
 
 Commit：`feat(otama-lab): add playful standalone Wah Lab`
+
+## 2026-11-14 · Wah 專注演奏與鍵盤開嘴
+
+- 新增四角 SVG 專注按鈕，放大原琴頸／臉，保留圖示聲音、持續發聲與退出；手機鎖定可見 viewport，不捲動／誤選，隱藏的頻譜不再繪圖。
+- 支援 `wah.html?mode=play` 直連，保留其他 query／anchor；網址本身不自動播放。Esc 返回一般模式，切換前安全釋放演奏與音訊競態。
+- 修正 W 只限琴頸／臉有焦點的問題：按過持續發聲、聲音、模式按鈕或嘴巴滑桿後都可按住 W 開嘴、放開閉嘴。原控制列加入功能性鍵盤提示。
+- W 優先於同時操作的指標／滑桿，不受按鍵自動重複影響；失焦、背景、退出與停止會清除，不攔截瀏覽器捷徑／文字／說明對話框。
+- 窄畫面正常模式重新安排四個 44px 圖示按鈕；焦點模式僅三個圖示，保留無障礙名稱與鍵盤操作。新增獨立 keyboard／focus 模組，未修改 Wah 音訊與音高模型。
+
+Commit：`feat(otama-lab): add Wah focus mode and reliable hold-W mouth control`

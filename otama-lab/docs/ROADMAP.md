@@ -41,6 +41,8 @@
 
 ## Phase 4 — Wah Lab（虛擬 Wah／即時頻譜已實作）
 
+2026-11-14：新增 Wah 專注演奏（含 `?mode=play` 直連）、跨演奏控制的 W 按住開嘴／放開閉嘴與安全停止；一般／專注模式共用音訊及雙指輸入。
+
 2026-11-14：獨立 `wah.html` 已完成原角色捏嘴、雙指琴頸／嘴巴、持續發聲、近似共振音色與原生即時 FFT 頻譜。`src/wah/audio.js`、`src/wah/input.js`、`src/wah/spectrum.js`、`src/wah/app.js` 分開負責音訊、輸入、視覺與介面。嘴巴不改基頻；靜音／取消／背景與 late resume 有安全停止。
 
 尚待：聲譜圖、真實 DX 麥克風開嘴／閉嘴比較與保存量測條件，可由共用分析模組擴充。合成音：oscillator → filter / Wah → gain → output；分析 tap 與嘴巴開合控制各自獨立。輸入模型不應為了模擬音色改寫 fundamental frequency。

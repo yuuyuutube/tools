@@ -1,0 +1,74 @@
+Wah Lab checks
+
+Native synthesized Web Audio redirected to a MediaStream destination. No physical microphone, speaker output or real device multitouch. Pointer and keyboard input is synthetic; native mouse capture is checked separately.
+
+Run Wah checks
+
+50/50 passed; 0 failed. Native audio graph; synthetic pointers, no physical device.
+
+PASS: no automatic audio context, fake trace or microphone on load
+PASS: original cream face, SVG controls and explicit Simulation remain
+PASS: page has no horizontal or vertical scrollbars
+PASS: header title and 44px SVG targets fit even the narrow viewport
+PASS: neck and mouth prevent scrolling and text selection
+PASS: readout, slider, sustain and spectrum fit in the viewport
+PASS: mouth alone opens without starting any audio
+PASS: mouth springs closed on release
+PASS: first neck gesture starts real continuous nonstandard pitch
+PASS: live spectrum comes from native FFT values
+PASS: second non-primary touch controls mouth without stopping neck
+PASS: opening changes real harmonic balance and raises spectral centroid
+PASS: mouth preserves fundamental, tuning and fixed f0 marker
+PASS: output remains bounded without clipping
+PASS: third finger cannot steal the held neck
+PASS: releasing mouth closes it while neck continues sounding
+PASS: high pitch is near the face and reaches D6
+PASS: upper neck reaches G3 continuously
+PASS: release outside neck stops real audio and clears trace
+PASS: mouth-first then non-primary neck also works
+PASS: pointer cancellation stops neck without stealing mouth state
+PASS: mouth cancellation safely closes it
+PASS: lost pointer capture cannot leave a stuck note
+PASS: sustain supports one-mouse mouth control and retains slider value
+PASS: sustain toggles off immediately
+PASS: keyboard can hold a note and open the mouth independently
+PASS: keyboard releases close mouth and stop sound
+PASS: manual mute stays muted during further neck gestures
+PASS: opening help stops audio and sustain
+PASS: background transition mutes and clears held state
+PASS: release before pending resume cannot start a late oscillator
+PASS: Escape stops sound, resets mouth and cancels sustain
+PASS: frequency spectrum stays actual and frame loop stops when idle
+PASS: W works with focus on wah-sustain
+PASS: W works with focus on mouth-opening
+PASS: W works with focus on wah-sound
+PASS: W works with focus on wah-focus
+PASS: focus mode enters without automatic sound and records mode=play
+PASS: focus shows only the instrument and three SVG controls
+PASS: focus is scrollbar-free in the current viewport
+PASS: focus instrument and touch targets stay in view
+PASS: sustain plus held W opens mouth in focus without changing pitch
+PASS: hidden spectrum does not keep painting during focus performance
+PASS: W release closes mouth while sustained audio continues
+PASS: held W keeps mouth open when the face pointer releases
+PASS: focus multitouch and keyboard both release safely
+PASS: exiting focus stops sound and restores the normal controls
+PASS: Escape exits focus and clears held audio state
+PASS: direct mode=play opens focus silently
+PASS: exiting direct focus preserves other query parameters and anchor
+{
+  "viewport": [
+    812,
+    390
+  ],
+  "closed": {
+    "pitch": 449.50889052800557,
+    "centroid": 564.0629998463738,
+    "peak": 0.03074769116938114
+  },
+  "open": {
+    "pitch": 449.50488417046273,
+    "centroid": 1045.0075300154854,
+    "peak": 0.03748897463083267
+  }
+}
