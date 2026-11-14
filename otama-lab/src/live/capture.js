@@ -1,6 +1,7 @@
 import { PitchRecording, RECORDING_LIMIT_MS, recordingClock } from './recording.js';
 import { pitchRecordingPng, canSharePitchFile } from './export.js';
-import { pitchDocument, importPitchFile } from './format.js';
+import { pitchDocument } from './format.js';
+import { importPlayablePitch } from './image-import.js';
 import { bindPitchReplay } from './replay.js';
 
 // UI capture lifecycle is independent of both microphone audio and 12 s history.
@@ -37,7 +38,9 @@ export function bindPitchCapture({ button, clock, resultButton, dialog, image, d
       jsonURL = URL.createObjectURL(new Blob([pitchDocument(snapshot)], { type: 'application/json' }));
       jsonDownload.href = jsonURL; jsonDownload.download = 'otama-pitch.otama.json'; jsonDownload.setAttribute('aria-disabled', 'false');
     }
-    duration.textContent = `${(snapshot.durationMs / 1000).toFixed(1)} 秒`;
+    const derived = snapshot.reconstruction;
+    const assumed = derived && (derived.pitchScale === 'assumed' || derived.timeScale === 'assumed');
+    duration.textContent = `${(snapshot.durationMs / 1000).toFixed(1)} 秒${derived ? ` · 圖片辨識（近似${assumed ? '，部分刻度採估計' : ''}）` : ''}`;
     image.alt = `${(snapshot.durationMs / 1000).toFixed(1)} 秒的音高軌跡，半音等距，A4 = 440 Hz`;
     image.hidden = !snapshot.hasPitch || !imageURL;
     if (document.hidden) return; // The result button keeps it available on return.
@@ -87,7 +90,7 @@ export function bindPitchCapture({ button, clock, resultButton, dialog, image, d
     const request = ++importRevision; importing = true; renderControls();
     importStatus.textContent = '正在讀取演奏資料…';
     try {
-      const snapshot = await importPitchFile(selected);
+      const snapshot = await importPlayablePitch(selected);
       if (request !== importRevision || recording.active) return;
       releaseImage(); result = snapshot; replay.load(result); renderControls();
       importStatus.textContent = ''; await showResult();

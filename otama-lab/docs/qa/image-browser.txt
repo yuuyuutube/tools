@@ -1,0 +1,160 @@
+55/55 passed; 0 failed. Synthetic re-encoded images; no actual LINE transfer.
+PASS: 12000ms/720px/image/jpeg: recovers a marked approximate trajectoryPASS: 12000ms/720px: preserves blank gapsPASS: 12000ms/720px: reads pitch and time axesPASS: 12000ms/720px: median pitch error < 50 cents, duration error < 150msPASS: 12000ms/720px/image/jpeg: recovers a marked approximate trajectoryPASS: 12000ms/720px: preserves blank gapsPASS: 12000ms/720px: reads pitch and time axesPASS: 12000ms/720px: median pitch error < 50 cents, duration error < 150msPASS: 2200ms/1440px/image/png: recovers a marked approximate trajectoryPASS: 2200ms/1440px: preserves blank gapsPASS: 2200ms/1440px: reads pitch and time axesPASS: 2200ms/1440px: median pitch error < 50 cents, duration error < 150msPASS: 700ms/720px/image/jpeg: recovers a marked approximate trajectoryPASS: 700ms/720px: preserves blank gapsPASS: 700ms/720px: reads pitch and time axesPASS: 700ms/720px: median pitch error < 50 cents, duration error < 150msPASS: 2200ms/720px/image/jpeg: recovers a marked approximate trajectoryPASS: 2200ms/720px: preserves blank gapsPASS: 2200ms/720px: reads pitch and time axesPASS: 2200ms/720px: median pitch error < 50 cents, duration error < 150msPASS: 5300ms/720px/image/jpeg: recovers a marked approximate trajectoryPASS: 5300ms/720px: preserves blank gapsPASS: 5300ms/720px: reads pitch and time axesPASS: 5300ms/720px: median pitch error < 50 cents, duration error < 150msPASS: 9700ms/720px/image/jpeg: recovers a marked approximate trajectoryPASS: 9700ms/720px: preserves blank gapsPASS: 9700ms/720px: reads pitch and time axesPASS: 9700ms/720px: median pitch error < 50 cents, duration error < 150msPASS: 11900ms/720px/image/jpeg: recovers a marked approximate trajectoryPASS: 11900ms/720px: preserves blank gapsPASS: 11900ms/720px: reads pitch and time axesPASS: 11900ms/720px: median pitch error < 50 cents, duration error < 150msPASS: 2200ms/480px/image/jpeg: recovers a marked approximate trajectoryPASS: 2200ms/480px: preserves blank gapsPASS: 2200ms/480px: unclear scale is declared as an estimatePASS: 2200ms/480px: estimated pitch still preserves contour and timingPASS: 12000ms/720px/image/jpeg: recovers a marked approximate trajectoryPASS: 12000ms/720px: preserves blank gapsPASS: 12000ms/720px: reads pitch and time axesPASS: 12000ms/720px: median pitch error < 50 cents, duration error < 150msPASS: 25500ms/720px/image/jpeg: recovers a marked approximate trajectoryPASS: 25500ms/720px: preserves blank gapsPASS: 25500ms/720px: reads pitch and time axesPASS: 25500ms/720px: median pitch error < 50 cents, duration error < 150msPASS: 60000ms/720px/image/jpeg: recovers a marked approximate trajectoryPASS: 60000ms/720px: preserves blank gapsPASS: 60000ms/720px: reads pitch and time axesPASS: 60000ms/720px: median pitch error < 50 cents, duration error < 150msPASS: very small unreadable JPEG fails clearly instead of inventing dataPASS: embedded data retains priority and exact frequenciesPASS: PNG re-export preserves approximation provenancePASS: JSON re-export preserves approximation provenancePASS: ordinary import UI accepts JPEG and labels approximate reconstructionPASS: import does not enable microphone or autoplayPASS: approximation label survives closing and reopening preview
+[
+  {
+    "durationMs": 12000,
+    "width": 720,
+    "type": "image/jpeg",
+    "calibration": {
+      "method": "image-curve",
+      "pitchScale": "axis",
+      "timeScale": "axis"
+    },
+    "durationError": 0,
+    "medianCents": 6.824797840684014,
+    "correlation": 0.9974861548936088
+  },
+  {
+    "durationMs": 12000,
+    "width": 720,
+    "type": "image/jpeg",
+    "calibration": {
+      "method": "image-curve",
+      "pitchScale": "axis",
+      "timeScale": "axis"
+    },
+    "durationError": 0,
+    "medianCents": 6.969707320117615,
+    "correlation": 0.9974660221502032
+  },
+  {
+    "durationMs": 2200,
+    "width": 1440,
+    "type": "image/png",
+    "calibration": {
+      "method": "image-curve",
+      "pitchScale": "axis",
+      "timeScale": "axis"
+    },
+    "durationError": 0,
+    "medianCents": 4.746363195250168,
+    "correlation": 0.9980082063411883
+  },
+  {
+    "durationMs": 700,
+    "width": 720,
+    "type": "image/jpeg",
+    "calibration": {
+      "method": "image-curve",
+      "pitchScale": "axis",
+      "timeScale": "axis"
+    },
+    "durationError": 0,
+    "medianCents": 4.908140085982463,
+    "correlation": 0.9904866542220828
+  },
+  {
+    "durationMs": 2200,
+    "width": 720,
+    "type": "image/jpeg",
+    "calibration": {
+      "method": "image-curve",
+      "pitchScale": "axis",
+      "timeScale": "axis"
+    },
+    "durationError": 0,
+    "medianCents": 5.2768657083493515,
+    "correlation": 0.9978572660775609
+  },
+  {
+    "durationMs": 5300,
+    "width": 720,
+    "type": "image/jpeg",
+    "calibration": {
+      "method": "image-curve",
+      "pitchScale": "axis",
+      "timeScale": "axis"
+    },
+    "durationError": 0,
+    "medianCents": 5.02397924695875,
+    "correlation": 0.9984579215679914
+  },
+  {
+    "durationMs": 9700,
+    "width": 720,
+    "type": "image/jpeg",
+    "calibration": {
+      "method": "image-curve",
+      "pitchScale": "axis",
+      "timeScale": "axis"
+    },
+    "durationError": 0,
+    "medianCents": 6.258501149268295,
+    "correlation": 0.9978844789255504
+  },
+  {
+    "durationMs": 11900,
+    "width": 720,
+    "type": "image/jpeg",
+    "calibration": {
+      "method": "image-curve",
+      "pitchScale": "axis",
+      "timeScale": "axis"
+    },
+    "durationError": 0,
+    "medianCents": 6.734289331667631,
+    "correlation": 0.9974755516131584
+  },
+  {
+    "durationMs": 2200,
+    "width": 480,
+    "type": "image/jpeg",
+    "calibration": {
+      "method": "image-curve",
+      "pitchScale": "assumed",
+      "timeScale": "axis"
+    },
+    "durationError": 0,
+    "medianCents": 250.5157453968363,
+    "correlation": 0.9959227241763918
+  },
+  {
+    "durationMs": 12000,
+    "width": 720,
+    "type": "image/jpeg",
+    "calibration": {
+      "method": "image-curve",
+      "pitchScale": "axis",
+      "timeScale": "axis"
+    },
+    "durationError": 0,
+    "medianCents": 7.238825583899385,
+    "correlation": 0.9970313679341598
+  },
+  {
+    "durationMs": 25500,
+    "width": 720,
+    "type": "image/jpeg",
+    "calibration": {
+      "method": "image-curve",
+      "pitchScale": "axis",
+      "timeScale": "axis"
+    },
+    "durationError": 4.615384615382936,
+    "medianCents": 7.172066343096643,
+    "correlation": 0.9971957290304084
+  },
+  {
+    "durationMs": 60000,
+    "width": 720,
+    "type": "image/jpeg",
+    "calibration": {
+      "method": "image-curve",
+      "pitchScale": "axis",
+      "timeScale": "axis"
+    },
+    "durationError": 18.46153846153902,
+    "medianCents": 7.064693484596019,
+    "correlation": 0.9972299783795232
+  }
+]

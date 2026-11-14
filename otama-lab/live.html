@@ -21,7 +21,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
   <link rel="stylesheet" href="./src/styles.css?v=941ac5d3dcbe">
   <link rel="stylesheet" href="./src/live/styles.css?v=497fe0a0b157">
-  <script defer src="./live.bundle.js?v=adc452e296e1"></script>
+  <script defer src="./live.bundle.js?v=ad9fde9a7ace"></script>
 </head>
 <body>
 <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
@@ -69,15 +69,15 @@
         <button id="mini-otama-toggle" class="btn mini-otama-toggle" type="button" aria-label="顯示虛擬琴頸" aria-controls="mini-otama" aria-pressed="false" title="顯示虛擬琴頸（Simulation，G3–D6）" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-otama"/></svg></button>
         <div class="record-group"><button id="record-pitch" class="btn record-button" type="button" aria-label="開始錄製音高軌跡（最長 60 秒）" aria-pressed="false" disabled><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-record"/></svg><span>開始錄製</span></button><output id="recording-clock" class="recording-clock" aria-label="錄製時間，上限一分鐘" hidden>00:00 / 01:00</output></div>
         <button id="recording-result" class="btn result-button" type="button" aria-label="查看錄製結果" title="查看錄製結果" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-image"/></svg><span>查看錄製</span></button>
-        <button id="import-pitch" class="btn import-button" type="button" aria-label="匯入演奏 PNG 或 JSON" title="匯入演奏 PNG 或 JSON"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-import"/></svg><span>匯入演奏</span></button>
-        <input id="pitch-file" type="file" accept=".png,.json,image/png,application/json" hidden>
+        <button id="import-pitch" class="btn import-button" type="button" aria-label="匯入演奏 PNG、JPEG 或 JSON" title="匯入演奏 PNG、JPEG 或 JSON"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-import"/></svg><span>匯入演奏</span></button>
+        <input id="pitch-file" type="file" accept=".png,.jpg,.jpeg,.json,image/png,image/jpeg,application/json" hidden>
         <button id="timeline-exit" class="btn focus-exit" type="button" aria-label="離開軌跡專注模式" title="離開軌跡專注模式（Esc）"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#live-close"/></svg></button>
       </div>
       <p id="import-status" class="import-status" role="status"></p>
       <p class="timeline-caption">滑音會連成斜線，顫音會形成波浪。未偵測到音高時斷線，音高範圍自動縮放。</p>
     </section>
   </div>
-  <footer><details class="simulation-info"><summary>分析方式與限制</summary><p>音訊只在此裝置即時分析，不錄音、不上傳。錄製僅保存音高軌跡，最長 60 秒。新版匯出的原始 PNG 與 JSON 可匯入，用合成音重播音高、滑音與停頓，不是原始錄音。圖片經截圖或平台轉存後可能遺失演奏資料，建議另存 JSON。使用 YIN 單音基頻估計（60–2000 Hz），不限制在虛擬琴的音域，也不吸附標準音。十二平均律，A4 = 440 Hz。</p><p>訊號品質表示週期性估計，並非準確率；穩定度依最近 0.6 秒的音高變化判斷。背景噪音、和弦與過強的泛音可能造成誤判。左側虛擬琴頸以 G3–D6 的反比靈感映射對照音高（Simulation），不是 DX 實測按壓位置。此頁尚不儲存 DX 位置量測資料。</p></details></footer>
+  <footer><details class="simulation-info"><summary>分析方式與限制</summary><p>音訊只在此裝置即時分析，不錄音、不上傳。錄製僅保存音高軌跡，最長 60 秒。新版匯出的原始 PNG 與 JSON 可匯入，用合成音重播音高、滑音與停頓，不是原始錄音。沒有附帶資料的完整 PNG／JPEG 軌跡圖會嘗試辨識綠色曲線，標示為圖片辨識近似重播；若刻度不清楚，會暫以 G3–D6 或每行 12 秒估計。圖片經截圖或平台轉存後可能遺失演奏資料，建議另存 JSON。使用 YIN 單音基頻估計（60–2000 Hz），不限制在虛擬琴的音域，也不吸附標準音。十二平均律，A4 = 440 Hz。</p><p>訊號品質表示週期性估計，並非準確率；穩定度依最近 0.6 秒的音高變化判斷。背景噪音、和弦與過強的泛音可能造成誤判。左側虛擬琴頸以 G3–D6 的反比靈感映射對照音高（Simulation），不是 DX 實測按壓位置。此頁尚不儲存 DX 位置量測資料。</p></details></footer>
   <noscript><p class="card">請啟用 JavaScript，才能使用麥克風音高分析。</p></noscript>
 </main>
 <dialog id="recording-preview" class="recording-preview" aria-labelledby="recording-title" aria-describedby="recording-duration recording-status">

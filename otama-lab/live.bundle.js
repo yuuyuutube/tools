@@ -277,8 +277,8 @@ const recordingClock = elapsed => {
 
 // src/live/format.js
 
-// Versioned, pitch-only interchange. Never executes imported text or decodes an
-// imported image: PNG is a carrier for the same validated JSON document.
+// Versioned pitch-only interchange. Image recovery is a separate, pixel-only
+// fallback; this reader remains strict about embedded data and JSON versions.
 const PITCH_FILE_LIMIT = 8 * 1024 * 1024;
 const PITCH_TEXT_LIMIT = 600000;
 const pitchKeyword = 'otama-lab.recording';
@@ -290,7 +290,13 @@ function parsePitchDocument(text) {
   if (typeof text !== 'string' || text.length > PITCH_TEXT_LIMIT) throw new Error('演奏資料過大。');
   let data;
   try { data = JSON.parse(text); } catch { throw new Error('無法讀取演奏資料，請選擇 OTAMA LAB 匯出的 PNG 或 JSON。'); }
-  if (data?.format !== 'otama-lab.pitch' || data.version !== 1 || data.tuningHz !== 440) throw new Error('不支援這份演奏資料的格式或版本。');
+  if (data?.format !== 'otama-lab.pitch' || ![1, 2].includes(data.version) || data.tuningHz !== 440) throw new Error('不支援這份演奏資料的格式或版本。');
+  let reconstruction;
+  if (data.version === 2) {
+    const source = data.reconstruction;
+    if (source?.method !== 'image-curve' || !['axis', 'assumed'].includes(source.pitchScale) || !['axis', 'assumed'].includes(source.timeScale)) throw new Error('圖片辨識資料的來源標記無效。');
+    reconstruction = Object.freeze({ method: 'image-curve', pitchScale: source.pitchScale, timeScale: source.timeScale });
+  } else if (data.reconstruction !== undefined) throw new Error('圖片辨識資料必須使用版本 2。');
   if (!Number.isFinite(data.durationMs) || data.durationMs <= 0 || data.durationMs > RECORDING_LIMIT_MS || !Array.isArray(data.frames) || data.frames.length > 6000) throw new Error('演奏資料必須在 60 秒內，且包含有效的音高軌跡。');
   let previous = -1;
   const frames = data.frames.map(frame => {
@@ -298,11 +304,11 @@ function parsePitchDocument(text) {
     previous = frame.timeMs;
     return Object.freeze({ timeMs: frame.timeMs, frequencyHz: frame.frequencyHz });
   });
-  return Object.freeze({ durationMs: data.durationMs, frames: Object.freeze(frames), hasPitch: frames.some(frame => frame.frequencyHz !== null) });
+  return Object.freeze({ durationMs: data.durationMs, frames: Object.freeze(frames), hasPitch: frames.some(frame => frame.frequencyHz !== null), ...(reconstruction ? { reconstruction } : {}) });
 }
 
 function pitchDocument(recording) {
-  const text = JSON.stringify({ format: 'otama-lab.pitch', version: 1, tuningHz: 440, durationMs: recording.durationMs, frames: recording.frames });
+  const text = JSON.stringify({ format: 'otama-lab.pitch', version: recording.reconstruction ? 2 : 1, tuningHz: 440, durationMs: recording.durationMs, frames: recording.frames, ...(recording.reconstruction ? { reconstruction: recording.reconstruction } : {}) });
   parsePitchDocument(text);
   return text;
 }
@@ -357,7 +363,9 @@ function extractPitchPng(bytes) {
     if (languageEnd < 0 || translatedEnd < 0) throw new Error('PNG 的演奏資料不完整。');
     try { documentText = pitchDecoder.decode(data.subarray(translatedEnd + 1)); } catch { throw new Error('PNG 的演奏資料文字已損壞。'); }
   }
-  if (documentText === null) throw new Error('這張 PNG 沒有演奏資料。請使用新版 OTAMA LAB 匯出的原始 PNG 或 JSON；截圖、舊圖片或經轉存的圖片可能無法重播。');
+  if (documentText === null) {
+    const error = new Error('這張 PNG 沒有演奏資料。'); error.code = 'NO_PITCH_DATA'; throw error;
+  }
   return parsePitchDocument(documentText);
 }
 
@@ -370,6 +378,277 @@ async function importPitchFile(file) {
   let text;
   try { text = pitchDecoder.decode(bytes); } catch { throw new Error('請選擇 OTAMA LAB 匯出的 PNG 或 JSON。'); }
   return parsePitchDocument(text);
+}
+
+// src/live/image-curve.js
+// Pixel-only fallback for the tool's complete, unrotated exported graph layout.
+// All recovered samples are derived estimates, never microphone measurements.
+const CURVE_WIDTH = 1440;
+const curveInk = (r, g, b) => g > 85 && g - b > 22 && r - b > 12 && g > r * .85;
+
+function curveLayout(width, height) {
+  if (!Number.isFinite(width) || !Number.isFinite(height) || width < 360 || width > 12000 || height < 60 || width * height > 16000000) throw new Error('圖片尺寸不適合辨識，請使用完整的音高軌跡匯出圖（寬度至少 360px）。');
+  const canonical = height / width * CURVE_WIDTH, rows = Math.round((canonical - 32) / 280);
+  if (rows < 1 || rows > 5 || Math.abs(canonical - (32 + rows * 280)) > Math.max(4, canonical * .012)) throw new Error('請使用完整、未裁切或旋轉的 OTAMA LAB 軌跡圖。');
+  return { width: CURVE_WIDTH, height: 32 + rows * 280, rows };
+}
+
+function pixelAt(image, x, y) { return (Math.round(y) * image.width + Math.round(x)) * 4; }
+function gridPixel(data, index) {
+  const r = data[index], g = data[index + 1], b = data[index + 2];
+  return g >= 30 && g <= 125 && g - r >= 3 && Math.abs(g - b) < 18;
+}
+function curveGrid(image, row = 0) {
+  const candidates = [], top = 24 + row * 280, bottom = top + 218;
+  for (let y = top; y <= bottom; y++) {
+    let count = 0, right = 100;
+    for (let x = 100; x <= 1400; x++) if (gridPixel(image.data, pixelAt(image, x, y))) { count++; right = x; }
+    if (count >= (row === 0 ? 650 : 35)) candidates.push({ y, count, right });
+  }
+  const groups = [];
+  for (const candidate of candidates) {
+    if (!groups.length || candidate.y - groups.at(-1).at(-1).y > 2) groups.push([]);
+    groups.at(-1).push(candidate);
+  }
+  const lines = groups.map(group => ({ y: group.reduce((sum, point) => sum + point.y * point.count, 0) / group.reduce((sum, point) => sum + point.count, 0), right: Math.max(...group.map(point => point.right)) }));
+  // Thin grid strokes can vanish under downsampling; bright note labels survive.
+  const labelGroups = []; let current = null;
+  for (let y = top - 18; y <= bottom + 14; y++) {
+    let ink = 0;
+    for (let x = 8; x <= 84; x++) {
+      const i = pixelAt(image, x, y), r = image.data[i], g = image.data[i + 1], b = image.data[i + 2];
+      if (g > 70 && Math.abs(g - r) < 50 && Math.abs(g - b) < 45) ink++;
+    }
+    if (ink < 2) continue;
+    if (!current || y - current.at(-1).y > 2) { current = []; labelGroups.push(current); }
+    current.push({ y, count: ink });
+  }
+  const labels = labelGroups.filter(group => group.at(-1).y - group[0].y >= 5 && group.at(-1).y - group[0].y < 30).map(group => {
+    const y = (group[0].y + group.at(-1).y) / 2 + 1;
+    const nearby = lines.find(line => Math.abs(line.y - y) < 8);
+    return { y: nearby?.y ?? y, right: nearby?.right ?? 100 };
+  });
+  return labels.length >= 3 && labels.length <= 7 && labels.length > lines.length ? labels : lines;
+}
+
+// Compact, font-template matching, restricted to note labels and 0.1–12 s.
+// Normalizing glyph crops makes moderate JPEG loss / resizing tolerable.
+function curveGlyph(image, rect, template = false) {
+  const { data, width } = image;
+  let left = rect.x + rect.width, right = rect.x, top = rect.y + rect.height, bottom = rect.y, peak = 0;
+  const intensity = (x, y) => {
+    const i = (y * width + x) * 4;
+    return template ? data[i] / 255 : Math.max(0, (data[i + 1] - 23) / 161);
+  };
+  for (let y = rect.y; y < rect.y + rect.height; y++) for (let x = rect.x; x < rect.x + rect.width; x++) peak = Math.max(peak, intensity(x, y));
+  for (let y = rect.y; y < rect.y + rect.height; y++) for (let x = rect.x; x < rect.x + rect.width; x++) {
+    const value = intensity(x, y);
+    if (value < peak * .2) continue;
+    left = Math.min(left, x); right = Math.max(right, x); top = Math.min(top, y); bottom = Math.max(bottom, y);
+  }
+  if (right - left < 2 || bottom - top < 4 || peak <= 0) return null;
+  const aspect = (right - left + 1) / (bottom - top + 1), targetWidth = Math.min(116, Math.max(2, Math.round(aspect * 24)));
+  const pixels = new Uint8Array(120 * 24);
+  for (let y = 0; y < 24; y++) for (let x = 0; x < targetWidth; x++) {
+    const sx = Math.min(right, left + Math.floor((x + .5) / targetWidth * (right - left + 1)));
+    const sy = Math.min(bottom, top + Math.floor((y + .5) / 24 * (bottom - top + 1)));
+    pixels[y * 120 + x + 2] = Math.round(Math.min(1, intensity(sx, sy) / peak) * 255);
+  }
+  return { pixels, aspect };
+}
+function curveGlyphScore(a, b) {
+  if (!a || !b) return 2;
+  let intersection = 0, union = 0;
+  for (let i = 0; i < a.pixels.length; i++) { intersection += Math.min(a.pixels[i], b.pixels[i]); union += Math.max(a.pixels[i], b.pixels[i]); }
+  return 1 - intersection / Math.max(1, union) + .25 * Math.abs(Math.log(a.aspect / b.aspect));
+}
+
+function curvePitchAxis(image, grid, templates) {
+  if (grid.length < 3 || grid.length > 7) return null;
+  const scores = grid.map(line => {
+    const glyph = curveGlyph(image, { x: 0, y: Math.max(0, Math.round(line.y) - 15), width: 86, height: 29 });
+    const map = new Map();
+    for (const template of templates) map.set(template.value, Math.min(map.get(template.value) ?? 2, curveGlyphScore(glyph, template.glyph)));
+    return map;
+  });
+  const fits = [];
+  for (let highMidi = 12; highMidi <= 132; highMidi++) for (let step = 1; step <= 24; step++) {
+    if (highMidi - step * (grid.length - 1) < 12) continue;
+    const score = scores.reduce((sum, map, index) => sum + (map.get(highMidi - step * index) ?? 2), 0) / grid.length;
+    fits.push({ highMidi, step, score });
+  }
+  fits.sort((a, b) => a.score - b.score);
+  const first = fits[0];
+  if (!first || first.score > .64) return null;
+  // When tiny octave digits are ambiguous, prefer the microphone's plausible
+  // label range, but explicitly preserve that this required an estimate.
+  const best = fits.find(fit => fit.score <= first.score + .03 && fit.highMidi <= 100 && fit.highMidi - fit.step * (grid.length - 1) >= 30) || first;
+  const estimated = best !== first || fits.some(fit => fit !== best && Math.abs(fit.score - best.score) < .008);
+  const slope = -best.step * (grid.length - 1) / (grid.at(-1).y - grid[0].y);
+  return { midiAtTop: best.highMidi + (24 - grid[0].y) * slope, semitonesPerPixel: slope, estimated };
+}
+function curveSingleRowTime(image, templates) {
+  const groups = []; let current = null;
+  for (let x = 96; x <= 1403; x++) {
+    let ink = false;
+    for (let y = 250; y <= 278; y++) { const i = pixelAt(image, x, y); if (image.data[i + 1] > 65) { ink = true; break; } }
+    if (!ink) continue;
+    if (!current || x - current.right > 18) { current = { left: x, right: x }; groups.push(current); }
+    current.right = x;
+  }
+  if (groups.length < 2 || groups.length > 6) return null;
+  const scores = groups.map(group => {
+    const glyph = curveGlyph(image, { x: group.left, y: 248, width: group.right - group.left + 1, height: 32 });
+    const map = new Map();
+    for (const template of templates) map.set(template.value, Math.min(map.get(template.value) ?? 2, curveGlyphScore(glyph, template.glyph)));
+    return map;
+  });
+  const fits = [];
+  for (let durationMs = 100; durationMs <= 12000; durationMs += 100) {
+    const tick = durationMs <= 3000 ? 1000 : durationMs <= 6000 ? 2000 : 3000, ticks = [];
+    for (let time = 0; time <= durationMs; time += tick) ticks.push(time);
+    if (durationMs - ticks.at(-1) > durationMs * .07) ticks.push(durationMs);
+    else if (ticks.length > 1) ticks[ticks.length - 1] = durationMs;
+    if (ticks.length !== groups.length) continue;
+    let score = 0;
+    for (let i = 0; i < ticks.length; i++) {
+      score += scores[i].get(ticks[i]) ?? 2;
+      if (i > 0 && i < ticks.length - 1) score += Math.abs((groups[i].left + groups[i].right) / 2 - (100 + ticks[i] / durationMs * 1300)) * .004;
+    }
+    fits.push({ durationMs, score: score / ticks.length });
+  }
+  fits.sort((a, b) => a.score - b.score);
+  return fits[0] && fits[0].score <= .8 ? fits[0].durationMs : null;
+}
+
+function traceCurvePixels(image, { rows, pitchAxis = null, singleRowMs = null }) {
+  const grid = curveGrid(image);
+  if (grid.length < 3 || grid.length > 7) throw new Error('沒有找到可辨識的音高刻度，請使用完整的軌跡匯出圖。');
+  const pitchScale = pitchAxis && !pitchAxis.estimated ? 'axis' : 'assumed';
+  const axis = pitchAxis || { midiAtTop: 86, semitonesPerPixel: -31 / 218 };
+  const finalGrid = rows > 1 ? curveGrid(image, rows - 1) : grid;
+  const endpoints = finalGrid.map(line => line.right).filter(x => x > 102).sort((a, b) => a - b);
+  const finalRight = endpoints.length ? endpoints[Math.floor(endpoints.length / 2)] : null;
+  const geometryTime = finalRight !== null && finalRight > 102 ? Math.min(12000, Math.max(20, (finalRight - 100) / 1300 * 12000)) : null;
+  const lastMs = rows === 1 ? singleRowMs || 12000 : geometryTime || 12000;
+  const durationMs = Math.min(60000, (rows - 1) * 12000 + lastMs), spanMs = rows === 1 ? lastMs : 12000;
+  const timeScale = rows === 1 ? singleRowMs ? 'axis' : 'assumed' : geometryTime ? 'axis' : 'assumed';
+  const frames = []; let voiced = 0, thick = 0;
+  for (let row = 0; row < rows; row++) {
+    const top = 24 + row * 280, endMs = row === rows - 1 ? lastMs : 12000;
+    const right = 100 + endMs / spanMs * 1300;
+    for (let x = 100; x <= right + .01; x += 2) {
+      const timeMs = row * 12000 + (x - 100) / 1300 * spanMs;
+      if (frames.length && timeMs <= frames.at(-1).timeMs) continue;
+      const ink = [];
+      for (let y = top; y <= top + 218; y++) {
+        let weight = 0;
+        for (let dx = -1; dx <= 1; dx++) {
+          const index = pixelAt(image, x + dx, y), r = image.data[index], g = image.data[index + 1], b = image.data[index + 2];
+          if (curveInk(r, g, b)) weight += g - b;
+        }
+        if (weight) ink.push({ y, weight });
+      }
+      let frequencyHz = null;
+      if (ink.length) {
+        voiced++; if (ink.length > 35) thick++;
+        const total = ink.reduce((sum, point) => sum + point.weight, 0); let weight = 0, y = ink[0].y;
+        for (const point of ink) { weight += point.weight; if (weight >= total / 2) { y = point.y; break; } }
+        const midi = axis.midiAtTop + (y - top) * axis.semitonesPerPixel;
+        frequencyHz = Math.max(20, Math.min(20000, 440 * 2 ** ((midi - 69) / 12)));
+      }
+      frames.push(Object.freeze({ timeMs, frequencyHz }));
+    }
+  }
+  if (voiced < 3 || thick > voiced * .2) throw new Error('辨識不到清楚的綠色軌跡，請換較清晰的完整圖片。');
+  return Object.freeze({ durationMs, frames: Object.freeze(frames), hasPitch: true, reconstruction: Object.freeze({ method: 'image-curve', pitchScale, timeScale }) });
+}
+
+// src/live/image-import.js
+
+function pitchRasterDimensions(bytes) {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  if (bytes.length >= 24 && bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71) return { width: view.getUint32(16), height: view.getUint32(20) };
+  if (bytes.length < 4 || bytes[0] !== 255 || bytes[1] !== 216 || bytes[2] !== 255) return null;
+  let offset = 2, count = 0;
+  while (offset + 4 <= bytes.length && count++ < 4096) {
+    if (bytes[offset++] !== 255) return null;
+    while (bytes[offset] === 255) offset++;
+    const marker = bytes[offset++];
+    if (marker === 217 || marker === 218) return null;
+    if (marker === 1 || (marker >= 208 && marker <= 215)) continue;
+    if (offset + 2 > bytes.length) return null;
+    const length = view.getUint16(offset);
+    if (length < 2 || offset + length > bytes.length) return null;
+    if ([192, 193, 194, 195, 197, 198, 199, 201, 202, 203, 205, 206, 207].includes(marker)) {
+      if (length < 8) return null;
+      return { width: view.getUint16(offset + 5), height: view.getUint16(offset + 3) };
+    }
+    offset += length;
+  }
+  return null;
+}
+
+let curveTemplates = null;
+let curveTemplateScale = null;
+function makeCurveTemplates(inputScale = 1) {
+  const scale = Math.max(.25, Math.min(1, inputScale));
+  if (curveTemplates && curveTemplateScale === scale) return curveTemplates;
+  const canvas = document.createElement('canvas'); canvas.width = 144; canvas.height = 48;
+  const context = canvas.getContext('2d', { willReadFrequently: true });
+  if (!context) throw new Error('此瀏覽器無法辨識圖片。');
+  const small = document.createElement('canvas'); small.width = Math.round(144 * scale); small.height = Math.round(48 * scale);
+  const smallContext = small.getContext('2d');
+  const notes = [], times = [];
+  const make = (text, font, phase, time = false) => {
+    context.fillStyle = '#0c1719'; context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = '#a3b8ae'; context.font = `18px ${font}`; context.textAlign = 'right'; context.textBaseline = 'alphabetic'; context.fillText(text, time ? 104 : 82, (time ? 32 : 30) + phase);
+    if (scale < 1) { smallContext.drawImage(canvas, 0, 0, small.width, small.height); context.drawImage(small, 0, 0, canvas.width, canvas.height); }
+    return curveGlyph(context.getImageData(0, 0, canvas.width, canvas.height), { x: 0, y: 0, width: canvas.width, height: canvas.height });
+  };
+  const phases = scale === 1 ? [0] : [0, .25 / scale, .5 / scale, .75 / scale];
+  for (const phase of phases) {
+    for (const font of ['system-ui, sans-serif', 'Arial, sans-serif', 'Verdana, sans-serif']) for (let midi = 12; midi <= 132; midi++) notes.push({ value: midi, glyph: make(pitchOf(440 * 2 ** ((midi - 69) / 12)).note, font, phase) });
+    for (const font of ['ui-monospace, monospace', 'monospace', 'Arial, sans-serif']) for (let tenth = 0; tenth <= 120; tenth++) times.push({ value: tenth * 100, glyph: make(`${Number((tenth / 10).toFixed(1))} s`, font, phase, true) });
+  }
+  curveTemplateScale = scale;
+  curveTemplates = { notes, times }; return curveTemplates;
+}
+
+async function recoverPitchImage(file, bytes) {
+  const dimensions = pitchRasterDimensions(bytes);
+  if (!dimensions) throw new Error('請選擇 OTAMA LAB 的 PNG、JPEG 或演奏 JSON。');
+  const layout = curveLayout(dimensions.width, dimensions.height); // Bound pixels before decoding.
+  const url = URL.createObjectURL(file); let bitmap = null;
+  try {
+    const image = await new Promise((resolve, reject) => {
+      const img = new Image(); img.onload = () => resolve(img); img.onerror = () => reject(new Error('圖片無法解碼，請重新儲存成 PNG 或 JPEG。')); img.src = url;
+    });
+    bitmap = image;
+    curveLayout(image.naturalWidth, image.naturalHeight);
+    const canvas = document.createElement('canvas'); canvas.width = layout.width; canvas.height = layout.height;
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    if (!context) throw new Error('此瀏覽器無法辨識圖片。');
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const pixels = context.getImageData(0, 0, canvas.width, canvas.height), grid = curveGrid(pixels);
+    const templates = makeCurveTemplates(dimensions.width / 1440);
+    const pitchAxis = curvePitchAxis(pixels, grid, templates.notes);
+    const singleRowMs = layout.rows === 1 ? curveSingleRowTime(pixels, templates.times) : null;
+    return traceCurvePixels(pixels, { rows: layout.rows, pitchAxis, singleRowMs });
+  } finally { if (bitmap) bitmap.src = ''; URL.revokeObjectURL(url); }
+}
+
+async function importPlayablePitch(file) {
+  if (!file || file.size > PITCH_FILE_LIMIT) throw new Error('請選擇 8 MB 以內的 PNG、JPEG 或 JSON。');
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  if (bytes.length > PITCH_FILE_LIMIT) throw new Error('檔案過大。');
+  if (bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255) return recoverPitchImage(file, bytes);
+  try { return await importPitchFile(file); }
+  catch (error) {
+    // Never silently downgrade corrupt or unsupported embedded data / JSON.
+    if (error.code !== 'NO_PITCH_DATA') throw error;
+    return recoverPitchImage(file, bytes);
+  }
 }
 
 // src/live/export.js
@@ -639,7 +918,9 @@ function bindPitchCapture({ button, clock, resultButton, dialog, image, duration
       jsonURL = URL.createObjectURL(new Blob([pitchDocument(snapshot)], { type: 'application/json' }));
       jsonDownload.href = jsonURL; jsonDownload.download = 'otama-pitch.otama.json'; jsonDownload.setAttribute('aria-disabled', 'false');
     }
-    duration.textContent = `${(snapshot.durationMs / 1000).toFixed(1)} 秒`;
+    const derived = snapshot.reconstruction;
+    const assumed = derived && (derived.pitchScale === 'assumed' || derived.timeScale === 'assumed');
+    duration.textContent = `${(snapshot.durationMs / 1000).toFixed(1)} 秒${derived ? ` · 圖片辨識（近似${assumed ? '，部分刻度採估計' : ''}）` : ''}`;
     image.alt = `${(snapshot.durationMs / 1000).toFixed(1)} 秒的音高軌跡，半音等距，A4 = 440 Hz`;
     image.hidden = !snapshot.hasPitch || !imageURL;
     if (document.hidden) return; // The result button keeps it available on return.
@@ -689,7 +970,7 @@ function bindPitchCapture({ button, clock, resultButton, dialog, image, duration
     const request = ++importRevision; importing = true; renderControls();
     importStatus.textContent = '正在讀取演奏資料…';
     try {
-      const snapshot = await importPitchFile(selected);
+      const snapshot = await importPlayablePitch(selected);
       if (request !== importRevision || recording.active) return;
       releaseImage(); result = snapshot; replay.load(result); renderControls();
       importStatus.textContent = ''; await showResult();

@@ -133,3 +133,14 @@ Commit：`feat(otama-lab): add playful standalone Wah Lab`
 - 窄畫面正常模式重新安排四個 44px 圖示按鈕；焦點模式僅三個圖示，保留無障礙名稱與鍵盤操作。新增獨立 keyboard／focus 模組，未修改 Wah 音訊與音高模型。
 
 Commit：`feat(otama-lab): add Wah focus mode and reliable hold-W mouth control`
+
+## 2026-11-14 · 圖片曲線辨識備援
+
+- 既有「匯入演奏」接受 PNG／JPEG／JSON；PNG 優先讀取原始音高資料，只有缺少資料才辨識像素。錯誤或未知版本的附帶資料仍明確拒絕。
+- 完整匯出圖的綠色軌跡、音名刻度與時間刻度以本機 Canvas 及小型字形範本還原；支援縮圖、一至五行與連續滑音／可見停頓，無外部依賴／API／上傳。
+- 近似結果清楚標示，刻度不明時另標示估計；模糊或不合版型時保留既有結果並顯示錯誤。
+- 近似來源以 v2 PNG／JSON 保存，重新匯入不會被當作原始錄製；原始精確資料保持 v1。
+- 新增像素／格式限制與來源往返單元測試、PNG／縮圖 JPEG 瀏覽器矩陣、合成範例圖片。修正既有 Wah 測試的非同步讀檔競態，Wah 產品程式未變動。
+- 沒有更改 YIN、麥克風門檻／更新排程、原始角色、虛擬演奏與 Wah 音訊。
+
+Commit：`feat(otama-lab): recover pitch from metadata-free graph images`

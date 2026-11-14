@@ -1,7 +1,7 @@
 import { RECORDING_LIMIT_MS } from './recording.js';
 
-// Versioned, pitch-only interchange. Never executes imported text or decodes an
-// imported image: PNG is a carrier for the same validated JSON document.
+// Versioned pitch-only interchange. Image recovery is a separate, pixel-only
+// fallback; this reader remains strict about embedded data and JSON versions.
 export const PITCH_FILE_LIMIT = 8 * 1024 * 1024;
 const PITCH_TEXT_LIMIT = 600000;
 const pitchKeyword = 'otama-lab.recording';
@@ -13,7 +13,13 @@ export function parsePitchDocument(text) {
   if (typeof text !== 'string' || text.length > PITCH_TEXT_LIMIT) throw new Error('演奏資料過大。');
   let data;
   try { data = JSON.parse(text); } catch { throw new Error('無法讀取演奏資料，請選擇 OTAMA LAB 匯出的 PNG 或 JSON。'); }
-  if (data?.format !== 'otama-lab.pitch' || data.version !== 1 || data.tuningHz !== 440) throw new Error('不支援這份演奏資料的格式或版本。');
+  if (data?.format !== 'otama-lab.pitch' || ![1, 2].includes(data.version) || data.tuningHz !== 440) throw new Error('不支援這份演奏資料的格式或版本。');
+  let reconstruction;
+  if (data.version === 2) {
+    const source = data.reconstruction;
+    if (source?.method !== 'image-curve' || !['axis', 'assumed'].includes(source.pitchScale) || !['axis', 'assumed'].includes(source.timeScale)) throw new Error('圖片辨識資料的來源標記無效。');
+    reconstruction = Object.freeze({ method: 'image-curve', pitchScale: source.pitchScale, timeScale: source.timeScale });
+  } else if (data.reconstruction !== undefined) throw new Error('圖片辨識資料必須使用版本 2。');
   if (!Number.isFinite(data.durationMs) || data.durationMs <= 0 || data.durationMs > RECORDING_LIMIT_MS || !Array.isArray(data.frames) || data.frames.length > 6000) throw new Error('演奏資料必須在 60 秒內，且包含有效的音高軌跡。');
   let previous = -1;
   const frames = data.frames.map(frame => {
@@ -21,11 +27,11 @@ export function parsePitchDocument(text) {
     previous = frame.timeMs;
     return Object.freeze({ timeMs: frame.timeMs, frequencyHz: frame.frequencyHz });
   });
-  return Object.freeze({ durationMs: data.durationMs, frames: Object.freeze(frames), hasPitch: frames.some(frame => frame.frequencyHz !== null) });
+  return Object.freeze({ durationMs: data.durationMs, frames: Object.freeze(frames), hasPitch: frames.some(frame => frame.frequencyHz !== null), ...(reconstruction ? { reconstruction } : {}) });
 }
 
 export function pitchDocument(recording) {
-  const text = JSON.stringify({ format: 'otama-lab.pitch', version: 1, tuningHz: 440, durationMs: recording.durationMs, frames: recording.frames });
+  const text = JSON.stringify({ format: 'otama-lab.pitch', version: recording.reconstruction ? 2 : 1, tuningHz: 440, durationMs: recording.durationMs, frames: recording.frames, ...(recording.reconstruction ? { reconstruction: recording.reconstruction } : {}) });
   parsePitchDocument(text);
   return text;
 }
@@ -80,7 +86,9 @@ export function extractPitchPng(bytes) {
     if (languageEnd < 0 || translatedEnd < 0) throw new Error('PNG 的演奏資料不完整。');
     try { documentText = pitchDecoder.decode(data.subarray(translatedEnd + 1)); } catch { throw new Error('PNG 的演奏資料文字已損壞。'); }
   }
-  if (documentText === null) throw new Error('這張 PNG 沒有演奏資料。請使用新版 OTAMA LAB 匯出的原始 PNG 或 JSON；截圖、舊圖片或經轉存的圖片可能無法重播。');
+  if (documentText === null) {
+    const error = new Error('這張 PNG 沒有演奏資料。'); error.code = 'NO_PITCH_DATA'; throw error;
+  }
   return parsePitchDocument(documentText);
 }
 

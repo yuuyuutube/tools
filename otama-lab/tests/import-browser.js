@@ -52,7 +52,7 @@ run.addEventListener('click', async () => {
     check('an exported PNG can be imported and replayed without any other file', !$('recording-play').disabled);
     $('recording-close').click();
     const original = await (await fetch('../assets/favicon-32.png')).blob(); await inject(new win.File([original], 'old.png'));
-    check('legacy PNG explains missing data and preserves previous take', $('import-status').textContent.includes('沒有演奏資料') && !$('recording-result').hidden);
+    check('unrelated small PNG is rejected without replacing previous take', $('import-status').textContent.includes('圖片尺寸') && !$('recording-result').hidden);
     await inject(new win.File(['{"format":"otama-lab.pitch","version":999}'], 'future.json'));
     check('unsupported file versions produce a useful error', $('import-status').textContent.includes('版本'));
     const damaged = new Uint8Array(await exported.arrayBuffer()); damaged[50] ^= 1; await inject(new win.File([damaged], 'damaged.png'));

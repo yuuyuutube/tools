@@ -111,6 +111,6 @@ test('Wah page ships a subpath-safe classic bundle, real character, SVG controls
   assert.match(html, /wah\.bundle\.js\?v=[a-f0-9]{12}/); assert.match(html, /src\/wah\/styles\.css\?v=[a-f0-9]{12}/);
   assert.match(html, /Approximate Wah Simulation/); assert.match(html, /class="eye left"/); assert.match(html, /class="mouth"/);
   assert.doesNotMatch(html, /\p{Extended_Pictographic}|type="module"/u);
+  const requireWahBundle = await readFile(new URL('../wah.bundle.js', import.meta.url), 'utf8');
   assert.doesNotThrow(() => new Script(requireWahBundle));
 });
-const requireWahBundle = await readFile(new URL('../wah.bundle.js', import.meta.url), 'utf8');
