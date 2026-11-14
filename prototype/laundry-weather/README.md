@@ -7,7 +7,7 @@
 需要 **Node.js 22 或以上**（開發與測試使用 24.12.0）。
 
 ```sh
-cd /Users/yoyohuang/dev/yuuyuutube/tools/laundry-weather
+cd /Users/yoyohuang/dev/yuuyuutube/tools/prototype/laundry-weather
 npm start
 ```
 

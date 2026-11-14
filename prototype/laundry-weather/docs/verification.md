@@ -2,6 +2,19 @@
 
 日期：2026-11-13。執行環境 Node 24.12.0、macOS、Codex 內嵌瀏覽器。
 
+## Concept art 改版驗證
+
+目前專案位於 `tools/prototype/laundry-weather`，保留使用者移動後的位置。
+
+- 完整檢視 `docs/concept-art` 的四張參考圖，改以青綠／朱橘／奶油色重畫，加入花朵 T-shirt、拼色襪、波浪毛巾、翻領外套與熟睡花貓。
+- 實際檢查約 890×770、390×844、320×740、768×1024 構圖。衣物與貓等比縮放、桌面與直式背景分開繪製，避免拉伸。
+- `src/composition.js` 以同一條曲線計算衣物位置與傾角；ResizeObserver 在清理時斷開。
+- 原有 17 項測試通過，其中動畫生命週期測試增加了 ResizeObserver 註冊／斷開檢查。15 個 JavaScript 語法與兩個 SVG XML 檢查通過。
+- 實際雨景檢查曾找出太陽遮蔽與雨線規則遺失，已修正 CSS 並重新檢查。
+- 這次仍使用明確標示的展示資料，官方 API 的驗證界線不變。
+
+新版截圖：[桌面](screenshots/concept-desktop.jpg)、[手機](screenshots/concept-mobile.jpg)、[雨天](screenshots/concept-rainy.jpg)。下方為前兩版歷史紀錄。
+
 ## 2026-11-13 介面與插畫重畫驗證
 
 重新閱讀 `docs/prompt.md` 後完成第二版：移除所有可見眉標、英文副標、詩句與成功寒暄；操作及天氣類別改為 SVG，展示切換收進資料說明。太陽保留原始造型，其餘衣物、雲與鳥重畫，移除建築、盆栽、洗衣籃與欄杆細節。
