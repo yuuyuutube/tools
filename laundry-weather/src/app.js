@@ -4,7 +4,7 @@ import { createScene } from './scene.js';
 import { laundryScore } from './score.js?v=stale-reference-3';
 import { demoWeather } from './demo.js';
 import { moonPhase, moonName } from './moon.js';
-import { COUNTIES, DEFAULT_LOCATION, nearestForecast, readSavedLocation, saveLocation, geolocate } from './locations.js';
+import { COUNTIES, DEFAULT_LOCATION, nearestForecast, readSavedLocation, saveLocation, geolocate } from './locations.js?v=view-mode-1';
 
 const $ = id => document.getElementById(id);
 const icon = name => `<svg class="ic"><use href="#i-${name}"/></svg>`;
@@ -174,7 +174,7 @@ $('refresh').addEventListener('click', () => load({ manual: true }));
 
 $('eye').addEventListener('click', () => {
   const bare = document.body.classList.toggle('bare');
-  $('eye').setAttribute('aria-pressed', bare); $('eye').setAttribute('aria-label', bare ? '顯示數值' : '隱藏數值');
+  $('eye').setAttribute('aria-pressed', bare); $('eye').setAttribute('aria-label', bare ? '顯示天氣資訊' : '隱藏天氣資訊');
   $('eye').firstElementChild.firstElementChild.setAttribute('href', bare ? '#i-eye-off' : '#i-eye');
   try { localStorage.setItem('laundry-bare', bare ? '1' : ''); } catch { /* 無痕模式 */ }
 });

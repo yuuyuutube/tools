@@ -135,7 +135,7 @@ button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .verdict {
   position: absolute; z-index: 2; pointer-events: none;
   left: max(24px, env(safe-area-inset-left)); top: calc(env(safe-area-inset-top) + 76px); max-width: min(58vw, 720px);
-  color: var(--text); transition: color 2.8s ease;
+  color: var(--text); transition: color 2.8s ease, opacity .3s, transform .3s;
 }
 .verdict h1 {
   font-size: clamp(30px, 4.6vw, 62px); font-weight: 800; line-height: 1.22; letter-spacing: .08em;
@@ -150,7 +150,7 @@ body.night { --text: #f6efd8; }
   border-radius: 14px; padding: 12px 16px 10px; min-width: 300px;
   transition: opacity .3s, transform .3s;
 }
-body.bare .tag { opacity: 0; transform: translateY(8px); pointer-events: none; visibility: hidden; transition: opacity .3s, transform .3s, visibility 0s .3s; }
+body.bare .tag, body.bare .verdict { opacity: 0; transform: translateY(8px); pointer-events: none; visibility: hidden; transition: opacity .3s, transform .3s, visibility 0s .3s; }
 .nums { list-style: none; display: flex; gap: 18px; }
 .nums li { display: flex; align-items: baseline; gap: 5px; font-variant-numeric: tabular-nums; }
 .nums .ic { width: 17px; height: 17px; align-self: center; color: var(--mute); }

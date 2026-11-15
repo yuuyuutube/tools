@@ -12,7 +12,7 @@ export const COUNTIES = [
  ['臺東縣','037','臺東市',22.756,121.145],['澎湖縣','045','馬公市',23.566,119.579],
  ['金門縣','085','金城鎮',24.432,118.317],['連江縣','081','南竿鄉',26.154,119.93]
 ].map(([name,feed,town,lat,lon])=>({name,feed:`F-D0047-${feed}`,town,lat,lon}));
-export const DEFAULT_LOCATION = { county:'臺北市', town:'中正區', origin:'default' };
+export const DEFAULT_LOCATION = { county:'臺北市', town:'信義區', origin:'default' };
 export function distance(a, b) {
  const rad = Math.PI / 180, dlat = (b.lat-a.lat)*rad, dlon=(b.lon-a.lon)*rad;
  const h=Math.sin(dlat/2)**2+Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin(dlon/2)**2;
