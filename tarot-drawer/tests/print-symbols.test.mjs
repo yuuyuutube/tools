@@ -38,3 +38,46 @@ test('月亮框與文字獨立印製，採隱者固定的朱橘與墨藍',()=>{
  assert.ok(moon.FN.includes('THE MOON'));
  for(const ink of ['Y','O','B','N']) assert.ok(!moon[ink].includes('<text'));
 });
+
+import {hangedManPlates,HANGED_MAN_INKS} from '../src/print/hanged-man.js';
+const hanged=hangedManPlates(cardById('hanged-man'));
+test('倒吊人：活木上長著葉子、頭上有光環，牌框用固定墨色',()=>{
+ const leaves=new Set([...hanged.N.matchAll(/data-symbol="living-leaf" transform="([^"]+)"/g)].map(m=>m[1]));
+ assert.ok(leaves.size>=10,`葉子 ${leaves.size}`);
+ assert.ok(hanged.Y.includes('data-symbol="halo"'));
+ assert.ok(hanged.N.includes('data-symbol="halo"'));
+ assert.deepEqual(HANGED_MAN_INKS.FO,INKS.O);
+ assert.deepEqual(HANGED_MAN_INKS.FN.rgb,INKS.N.rgb);
+ assert.ok(hanged.FN.includes('THE HANGED MAN'));
+ for(const ink of ['Y','O','B','N']) assert.ok(!hanged[ink].includes('<text'));
+});
+
+import {foolPlates,FOOL_INKS} from '../src/print/fool.js';
+const fool=foolPlates(cardById('fool'));
+test('愚者：手中白玫瑰、牌框用固定墨色、色版沒有文字',()=>{
+ assert.ok(fool.N.includes('data-symbol="white-rose"'));
+ assert.deepEqual(FOOL_INKS.FO,INKS.O);
+ assert.deepEqual(FOOL_INKS.FN.rgb,INKS.N.rgb);
+ assert.ok(fool.FN.includes('THE FOOL'));
+ for(const ink of ['Y','O','B','N']) assert.ok(!fool[ink].includes('<text'));
+});
+
+import {magicianPlates,MAGICIAN_INKS} from '../src/print/magician.js';
+const magician=magicianPlates(cardById('magician'));
+test('魔術師：桌上四器、無限符號、銜尾蛇、百合都在墨版上',()=>{
+ for(const sym of ['wand','cup','sword','pentacle','infinity','ouroboros','lily']) assert.ok(magician.N.includes(`data-symbol="${sym}"`),sym);
+ assert.deepEqual(MAGICIAN_INKS.FO,INKS.O);
+ assert.deepEqual(MAGICIAN_INKS.FN.rgb,INKS.N.rgb);
+ assert.ok(magician.FN.includes('THE MAGICIAN'));
+ for(const ink of ['Y','O','B','N']) assert.ok(!magician[ink].includes('<text'));
+});
+
+import {strengthPlates,STRENGTH_INKS} from '../src/print/strength.js';
+const strength=strengthPlates(cardById('strength'));
+test('力量：無限符號、花鏈都在墨版上，牌框用固定墨色',()=>{
+ for(const sym of ['infinity','flower-chain']) assert.ok(strength.N.includes(`data-symbol="${sym}"`),sym);
+ assert.deepEqual(STRENGTH_INKS.FO,INKS.O);
+ assert.deepEqual(STRENGTH_INKS.FN.rgb,INKS.N.rgb);
+ assert.ok(strength.FN.includes('STRENGTH'));
+ for(const ink of ['Y','O','B','N']) assert.ok(!strength[ink].includes('<text'));
+});

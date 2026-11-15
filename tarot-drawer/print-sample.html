@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>重繪樣張</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #e8e4dc; -webkit-user-select: none; user-select: none; }
+  body { padding: 24px; }
+  main { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: center; gap: 28px; }
+  canvas { display: block; height: auto; border-radius: 5.4% / 3.2%; box-shadow: 0 0 0 1px rgba(36,34,31,.06), 0 14px 26px -16px rgba(40,30,10,.5); }
+  .big { width: min(360px, 44vw); }
+  .small { width: 120px; }
+  .detail { width: min(420px, 90vw); border-radius: 6px; }
+  a { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #24221f; color: #fbfaf6; }
+  a svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .side { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+</style>
+</head>
+<body>
+<main>
+  <canvas id="ref" class="big"></canvas>
+  <canvas id="after" class="big"></canvas>
+  <div class="side">
+    <canvas id="small" class="small"></canvas>
+    <a id="download" aria-label="下載 PNG"><svg viewBox="0 0 24 24"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg></a>
+  </div>
+  <canvas id="detail" class="detail"></canvas>
+</main>
+<script type="module">
+  // 重繪校對用：左＝隱者（筆觸基準），右＝這張牌；旁邊是 120px 縮圖與下載；下方是局部放大。
+  // ?card=hanged-man　?scale=3　?detail=x,y,w,h（牌面座標）
+  import { cardById } from './src/data/cards.js';
+  import { printCard } from './src/print/press.js';
+  import { PRINTS } from './src/print/registry.js';
+  const q = new URLSearchParams(location.search);
+  const id = q.get('card') || 'hanged-man', scale = +(q.get('scale') || 3);
+  const print = async cardId => {
+    const e = PRINTS[cardId];
+    return printCard(e.plates(cardById(cardId)), { seed: e.seed, scale, inks: e.inks, quietAreas: e.quietAreas });
+  };
+  const put = (el, cv, sx = 0, sy = 0, sw = cv.width, sh = cv.height) => {
+    el.width = sw; el.height = sh;
+    el.getContext('2d').drawImage(cv, sx, sy, sw, sh, 0, 0, sw, sh);
+  };
+  const $ = s => document.getElementById(s);
+  const cv = await print(id);
+  put($('after'), cv); put($('small'), cv);
+  const [dx, dy, dw, dh] = (q.get('detail') || '80,250,140,110').split(',').map(Number);
+  put($('detail'), cv, dx * scale, dy * scale, dw * scale, dh * scale);
+  $('download').href = cv.toDataURL('image/png');
+  $('download').download = `${id}-sample.png`;
+  if (q.get('ref') !== '0') put($('ref'), await print('hermit')); else $('ref').remove();
+  window.__done = true;
+</script>
+</body>
+</html>
