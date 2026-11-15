@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4eedf">
+<title>晾晾日和｜LAUNDRY WEATHER</title>
+<meta name="description" content="今天適合曬衣服嗎？">
+<link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:title" content="晾晾日和｜LAUNDRY WEATHER">
+<meta property="og:description" content="今天適合曬衣服嗎？">
+<meta property="og:url" content="https://yuuyuutube.github.io/tools/laundry-weather/">
+<meta property="og:image" content="https://yuuyuutube.github.io/tools/laundry-weather/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="晾晾日和：晴朗的陽台上，晾衣繩掛著 T-shirt、襪子、毛巾與外套，花貓在一旁睡覺。">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="晾晾日和｜LAUNDRY WEATHER">
+<meta name="twitter:description" content="今天適合曬衣服嗎？">
+<meta name="twitter:image" content="https://yuuyuutube.github.io/tools/laundry-weather/assets/og.png">
+<link rel="stylesheet" href="src/style.css">
+<script type="module" src="src/app.js"></script>
+</head>
+<body>
+<svg class="defs" aria-hidden="true">
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2.2"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="m14 7-5 5 5 5"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4 20 20"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 8a8 8 0 1 0 0 8M20 3v6h-6"/></symbol>
+  <symbol id="i-full" viewBox="0 0 24 24"><path d="M4 9V4h5m6 0h5v5M4 15v5h5m6 0h5v-5"/></symbol>
+  <symbol id="i-unfull" viewBox="0 0 24 24"><path d="M9 4v5H4m16 0h-5V4M4 15h5v5m6 0v-5h5"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.4v.2"/></symbol>
+  <symbol id="i-locate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.6"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/></symbol>
+  <symbol id="i-temp" viewBox="0 0 24 24"><path d="M9.5 14.5V5a2.5 2.5 0 0 1 5 0v9.5a4.5 4.5 0 1 1-5 0Z"/><path d="M12 9v8"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3S5.5 10.5 5.5 15a6.5 6.5 0 0 0 13 0C18.5 10.5 12 3 12 3Z"/></symbol>
+  <symbol id="i-wind" viewBox="0 0 24 24"><path d="M3 9h11a3 3 0 1 0-3-3M3 14h15a3 3 0 1 1-3 3"/></symbol>
+  <symbol id="i-rain" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 18 0ZM12 12v7a2 2 0 0 1-4 0M12 3V2"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M6.5 18a4 4 0 0 1-.8-7.9A6 6 0 0 1 17 9.2a4.4 4.4 0 0 1 .5 8.8Z"/></symbol>
+  <symbol id="i-shower" viewBox="0 0 24 24"><path d="M6.5 14a4 4 0 0 1-.8-7.9A6 6 0 0 1 17 5.2a4.4 4.4 0 0 1 .5 8.8M8 17l-1 3m5.5-3-1 3m5.5-3-1 3"/></symbol>
+</svg>
+
+<main id="app">
+  <div id="scene"></div>
+  <div id="grain"></div>
+
+  <div class="top chrome">
+    <button id="place" class="pill" aria-haspopup="dialog" aria-label="選擇地點">
+      <svg class="ic"><use href="#i-pin"/></svg><span id="place-name"></span><b id="place-flag" hidden></b><svg class="ic sm"><use href="#i-down"/></svg>
+    </button>
+    <div class="tools">
+      <button id="refresh" class="dot" aria-label="更新天氣"><svg class="ic"><use href="#i-refresh"/></svg></button>
+      <button id="eye" class="dot" aria-label="隱藏數值" aria-pressed="false"><svg class="ic"><use href="#i-eye"/></svg></button>
+      <button id="full" class="dot" aria-label="全螢幕"><svg class="ic"><use href="#i-full"/></svg></button>
+      <button id="info" class="dot" aria-haspopup="dialog" aria-label="資料說明"><svg class="ic"><use href="#i-info"/></svg></button>
+    </div>
+  </div>
+
+  <div class="verdict" aria-live="polite" aria-atomic="true">
+    <h1 id="title"></h1>
+    <p id="detail" hidden></p>
+  </div>
+
+  <div id="tag" class="tag">
+    <ul class="nums">
+      <li aria-label="氣溫"><svg class="ic"><use href="#i-temp"/></svg><span id="n-temp">—</span><small>°C</small></li>
+      <li aria-label="相對濕度"><svg class="ic"><use href="#i-drop"/></svg><span id="n-hum">—</span><small>%</small></li>
+      <li aria-label="風速"><svg class="ic"><use href="#i-wind"/></svg><span id="n-wind">—</span><small>m/s</small></li>
+      <li aria-label="降雨機率"><svg class="ic"><use href="#i-rain"/></svg><span id="n-pop">—</span><small>%</small></li>
+    </ul>
+    <div class="foot">
+      <span id="stamp"></span>
+      <div id="demo" class="seg" role="radiogroup" aria-label="展示天氣" hidden>
+        <button role="radio" data-demo="sunny" aria-label="晴朗"><svg class="ic"><use href="#i-sun"/></svg></button>
+        <button role="radio" data-demo="cloudy" aria-label="多雲"><svg class="ic"><use href="#i-cloud"/></svg></button>
+        <button role="radio" data-demo="humid" aria-label="潮濕"><svg class="ic"><use href="#i-drop"/></svg></button>
+        <button role="radio" data-demo="rainy" aria-label="下雨"><svg class="ic"><use href="#i-shower"/></svg></button>
+        <i></i>
+        <button id="moon" aria-label="夜晚" aria-pressed="false"><svg class="ic"><use href="#i-moon"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+</main>
+
+<div id="veil" hidden></div>
+
+<section id="picker" class="sheet" role="dialog" aria-modal="true" aria-label="選擇地點" hidden>
+  <header>
+    <button id="pick-back" class="dot flat" aria-label="回到縣市" hidden><svg class="ic"><use href="#i-back"/></svg></button>
+    <h2 id="pick-title"></h2>
+    <button class="dot flat" data-close aria-label="關閉"><svg class="ic"><use href="#i-close"/></svg></button>
+  </header>
+  <button id="locate" class="row"><svg class="ic"><use href="#i-locate"/></svg><span>目前位置</span></button>
+  <div id="pick-list" class="grid"></div>
+</section>
+
+<section id="about" class="sheet" role="dialog" aria-modal="true" aria-label="資料說明" hidden>
+  <header><h2></h2><button class="dot flat" data-close aria-label="關閉"><svg class="ic"><use href="#i-close"/></svg></button></header>
+  <dl id="about-list"></dl>
+</section>
+
+<noscript>請啟用 JavaScript。</noscript>
+</body>
+</html>

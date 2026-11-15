@@ -1,0 +1,6 @@
+{
+  "name": "laundry-weather", "version": "1.0.0", "private": true, "type": "module",
+  "description": "晾晾日和 — 一幅由天氣驅動的陽台插畫",
+  "engines": { "node": ">=22" },
+  "scripts": { "start": "node --env-file-if-exists=.env server/index.js", "dev": "node --watch --env-file-if-exists=.env server/index.js", "test": "node --test tests/*.test.js", "verify:live": "node --env-file-if-exists=.env scripts/verify-live.js" }
+}
