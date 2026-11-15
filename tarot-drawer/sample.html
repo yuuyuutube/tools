@@ -23,7 +23,7 @@
   // 畫風校對用：左邊整張牌，中間是放大的局部（看網點、滲墨、紙紋），右邊是牌扇上的實際大小
   import { cardById } from './src/data/cards.js';
   import { printCard } from './src/print/press.js';
-  import { hermitPlates } from './src/print/hermit.js?v=wide-sleeve-1';
+  import { hermitPlates } from './src/print/hermit.js?v=symbols-2';
   const q = new URLSearchParams(location.search);
   const cv = await printCard(hermitPlates(cardById('hermit')), { seed: +(q.get('seed') || 20261115), scale: +(q.get('scale') || 2.4), quietAreas: [{x: 153, y: 175, rx: 24, ry: 34}, {x: 106, y: 260, rx: 25, ry: 30}, {x: 219, y: 236, rx: 15, ry: 16}] });
   const put = (id, sx, sy, sw, sh) => {

@@ -26,7 +26,7 @@ npm test
 
 需要 Python 3 靜態伺服器與 Node.js 20 以上；ES modules 不能以 `file://` 直接開啟。
 
-本次 `npm test` 的 14 項引擎／資料測試通過，包括抽牌順序、不重複、正逆位、亂數與原版 SVG 可生成性。這些測試不驗證新版插畫的解剖、牌義符號或瀏覽器海報；不能用測試通過代替美術驗收。
+本次 `npm test` 的 18 項測試（14 項引擎／資料與 4 項新版符號）通過，包括抽牌順序、不重複、正逆位、亂數與原版 SVG 可生成性。新增符號測試只驗證指定符號的數量、形狀與固定框色；不驗證解剖、完整牌義敘事或瀏覽器海報，不能用測試通過代替美術驗收。
 
 ## 預覽頁
 
@@ -35,6 +35,7 @@ npm test
 | `index.html` | 正式抽牌工具 |
 | `gallery.html` | 原版正面圖鑑與目前牌背；支援 `?only=moon,sun`、`?w=360` |
 | `sample.html` | 新版隱者；完整圖、印刷局部與縮圖 |
+| `symbol-review.html` | 本輪隱者與月亮符號修訂前後，含 PNG 下載；支援 `?only=hermit`／`?only=moon` |
 | `compare.html` | Claude 初版隱者印刷樣張與已確認修訂版對照 |
 | `moon-sample.html` | 原版月亮與新版試畫、120px 縮圖、動物局部、PNG 下載 |
 | `moon-sample.html?reference=hermit` | 以已確認隱者作筆觸、框色與重量參照 |
@@ -52,6 +53,7 @@ npm test
 - `src/print/hermit.js`：已確認隱者；`hermit-before.js` 保留其初版作對照。
 - `src/print/moon.js`：月亮試畫與獨立色盤；`moon-before-refinement.js` 保留首次試畫。
 - `src/print/frame.js`：與隱者一致的新版正面框與文字版式。
+- `assets/hermit-sample.png`：六芒星與抬燈修訂後的隱者（900 × 1500）。
 - `assets/moon-sample.png`：最新月亮樣張（900 × 1500；seed 20261116）。
 
 插畫可各有色盤；外框／牌號／牌名／裝飾固定用隱者的墨藍 `INKS.N` 與朱橘 `INKS.O`。月亮分成插畫四版及外框 FO／FN；`press.js` 可在預設四色後加入額外色版，`fixedRegistration` 固定墨線版套準。
@@ -104,3 +106,5 @@ src/audio/             紙張音效
 - 正式 UI 的九款牌背選擇、OG 分享縮圖與 PNG favicon 尚未完成。
 - 原 README 記錄 Claude 曾測試桌面／手機／平板、單三張、連點／返回、鍵盤與海報；這是先前版本紀錄，並非本次全部重新執行。
 - 實機 iOS／Android 分享面板、桌面 Safari／Firefox、實際 Reduce Motion 與音效聽感仍需驗證。
+
+2026-11-16 符號修訂：隱者六芒星與抬燈，月亮右亮面、16＋16 光芒、十五露滴及犬狼仰望。修訂前保存在 `hermit-before-symbols.js`／`moon-before-symbols.js`；本輪尚待使用者確認。

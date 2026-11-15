@@ -11,7 +11,7 @@ const P = (d, attr) => `<path d="${d}" ${attr}/>`;
 // 斗篷（面向左）：兜帽尖 → 帽沿 → 胸前 → 下襬 → 背
 const CLOAK = 'M148 70C138 70 130 78 129 89C133 100 139 116 143 130C143 138 142 144 140 150C130 154 122 160 119 172C114 204 106 248 98 288C116 296 136 290 156 295C176 299 194 292 212 294C210 252 204 204 194 166C190 146 186 124 176 100C170 84 160 70 148 70Z';
 // 舉燈的寬袖：手腕在袖口上緣，下方布料自然垂墜。
-const SLEEVE = 'M150 151C139 151 129 159 120 165L93 155C89 172 94 201 100 220C120 215 142 197 154 174Z';
+const SLEEVE = 'M150 151C135 137 111 128 88 124C83 143 89 172 96 191C119 187 143 174 154 162Z';
 const HAND = 'M94 156L88 153C86 149 82 148 79 151L75 157C73 160 75 164 78 166L85 169L90 167Z';
 // 側臉：額頭 → 眉骨 → 鼻 → 唇 → 下巴
 const FACE = 'M132 92C127 95 124 101 123 108L122 114L113 122C112 124 114 126 119 126L118 130L121 132L119 136C118 140 120 143 124 144L144 142L146 104Z';
@@ -22,7 +22,9 @@ const LAMP_GLASS = 'M67 185L93 185L89 219L71 219Z';
 const LAMP_CAP = 'M80 171L96 185L64 185Z';
 const LAMP_BASE = 'M69 219L91 219L94 225L66 225Z';
 const LAMP_ALL = 'M80 170L97 185L93 185L89 219L94 225L66 225L71 219L67 185L63 185Z';
-const FLAME = 'M80 215C72 207 78 199 80 190C84 199 89 208 80 215Z';
+// 提燈與握燈手一起抬高，燈仍直立；六芒星是燈中的光源。
+const raised = art => `<g transform="translate(-5 -31)">${art}</g>`;
+const lampStar = attr => `<g data-symbol="lantern-star">${burst(80, 202, 10, 5, 6)} ${attr}/></g>`;
 const MOON = 'M52 34A22 22 0 1 0 74 68A17 17 0 1 1 52 34Z';
 const RIDGE = 'M-4 304V262L20 232L42 250L74 204L100 238L122 226L150 256L190 228L216 250L252 214V304Z';
 const SNOW = 'M74 204L61 223L70 220L76 230L83 219L91 226ZM252 214L235 231L244 229L252 238ZM190 228L179 241L188 239L194 248L201 239ZM20 232L9 247L18 244L24 252L31 243Z';
@@ -34,7 +36,7 @@ const DOTS = [[86, 60], [24, 96], [206, 118], [216, 50], [236, 110], [146, 28]];
 
 const stars = attr => STARS.map(([x, y, s]) => `${burst(x, y, s, s * .34, 4)} ${attr}/>`).join('') +
   DOTS.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.3" ${attr}/>`).join('');
-const figure = attr => P(CLOAK, attr) + P(SLEEVE, attr) + P(HAND, attr) + P(LAMP_ALL, attr) + P(FACE, attr) + P(BEARD, attr);
+const figure = attr => P(CLOAK, attr) + P(SLEEVE, attr) + raised(P(HAND, attr) + P(LAMP_ALL, attr)) + P(FACE, attr) + P(BEARD, attr);
 
 // 排線：兩條引導線之間平均插入 n 條線
 function hatch(x0, y0, x1, y1, dx0, dy0, dx1, dy1, n, bend = 0) {
@@ -69,11 +71,11 @@ export function hermitPlates(card) {
   const B = plateSVG({
     defs:
       `<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${g255(.78)}"/><stop offset=".8" stop-color="${g255(.34)}"/></linearGradient>` +
-      `<radialGradient id="hole" cx="80" cy="200" r="64" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#000" stop-opacity="1"/><stop offset=".55" stop-color="#000" stop-opacity=".7"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>`,
+      `<radialGradient id="hole" cx="75" cy="169" r="64" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#000" stop-opacity="1"/><stop offset=".55" stop-color="#000" stop-opacity=".7"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>`,
     art:
       `<rect x="-2" y="-2" width="252" height="346" fill="url(#sky)"/>` +
       P(RIDGE, tint(.9)) + P(SNOW, CUT) +
-      `<circle cx="80" cy="200" r="64" fill="url(#hole)"/>` +      // 燈光把夜色推開
+      `<circle cx="75" cy="169" r="64" fill="url(#hole)"/>` +      // 燈光把夜色推開
       P(CRAG, SOLID) +
       P(MOON, CUT) + stars(CUT) + figure(CUT) + P(STAFF, cutLine(4.6)),
   });
@@ -82,19 +84,19 @@ export function hermitPlates(card) {
   let rays = '';
   for (let i = 0; i < 14; i++) {
     const a = (i * 360 / 14 + 8) * Math.PI / 180, r1 = 27, r2 = i % 2 ? 37 : 44;
-    rays += `M${(80 + r1 * Math.cos(a)).toFixed(1)} ${(200 + r1 * Math.sin(a)).toFixed(1)}L${(80 + r2 * Math.cos(a)).toFixed(1)} ${(200 + r2 * Math.sin(a)).toFixed(1)}`;
+    rays += `M${(75 + r1 * Math.cos(a)).toFixed(1)} ${(169 + r1 * Math.sin(a)).toFixed(1)}L${(75 + r2 * Math.cos(a)).toFixed(1)} ${(169 + r2 * Math.sin(a)).toFixed(1)}`;
   }
   const Y = plateSVG({
-    defs: `<radialGradient id="glow" cx="80" cy="200" r="78" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${g255(.95)}"/><stop offset=".4" stop-color="${g255(.6)}"/><stop offset="1" stop-color="${g255(0)}"/></radialGradient>`,
+    defs: `<radialGradient id="glow" cx="75" cy="169" r="78" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${g255(.95)}"/><stop offset=".4" stop-color="${g255(.6)}"/><stop offset="1" stop-color="${g255(0)}"/></radialGradient>`,
     art:
-      `<circle cx="80" cy="200" r="78" fill="url(#glow)" style="mix-blend-mode:lighten"/>` +
+      `<circle cx="75" cy="169" r="78" fill="url(#glow)" style="mix-blend-mode:lighten"/>` +
       P(rays, line(1.5)) +
       P(MOON, SOLID) + stars(SOLID) +
-      P(LAMP_GLASS, SOLID) +
+      raised(P(LAMP_GLASS, tint(.35)) + lampStar(SOLID)) +
       // 迎光面：兜帽與斗篷前緣、袖子上緣、臉
       P('M129 89C133 100 139 116 143 130C143 138 142 144 140 150C130 154 122 160 119 172C114 204 106 248 98 288L113 292C116 250 122 208 128 178C136 166 150 158 152 146C152 120 146 96 138 76Z', tint(.6)) +
-      P('M148 154C136 155 128 162 120 168L94 158L92 162L120 175C130 168 140 162 149 161Z', tint(.5)) +
-      P(FACE, tint(.3)) + P(HAND, tint(.3)) +
+      P('M147 151C131 138 110 132 89 127L88 133C111 137 130 146 147 157Z', tint(.5)) +
+      P(FACE, tint(.3)) + raised(P(HAND, tint(.3))) +
       `<ellipse cx="74" cy="303" rx="64" ry="9" ${tint(.5)}/>`,
   });
 
@@ -103,8 +105,8 @@ export function hermitPlates(card) {
     frame: fr.O,
     art:
       P(CLOAK, SOLID) + P(FACE, CUT) + P(FACE, tint(.3)) + P(HOOD, SOLID) +
-      P(SLEEVE, SOLID) + P(BEARD, CUT) + P(HAND, CUT) + P(HAND, tint(.25)) +
-      P(FLAME, tint(.55)) +
+      P(SLEEVE, SOLID) + P(BEARD, CUT) + raised(P(HAND, CUT) + P(HAND, tint(.25))) +
+      raised(lampStar(CUT)) +
       '',
   });
 
@@ -143,11 +145,11 @@ export function hermitPlates(card) {
       P('M129 89C133 100 139 116 143 130C143 138 142 144 140 150', line(2.200)) +
       // 前景袖子先挖去軀幹排線；鬍子最後覆蓋袖子，遮擋關係一致。
       P(SLEEVE, CUT) +
-      P('M94 185C97 199 100 208 104 214C123 207 139 193 150 178L154 174C142 197 120 215 100 220C97 210 95 197 94 185Z', tint(.34)) +
+      P('M86 151C89 167 93 181 98 186C121 180 139 169 150 158L154 162C143 174 119 187 96 191C91 177 88 165 86 151Z', tint(.34)) +
       P(SLEEVE, line(2)) +
-      P('M94 159C93 178 98 201 104 215M103 164C103 180 107 194 110 204M116 170C117 182 120 191 122 197M136 163C137 173 136 181 133 187', line(1.1)) +
-      P(HAND, CUT) + P(HAND, line(1.7)) +
-      P('M79 153L77 159C77 161 80 162 82 163M83 152L81 158C81 160 84 161 86 162M87 154L85 159', line(.85)) +
+      P('M89 128C88 147 92 171 100 186M100 133C100 151 104 167 110 178M114 139C115 153 120 165 125 171M137 150L141 161', line(1.1)) +
+      raised(P(HAND, CUT) + P(HAND, line(1.7)) +
+      P('M79 153L77 159C77 161 80 162 82 163M83 152L81 158C81 160 84 161 86 162M87 154L85 159', line(.85))) +
       // 遠側手臂與手掌完全被軀幹遮住；木杖已在人物之前印於後景。
       P(BEARD, CUT) +
       // 鬍子
@@ -156,8 +158,8 @@ export function hermitPlates(card) {
       // 鞋尖
       P('M99 289C95 291 91 293 89 297L108 297L110 291Z', SOLID) +
       // 提燈
-      P('M80 167a3.500 3.500 0 1 0 .1 0', line(1.500)) + P(LAMP_CAP, SOLID) + P(LAMP_BASE, SOLID) +
-      P(LAMP_GLASS, line(1.800)) + P('M80 185V219M69 202H91', line(.8)),
+      raised(P('M80 167a3.500 3.500 0 1 0 .1 0', line(1.500)) + P(LAMP_CAP, SOLID) + P(LAMP_BASE, SOLID) +
+      P(LAMP_GLASS, line(1.800)) + lampStar(CUT) + lampStar(line(1))),
   });
 
   return { Y, O, B, N };
