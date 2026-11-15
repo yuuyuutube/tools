@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#e8e4dc">
+<title>小小塔羅印刷所｜THE LITTLE TAROT PRESS</title>
+<meta name="description" content="洗牌、選牌、翻牌，得到一張剛印好的塔羅牌。">
+<link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:title" content="小小塔羅印刷所｜THE LITTLE TAROT PRESS">
+<meta property="og:description" content="洗牌、選牌、翻牌，得到一張剛印好的塔羅牌。">
+<link rel="stylesheet" href="src/ui/tokens.css">
+<link rel="stylesheet" href="src/ui/style.css">
+<script type="module" src="src/ui/app.js"></script>
+</head>
+<body>
+<svg class="defs" aria-hidden="true">
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="m14 7-5 5 5 5"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.4v.2"/></symbol>
+  <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3l4-3.5v12l-4-3.5H4z"/><path d="M15 9.2a4 4 0 0 1 0 5.6M17.6 6.6a7.6 7.6 0 0 1 0 10.8"/></symbol>
+  <symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9.5h3l4-3.5v12l-4-3.5H4z"/><path d="m15.5 9.5 5 5m0-5-5 5"/></symbol>
+  <symbol id="i-one" viewBox="0 0 24 24"><rect x="7.5" y="4" width="9" height="16" rx="1.6"/></symbol>
+  <symbol id="i-three" viewBox="0 0 24 24"><rect x="2.5" y="6.5" width="5.4" height="11" rx="1.2"/><rect x="9.3" y="6.5" width="5.4" height="11" rx="1.2"/><rect x="16.1" y="6.5" width="5.4" height="11" rx="1.2"/></symbol>
+  <symbol id="i-rev" viewBox="0 0 24 24"><rect x="6.5" y="3" width="11" height="18" rx="1.6"/><path d="M12 7.5v9M9.8 9.6 12 7.4l2.2 2.2M9.8 14.4l2.2 2.2 2.2-2.2"/></symbol>
+  <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M3 7h3.2c2 0 3.3 1 4.3 2.7l2.6 4.6c1 1.7 2.3 2.7 4.3 2.7H21M3 17h3.2c1.4 0 2.5-.5 3.3-1.4M14.1 8.4c.8-.9 1.9-1.4 3.3-1.4H21M18 4l3 3-3 3M18 14l3 3-3 3"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></symbol>
+  <symbol id="i-again" viewBox="0 0 24 24"><path d="M20 8a8 8 0 1 0 0 8M20 3v6h-6"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5m0 0-5 5m5-5 5 5"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14m0 0-5-5m5 5 5-5"/></symbol>
+  <symbol id="i-dice" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.6 8.6v.1M15.4 8.6v.1M12 12v.1M8.6 15.4v.1M15.4 15.4v.1"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 6.5C10 5 7 4.6 4 5v13c3-.4 6 0 8 1.5 2-1.500 5-1.900 8-1.500V5c-3-.4-6 0-8 1.500Zm0 0V19.500"/></symbol>
+</svg>
+
+<main id="app" data-state="idle">
+  <div class="top">
+    <button id="back" class="dot" aria-label="回到牌堆" hidden><svg class="ic"><use href="#i-back"/></svg></button>
+    <div class="tools">
+      <button id="sound" class="dot" aria-label="音效" aria-pressed="false"><svg class="ic"><use href="#i-mute"/></svg></button>
+      <button id="info" class="dot" aria-haspopup="dialog" aria-label="說明"><svg class="ic"><use href="#i-info"/></svg></button>
+    </div>
+  </div>
+
+  <section id="board" hidden>
+    <div id="cols"></div>
+    <div id="detail" class="meta"></div>
+    <div class="actions">
+      <button id="again" class="dot big" aria-label="再抽一次"><svg class="ic"><use href="#i-again"/></svg></button>
+      <button id="save" class="dot big ink" aria-label="儲存圖片"><svg class="ic"><use href="#i-save"/></svg></button>
+    </div>
+  </section>
+
+  <div id="stage">
+    <button id="pile" aria-label="洗牌"></button>
+  </div>
+
+  <div id="setup">
+    <button id="go" aria-label="洗牌"><svg class="ic"><use href="#i-shuffle"/></svg></button>
+    <div id="spread" class="opts seg words" role="radiogroup" aria-label="三張牌陣">
+      <button role="radio" data-spread="time">過去・現在・未來</button>
+      <button role="radio" data-spread="advice">現況・阻礙・建議</button>
+    </div>
+    <div class="opts">
+      <div id="count" class="seg" role="radiogroup" aria-label="抽牌張數">
+        <button role="radio" data-count="1" aria-label="抽一張"><svg class="ic"><use href="#i-one"/></svg></button>
+        <button role="radio" data-count="3" aria-label="抽三張"><svg class="ic"><use href="#i-three"/></svg></button>
+      </div>
+      <i></i>
+      <div class="seg">
+        <button id="rev" role="switch" aria-checked="false" aria-label="逆位"><svg class="ic"><use href="#i-rev"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <p id="live" class="sr" aria-live="polite"></p>
+  <div id="toast" role="status"></div>
+</main>
+
+<div id="veil" hidden></div>
+<section id="about" class="sheet" role="dialog" aria-modal="true" aria-label="說明" hidden>
+  <header><h2></h2><button class="dot flat" data-close aria-label="關閉"><svg class="ic"><use href="#i-close"/></svg></button></header>
+  <dl>
+    <dt><svg class="ic"><use href="#i-book"/></svg></dt><dd>本工具提供塔羅抽牌與基礎牌義參考，不包含完整占卜解讀。</dd>
+    <dt><svg class="ic"><use href="#i-dice"/></svg></dt><dd>每次洗牌都以瀏覽器的密碼學亂數重新排列 22 張大阿爾克那，你點的那張牌背就是你抽到的牌。</dd>
+    <dt><svg class="ic"><use href="#i-rev"/></svg></dt><dd>開啟逆位後，每張牌各自有一半的機會是逆位。</dd>
+  </dl>
+</section>
+
+<noscript>請啟用 JavaScript。</noscript>
+</body>
+</html>

@@ -1,0 +1,537 @@
+// 畫面與流程：IDLE → SHUFFLING → SPREADING → SELECTING → REVEALING → RESULT
+// 抽牌結果全部來自 engine/draw.js 的 session；這裡只負責把它演出來，動畫不會再擲任何一次骰子。
+import { SPREADS, DEFAULTS, MOTION, EASE } from '../config.js';
+import { CARDS, CARD_IDS, cardById, keywordsOf } from '../data/cards.js';
+import { createSession } from '../engine/draw.js';
+import { faceSVG, backSVG, offsetsFromSeed, svgDataURL } from '../art/frame.js';
+import { posterBlob, savePoster } from '../poster/poster.js';
+import { sfx, soundOn, setSound } from '../audio/sound.js';
+
+const $ = s => document.querySelector(s);
+const app = $('#app'), stage = $('#stage'), pile = $('#pile'), board = $('#board'), cols = $('#cols'), detail = $('#detail');
+const live = $('#live'), toastEl = $('#toast');
+const N = CARDS.length;
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+const ms = t => reduced.matches ? 0 : t;
+const wait = t => new Promise(r => setTimeout(r, ms(t)));
+
+// ---------------- 狀態 ----------------
+let state = 'idle';
+let run = 0;            // 每次開始／取消一段流程就 +1；還在等動畫的舊流程醒來後發現號碼不對就自己結束
+let session = null;     // 這一次抽牌（洗好的牌堆與已抽到的牌）
+let result = null;      // 揭曉後的結果，海報也用它
+let fan = [];           // 還在牌扇上的牌，由左到右；fan[j] 對應牌堆裡的 deckIndex
+let focus = -1;         // 牌扇上被抬起來的那張
+let pos = 0;            // 牌扇捲動位置：哪一張在正中央（可以是小數）
+let active = 0;         // 三張結果裡，手機上正在看的那張
+let kbd = false;        // 最近一次操作是不是鍵盤
+let saving = false;
+let M = null, G = null; // 版面尺寸、牌扇幾何
+
+const settings = { ...DEFAULTS };
+try { Object.assign(settings, JSON.parse(localStorage.getItem('tarot-settings') || '{}')); } catch { /* 用預設值 */ }
+if (settings.count !== 1 && settings.count !== 3) settings.count = DEFAULTS.count;
+if (!SPREADS[settings.spread]) settings.spread = DEFAULTS.spread;
+settings.reversals = !!settings.reversals;
+
+function setState(s) {
+  state = s;
+  app.dataset.state = s;
+  $('#back').hidden = s === 'idle';
+}
+const say = text => { live.textContent = ''; requestAnimationFrame(() => { live.textContent = text; }); };
+
+// ---------------- 牌 ----------------
+stage.style.setProperty('--back', `url("${svgDataURL(backSVG())}")`);
+const cards = Array.from({ length: N }, () => {
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.setAttribute('role', 'button');
+  el.setAttribute('aria-hidden', 'true');
+  el.tabIndex = -1;
+  el.innerHTML = '<div class="flip"><div class="back"></div><div class="face"></div></div>';
+  stage.append(el);
+  return { el, face: el.querySelector('.face'), pose: { x: 0, y: 0, r: 0, s: 1 }, w: 0, deckIndex: -1, drawn: null, slot: -1, anim: null };
+});
+const cardOf = el => cards.find(c => c.el === el);
+let order = cards.slice();   // 牌堆由下到上的順序（只是畫面，與抽牌結果無關）
+
+function place(cd, pose, o = {}) {
+  cd.pose = pose;
+  const d = ms(o.dur || 0), dl = ms(o.delay || 0);
+  let t = d ? `transform ${d}ms ${o.ease || EASE.out} ${dl}ms` : 'transform 0s';
+  if (o.fade) t += `, opacity ${ms(260)}ms ease ${dl}ms`;
+  cd.el.style.transition = t + ', translate .25s cubic-bezier(.2,1.2,.4,1)';
+  cd.el.style.transform = `translate(${pose.x.toFixed(2)}px,${pose.y.toFixed(2)}px) rotate(${pose.r.toFixed(2)}deg) scale(${(pose.s ?? 1).toFixed(4)})`;
+}
+
+// 固定的小亂數：牌堆裡每張牌歪一點點。純裝飾，所以不用抽牌的亂數來源
+const jit = i => { const s = Math.sin(i * 12.9898) * 43758.5453; return s - Math.floor(s) - .5; };
+const pilePose = k => ({ x: jit(k) * 3, y: M.pileY - k * .5, r: jit(k + 40) * 3.4, s: 1 });
+
+function measure() {
+  const W = stage.clientWidth, H = stage.clientHeight, mobile = W < 700;
+  const topPad = mobile ? 58 : 68, bottomPad = 200;
+  const avail = H - topPad - bottomPad - 36;
+  const cw = Math.round(clamp(Math.min(mobile ? W * .31 : H * .2, avail * .6), 64, 150));
+  M = { W, H, mobile, cw, ch: cw * 5 / 3, topPad, pileY: Math.round((topPad - bottomPad) / 2) };
+  stage.style.setProperty('--cw', cw + 'px');
+  pile.style.transform = `translateY(${M.pileY}px)`;
+  for (const cd of cards) if (!cd.drawn) cd.w = cw;
+}
+
+function markTop() {
+  order.forEach((cd, k) => {
+    cd.el.classList.toggle('top1', k === N - 1);
+    cd.el.classList.toggle('top3', k === N - 2 || k === N - 3);
+  });
+}
+
+function resetCard(cd) {
+  const el = cd.el;
+  if (cd.w !== M.cw) {          // 放大過的牌：先換回原本的尺寸（用 scale 補上，畫面不會跳）
+    const s = cd.w / M.cw;
+    el.style.removeProperty('--cw');
+    cd.w = M.cw;
+    place(cd, { ...cd.pose, s });
+    void el.offsetWidth;
+  }
+  cd.anim?.cancel(); cd.anim = null;
+  el.classList.remove('drawn', 'flipped', 'printing', 'gone', 'tap');
+  el.tabIndex = -1;
+  el.setAttribute('aria-hidden', 'true');
+  el.removeAttribute('aria-label');
+  cd.drawn = null; cd.slot = -1; cd.deckIndex = -1;
+}
+
+// ---------------- IDLE ----------------
+function toIdle(animate = true) {
+  run++;
+  cancelAnimationFrame(raf); raf = 0; drag = null;
+  session = null; result = null; fan = []; focus = -1; saving = false;
+  $('#save').classList.remove('busy');
+  setState('idle');
+  board.hidden = true;
+  measure();
+  order.forEach((cd, k) => {
+    resetCard(cd);
+    cd.el.style.zIndex = k;
+    place(cd, pilePose(k), animate ? { dur: MOTION.gather, ease: EASE.out, delay: k * 6 } : {});
+  });
+  markTop();
+}
+
+// ---------------- SHUFFLING → SPREADING ----------------
+async function start() {
+  if (state !== 'idle') return;
+  const my = ++run;
+  setState('shuffling');
+  // 洗牌在資料層完成：此刻整副牌的順序與每張牌的正逆位就已經決定，接下來的動畫只是演出
+  session = createSession(CARD_IDS, settings);
+  session.offsets = offsetsFromSeed(session.seed);
+  for (const cd of cards) { cd.face.innerHTML = ''; cd.face.classList.remove('rev'); cd.el.classList.remove('top1', 'top3'); }
+  sfx.shuffle(MOTION.shuffleRounds);
+
+  const half = N / 2;
+  for (let rd = 0; rd < MOTION.shuffleRounds; rd++) {
+    const left = order.slice(0, half), right = order.slice(half);
+    left.forEach((cd, j) => place(cd, { x: -M.cw * .64, y: M.pileY - j * .5, r: -5 + jit(j + rd * 9) * 3, s: 1 }, { dur: MOTION.shuffleOut, delay: j * 3 }));
+    right.forEach((cd, j) => place(cd, { x: M.cw * .64, y: M.pileY - j * .5, r: 5 + jit(j + rd * 9 + 20) * 3, s: 1 }, { dur: MOTION.shuffleOut, delay: j * 3 }));
+    await wait(MOTION.shuffleOut + 70);
+    if (my !== run) return;
+    order = left.flatMap((cd, j) => [cd, right[j]]);      // 左右交錯疊回去
+    order.forEach((cd, k) => { cd.el.style.zIndex = k; place(cd, pilePose(k), { dur: MOTION.shuffleIn, ease: EASE.back, delay: k * 9 }); });
+    await wait(MOTION.shuffleIn + N * 9 + 30);
+    if (my !== run) return;
+  }
+
+  setState('spreading');
+  buildBoard();
+  fan = order.slice();
+  fan.forEach((cd, j) => { cd.deckIndex = j; cd.el.style.zIndex = j; });
+  fanGeom();
+  pos = (fan.length - 1) / 2;
+  focus = G.scroll ? Math.round(pos) : -1;
+  sfx.spread();
+  fan.forEach((cd, j) => place(cd, fanPose(j), { dur: MOTION.spread, delay: j * MOTION.spreadStagger }));
+  await wait(MOTION.spread + N * MOTION.spreadStagger);
+  if (my !== run) return;
+
+  setState('selecting');
+  fan.forEach(cd => cd.el.removeAttribute('aria-hidden'));
+  labelFan();
+  announcePick();
+  if (kbd) setFocus(Math.round((fan.length - 1) / 2), true);
+}
+
+// ---------------- 牌陣（上方的空位與結果文字） ----------------
+function buildBoard() {
+  const labels = session.count === 3 ? SPREADS[session.spread] : [null];
+  cols.innerHTML = labels.map((l, i) =>
+    `<div class="col${i === 0 ? ' next' : ''}">${l ? `<div class="pos"><b>${i + 1}</b>${l.zh}</div>` : ''}<div class="slot"></div><div class="meta"></div></div>`).join('');
+  detail.innerHTML = ''; detail.classList.remove('shown');
+  board.dataset.count = session.count;
+  board.dataset.phase = 'picking';
+  board.hidden = false;
+}
+
+function slotRect(k) {
+  const r = cols.children[k].querySelector('.slot').getBoundingClientRect(), s = stage.getBoundingClientRect();
+  return { x: r.left + r.width / 2 - (s.left + s.width / 2), y: r.top + r.height / 2 - (s.top + s.height / 2), w: r.width };
+}
+// 飛到空位：飛行途中用 scale，落定後換成真正的尺寸（settle），牌面才會是清晰的
+function fly(cd, dur, ease) {
+  const t = slotRect(cd.slot);
+  place(cd, { x: t.x, y: t.y, r: 0, s: t.w / cd.w }, { dur, ease });
+}
+function settle(cd) {
+  const t = slotRect(cd.slot);
+  cd.w = t.w;
+  cd.el.style.setProperty('--cw', t.w + 'px');
+  place(cd, { x: t.x, y: t.y, r: 0, s: 1 });
+}
+
+// ---------------- 牌扇 ----------------
+function fanGeom() {
+  const { W, H, cw, ch } = M;
+  const fit = (W * .9 - cw) / (N - 1);
+  const scroll = fit < 34;                                 // 放不下就改成可以左右拖的牌扇（手機）
+  const s = scroll ? Math.max(40, cw * .46) : Math.min(fit, cw * .4);
+  const R = scroll ? Math.max(480, W * 1.5) : Math.max(900, W * 1.15);
+  let top = M.topPad;
+  if (session.count === 3) top = cols.getBoundingClientRect().bottom - stage.getBoundingClientRect().top + 8;
+  const fy = Math.min((top + H) / 2 - H / 2 + ch * .04, H / 2 - ch / 2 - 44);
+  G = { s, R, fy, scroll, lift: ch * .13 };
+}
+function fanPose(j) {
+  const a = (j - pos) * G.s / G.R, sn = Math.sin(a), cs = Math.cos(a);
+  const up = j === focus ? G.lift : 0;
+  return { x: G.R * sn + sn * up, y: G.fy + G.R * (1 - cs) - cs * up, r: a * 180 / Math.PI, s: 1 };
+}
+function layoutFan(o) {
+  fan.forEach((cd, j) => place(cd, fanPose(j), o));
+  const tab = focus < 0 ? Math.round((fan.length - 1) / 2) : focus;
+  fan.forEach((cd, j) => { cd.el.tabIndex = j === tab ? 0 : -1; });
+}
+function labelFan() {
+  fan.forEach((cd, j) => cd.el.setAttribute('aria-label', `牌背，第 ${j + 1} 張，共 ${fan.length} 張`));
+}
+function setFocus(i, viaKeyboard) {
+  if (i === focus && !viaKeyboard) return;
+  focus = i;
+  if (G.scroll && i >= 0) pos = i;
+  layoutFan({ dur: MOTION.hover });
+  if (viaKeyboard && fan[i]) fan[i].el.focus({ preventScroll: true });
+}
+function announcePick() {
+  const k = session.drawn.length;
+  say(session.count === 3 ? `選第 ${k + 1} 張牌：${SPREADS[session.spread][k].zh}` : '選一張牌');
+}
+
+// 拖曳與慣性（只有放不下的牌扇才會捲）
+let drag = null, raf = 0, suppressClick = false;
+function fling(v) {
+  cancelAnimationFrame(raf);
+  if (reduced.matches || Math.abs(v) < .002) return;
+  let last = performance.now();
+  const step = t => {
+    const dt = Math.min(32, t - last); last = t;
+    pos += v * dt; v *= Math.pow(.995, dt);
+    if (pos < 0 || pos > fan.length - 1) { pos = clamp(pos, 0, fan.length - 1); v = 0; }
+    focus = Math.round(pos);
+    layoutFan();
+    raf = Math.abs(v) > .0012 && state === 'selecting' ? requestAnimationFrame(step) : 0;
+  };
+  raf = requestAnimationFrame(step);
+}
+
+stage.addEventListener('pointerdown', e => {
+  kbd = false;
+  if (state !== 'selecting' || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
+  cancelAnimationFrame(raf); raf = 0;
+  suppressClick = false;
+  drag = { id: e.pointerId, x: e.clientX, pos0: pos, moved: false, lx: e.clientX, lt: e.timeStamp, v: 0 };
+});
+stage.addEventListener('pointermove', e => {
+  if (state !== 'selecting') return;
+  if (!drag) {
+    if (e.pointerType === 'mouse') {                     // 滑鼠滑過：那張牌抬起來
+      const cd = cardOf(e.target.closest?.('.card'));
+      setFocus(cd && !cd.drawn ? fan.indexOf(cd) : (G.scroll ? focus : -1));
+    }
+    return;
+  }
+  if (e.pointerId !== drag.id) return;
+  const dx = e.clientX - drag.x;
+  if (!drag.moved && Math.abs(dx) > 8) {
+    drag.moved = true;
+    if (G.scroll) { try { stage.setPointerCapture(e.pointerId); } catch { /* 指標已經不在了 */ } }
+  }
+  if (drag.moved && G.scroll) {
+    const dt = Math.max(1, e.timeStamp - drag.lt);
+    drag.v = drag.v * .6 + (-(e.clientX - drag.lx) / G.s / dt) * .4;
+    drag.lx = e.clientX; drag.lt = e.timeStamp;
+    pos = clamp(drag.pos0 - dx / G.s, 0, fan.length - 1);
+    focus = Math.round(pos);
+    layoutFan();
+  }
+});
+function endDrag(e) {
+  if (!drag || e.pointerId !== drag.id) return;
+  const d = drag; drag = null;
+  if (d.moved && G?.scroll && state === 'selecting') {
+    suppressClick = true;
+    if (e.type === 'pointerup' && e.timeStamp - d.lt < 80) fling(d.v);
+  }
+}
+stage.addEventListener('pointerup', endDrag);
+stage.addEventListener('pointercancel', endDrag);
+stage.addEventListener('pointerleave', e => {
+  if (state === 'selecting' && !drag && e.pointerType === 'mouse' && !G.scroll) setFocus(-1);
+});
+
+stage.addEventListener('click', e => {
+  const cd = cardOf(e.target.closest('.card'));
+  if (!cd) return;
+  if (state === 'selecting') {
+    if (suppressClick) { suppressClick = false; return; }
+    pick(cd);
+  } else if (state === 'result' && cd.drawn) setActive(cd.slot);
+});
+
+stage.addEventListener('keydown', e => {
+  const cd = cardOf(e.target.closest('.card'));
+  if (!cd) return;
+  const enter = e.key === 'Enter' || e.key === ' ';
+  if (state === 'selecting' && !cd.drawn) {
+    const n = fan.length;
+    let i = fan.indexOf(cd);
+    if (enter) { e.preventDefault(); pick(cd); return; }
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') i = Math.min(n - 1, i + 1);
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') i = Math.max(0, i - 1);
+    else if (e.key === 'Home') i = 0;
+    else if (e.key === 'End') i = n - 1;
+    else return;
+    e.preventDefault();
+    setFocus(i, true);
+  } else if (state === 'result' && cd.drawn && enter) { e.preventDefault(); setActive(cd.slot); }
+});
+stage.addEventListener('focusin', e => {
+  if (state !== 'selecting' || !kbd) return;
+  const i = fan.indexOf(cardOf(e.target.closest('.card')));
+  if (i >= 0 && i !== focus) setFocus(i);
+});
+
+// ---------------- 選牌 ----------------
+function pick(cd) {
+  if (state !== 'selecting' || cd.drawn) return;
+  const d = session.pick(cd.deckIndex);        // 這張牌背對應的就是牌堆裡的這一張
+  if (!d) return;
+  cancelAnimationFrame(raf); raf = 0;
+  const idx = fan.indexOf(cd);
+  fan.splice(idx, 1);
+  cd.drawn = d; cd.slot = d.position;
+  cd.el.classList.add('drawn');
+  cd.el.style.zIndex = 100 + d.position;
+  cd.el.tabIndex = -1;
+  cd.el.setAttribute('aria-label', `第 ${d.position + 1} 張牌，尚未翻開`);
+  cd.face.innerHTML = faceSVG(cardById(d.cardId), { offsets: session.offsets });
+  cd.face.classList.toggle('rev', d.orientation === 'reversed');
+  sfx.slide();
+
+  const col = cols.children[d.position];
+  col.classList.remove('next'); col.classList.add('filled');
+
+  if (session.done) { reveal(); return; }
+
+  cols.children[d.position + 1]?.classList.add('next');
+  fly(cd, MOTION.pick, EASE.soft);
+  const my = run;
+  setTimeout(() => { if (my === run && state === 'selecting' && cd.drawn) settle(cd); }, ms(MOTION.pick) + 30);
+  // 牌扇補上缺口
+  if (G.scroll) { if (idx < pos) pos -= 1; pos = clamp(pos, 0, fan.length - 1); focus = Math.round(pos); }
+  else { pos = (fan.length - 1) / 2; focus = -1; }
+  layoutFan({ dur: 320 });
+  labelFan();
+  announcePick();
+  if (kbd) setFocus(Math.min(idx, fan.length - 1), true);
+}
+
+// ---------------- REVEALING → RESULT ----------------
+const FLIP = [
+  { transform: 'translateY(0) rotateY(0deg) scale(1)' },
+  { transform: 'translateY(-6%) rotateY(86deg) scale(1.06)', offset: .44 },
+  { transform: 'translateY(-2.5%) rotateY(187deg) scale(1.03)', offset: .8 },
+  { transform: 'translateY(0) rotateY(180deg) scale(1)' },
+];
+
+const metaHTML = it => {
+  const rev = it.orientation === 'reversed';
+  return `<div class="no">${it.card.romanNumeral}</div><h2>${it.card.nameZh}</h2><div class="en">${it.card.nameEn.toUpperCase()}</div>` +
+    `<div class="ori${rev ? ' rev' : ''}"><svg class="ic" aria-hidden="true"><use href="#${rev ? 'i-down' : 'i-up'}"/></svg>${rev ? '逆位' : '正位'}</div>` +
+    `<p class="kw">${keywordsOf(it.card, it.orientation).map(k => `<span>${k}</span>`).join('')}</p>`;
+};
+const describe = it => `${it.label ? it.label.zh + '：' : ''}${it.card.nameZh}，${it.orientation === 'reversed' ? '逆位' : '正位'}。${keywordsOf(it.card, it.orientation).join('、')}`;
+
+function setActive(k) {
+  if (!result || result.cards.length < 2) return;
+  active = k;
+  [...cols.children].forEach((c, i) => c.classList.toggle('active', i === k));
+  detail.innerHTML = metaHTML(result.cards[k]);
+  if (state === 'result') say(describe(result.cards[k]));
+}
+
+async function reveal() {
+  const my = ++run;
+  setState('revealing');
+  const picked = cards.filter(c => c.drawn).sort((a, b) => a.slot - b.slot);
+  result = {
+    seed: session.seed, offsets: session.offsets, date: new Date(), spread: session.spread,
+    cards: session.drawn.map((d, i) => ({ card: cardById(d.cardId), orientation: d.orientation, label: session.count === 3 ? SPREADS[session.spread][i] : null })),
+  };
+  // 先把結果的版面排好（文字還看不見），才量得到每張牌最後要去的位置
+  result.cards.forEach((it, i) => { cols.children[i].querySelector('.meta').innerHTML = metaHTML(it); });
+  board.dataset.phase = 'result';
+  setActive(0);
+
+  const mid = (fan.length - 1) / 2;
+  fan.forEach((cd, j) => {
+    cd.el.classList.add('gone');
+    cd.el.tabIndex = -1; cd.el.setAttribute('aria-hidden', 'true');
+    place(cd, { x: cd.pose.x * 1.1, y: cd.pose.y + M.H * .45, r: cd.pose.r * 1.6, s: 1 }, { dur: 460, ease: EASE.in, delay: Math.abs(j - mid) * 9, fade: true });
+  });
+  picked.forEach(cd => fly(cd, MOTION.toResult, EASE.soft));
+  await wait(MOTION.toResult + 40);
+  if (my !== run) return;
+  picked.forEach(settle);
+
+  for (let i = 0; i < picked.length; i++) {
+    const cd = picked[i], it = result.cards[i];
+    cd.el.classList.add('printing', 'flipped');
+    if (!reduced.matches) cd.anim = cd.el.firstElementChild.animate(FLIP, { duration: MOTION.flip, easing: EASE.flip });
+    cd.el.setAttribute('aria-label', describe(it));
+    sfx.flip();
+    setTimeout(() => { if (my === run) cols.children[i].classList.add('shown'); }, ms(MOTION.flip * .7));
+    if (i < picked.length - 1) { await wait(MOTION.flipGap); if (my !== run) return; }
+  }
+  await wait(MOTION.flip);
+  if (my !== run) return;
+
+  detail.classList.add('shown');
+  setState('result');
+  if (result.cards.length > 1) picked.forEach(cd => { cd.el.classList.add('tap'); cd.el.tabIndex = 0; });
+  say(result.cards.map(describe).join(' '));
+  posterBlob(result).catch(() => {});      // 先把海報算好，按下儲存時就能馬上交給系統
+}
+
+// ---------------- 結果操作 ----------------
+let toastTimer = 0;
+function toast(text) {
+  toastEl.textContent = text;
+  toastEl.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('on'), 2600);
+}
+
+$('#save').addEventListener('click', async () => {
+  if (state !== 'result' || saving || !result) return;     // 產生途中重複按不會再做一次
+  saving = true;
+  const btn = $('#save'), mine = result;
+  btn.classList.add('busy');
+  try { await savePoster(mine); sfx.stamp(); }
+  catch { toast('圖片沒有存成功，再試一次'); }
+  finally { if (result === mine) { saving = false; btn.classList.remove('busy'); } }
+});
+
+$('#again').addEventListener('click', () => {
+  if (state !== 'result') return;
+  app.classList.add('again');                 // 收牌的這一小段時間，設定面板不用跑出來
+  toIdle();
+  const my = run;
+  setTimeout(() => {
+    if (my === run && state === 'idle') start();
+    app.classList.remove('again');
+  }, ms(MOTION.gather + N * 6) + 20);
+});
+
+$('#back').addEventListener('click', () => { if (state !== 'idle') { toIdle(); if (kbd) $('#go').focus(); } });
+$('#go').addEventListener('click', start);
+pile.addEventListener('click', start);
+
+// ---------------- 抽牌設定（只有 IDLE 能改） ----------------
+function renderSettings() {
+  for (const b of $('#count').children) b.setAttribute('aria-checked', String(+b.dataset.count === settings.count));
+  for (const b of $('#spread').children) b.setAttribute('aria-checked', String(b.dataset.spread === settings.spread));
+  $('#rev').setAttribute('aria-checked', String(settings.reversals));
+  $('#spread').classList.toggle('off', settings.count !== 3);
+  for (const b of $('#spread').children) b.tabIndex = settings.count === 3 ? 0 : -1;
+  try { localStorage.setItem('tarot-settings', JSON.stringify(settings)); } catch { /* 存不了就只用這一次 */ }
+}
+$('#count').addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b || state !== 'idle') return;
+  settings.count = +b.dataset.count; renderSettings();
+});
+$('#spread').addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b || state !== 'idle' || settings.count !== 3) return;
+  settings.spread = b.dataset.spread; renderSettings();
+});
+$('#rev').addEventListener('click', () => {
+  if (state !== 'idle') return;
+  settings.reversals = !settings.reversals; renderSettings();
+});
+// 單選群組的方向鍵
+for (const group of [$('#count'), $('#spread')]) {
+  group.addEventListener('keydown', e => {
+    const dir = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+    if (!dir) return;
+    e.preventDefault();
+    const bs = [...group.children], i = bs.indexOf(document.activeElement);
+    const next = bs[(i + dir + bs.length) % bs.length];
+    next.focus(); next.click();
+  });
+}
+
+// ---------------- 音效與說明 ----------------
+function renderSound() {
+  const b = $('#sound');
+  b.setAttribute('aria-pressed', String(soundOn()));
+  b.querySelector('use').setAttribute('href', soundOn() ? '#i-sound' : '#i-mute');
+}
+$('#sound').addEventListener('click', () => { setSound(!soundOn()); renderSound(); if (soundOn()) sfx.slide(); });
+
+const veil = $('#veil'), about = $('#about');
+function openAbout() { veil.hidden = false; about.hidden = false; about.querySelector('[data-close]').focus(); }
+function closeAbout() { if (about.hidden) return; veil.hidden = true; about.hidden = true; $('#info').focus(); }
+$('#info').addEventListener('click', openAbout);
+veil.addEventListener('click', closeAbout);
+about.querySelector('[data-close]').addEventListener('click', closeAbout);
+about.addEventListener('keydown', e => { if (e.key === 'Tab') { e.preventDefault(); about.querySelector('[data-close]').focus(); } });
+
+addEventListener('keydown', e => {
+  kbd = true;
+  if (e.key === 'Escape') { if (!about.hidden) closeAbout(); else if (state !== 'idle') $('#back').click(); }
+});
+app.addEventListener('contextmenu', e => e.preventDefault());
+addEventListener('dragstart', e => e.preventDefault());
+
+// ---------------- 版面 ----------------
+function relayout() {
+  measure();
+  if (state === 'idle') order.forEach((cd, k) => place(cd, pilePose(k)));
+  else if (state === 'selecting') {
+    fanGeom();
+    pos = G.scroll ? clamp(pos, 0, fan.length - 1) : (fan.length - 1) / 2;
+    if (G.scroll && focus < 0) focus = Math.round(pos);
+    layoutFan();
+    cards.filter(c => c.drawn).forEach(settle);
+  } else if (state === 'result') cards.filter(c => c.drawn).forEach(settle);
+}
+new ResizeObserver(relayout).observe(stage);
+
+renderSettings();
+renderSound();
+toIdle(false);

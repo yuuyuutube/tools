@@ -1,0 +1,26 @@
+/* Design tokens：延續 laundry-weather／retro-printer 的暖灰紙底、墨色字、Riso 四色、白紙卡與圓形小鈕 */
+:root {
+  --bg: #e8e4dc;
+  --ink: #24221f;
+  --paper: #fbfaf6;
+  --mute: #8b8984;
+  --faint: #c4c2bc;
+  --line: #dedbd3;
+
+  --pink: #FF48B0;
+  --blue: #0078BF;
+  --yellow: #FFC629;
+  --orange: #FF6B35;
+
+  --font: "Helvetica Neue", Helvetica, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+  --card: 0 0 0 1px rgba(36,34,31,.05), 0 8px 24px -14px rgba(40,30,10,.35);
+  --card-shadow: 0 0 0 1px rgba(36,34,31,.06), 0 8px 14px -9px rgba(40,30,10,.5);
+  --card-radius: 5.4% / 3.2%;
+
+  --gutter: max(20px, env(safe-area-inset-left), env(safe-area-inset-right));
+  --top: calc(env(safe-area-inset-top) + 16px);
+  --bottom: calc(env(safe-area-inset-bottom) + 20px);
+
+  --ease-out: cubic-bezier(.2,.8,.2,1);
+  --ease-back: cubic-bezier(.2,1.2,.4,1);
+}

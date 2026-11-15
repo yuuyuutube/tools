@@ -1,0 +1,218 @@
+[hidden] { display: none !important; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body {
+  height: 100%; overflow: hidden; overscroll-behavior: none; background: var(--bg); color: var(--ink);
+  font-family: var(--font); -webkit-font-smoothing: antialiased;
+  /* 操作再激烈也不會圈選到東西、長按也不會跳出系統選單 */
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+}
+body { position: fixed; inset: 0; }
+button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; touch-action: manipulation; -webkit-appearance: none; appearance: none; }
+button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+img, svg { -webkit-user-drag: none; }
+.defs { position: absolute; width: 0; height: 0; }
+.ic { width: 20px; height: 20px; flex: none; display: block; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+#app { position: absolute; inset: 0; overflow: hidden; }
+
+/* ---------------- 上方的小圓鈕 ---------------- */
+.top {
+  position: absolute; z-index: 5; left: 0; right: 0; top: var(--top); padding: 0 var(--gutter);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; pointer-events: none;
+}
+.top > * { pointer-events: auto; }
+.tools { display: flex; gap: 8px; margin-left: auto; }
+.dot, .opts, .sheet, #toast, .ori { background: var(--paper); box-shadow: var(--card); }
+.dot { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; flex: none; transition: transform .15s, background .2s, color .2s, opacity .2s; }
+.dot.flat { box-shadow: none; background: none; }
+.dot:active { transform: scale(.94); }
+.dot[aria-pressed="true"], .dot.ink { background: var(--ink); color: var(--paper); }
+.dot.big { width: 52px; height: 52px; }
+.dot.busy { opacity: .45; pointer-events: none; }
+@media (hover: hover) { .dot.flat:hover { background: rgba(36,34,31,.06); } }
+
+/* ---------------- 牌 ---------------- */
+#stage { position: absolute; inset: 0; z-index: 2; pointer-events: none; --cw: 120px; }
+#app[data-state="selecting"] #stage { pointer-events: auto; touch-action: none; }
+.card {
+  position: absolute; left: 50%; top: 50%; width: var(--cw); height: calc(var(--cw) * 5 / 3);
+  margin: calc(var(--cw) * -5 / 6) 0 0 calc(var(--cw) / -2);
+  perspective: 1100px; pointer-events: none; outline: 0; cursor: pointer; touch-action: none;
+  transition-property: transform;
+}
+.card::after { content: ''; position: absolute; inset: 0 0 -24% 0; }   /* 抬起來的牌，滑鼠還是在它身上 */
+#app[data-state="selecting"] .card:not(.drawn), .card.tap { pointer-events: auto; }
+.card.drawn::after { display: none; }
+.card.gone { opacity: 0; transition-property: transform, opacity; }
+.flip { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform .45s var(--ease-out); }
+.card.flipped .flip { transform: rotateY(180deg); }
+.back, .face {
+  position: absolute; inset: 0; border-radius: var(--card-radius); overflow: hidden;
+  -webkit-backface-visibility: hidden; backface-visibility: hidden; box-shadow: var(--card-shadow);
+}
+.back { background: #f6f0e2 var(--back) center / 100% 100% no-repeat; }
+.face { background: #f6f0e2; transform: rotateY(180deg); }
+.face svg { display: block; width: 100%; height: 100%; isolation: isolate; }
+.face.rev svg { transform: rotate(180deg); }
+.card:focus-visible .flip { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: var(--card-radius); }
+
+/* 揭曉時，顏色先印上去，墨線隨後 */
+.card.printing .kf { animation: ink .5s .36s both; }
+.card.printing .kl { animation: ink .42s .74s both; }
+@keyframes ink { from { opacity: 0; } }
+
+/* 牌堆本身也是洗牌按鈕 */
+#pile {
+  position: absolute; z-index: 60; left: 50%; top: 50%; width: var(--cw); height: calc(var(--cw) * 5 / 3);
+  margin: calc(var(--cw) * -5 / 6) 0 0 calc(var(--cw) / -2); border-radius: var(--card-radius);
+  pointer-events: auto; display: none;
+}
+#app[data-state="idle"] #pile { display: block; }
+@media (hover: hover) {
+  #app[data-state="idle"] .card { transition: transform .42s var(--ease-out), translate .25s var(--ease-back); }
+  #app[data-state="idle"] #stage:has(#pile:hover) .card.top3 { translate: 0 -5px; }
+  #app[data-state="idle"] #stage:has(#pile:hover) .card.top1 { translate: 0 -12px; }
+}
+
+/* ---------------- 抽牌設定 ---------------- */
+#setup {
+  position: absolute; z-index: 4; left: 0; right: 0; bottom: var(--bottom);
+  display: flex; flex-direction: column; align-items: center; gap: 12px; pointer-events: none;
+  transition: opacity .3s, transform .3s var(--ease-out);
+}
+#setup > * { pointer-events: auto; }
+#app:not([data-state="idle"]) #setup, #app.again #setup { opacity: 0; transform: translateY(10px); visibility: hidden; transition: opacity .2s, transform .2s, visibility 0s .2s; }
+#go {
+  width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--ink); color: var(--paper);
+  box-shadow: 0 1px 1px rgba(20,18,14,.08), 0 16px 30px -16px rgba(20,18,14,.6);
+  transition: transform .2s var(--ease-back);
+}
+#go .ic { width: 24px; height: 24px; }
+#go:active { transform: scale(.93); }
+@media (hover: hover) { #go:hover { transform: translateY(-2px); } #go:hover:active { transform: scale(.93); } }
+.opts { height: 44px; padding: 0 6px; border-radius: 22px; display: flex; align-items: center; gap: 2px; }
+.opts > i { width: 1px; height: 16px; margin: 0 6px; background: var(--line); }
+.seg { display: flex; gap: 2px; align-items: center; }
+.seg button { width: 44px; height: 32px; border-radius: 16px; display: grid; place-items: center; color: var(--mute); transition: background .2s, color .2s; }
+.seg button[aria-checked="true"] { background: var(--ink); color: var(--paper); }
+.seg.words button { width: auto; padding: 0 14px; font-size: 13px; letter-spacing: .08em; white-space: nowrap; }
+@media (hover: hover) { .seg button:not([aria-checked="true"]):hover { background: rgba(36,34,31,.06); color: var(--ink); } }
+#spread { transition: opacity .25s, transform .25s var(--ease-out); }
+#spread.off { opacity: 0; transform: translateY(6px); visibility: hidden; pointer-events: none; transition: opacity .2s, transform .2s, visibility 0s .2s; }
+
+/* ---------------- 牌陣與結果 ---------------- */
+#board {
+  position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 14px;
+  padding: calc(var(--top) + 52px) var(--gutter) var(--bottom);
+  --gap: clamp(8px, 2.4vw, 36px);
+}
+#cols { display: flex; justify-content: center; align-items: flex-start; gap: var(--gap); }
+.col { display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 0; }
+.pos { font-size: 12px; font-weight: 500; letter-spacing: .16em; color: var(--mute); white-space: nowrap; transition: color .3s; }
+.pos b { font-weight: 500; margin-right: .5em; font-variant-numeric: tabular-nums; }
+.col.next .pos, .col.filled .pos { color: var(--ink); }
+.slot { width: var(--sw); aspect-ratio: 3 / 5; border-radius: var(--card-radius); border: 1.5px dashed var(--faint); transition: border-color .3s; }
+.col.next .slot { border-color: var(--ink); }
+.col.filled .slot { border-color: transparent; }
+
+.meta { text-align: center; opacity: 0; transform: translateY(6px); transition: opacity .45s, transform .45s var(--ease-out); }
+.col.shown .meta, #detail.shown { opacity: 1; transform: none; }
+.meta .no { font-size: 13px; letter-spacing: .24em; color: var(--mute); font-variant-numeric: tabular-nums; }
+.meta h2 {
+  margin-top: 4px; font-size: clamp(26px, 3.4vw, 40px); font-weight: 800; letter-spacing: .14em; margin-right: -.14em; line-height: 1.25;
+  text-shadow: 1.5px 1px 0 rgba(255,72,176,.5), -1px 1.5px 0 rgba(0,120,191,.42);   /* Riso 錯版 */
+}
+.meta .en { margin-top: 2px; font-size: 11px; font-weight: 500; letter-spacing: .24em; margin-right: -.24em; color: var(--mute); }
+.ori { margin-top: 12px; display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 12px 0 8px; border-radius: 13px; font-size: 12px; font-weight: 500; letter-spacing: .12em; }
+.ori .ic { width: 14px; height: 14px; stroke-width: 2; }
+.ori.rev { background: var(--ink); color: var(--paper); }
+.kw { margin-top: 12px; font-size: 15px; letter-spacing: .1em; line-height: 1.8; text-wrap: balance; }
+.kw span { white-space: nowrap; }
+.kw span + span::before { content: '·'; margin: 0 .5em; color: var(--mute); }
+
+.actions { margin-top: auto; display: flex; gap: 12px; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity .35s, transform .35s var(--ease-out); }
+#app[data-state="result"] .actions { opacity: 1; pointer-events: auto; transform: none; }
+#detail { display: none; }
+
+/* 選牌中（三張）：上方三個空位，下面留給牌扇 */
+#board[data-phase="picking"] { --sw: clamp(56px, min(21vw, 14dvh), 104px); }
+#board[data-phase="picking"] .meta { display: none; }
+#board[data-count="1"][data-phase="picking"] #cols { visibility: hidden; }
+
+/* 單張結果：直式上下排，寬螢幕左右排 */
+#board[data-count="1"][data-phase="result"] { justify-content: center; --sw: min(64vw, calc((100dvh - 372px) * .6), 380px); }
+#board[data-count="1"] .pos { display: none; }
+#board[data-count="1"][data-phase="result"] .col { gap: 18px; }
+#board[data-count="1"][data-phase="result"] .actions { margin-top: 6px; }
+@media (min-width: 760px) and (min-aspect-ratio: 11/10) {
+  #board[data-count="1"][data-phase="result"] { --sw: min(calc((100dvh - 232px) * .6), 34vw, 360px); padding-bottom: calc(var(--bottom) + 68px); }
+  #board[data-count="1"][data-phase="result"] .col { flex-direction: row; gap: clamp(36px, 5vw, 72px); align-items: center; }
+  #board[data-count="1"][data-phase="result"] .meta { text-align: left; min-width: 230px; max-width: 320px; }
+  #board[data-count="1"][data-phase="result"] .meta h2 { font-size: clamp(36px, 4.4vw, 56px); }
+  #board[data-count="1"][data-phase="result"] .kw { font-size: 16px; }
+  #board[data-count="1"][data-phase="result"] .actions { position: absolute; bottom: var(--bottom); left: 0; right: 0; justify-content: center; }
+}
+
+/* 三張結果 */
+#board[data-count="3"][data-phase="result"] { --sw: min(calc((100vw - 2 * var(--gutter) - 2 * var(--gap)) / 3), calc((100dvh - 400px) * .6), 230px); }
+#board[data-count="3"] .col { width: var(--sw); }
+#board[data-count="3"] .meta h2 { font-size: clamp(17px, 2.3vw, 28px); letter-spacing: .1em; margin-right: -.1em; }
+#board[data-count="3"] .meta .kw { font-size: 13px; letter-spacing: .06em; }
+#board[data-count="3"] .meta .kw span { display: block; }
+#board[data-count="3"] .meta .kw span + span::before { display: none; }
+#board[data-count="3"] .ori { margin-top: 8px; }
+#board[data-count="3"] .kw { margin-top: 8px; line-height: 1.7; }
+
+/* 手機的三張結果：上面三張總覽，點一張，下面顯示那張的牌義 */
+@media (max-width: 699px) {
+  #board[data-count="3"][data-phase="result"] { --sw: min(calc((100vw - 2 * var(--gutter) - 2 * var(--gap)) / 3), calc((100dvh - 430px) * .6)); }
+  #board[data-count="3"] .col .meta .no, #board[data-count="3"] .col .meta .en, #board[data-count="3"] .col .meta .ori, #board[data-count="3"] .col .meta .kw { display: none; }
+  #board[data-count="3"] .col .meta h2 { margin-top: 0; font-size: 15px; text-shadow: none; color: var(--mute); transition: color .25s; }
+  #board[data-count="3"] .col.active .meta h2 { color: var(--ink); }
+  #board[data-count="3"] .col .pos { transition: color .25s; }
+  #board[data-count="3"][data-phase="result"] .col:not(.active) .pos { color: var(--mute); }
+  #board[data-count="3"][data-phase="result"] #detail { display: block; width: 100%; padding-top: 14px; border-top: 1px solid var(--line); }
+  #board[data-count="3"] #detail h2 { font-size: 26px; letter-spacing: .14em; margin-right: -.14em; }
+  #board[data-count="3"] #detail .kw { font-size: 14px; letter-spacing: .1em; margin-top: 10px; }
+  #board[data-count="3"] #detail .kw span { display: inline; }
+  #board[data-count="3"] #detail .kw span + span::before { display: inline; }
+  #board[data-count="3"] #detail .ori { margin-top: 10px; }
+}
+
+/* ---------------- 提示與浮層 ---------------- */
+#toast {
+  position: absolute; z-index: 7; left: 50%; bottom: calc(var(--bottom) + 72px); max-width: calc(100% - 40px);
+  padding: 10px 16px; border-radius: 20px; font-size: 13px; letter-spacing: .06em; line-height: 1.5;
+  opacity: 0; transform: translate(-50%, 8px); pointer-events: none; transition: opacity .25s, transform .25s;
+}
+#toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+#veil { position: fixed; inset: 0; z-index: 8; background: rgba(36,34,31,.28); animation: fade .2s; }
+.sheet {
+  position: fixed; z-index: 9; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(420px, calc(100% - 32px)); max-height: min(560px, calc(100% - 48px)); border-radius: 18px;
+  display: flex; flex-direction: column; padding: 10px 14px 20px; animation: rise .28s var(--ease-back);
+}
+.sheet header { display: flex; align-items: center; min-height: 44px; gap: 4px; }
+.sheet h2 { flex: 1; }
+.sheet dl { padding: 4px 6px 0; display: grid; grid-template-columns: auto 1fr; gap: 12px 14px; font-size: 13px; line-height: 1.7; letter-spacing: .04em; overflow-y: auto; touch-action: pan-y; }
+.sheet dt { color: var(--mute); padding-top: 2px; } .sheet dt .ic { width: 18px; height: 18px; }
+@keyframes fade { from { opacity: 0; } }
+@keyframes rise { from { opacity: 0; transform: translate(-50%, calc(-50% + 14px)); } }
+
+@media (max-width: 699px) {
+  :root { --gutter: max(12px, env(safe-area-inset-left), env(safe-area-inset-right)); --top: calc(env(safe-area-inset-top) + 12px); --bottom: calc(env(safe-area-inset-bottom) + 14px); }
+  .dot { width: 36px; height: 36px; } .dot.big { width: 52px; height: 52px; }
+  .tools { gap: 6px; }
+  #board { padding-top: calc(var(--top) + 46px); gap: 12px; }
+  .sheet { top: auto; bottom: 0; transform: translateX(-50%); width: 100%; max-height: 78%; border-radius: 18px 18px 0 0; padding-bottom: calc(env(safe-area-inset-bottom) + 20px); animation-name: slide; }
+  @keyframes slide { from { transform: translate(-50%, 40px); opacity: 0; } }
+}
+@media (max-width: 359px) { .seg.words button { padding: 0 10px; font-size: 12px; letter-spacing: .04em; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet, #veil, .card.printing .kf, .card.printing .kl { animation: none !important; }
+  .flip, .meta, .actions, #setup, #spread { transition-duration: .01s !important; }
+}

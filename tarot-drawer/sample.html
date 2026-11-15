@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>畫風樣張</title>
+<style>
+  html, body { height: 100%; margin: 0; background: #e8e4dc; -webkit-user-select: none; user-select: none; }
+  body { display: flex; align-items: center; justify-content: center; gap: 4vw; padding: 24px; box-sizing: border-box; }
+  canvas { display: block; border-radius: 5.4% / 3.2%; box-shadow: 0 0 0 1px rgba(36,34,31,.06), 0 18px 34px -18px rgba(40,30,10,.55); }
+  #big { height: min(92vh, 150vw); width: auto; }
+  #small { width: 120px; height: auto; }
+  #crop { width: min(36vw, 420px); height: auto; border-radius: 6px; }
+  @media (max-width: 760px) { #small, #crop { display: none; } }
+</style>
+</head>
+<body>
+<canvas id="big"></canvas>
+<canvas id="crop"></canvas>
+<canvas id="small"></canvas>
+<script type="module">
+  // 畫風校對用：左邊整張牌，中間是放大的局部（看網點、滲墨、紙紋），右邊是牌扇上的實際大小
+  import { cardById } from './src/data/cards.js';
+  import { printCard } from './src/print/press.js';
+  import { hermitPlates } from './src/print/hermit.js';
+  const q = new URLSearchParams(location.search);
+  const cv = await printCard(hermitPlates(cardById('hermit')), { seed: +(q.get('seed') || 20261115), scale: +(q.get('scale') || 2.4) });
+  const put = (id, sx, sy, sw, sh) => {
+    const el = document.getElementById(id);
+    el.width = sw; el.height = sh;
+    el.getContext('2d').drawImage(cv, sx, sy, sw, sh, 0, 0, sw, sh);
+  };
+  put('big', 0, 0, cv.width, cv.height);
+  put('small', 0, 0, cv.width, cv.height);
+  const s = cv.width / 300;
+  put('crop', 70 * s, 130 * s, 130 * s, 130 * s);
+  window.__done = true;
+</script>
+</body>
+</html>

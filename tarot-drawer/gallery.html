@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>牌面總覽</title>
+<style>
+  body { margin: 0; padding: 24px; background: #e8e4dc; }
+  #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--w, 220px), 1fr)); gap: 20px; }
+  #grid > div { border-radius: 5.4% / 3.2%; overflow: hidden; box-shadow: 0 0 0 1px rgba(36,34,31,.05), 0 8px 24px -14px rgba(40,30,10,.35); }
+  #grid svg { display: block; width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<div id="grid"></div>
+<script type="module">
+  // 美術檢查用：一次看完牌背與 22 張牌面。?only=moon,sun 只看指定的牌，?w=360 調整寬度
+  import { CARDS } from './src/data/cards.js';
+  import { faceSVG, backSVG } from './src/art/frame.js';
+  const q = new URLSearchParams(location.search);
+  const only = q.get('only')?.split(',');
+  if (q.get('w')) document.body.style.setProperty('--w', q.get('w') + 'px');
+  const grid = document.getElementById('grid');
+  const add = svg => { const d = document.createElement('div'); d.innerHTML = svg; grid.append(d); };
+  if (!only || only.includes('back')) add(backSVG());
+  for (const c of CARDS) if (!only || only.includes(c.id)) add(faceSVG(c));
+</script>
+</body>
+</html>
