@@ -9,6 +9,7 @@ import { COUNTIES, DEFAULT_LOCATION, nearestForecast, readSavedLocation, saveLoc
 const $ = id => document.getElementById(id);
 const icon = name => `<svg class="ic"><use href="#i-${name}"/></svg>`;
 const POLL = 10 * 60 * 1000;
+const pagesSource = location.hostname.endsWith('.github.io');
 const motion = matchMedia('(prefers-reduced-motion: reduce)');
 
 const scene = createScene($('scene'), { reduced: motion.matches, shot: new URLSearchParams(location.search).has('shot') });
@@ -36,7 +37,7 @@ function toast(text) { const t = $('toast'); t.textContent = text; t.classList.a
 
 /* ---------------- 天氣 ---------------- */
 async function api(path, options) {
-  if (location.hostname.endsWith('.github.io')) return publishedApi(path, options);
+  if (pagesSource) return publishedApi(path, options);
   const r = await fetch(path, { ...options, headers: { Accept: 'application/json', ...options?.headers } });
   const type = r.headers.get('content-type') || '';
   if (!type.includes('json')) { const e = new Error('NO_SERVER'); e.noServer = true; throw e; }   // 純靜態主機：沒有代理
@@ -53,7 +54,7 @@ async function load({ manual = false } = {}) {
       try { w = await api(`./api/weather?county=${encodeURIComponent(state.loc.county)}&town=${encodeURIComponent(state.loc.town)}`, { signal: ctl.signal }); }
       catch (e) {
         if (e.name === 'AbortError') return;
-        if (e.noServer || e instanceof TypeError) state.server = false;
+        if (!pagesSource && (e.noServer || e instanceof TypeError)) state.server = false;
         else { toast(e.message); if (state.weather?.mode === 'live' && state.weather.town === state.loc.town) w = { ...state.weather, stale: true }; }
       }
     }
@@ -85,7 +86,7 @@ function render() {
   document.querySelector('meta[name="theme-color"]').content = w.isNight ? '#1f2c49' : { sunny: '#f4eedf', cloudy: '#ece8dc', humid: '#e2e1d3', rainy: '#d3d8d4' }[s.scene];
   scene.setWeather({ scene: s.scene, night: !!w.isNight, windSpeed: w.windSpeed ?? 0, windDirection: w.windDirection ?? null });
   state.score = s;
-  clearTimeout(state.timer); if (live) state.timer = setTimeout(() => !document.hidden && load(), POLL);
+  clearTimeout(state.timer); if (live || pagesSource) state.timer = setTimeout(() => !document.hidden && load(), POLL);
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden && state.weather?.mode === 'live' && Date.now() - Date.parse(state.weather.fetchedAt) > POLL) load(); });
 
@@ -98,7 +99,7 @@ async function locate({ quiet = false } = {}) {
     const point = await geolocate(); let found = null;      // 座標只留在這個函式裡，不寫入任何儲存
     if (state.server) {
       try { found = await api('./api/locate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(point) }); }
-      catch (e) { if (e.noServer || e instanceof TypeError) state.server = false; else throw e; }
+      catch (e) { if (!pagesSource && (e.noServer || e instanceof TypeError)) state.server = false; else throw e; }
     }
     if (!found) { found = nearestForecast(point, COUNTIES.map(c => ({ county: c.name, town: c.town, lat: c.lat, lon: c.lon }))); if (!found) throw new Error('離臺灣的預報區太遠，請手動選擇地點'); }
     closeSheet(); await setLocation({ county: found.county, town: found.town, origin: 'gps' });
@@ -134,7 +135,7 @@ async function showTowns(county) {
   $('pick-title').textContent = county; $('pick-back').hidden = false; list.innerHTML = `<div class="wait">${icon('refresh')}</div>`;
   if (state.server) {
     try { towns = (await api(`./api/locations?county=${encodeURIComponent(county)}`)).towns; }
-    catch (e) { if (e.noServer || e instanceof TypeError) state.server = false; else { toast(e.message); return showCounties(); } }
+    catch (e) { if (!pagesSource && (e.noServer || e instanceof TypeError)) state.server = false; else { toast(e.message); return showCounties(); } }
   }
   if (!towns?.length) { const c = COUNTIES.find(c => c.name === county); towns = [{ county, town: c.town }]; }
   if (opened !== $('picker') || $('pick-title').textContent !== county) return;
