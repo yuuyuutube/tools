@@ -54,7 +54,8 @@ function showLine(line, live) {
   const text = typeof line === 'string' ? line : line.text;
   clearTimeout(moodTimer);
   if (typeof line !== 'string') setMood(line.mood);
-  $('#talkHint').textContent = queue.length ? '接著呢？ ›' : '點一下，繼續相遇';
+  $('#talkHint').innerHTML = icon('paw');
+  talk.title = queue.length ? '點一下，聽下一句' : '點一下，收起對話';
   talk.setAttribute('aria-label', text + (queue.length ? '。下一句' : '。收起對話'));
   clearTimeout(talkTimer); clearTimeout(hideTimer);
   $('#line').textContent = text;
