@@ -104,20 +104,34 @@ export const capsuleSVG = c => `<svg viewBox="0 0 100 100" aria-hidden="true">
   <g class="cap-top"><path d="M4 50A46 46 0 0 1 96 50Z" fill="${c}"/><path d="M22 34A30 30 0 0 1 40 16" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".7"/></g>
 </svg>`;
 
-/* 沒有照片時的替代插圖：只表示「種類」，不代表牠的長相 */
+/* 依官方毛色畫簡化示意；花紋位置不代表動物實際長相。 */
+export function coatOf(colour = '') {
+  const swatches = [['黑', '#303033'], ['白', '#F5F1E7'], ['黃', '#D9A34D'], ['棕', '#916341'], ['咖啡', '#76533E'], ['灰', '#929394'], ['米', '#DED0AE']];
+  const colours = swatches.filter(([name]) => String(colour).includes(name)).map(([, hex]) => hex);
+  const tabby = String(colour).includes('虎斑');
+  const calico = String(colour).includes('三花');
+  const patterned = String(colour).includes('花');
+  if (calico) return { body: '#F5F1E7', patch: '#303033', extra: '#D9A34D', tabby: false };
+  const body = colours[0] || (tabby ? '#A58A66' : '#B9B4A9');
+  return { body, patch: colours[1] || (patterned ? '#76533E' : ''), extra: '', tabby };
+}
+let placeholderId = 0;
 export function placeholderSVG(a) {
-  const k = combo(a.id + 1), body = k.a === '#E9E4D8' ? INK.blue : k.a, d = INK.ink;
-  const face = `<circle cx="84" cy="104" r="5" fill="${d}"/><circle cx="116" cy="104" r="5" fill="${d}"/>`;
-  const shapes = a.kind === 'dog'
-    ? `<path d="M52 62Q30 70 34 120Q52 126 62 96Z" fill="${d}"/><path d="M148 62Q170 70 166 120Q148 126 138 96Z" fill="${d}"/>
-       <path d="M50 100Q50 52 100 52Q150 52 150 100V200H50Z" fill="${body}"/>${face}
-       <ellipse cx="100" cy="132" rx="24" ry="18" fill="${INK.paper}"/><ellipse cx="100" cy="124" rx="8" ry="6" fill="${d}"/>`
-    : a.kind === 'cat'
-      ? `<path d="M48 110V34L84 62Q100 58 116 62L152 34V110V200H48Z" fill="${body}"/>${face}
-         <path d="M94 120H106L100 127Z" fill="${d}"/><path d="M60 122H80M60 132H80M120 122H140M120 132H140" stroke="${d}" stroke-width="3" stroke-linecap="round"/>`
-      : `<path d="M50 200V110Q50 58 100 58Q150 58 150 110V200Z" fill="${body}"/><circle cx="62" cy="62" r="16" fill="${body}"/><circle cx="138" cy="62" r="16" fill="${body}"/>${face}
-         <path d="M92 122Q100 130 108 122" fill="none" stroke="${d}" stroke-width="4" stroke-linecap="round"/>`;
-  return `<svg class="ph-art" viewBox="0 0 200 200" preserveAspectRatio="xMidYMax meet" aria-hidden="true">${shapes}</svg>`;
+  const coat = coatOf(a.colour), body = coat.body;
+  const d = body === '#303033' || body === '#76533E' || body === '#916341' ? INK.paper : INK.ink;
+  const id = 'coat-' + (++placeholderId);
+  const silhouette = a.kind === 'dog' ? 'M50 100Q50 52 100 52Q150 52 150 100V200H50Z'
+    : a.kind === 'cat' ? 'M48 110V34L84 62Q100 58 116 62L152 34V110V200H48Z'
+    : 'M50 200V110Q50 58 100 58Q150 58 150 110V200Z';
+  const markings = `<g clip-path="url(#${id})">${coat.patch ? `<ellipse cx="62" cy="76" rx="38" ry="44" fill="${coat.patch}"/><path d="M110 150Q170 126 160 210H104Z" fill="${coat.patch}"/>` : ''}${coat.extra ? `<ellipse cx="145" cy="90" rx="33" ry="39" fill="${coat.extra}"/>` : ''}${coat.tabby ? `<path d="M80 53L88 79M100 48V77M120 53L112 79M44 142L68 152M156 142L132 152M44 173L68 181M156 173L132 181" fill="none" stroke="#51483E" stroke-width="7" stroke-linecap="round"/>` : ''}</g>`;
+  // 五官墊底讓黑白或多色毛紋上的眼睛也保持清楚。
+  const face = `<ellipse cx="84" cy="104" rx="8" ry="9" fill="${body}"/><ellipse cx="116" cy="104" rx="8" ry="9" fill="${body}"/><circle cx="84" cy="104" r="4" fill="${d}"/><circle cx="116" cy="104" r="4" fill="${d}"/>`;
+  const ears = a.kind === 'dog' ? `<path d="M52 62Q30 70 34 120Q52 126 62 96Z" fill="${body}"/><path d="M148 62Q170 70 166 120Q148 126 138 96Z" fill="${body}"/>`
+    : a.kind === 'cat' ? '' : `<circle cx="62" cy="62" r="16" fill="${body}"/><circle cx="138" cy="62" r="16" fill="${body}"/>`;
+  const muzzle = a.kind === 'dog' ? `<ellipse cx="100" cy="132" rx="24" ry="18" fill="${body}"/><ellipse cx="100" cy="124" rx="8" ry="6" fill="${d}"/>`
+    : a.kind === 'cat' ? `<path d="M94 120H106L100 127Z" fill="${d}"/><path d="M60 122H80M60 132H80M120 122H140M120 132H140" stroke="${d}" stroke-width="3" stroke-linecap="round"/>`
+    : `<path d="M92 122Q100 130 108 122" fill="none" stroke="${d}" stroke-width="4" stroke-linecap="round"/>`;
+  return `<svg class="ph-art" viewBox="0 0 200 200" preserveAspectRatio="xMidYMax meet" aria-hidden="true"><defs><clipPath id="${id}"><path d="${silhouette}"/></clipPath></defs>${ears}<path d="${silhouette}" fill="${body}" stroke="#24221F" stroke-opacity=".16" stroke-width="1.5"/>${markings}${face}${muzzle}</svg>`;
 }
 
 /* 相遇章：圓章＋腳印＋日期 */

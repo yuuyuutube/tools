@@ -12,11 +12,11 @@ export const proxied = (u, w, square) => `${IMG_PROXY}${encodeURIComponent(u)}&w
 export function photoEl(a, { w = 360, square = true, eager = false } = {}) {
   const box = el('div', { class: 'ph' });
   const none = msg => { box.classList.add('ph--none'); box.innerHTML = placeholderSVG(a); box.append(el('span', { class: 'ph-note', text: msg })); };
-  if (!a.photo) { none('目前沒有照片'); return box; }
+  if (!a.photo) { none('無照片・毛色示意'); return box; }
   const srcs = IMG_PROXY ? [proxied(a.photo, w, square), a.photo] : [a.photo];
   const img = el('img', { alt: `${title(a)}的照片`, loading: eager ? 'eager' : 'lazy', decoding: 'async', referrerpolicy: 'no-referrer', draggable: 'false' });
   let i = 0;
-  img.addEventListener('error', () => { if (++i < srcs.length) img.src = srcs[i]; else { img.remove(); none('照片暫時無法顯示'); } });
+  img.addEventListener('error', () => { if (++i < srcs.length) img.src = srcs[i]; else { img.remove(); none('照片暫無法顯示・毛色示意'); } });
   img.addEventListener('load', () => box.classList.add('ph--ok'));
   img.src = srcs[0];
   box.append(img);
