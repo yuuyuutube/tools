@@ -80,12 +80,26 @@ talk.addEventListener('keydown', e => {
   if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); advanceTalk(); }
 });
 const atLobby = () => page.hidden && meetEl.hidden && !busy && !document.querySelector('.modal');
+// 洗牌後逐則聊完，避免同一段閒聊一直出現。
+let idleBag = [], lastIdle = null;
+function nextIdle() {
+  if (!idleBag.length) {
+    idleBag = [...LINES.idle];
+    for (let i = idleBag.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [idleBag[i], idleBag[j]] = [idleBag[j], idleBag[i]];
+    }
+    if (idleBag.length > 1 && idleBag.at(-1) === lastIdle) [idleBag[0], idleBag[idleBag.length - 1]] = [idleBag.at(-1), idleBag[0]];
+  }
+  lastIdle = idleBag.pop();
+  return lastIdle;
+}
 function resetIdle() {
   clearTimeout(idleTimer); clearTimeout(dazeTimer);
   if (hosts[0].dataset.mood === 'daze') setMood('');
   dazeTimer = setTimeout(() => { if (atLobby() && !talk.classList.contains('in')) setMood('daze'); }, 16000);
   idleTimer = setTimeout(() => {
-    if (atLobby() && !document.hidden) say(LINES.idle[Math.floor(Math.random() * LINES.idle.length)], { live: false });
+    if (atLobby() && !document.hidden && !talk.classList.contains('in')) say(nextIdle(), { live: false });
     else resetIdle();
   }, 26000 + Math.random() * 9000);
 }
