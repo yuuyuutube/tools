@@ -1,16 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-<defs><pattern id="cloth" width="144" height="112" patternUnits="userSpaceOnUse"><g fill="#0078bf" opacity=".3" transform="translate(28 28) rotate(-20)"><ellipse cy="6" rx="7" ry="5.5"/><ellipse cx="-9" cy="-2" rx="3" ry="4"/><ellipse cx="-3.5" cy="-7" rx="3" ry="4"/><ellipse cx="4" cy="-7" rx="3" ry="4"/><ellipse cx="9.5" cy="-1" rx="3" ry="4"/></g><circle cx="102" cy="82" r="3" fill="#ff48b0" opacity=".4"/></pattern></defs>
+<defs><pattern id="cloth" width="180" height="150" patternUnits="userSpaceOnUse"><g fill="#0078bf" opacity=".1" transform="translate(35 35) rotate(-20)"><ellipse cy="6" rx="9" ry="7"/><ellipse cx="-11" cy="-3" rx="3.5" ry="5"/><ellipse cx="-4" cy="-10" rx="3.5" ry="5"/><ellipse cx="5" cy="-10" rx="3.5" ry="5"/><ellipse cx="12" cy="-2" rx="3.5" ry="5"/></g><g stroke="#ff48b0" stroke-width="2" opacity=".16"><path d="M120 103h8m-4-4v8"/></g></pattern></defs>
 <style>text{font-family:'PingFang TC','Heiti TC',sans-serif;fill:#24221f}.npc-happy,.npc-daze,.npc-wow,.npc-mouth-o{display:none}</style>
-<rect width="1200" height="630" fill="#e8e4dc"/>
-<rect x="36" y="36" width="1128" height="558" rx="18" fill="#fbfaf6"/>
-<text x="90" y="130" font-size="20" letter-spacing="5" fill="#0078bf">台灣動物認養圖鑑</text>
-<text x="87" y="258" font-size="78" font-weight="800" letter-spacing="5">小小相遇所</text>
-<text x="92" y="327" font-size="29" letter-spacing="2">每一顆轉蛋，都是認識牠的開始。</text>
-<text x="92" y="379" font-size="23" letter-spacing="1">領養或分享，讓更多朋友被看見。</text>
-<rect x="91" y="426" width="239" height="57" rx="28" fill="#24221f"/>
-<text x="118" y="464" font-size="22" style="fill:#fbfaf6" letter-spacing="2">今天會遇見誰？</text>
-<circle cx="359" cy="455" r="8" fill="#ff48b0"/><circle cx="386" cy="455" r="8" fill="#0078bf"/><circle cx="413" cy="455" r="8" fill="#ffe800"/>
-<svg x="674" y="344" width="138" height="173" class="npc npc--full" viewBox="0 0 120 150" aria-hidden="true">
+<rect width="1200" height="630" fill="#f4ead7"/>
+<rect width="1200" height="630" fill="url(#cloth)"/>
+<text x="65" y="230" font-size="31" font-weight="600" letter-spacing="4" style="fill:#0078bf">台灣動物認養圖鑑</text>
+<text x="58" y="346" font-size="96" font-weight="800" letter-spacing="2">小小相遇所</text>
+<svg x="810" y="48" width="345" height="512" class="mc" viewBox="0 0 240 356" aria-hidden="true">
+  <defs><clipPath id="mcGlass"><rect x="26" y="52" width="188" height="152" rx="28"/></clipPath></defs>
+  <path d="M56 42 L73 8 L100 34Z" fill="#0078BF"/><path d="M184 42 L167 8 L140 34Z" fill="#0078BF"/>
+  <rect x="36" y="28" width="168" height="32" rx="16" fill="#0078BF"/>
+  <rect x="26" y="52" width="188" height="152" rx="28" fill="#FBFAF6"/>
+  <g clip-path="url(#mcGlass)"><g transform="translate(48 184) rotate(-20)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#FF48B0"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(86 186) rotate(35)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#0078BF"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(124 184) rotate(-60)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#FFE800"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(160 186) rotate(15)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#FF48B0"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(194 182) rotate(80)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#0078BF"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(66 154) rotate(50)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#FFE800"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(104 156) rotate(-15)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#FF48B0"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(142 154) rotate(110)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#0078BF"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(178 152) rotate(-40)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#FFE800"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(88 125) rotate(20)"><g class="capj bob"><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#0078BF"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(126 127) rotate(-75)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#FFE800"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(162 123) rotate(40)"><g class="capj bob"><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#FF48B0"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><path d="M40 60H66L44 122H40Z" fill="#fff" opacity=".75"/></g>
+  <rect x="25" y="199" width="200" height="142" rx="20" fill="#FFE800"/>
+  <rect x="18" y="194" width="200" height="142" rx="20" fill="#FF48B0"/>
+  <rect x="36" y="212" width="52" height="20" rx="10" fill="#24221F"/>
+  <circle cx="48" cy="222" r="4" fill="#FFE800"/><circle cx="62" cy="222" r="4" fill="#0078BF"/><circle cx="76" cy="222" r="4" fill="#FBFAF6"/>
+  <rect x="180" y="212" width="8" height="26" rx="4" fill="#24221F"/>
+  <circle cx="118" cy="254" r="36" fill="#FBFAF6"/>
+  <g class="mc-knob"><circle cx="118" cy="254" r="27" fill="#FFE800"/><rect x="90" y="247" width="56" height="14" rx="7" fill="#24221F"/></g>
+  <path class="mc-chute" d="M84 336V312a12 12 0 0 1 12-12h44a12 12 0 0 1 12 12v24Z" fill="#24221F"/>
+  <rect x="34" y="336" width="38" height="16" rx="4" fill="#24221F"/><rect x="164" y="336" width="38" height="16" rx="4" fill="#24221F"/>
+</svg>
+<svg x="540" y="195" width="300" height="375" class="npc npc--full" viewBox="0 0 120 150" aria-hidden="true">
   <g class="npc-body">
     <path d="M20 150C20 118 38 104 60 104C82 104 100 118 100 150Z" fill="#FFE800"/>
     <path d="M34 150V124Q60 136 86 124V150Z" fill="#FF48B0"/>
@@ -30,23 +41,5 @@
     <path class="npc-mouth-c" d="M55 73Q60 78 65 73" fill="none" stroke="#24221F" stroke-width="2.400" stroke-linecap="round"/>
     <path class="npc-mouth-o" d="M54.500 72Q60 84 65.500 72Z" fill="#24221F"/>
   </g>
-</svg><svg x="786" y="126" width="260" height="386" class="mc" viewBox="0 0 240 356" aria-hidden="true">
-  <defs><clipPath id="mcGlass"><rect x="26" y="52" width="188" height="152" rx="28"/></clipPath></defs>
-  <path d="M56 42 L73 8 L100 34Z" fill="#0078BF"/><path d="M184 42 L167 8 L140 34Z" fill="#0078BF"/>
-  <rect x="36" y="28" width="168" height="32" rx="16" fill="#0078BF"/>
-  <rect x="26" y="52" width="188" height="152" rx="28" fill="#FBFAF6"/>
-  <g clip-path="url(#mcGlass)"><g transform="translate(48 184) rotate(-20)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#FF48B0"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(86 186) rotate(35)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#0078BF"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(124 184) rotate(-60)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#FFE800"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(160 186) rotate(15)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#FF48B0"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(194 182) rotate(80)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#0078BF"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(66 154) rotate(50)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#FFE800"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(104 156) rotate(-15)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#FF48B0"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(142 154) rotate(110)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#0078BF"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(178 152) rotate(-40)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#FFE800"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(88 125) rotate(20)"><g class="capj bob"><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#0078BF"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(126 127) rotate(-75)"><g class="capj "><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#FFE800"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><g transform="translate(162 123) rotate(40)"><g class="capj bob"><path d="M-18 0A18 18 0 0 1 18 0Z" fill="#FF48B0"/><path d="M-18 0A18 18 0 0 0 18 0Z" fill="#E6E0D3"/></g></g><path d="M40 60H66L44 122H40Z" fill="#fff" opacity=".75"/></g>
-  <rect x="25" y="199" width="200" height="142" rx="20" fill="#FFE800"/>
-  <rect x="18" y="194" width="200" height="142" rx="20" fill="#FF48B0"/>
-  <rect x="36" y="212" width="52" height="20" rx="10" fill="#24221F"/>
-  <circle cx="48" cy="222" r="4" fill="#FFE800"/><circle cx="62" cy="222" r="4" fill="#0078BF"/><circle cx="76" cy="222" r="4" fill="#FBFAF6"/>
-  <rect x="180" y="212" width="8" height="26" rx="4" fill="#24221F"/>
-  <circle cx="118" cy="254" r="36" fill="#FBFAF6"/>
-  <g class="mc-knob"><circle cx="118" cy="254" r="27" fill="#FFE800"/><rect x="90" y="247" width="56" height="14" rx="7" fill="#24221F"/></g>
-  <path class="mc-chute" d="M84 336V312a12 12 0 0 1 12-12h44a12 12 0 0 1 12 12v24Z" fill="#24221F"/>
-  <rect x="34" y="336" width="38" height="16" rx="4" fill="#24221F"/><rect x="164" y="336" width="38" height="16" rx="4" fill="#24221F"/>
 </svg>
-<path d="M36 514H1164V576Q1164 594 1146 594H54Q36 594 36 576Z" fill="#f4ead7"/>
-<path d="M36 514H1164V576Q1164 594 1146 594H54Q36 594 36 576Z" fill="url(#cloth)"/>
-<path d="M36 514H1164" stroke="#d6cbb8" stroke-width="3"/>
 </svg>
