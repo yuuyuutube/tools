@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#e8e4dc">
+<title>小小相遇所｜台灣動物認養圖鑑</title>
+<meta name="description" content="每一顆轉蛋裡，是一隻真正在台灣收容所等待被認識的動物。">
+<link rel="icon" type="image/svg+xml" href="icon.svg?v=3">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=3">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=3">
+<link rel="canonical" href="https://yuuyuutube.github.io/tools/adopt-strays/">
+<meta property="og:url" content="https://yuuyuutube.github.io/tools/adopt-strays/">
+<meta property="og:site_name" content="小小相遇所">
+<meta property="og:image" content="https://yuuyuutube.github.io/tools/adopt-strays/og.png?v=3">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="小小相遇所：店員阿糰與三色轉蛋機，領養或分享，讓更多朋友被看見。">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="小小相遇所｜台灣動物認養圖鑑">
+<meta name="twitter:description" content="每一顆轉蛋，都是認識牠的開始。領養或分享，讓更多朋友被看見。">
+<meta name="twitter:image" content="https://yuuyuutube.github.io/tools/adopt-strays/og.png?v=3">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:title" content="小小相遇所｜台灣動物認養圖鑑">
+<meta property="og:description" content="每一顆轉蛋裡，是一隻真正在台灣收容所等待被認識的動物。">
+<script>
+  /* 版本號：每次推版都要改，讓手機一定讀到新檔案 */
+  window.ENC_V = '3';
+  (function () {
+    var V = window.ENC_V, base = new URL('js/', location.href).href, map = { imports: {} };
+    ['main', 'util', 'icons', 'labels', 'copy', 'demo', 'store', 'data', 'api', 'normalize', 'eligibility', 'selector', 'search', 'favorites', 'freshness', 'art', 'sound', 'ui', 'card', 'gacha', 'share', 'views']
+      .forEach(function (m) { map.imports[base + m + '.js'] = base + m + '.js?v=' + V; });
+    var s = document.createElement('script'); s.type = 'importmap'; s.textContent = JSON.stringify(map);
+    document.currentScript.after(s);
+    document.write('<link rel="stylesheet" href="css/app.css?v=' + V + '">');
+  })();
+</script>
+</head>
+<body>
+<p id="demoBar">展示模式／非真實認養資料</p>
+
+<main id="lobby">
+  <h1 class="sr">小小相遇所</h1>
+  <button id="board" type="button"><i id="boardIc"></i><span id="boardText"></span></button>
+  <div id="tools">
+    <button id="sound" type="button" aria-label="音效"></button>
+    <button id="about" type="button" aria-label="關於本站"></button>
+  </div>
+  <div id="plant" aria-hidden="true"></div>
+  <button id="npc" type="button" aria-label="相遇所店員阿糰：重看歡迎故事" title="找阿糰聊聊"></button>
+  <button id="machine" type="button" aria-label="轉蛋機：今天會遇見誰？"></button>
+  <button id="book" type="button" aria-label="動物圖鑑" title="動物圖鑑"></button>
+  <button id="album" type="button" aria-label="我的相遇紀錄" title="我的相遇紀錄"></button>
+  <div id="counter" aria-hidden="true"></div>
+  <button id="go" type="button" class="primary"><span>今天會遇見誰？</span><i></i><i></i><i></i></button>
+</main>
+
+<div id="meet" hidden></div>
+<div id="gacha" hidden></div>
+<div id="talk"><div id="host" aria-hidden="true"></div><div id="bubble"><span id="line" aria-hidden="true"></span></div></div>
+<div id="page" hidden></div>
+<div id="live" class="sr" role="status" aria-live="polite"></div>
+
+<script type="module">import './js/main.js';</script>
+</body>
+</html>

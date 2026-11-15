@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" rx="28" fill="#fbfaf6"/><style>.npc-body,.npc-happy,.npc-daze,.npc-wow,.npc-mouth-o{display:none}</style><svg x="3" y="1" width="122" height="126" class="npc npc--head" viewBox="10 4 100 106" aria-hidden="true">
+  <g class="npc-body">
+    <path d="M20 150C20 118 38 104 60 104C82 104 100 118 100 150Z" fill="#FFE800"/>
+    <path d="M34 150V124Q60 136 86 124V150Z" fill="#FF48B0"/>
+    <rect x="51" y="134" width="18" height="12" rx="2" fill="#FBFAF6"/>
+    <path d="M42 109Q60 122 78 109" fill="none" stroke="#0078BF" stroke-width="6" stroke-linecap="round"/>
+  </g>
+  <g class="npc-head">
+    <circle cx="29" cy="36" r="12" fill="#FFE800"/><circle cx="91" cy="36" r="12" fill="#FFE800"/>
+    <circle cx="29" cy="37" r="5.500" fill="#FF48B0"/><circle cx="91" cy="37" r="5.500" fill="#FF48B0"/>
+    <path d="M17 68C17 43 35 29 60 29C85 29 103 43 103 68C103 92 87 104 60 104C33 104 17 92 17 68Z" fill="#FFE800"/>
+    <g class="npc-sprout"><path d="M60 30Q59 17 49 12Q61 7 64 20Z" fill="#0078BF"/><path d="M61 30Q63 20 74 17Q73 28 63 30Z" fill="#0078BF"/></g>
+    <circle cx="39" cy="73" r="6.500" fill="#FF48B0" opacity=".5"/><circle cx="81" cy="73" r="6.500" fill="#FF48B0" opacity=".5"/>
+    <g class="npc-eyes"><circle cx="50" cy="61" r="2.800" fill="#24221F"/><circle cx="70" cy="61" r="2.800" fill="#24221F"/></g>
+    <g class="npc-happy" fill="none" stroke="#24221F" stroke-width="2.400" stroke-linecap="round"><path d="M46 63Q50 57.500 54 63"/><path d="M66 63Q70 57.500 74 63"/></g>
+    <g class="npc-daze" fill="none" stroke="#24221F" stroke-width="2.400" stroke-linecap="round"><path d="M46 61.500H54"/><path d="M66 61.500H74"/></g>
+    <g class="npc-wow"><circle cx="50" cy="61" r="4.200" fill="#24221F"/><circle cx="70" cy="61" r="4.200" fill="#24221F"/></g>
+    <path class="npc-mouth-c" d="M55 73Q60 78 65 73" fill="none" stroke="#24221F" stroke-width="2.400" stroke-linecap="round"/>
+    <path class="npc-mouth-o" d="M54.500 72Q60 84 65.500 72Z" fill="#24221F"/>
+  </g>
+</svg></svg>
