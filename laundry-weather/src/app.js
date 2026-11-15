@@ -1,4 +1,5 @@
 // 介面與資料：地點、天氣請求、輪詢、展示模式、浮層。插畫在 scene.js，評分在 score.js。
+import { publishedApi } from './published-weather.js';
 import { createScene } from './scene.js';
 import { laundryScore } from './score.js';
 import { demoWeather } from './demo.js';
@@ -35,6 +36,7 @@ function toast(text) { const t = $('toast'); t.textContent = text; t.classList.a
 
 /* ---------------- 天氣 ---------------- */
 async function api(path, options) {
+  if (location.hostname.endsWith('.github.io')) return publishedApi(path, options);
   const r = await fetch(path, { ...options, headers: { Accept: 'application/json', ...options?.headers } });
   const type = r.headers.get('content-type') || '';
   if (!type.includes('json')) { const e = new Error('NO_SERVER'); e.noServer = true; throw e; }   // 純靜態主機：沒有代理
