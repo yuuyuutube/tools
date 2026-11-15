@@ -152,3 +152,10 @@ export function toast(text) {
   toastEl.classList.remove('in'); void toastEl.offsetWidth; toastEl.classList.add('in');
   clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove('in'), 2600);
 }
+
+/* 照片與分享圖共用的等待提示。 */
+export function loadingIndicator(label = '照片載入中') {
+  return el('div', { class: 'image-loading', role: 'status' },
+    el('span', { class: 'image-loading-dots', 'aria-hidden': 'true' }, el('i'), el('i'), el('i')),
+    el('span', { class: 'image-loading-label', text: label }));
+}

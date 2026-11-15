@@ -358,7 +358,7 @@ a.row:hover span, button.row:hover span { text-decoration:underline; text-underl
 /* ---------------- 分享 ---------------- */
 .modal-box--share { width:min(100%, 380px); padding:58px 16px 16px; background:var(--bg); }
 .share-pic { aspect-ratio:1080 / 1350; background:var(--card); display:grid; place-items:center; max-height:calc(100dvh - 232px); margin:0 auto; box-shadow:0 12px 26px -16px rgba(40,30,10,.5); font-size:13px; color:var(--mute); padding:0; }
-.share-pic[aria-busy="true"] { animation:sk 1s ease-in-out infinite alternate; }
+.share-pic[aria-busy="true"] { width:min(100%, 346px); }
 .share-pic img { width:100%; height:100%; object-fit:contain; }
 .share-btns { display:flex; justify-content:center; gap:14px; margin-top:16px; }
 .share .x { position:absolute; right:6px; top:6px; width:40px; height:40px; }
@@ -386,3 +386,13 @@ a.row:hover span, button.row:hover span { text-decoration:underline; text-underl
 @keyframes talk-paw { 0%,100% { opacity:.35; } 50% { opacity:1; } }
 @media (prefers-reduced-motion:reduce) { #talkHint { animation:none !important; opacity:1; } }
 #talk:not(.in) { visibility:hidden; }
+
+/* 圖片等待狀態：載入完成或切換替代圖時移除。 */
+.image-loading { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:16px 8px; color:var(--mute); text-align:center; }
+.ph > .image-loading { position:absolute; inset:0; z-index:1; }
+.image-loading-dots { display:flex; gap:6px; }
+.image-loading-dots i { width:7px; height:7px; border-radius:50%; background:var(--blue); animation:dots 1.2s infinite; }
+.image-loading-dots i:nth-child(2) { background:var(--pink); animation-delay:.16s; }
+.image-loading-dots i:nth-child(3) { background:#b2a000; animation-delay:.32s; }
+.image-loading-label { font-size:11px; line-height:1.5; letter-spacing:.04em; }
+@media (prefers-reduced-motion:reduce) { .image-loading-dots i { animation:none !important; opacity:1; } }

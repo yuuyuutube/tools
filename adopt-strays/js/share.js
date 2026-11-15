@@ -8,11 +8,16 @@ import { I } from './icons.js';
 export const shareUrl = a => `${location.origin}${location.pathname}#/a/${a.id}`;
 const FONT = '"Helvetica Neue","PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif';
 
-function loadImg(src, cors) {
+function loadImg(src, cors, timeout = 15000) {
   return new Promise((res, rej) => {
     const im = new Image();
     if (cors) im.crossOrigin = 'anonymous';
-    im.onload = () => res(im); im.onerror = rej; im.src = src;
+    const finish = (error) => {
+      clearTimeout(timer); im.onload = im.onerror = null;
+      if (error) rej(error); else res(im);
+    };
+    const timer = setTimeout(() => { finish(new Error('image timeout')); im.src = ''; }, timeout);
+    im.onload = () => finish(); im.onerror = () => finish(new Error('image unavailable')); im.src = src;
   });
 }
 function fit(ctx, text, max) {

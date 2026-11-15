@@ -11,6 +11,7 @@ import { OFFICIAL, SOURCE } from './api.js';
 import { describe } from './freshness.js';
 import { BEFORE, LINES } from './copy.js';
 import { emptySVG } from './art.js';
+import { loadingIndicator } from './ui.js';
 import { makeShareImage, shareUrl, download, copyText, canShareFile } from './share.js';
 import { DEMO_GONE } from './demo.js';
 import { sfx } from './sound.js';
@@ -199,7 +200,7 @@ export function detailView(app, id) {
 /* ============================== 分享 ============================== */
 export function openShare(a) {
   const url = shareUrl(a);
-  const pic = el('div', { class: 'share-pic', 'aria-busy': 'true' });
+  const pic = el('div', { class: 'share-pic', 'aria-busy': 'true' }, loadingIndicator('正在製作相遇分享卡'));
   const dl = iconBtn('download', '儲存圖片', { disabled: true }), sh = iconBtn('share', '分享', { disabled: true, hidden: true });
   const cp = iconBtn('link', '複製連結', { 'data-focus': true, onclick: async () => toast((await copyText(url)) ? '已複製連結' : '無法複製連結') });
   const m = modal(el('div', { class: 'share' }, pic, el('div', { class: 'share-btns' }, dl, sh, cp), iconBtn('close', '關閉', { class: 'x', onclick: () => m.close() })), { label: '分享這位朋友', cls: 'modal-box--share' });
