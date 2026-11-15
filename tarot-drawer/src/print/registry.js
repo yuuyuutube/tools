@@ -8,8 +8,18 @@ import { foolPlates, FOOL_INKS, FOOL_QUIET } from './fool.js';
 import { magicianPlates, MAGICIAN_INKS, MAGICIAN_QUIET } from './magician.js';
 import { strengthPlates, STRENGTH_INKS, STRENGTH_QUIET } from './strength.js';
 import { hangedManPlates, HANGED_MAN_INKS, HANGED_MAN_QUIET } from './hanged-man.js';
+import { highPriestessPlates, HIGH_PRIESTESS_INKS, HIGH_PRIESTESS_QUIET } from './high-priestess.js';
+import { empressPlates, EMPRESS_INKS, EMPRESS_QUIET } from './empress.js';
+import { emperorPlates, EMPEROR_INKS, EMPEROR_QUIET } from './emperor.js';
+import { hierophantPlates, HIEROPHANT_INKS, HIEROPHANT_QUIET } from './hierophant.js';
+import { justicePlates, JUSTICE_INKS, JUSTICE_QUIET } from './justice.js';
 
 export const PRINTS = {
+  'high-priestess': {status:'approved', plates:highPriestessPlates, inks:HIGH_PRIESTESS_INKS, seed:20261121, quietAreas:HIGH_PRIESTESS_QUIET},
+  'empress': {status:'approved', plates:empressPlates, inks:EMPRESS_INKS, seed:20261122, quietAreas:EMPRESS_QUIET},
+  'emperor': {status:'approved', plates:emperorPlates, inks:EMPEROR_INKS, seed:20261123, quietAreas:EMPEROR_QUIET},
+  'hierophant': {status:'approved', plates:hierophantPlates, inks:HIEROPHANT_INKS, seed:20261124, quietAreas:HIEROPHANT_QUIET},
+  'justice': {status:'approved', plates:justicePlates, inks:JUSTICE_INKS, seed:20261125, quietAreas:JUSTICE_QUIET},
   'fool': {
     status: 'sample', plates: foolPlates, inks: FOOL_INKS, seed: 20261118, quietAreas: FOOL_QUIET,
   },

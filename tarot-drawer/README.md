@@ -12,7 +12,9 @@ HTML、CSS、原生 ES modules；不需要建置或安裝執行套件。
 | 月亮新版 | 試畫；已修狼、弦月側臉、木刻陰影、十五露滴及固定框色 |
 | 新版牌背 | 九款，含可編輯色版與 PNG；正式牌堆預設使用新版星芒之眼 |
 | 牌背收藏頁 | 可看九款與最初舊版 Before／After；正式抽牌的多牌背選擇器尚未加入 |
-| 其餘正面 | [20 張詳細重畫計劃](docs/redraw-plan.md)已完成；尚未繪製 |
+| A 批正面 | 愚者、魔術師、倒吊人為試畫；力量兩輪結構修訂已確認 |
+| B 批正面 | 女祭司、皇后、皇帝、教皇、正義五張新版修訂已確認，含可編輯色版與 PNG |
+| 其餘正面 | [重畫計劃](docs/redraw-plan.md)中的 C／D／E 共十一張尚未繪製 |
 
 最新美術方向為「歐洲寓言、神秘、有一點擬真、木刻排線、四色套印」。角色要有可信的解剖與重量；不沿用早期圓頭點眼／細棍手腳的造型。`docs/prompt.md` 是歷史需求，遇到衝突以使用者最新指示與重畫計劃為準。
 
@@ -26,15 +28,18 @@ npm test
 
 需要 Python 3 靜態伺服器與 Node.js 20 以上；ES modules 不能以 `file://` 直接開啟。
 
-本次 `npm test` 的 18 項測試（14 項引擎／資料與 4 項新版符號）通過，包括抽牌順序、不重複、正逆位、亂數與原版 SVG 可生成性。新增符號測試只驗證指定符號的數量、形狀與固定框色；不驗證解剖、完整牌義敘事或瀏覽器海報，不能用測試通過代替美術驗收。
+目前 `npm test` 的 28 項測試通過，包括抽牌順序、不重複、正逆位、亂數、原版 SVG 可生成性、新版指定符號、遮罩參照與固定框色。測試不驗證解剖、完整牌義敘事或瀏覽器海報，不能用測試通過代替美術驗收。
 
 ## 預覽頁
 
 | 頁面 | 內容 |
 |---|---|
 | `index.html` | 正式抽牌工具 |
-| `gallery.html` | 原版正面圖鑑與目前牌背；支援 `?only=moon,sun`、`?w=360` |
+| `gallery.html` | 22 張原版與 11 張新版逐張 Before／After，含新版篩選、下載與牌背收藏入口；支援 `?only=moon,sun`、`?w=360` |
 | `sample.html` | 新版隱者；完整圖、印刷局部與縮圖 |
+| `batch-b-sample.html` | 女祭司、皇后、皇帝、教皇、正義的整批總覽、舊新對照、120px、局部及下載；支援 `?only=empress` |
+| `print-sample.html?card=strength` | 已登記新版正面與隱者並排；`card` 可換成其他新版 id |
+| `strength-review.html` | 力量第二輪修訂前後、手部及四肢局部 |
 | `symbol-review.html` | 本輪隱者與月亮符號修訂前後，含 PNG 下載；支援 `?only=hermit`／`?only=moon` |
 | `compare.html` | Claude 初版隱者印刷樣張與已確認修訂版對照 |
 | `moon-sample.html` | 原版月亮與新版試畫、120px 縮圖、動物局部、PNG 下載 |
@@ -53,6 +58,8 @@ npm test
 - `src/print/hermit.js`：已確認隱者；`hermit-before.js` 保留其初版作對照。
 - `src/print/moon.js`：月亮試畫與獨立色盤；`moon-before-refinement.js` 保留首次試畫。
 - `src/print/frame.js`：與隱者一致的新版正面框與文字版式。
+- `src/print/registry.js`：新版狀態、色版、色盤、種子與局部減噪。
+- `src/print/engraving.js`：批次 B 的分層挖空與裁切排線工具；五張來源與符號驗收見 [批次 B 紀錄](docs/batch-b-review.md)。
 - `assets/hermit-sample.png`：六芒星與抬燈修訂後的隱者（900 × 1500）。
 - `assets/moon-sample.png`：最新月亮樣張（900 × 1500；seed 20261116）。
 
@@ -101,7 +108,7 @@ src/audio/             紙張音效
 
 ## 後續工作與驗收範圍
 
-- 依 [逐牌重畫計劃](docs/redraw-plan.md)繪製其餘 20 張，圖像符號與解剖須人工驗收。
+- 依 [逐牌重畫計劃](docs/redraw-plan.md)確認 A／B 批樣張，繼續 C／D／E 共十一張；圖像符號與解剖須人工驗收。
 - 新版隱者／月亮仍需統一整合到抽牌、圖鑑與海報來源；不能只改樣張就聲稱正式完成。
 - 正式 UI 的九款牌背選擇、OG 分享縮圖與 PNG favicon 尚未完成。
 - 原 README 記錄 Claude 曾測試桌面／手機／平板、單三張、連點／返回、鍵盤與海報；這是先前版本紀錄，並非本次全部重新執行。

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>王座與門檻 · 第二批重繪</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#e8e4dc;color:#282723;font:15px system-ui}main{max-width:1280px;margin:auto;padding:32px 24px 64px}h1{font:600 28px Georgia,serif;margin:4px 0 12px}h2{font-size:20px;margin:0 0 8px}.intro,p{line-height:1.7;color:#68645d}.intro{max-width:780px;margin-bottom:24px}.overview{width:100%;height:auto;box-shadow:none;border-radius:0}.toolbar{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0 42px}a{color:inherit;text-underline-offset:4px}.button{padding:9px 16px;background:#f8f4ec;border:1px solid #cac3b8;border-radius:30px;text-decoration:none}article{border-top:1px solid #c8c2b7;padding-top:28px;margin-top:32px}.row{display:grid;grid-template-columns:220px minmax(240px,360px) 1fr;gap:28px;align-items:start}figure{margin:0}figcaption{font-size:12px;color:#777066;margin-bottom:12px}canvas,.old svg{width:100%;height:auto;display:block;border-radius:12px;box-shadow:0 12px 25px -17px #40302099}.old svg{filter:saturate(.8)}.old img{width:100%;height:auto;display:block;border-radius:12px}.small{width:120px;margin:16px 0}.detail{max-width:420px}.notes{margin-top:18px;font-size:13px}.status{font-size:12px;letter-spacing:2px;color:#8b6d48}.reference{max-width:220px;margin-top:24px}.reference canvas{width:180px}#progress{padding:20px 0}a[hidden]{display:none}@media(max-width:850px){.row{grid-template-columns:1fr 1.5fr;gap:16px}.side{grid-column:1/-1;display:grid;grid-template-columns:120px 1fr;gap:20px}.side .small{margin:0}main{padding:24px 16px}h1{font-size:24px}}@media(max-width:430px){.side{grid-template-columns:1fr}.old{opacity:.8}}
+</style></head><body><main><div class="status">BATCH B · WOODCUT STUDIES</div><h1>王座與門檻</h1><p class="intro">女祭司、皇后、皇帝、教皇、正義。歐洲寓言的神秘感、帶有體積的人物與器物、順著形體轉向的木刻陰影。以下為待確認樣張。</p><p id="progress" role="status">正在逐張印製樣張…</p><canvas id="overview" class="overview" aria-label="第二批五張新版總覽"></canvas><div class="toolbar"><a id="overview-download" class="button" hidden download="batch-b-overview.png">下載整批總覽</a><a class="button" href="?before=details">本輪修訂前後</a><a class="button" href="?before=previous">坐姿修訂前</a><a class="button" href="?">最初原版對照</a><a class="button" href="print-sample.html?card=hermit">隱者筆觸參照</a></div><div id="cards"></div><figure class="reference"><figcaption>已確認的隱者 · 同組筆觸參照</figcaption><canvas id="hermit"></canvas></figure></main>
+<script type="module">
+import {cardById} from './src/data/cards.js';
+import {faceSVG as renderCard} from './src/art/frame.js';
+import {PRINTS} from './src/print/registry.js';
+import {printCard} from './src/print/press.js';
+const meta=[
+ ['high-priestess','黑柱 B／白柱 J、半遮 TORA 卷軸、胸十字、月冠、足月、棕櫚與石榴帷幕、幕外水面。',[85,110,130,160]],
+ ['empress','十二星冠、金星心盾、球杖、石榴袍、軟墊、麥穗、森林及瀑布。',[40,130,230,235]],
+ ['emperor','四個公羊頭雕飾、右手安卡杖、左手寶球、皇冠長鬍、甲冑、裸岩與細河。',[63,145,175,140]],
+ ['hierophant','三重冠、三橫桿十字杖、右手祝福、兩位門徒、交叉鑰匙及不同花紋。',[60,140,180,180]],
+ ['justice','未蒙眼、右手雙刃劍、左手水平天平與兩盤、方飾冠、柱幕、袍下露鞋。',[60,195,205,100]],
+];
+const query=new URLSearchParams(location.search);
+const beforeMode=query.get('before');
+const previous=['previous','details'].includes(beforeMode);
+const beforeSuffix=beforeMode==='details'?'before-details':'before-structure';
+const selected=query.get('only')?.split(',');
+const cards=meta.filter(([id])=>!selected||selected.includes(id));
+const put=(target,cv)=>{target.width=cv.width;target.height=cv.height;target.getContext('2d').drawImage(cv,0,0);};
+const sheet=document.getElementById('overview');sheet.width=cards.length*320;sheet.height=564;const ctx=sheet.getContext('2d');ctx.fillStyle='#e8e4dc';ctx.fillRect(0,0,sheet.width,sheet.height);
+for(const [i,[id,note,detail]] of cards.entries()){
+ const card=cardById(id),e=PRINTS[id];
+ const article=document.createElement('article');article.innerHTML=`<h2>${card.romanNumeral} · ${card.nameZh}</h2><p>${card.nameEn}</p><div class="row"><figure class="old"><figcaption>${previous?'BEFORE · 本輪修訂前':'BEFORE · 原版'}</figcaption>${previous?`<img src="assets/${id}-${beforeSuffix}.png" alt="${card.nameZh}本輪修訂前">`:renderCard(card)}</figure><figure><figcaption>AFTER · 新版試畫</figcaption><canvas class="full" aria-label="${card.nameZh}新版"></canvas><div class="toolbar"><a class="download button" download="${id}-sample.png">下載 PNG</a><a href="print-sample.html?card=${id}">與隱者並排</a></div></figure><div class="side"><figure><figcaption>120px 縮圖</figcaption><canvas class="small"></canvas></figure><figure><figcaption>結構／器物局部</figcaption><canvas class="detail"></canvas><p class="notes">${note}</p></figure></div></div>`;document.getElementById('cards').append(article);
+ const cv=await printCard(e.plates(card),{seed:e.seed,scale:3,inks:e.inks,quietAreas:e.quietAreas});
+ put(article.querySelector('.full'),cv);put(article.querySelector('.small'),cv);
+ const [x,y,w,h]=detail,dc=article.querySelector('.detail');dc.width=w*3;dc.height=h*3;dc.getContext('2d').drawImage(cv,x*3,y*3,w*3,h*3,0,0,w*3,h*3);
+ const extras={justice:['露鞋局部',[143,365,50,32]],hierophant:['持杖手局部',[187,219,43,43]]};
+ if(extras[id]){const [label,[ex,ey,ew,eh]]=extras[id],fig=document.createElement('figure');fig.innerHTML=`<figcaption>${label}</figcaption><canvas class="detail"></canvas>`;article.querySelector('.side').append(fig);const ec=fig.querySelector('canvas');ec.width=ew*6;ec.height=eh*6;ec.getContext('2d').drawImage(cv,ex*3,ey*3,ew*3,eh*3,0,0,ew*6,eh*6);}
+ article.querySelector('.download').href=cv.toDataURL('image/png');
+ ctx.drawImage(cv,i*320+10,0,300,500);ctx.fillStyle='#3c3932';ctx.textAlign='center';ctx.font='19px serif';ctx.fillText(card.nameZh,i*320+160,536);
+ document.getElementById('progress').textContent=`已印製 ${i+1} / ${cards.length} 張`;
+}
+const dl=document.getElementById('overview-download');dl.href=sheet.toDataURL('image/png');dl.hidden=false;
+const e=PRINTS.hermit;put(document.getElementById('hermit'),await printCard(e.plates(cardById('hermit')),{seed:e.seed,scale:2,inks:e.inks,quietAreas:e.quietAreas}));
+document.getElementById('progress').textContent='五張樣張已備妥。可向下查看舊新對照、縮圖及局部。';
+</script></body></html>
