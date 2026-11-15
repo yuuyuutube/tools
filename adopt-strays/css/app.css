@@ -379,3 +379,7 @@ a.row:hover span, button.row:hover span { text-decoration:underline; text-underl
 .welcome-actions > button { flex:1 1 auto; }
 .welcome-share { margin-top:14px; font-size:13px; text-decoration:underline; text-underline-offset:4px; min-height:44px; }
 .welcome .x { position:absolute; right:10px; top:10px; width:38px; height:38px; box-shadow:none; }
+
+#bubble { flex-direction:column; align-items:flex-start; gap:5px; }
+#talkHint { align-self:flex-end; font-size:10px; font-weight:400; letter-spacing:.08em; color:var(--mute); }
+#talk:not(.in) { visibility:hidden; }

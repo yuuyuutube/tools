@@ -27,7 +27,7 @@
 <meta property="og:description" content="每一顆轉蛋裡，是一隻真正在台灣收容所等待被認識的動物。">
 <script>
   /* 版本號：每次推版都要改，讓手機一定讀到新檔案 */
-  window.ENC_V = '4';
+  window.ENC_V = '5';
   (function () {
     var V = window.ENC_V, base = new URL('js/', location.href).href, map = { imports: {} };
     ['main', 'util', 'icons', 'labels', 'copy', 'demo', 'store', 'data', 'api', 'normalize', 'eligibility', 'selector', 'search', 'favorites', 'freshness', 'art', 'sound', 'ui', 'card', 'gacha', 'share', 'views']
@@ -59,7 +59,7 @@
 
 <div id="meet" hidden></div>
 <div id="gacha" hidden></div>
-<div id="talk"><div id="host" aria-hidden="true"></div><div id="bubble"><span id="line" aria-hidden="true"></span></div></div>
+<div id="talk" role="button" tabindex="0" aria-label="阿糰的對話"><div id="host" aria-hidden="true"></div><div id="bubble"><span id="line" aria-hidden="true"></span><span id="talkHint" aria-hidden="true"></span></div></div>
 <div id="page" hidden></div>
 <div id="live" class="sr" role="status" aria-live="polite"></div>
 

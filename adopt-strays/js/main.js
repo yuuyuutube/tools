@@ -11,7 +11,7 @@ import { playGacha } from './gacha.js';
 import { bookView, albumView, detailView, aboutView, openShare, openFilter } from './views.js';
 import { iconBtn, modal, toast } from './ui.js';
 import { copyText } from './share.js';
-import { LINES } from './copy.js';
+import { LINES, encounterLines } from './copy.js';
 import { sfx, soundOn, setSound } from './sound.js';
 import { COUNTY } from './normalize.js';
 import { KIND } from './labels.js';
@@ -47,10 +47,15 @@ const paintAlbum = () => { $('#albumDot').hidden = !favs.count(); };
 paintAlbum();
 
 /* ---------- 相遇所店員 ---------- */
-let queue = [], talkTimer = 0, mouthTimer = 0, hideTimer = 0, idleTimer = 0, dazeTimer = 0;
+let queue = [], talkTimer = 0, mouthTimer = 0, hideTimer = 0, idleTimer = 0, dazeTimer = 0, moodTimer = 0;
 const hosts = [$('#npc'), $('#host')];
 const setMood = m => hosts.forEach(h => { h.dataset.mood = m || ''; });
-function showLine(text, live) {
+function showLine(line, live) {
+  const text = typeof line === 'string' ? line : line.text;
+  clearTimeout(moodTimer);
+  if (typeof line !== 'string') setMood(line.mood);
+  $('#talkHint').textContent = queue.length ? '接著呢？ ›' : '點一下，繼續相遇';
+  talk.setAttribute('aria-label', text + (queue.length ? '。下一句' : '。收起對話'));
   clearTimeout(talkTimer); clearTimeout(hideTimer);
   $('#line').textContent = text;
   if (live) $('#live').textContent = text;
@@ -65,11 +70,15 @@ function showLine(text, live) {
 function say(lines, { mood = '', live = true } = {}) {
   queue = [].concat(lines); setMood(mood);
   showLine(queue.shift(), live);
-  if (mood) setTimeout(() => setMood(''), 2600);
+  if (mood && typeof lines === 'string') moodTimer = setTimeout(() => setMood(''), 2600);
   resetIdle();
 }
-const hush = () => { queue = []; clearTimeout(talkTimer); clearTimeout(hideTimer); talk.classList.remove('in'); };
-talk.addEventListener('click', () => (queue.length ? showLine(queue.shift(), true) : hush()));
+const hush = () => { queue = []; clearTimeout(talkTimer); clearTimeout(hideTimer); clearTimeout(moodTimer); hosts.forEach(h => h.classList.remove('talking')); setMood(''); talk.classList.remove('in'); };
+const advanceTalk = () => queue.length ? showLine(queue.shift(), true) : hush();
+talk.addEventListener('click', advanceTalk);
+talk.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); advanceTalk(); }
+});
 const atLobby = () => page.hidden && meetEl.hidden && !busy && !document.querySelector('.modal');
 function resetIdle() {
   clearTimeout(idleTimer); clearTimeout(dazeTimer);
@@ -132,6 +141,7 @@ $('#npc').addEventListener('click', openWelcome);
 
 /* ---------- 轉蛋 ---------- */
 let busy = false, last = 0, current = null;
+let encounterTurn = Math.floor(Math.random() * 12);
 const seen = new Set();
 try { JSON.parse(sessionStorage.getItem('enc.seen') || '[]').forEach(i => seen.add(i)); } catch { /* ignore */ }
 const saveSeen = () => { try { sessionStorage.setItem('enc.seen', JSON.stringify([...seen].slice(-3000))); } catch { /* ignore */ } };
@@ -155,7 +165,7 @@ async function meet() {
     if (animal.photo && IMG_PROXY) new Image().src = proxied(animal.photo, 700, false);   // 動畫期間先載入照片
     hush(); setMood('happy');
     await playGacha({ machine: $('#machine'), color: combo(animal.id).a === '#E9E4D8' ? combo(animal.id).s : combo(animal.id).a, onOpen: () => showMeet(animal) });
-    say([LINES.open, LINES.meet(animal), ...(reset ? [LINES.reset] : [])], { mood: 'wow' });
+    say([...encounterLines(animal, encounterTurn++), ...(reset ? [LINES.reset] : [])], { mood: 'wow' });
     $('#meetGo')?.focus({ preventScroll: true });
   } finally { busy = false; }
 }
