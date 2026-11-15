@@ -1,7 +1,7 @@
 // 介面與資料：地點、天氣請求、輪詢、展示模式、浮層。插畫在 scene.js，評分在 score.js。
-import { publishedApi } from './published-weather.js';
+import { publishedApi } from './published-weather.js?v=stale-reference-3';
 import { createScene } from './scene.js';
-import { laundryScore } from './score.js';
+import { laundryScore } from './score.js?v=stale-reference-3';
 import { demoWeather } from './demo.js';
 import { moonPhase, moonName } from './moon.js';
 import { COUNTIES, DEFAULT_LOCATION, nearestForecast, readSavedLocation, saveLocation, geolocate } from './locations.js';
