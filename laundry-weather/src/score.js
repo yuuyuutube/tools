@@ -1,12 +1,15 @@
+import {weatherFreshness} from './freshness.js';
 export const RULES = Object.freeze({rain:45,humidity:30,wind:15,temperature:10,great:80,good:65,fair:40,rainRisk:60,strongWind:10});
 const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
 const valid=n=>typeof n==='number'&&Number.isFinite(n);
-export function laundryScore(w) {
+export function laundryScore(w, now = Date.now()) {
+ const freshness=weatherFreshness(w,now);
  const horizon=w.forecast || [];
  const rainValues=[w.pop,...horizon.map(p=>p.pop)].filter(valid);
  const risk=rainValues.length?Math.max(...rainValues):null;
  const missing=['temperature','humidity','windSpeed','pop'].filter(k=>!valid(w[k]));
- const sufficient=missing.length===0 && !w.stale && w.forecastComplete!==false;
+ const reference=freshness.stale && freshness.withinDay;
+ const sufficient=missing.length===0 && !freshness.expired && (!freshness.stale || reference) && (w.forecastComplete!==false || (reference && w.referenceForecastComplete===true));
  let score=0;
  if(valid(risk)) score+=RULES.rain*(1-risk/100);
  if(valid(w.humidity)) score+=RULES.humidity*clamp((95-w.humidity)/45,0,1);
@@ -25,8 +28,10 @@ export function laundryScore(w) {
  if(w.windSpeed>=10) detail='風勢較強，請固定好衣物。';
  if(!sufficient&&!poor) {
   title='天氣資料不足，先等等';
-  detail=w.stale?'資料已較舊，請更新後再評估。':w.forecastComplete===false?'接下來幾小時的預報不足。':'部分天氣資料不足。';
+  detail=freshness.expired?'資料已超過一天，等待更新。':w.forecastComplete===false?'接下來幾小時的預報不足。':'部分天氣資料不足。';
  }
+ if(freshness.expired) { title='天氣資料不足，先等等'; detail='資料已超過一天，等待更新。'; }
  if(w.isNight && !poor && sufficient) detail='入夜少了日照，可能需要多晾一會兒。';
- return {score,grade,scene,sceneLabel,title,detail,missing,sufficient,risk};
+ if(reference && sufficient) detail=[detail,'依較舊資料估計，僅供參考。'].filter(Boolean).join('');
+ return {stale:freshness.stale,expired:freshness.expired,score,grade,scene,sceneLabel,title,detail,missing,sufficient,risk};
 }

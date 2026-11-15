@@ -49,17 +49,20 @@ async function load({ manual = false } = {}) {
   state.busy?.abort(); const ctl = state.busy = new AbortController();
   $('refresh').classList.add('spin');
   try {
-    let w;
+    let w, failed = false;
+    const previous = state.weather;
     if (state.server) {
-      try { w = await api(`./api/weather?county=${encodeURIComponent(state.loc.county)}&town=${encodeURIComponent(state.loc.town)}`, { signal: ctl.signal }); }
+      try { w = await api(`./api/weather?county=${encodeURIComponent(state.loc.county)}&town=${encodeURIComponent(state.loc.town)}`, { signal: ctl.signal, refresh: manual }); }
       catch (e) {
         if (e.name === 'AbortError') return;
+        failed = true;
         if (!pagesSource && (e.noServer || e instanceof TypeError)) state.server = false;
-        else { toast(e.message); if (state.weather?.mode === 'live' && state.weather.town === state.loc.town) w = { ...state.weather, stale: true }; }
+        else { toast(e.message); if (state.weather?.mode === 'live' && state.weather.county === state.loc.county && state.weather.town === state.loc.town) w = { ...state.weather, stale: true }; }
       }
     }
     if (!w || w.mode !== 'live') w = demoWeather(state.demo, state.loc);
-    state.weather = w; render(); if (manual && w.mode === 'live') toast('已更新');
+    state.weather = w; render();
+    if (manual && w.mode === 'live' && !failed) toast((w.publishedAt || w.fetchedAt) === (previous?.publishedAt || previous?.fetchedAt) ? '目前沒有更新的資料' : state.score.stale ? '已讀取較舊資料' : '已更新');
   } finally { if (state.busy === ctl) { state.busy = null; $('refresh').classList.remove('spin'); } }
 }
 
@@ -78,7 +81,7 @@ function render() {
   $('place-name').textContent = `${w.county} ${w.town}`;
   const flag = state.loc.origin === 'default' ? '預設' : ''; $('place-flag').textContent = flag; $('place-flag').hidden = !flag;
   const at = w.observedAt || w.fetchedAt;
-  $('stamp').textContent = live ? `${md(at)} ${hm(at)}${w.stale ? ' 舊資料' : ''}` : '展示資料';
+  $('stamp').textContent = live ? `${md(at)} ${hm(at)}${s.expired ? ' 超過一天' : s.stale ? ' 較舊資料' : ''}` : '展示資料';
   $('demo').hidden = live;
   $('moon').setAttribute('aria-pressed', !!w.isNight);
   for (const b of $('demo').querySelectorAll('[data-demo]')) { const on = b.dataset.demo === state.demo; b.setAttribute('aria-checked', on); b.tabIndex = on ? 0 : -1; }
@@ -154,10 +157,11 @@ $('locate').addEventListener('click', () => locate());
 
 $('info').addEventListener('click', () => {
   const w = state.weather, s = state.score, live = w.mode === 'live', rows = [];
+  const historical = w.historicalForecast || (live && w.currentPeriod && Date.parse(w.currentPeriod.end) <= Date.now());
   rows.push(['info', live
     ? `<a href="https://opendata.cwa.gov.tw/" target="_blank" rel="noopener">中央氣象署開放資料</a><small>${w.station ? `${w.station.name}測站 ${w.station.distanceKm} km・${hm(w.observedAt)} 觀測` : '附近沒有可用測站，數值來自預報'}</small>`
     : `展示資料<small>固定的示範數值，不是即時天氣${state.server ? '' : '。這個網址沒有連上氣象代理'}</small>`]);
-  if (w.currentPeriod) rows.push(['rain', `${hm(w.currentPeriod.start)}–${hm(w.currentPeriod.end)} 降雨機率 ${num(w.pop)}%${live && s.risk !== null && s.risk > (w.pop ?? 0) ? `<small>未來六小時最高 ${s.risk}%</small>` : ''}`]);
+  if (w.currentPeriod) rows.push(['rain', `${historical ? `上次預報 ${md(w.currentPeriod.start)} ` : ''}${hm(w.currentPeriod.start)}–${hm(w.currentPeriod.end)} 降雨機率 ${num(w.pop)}%${live && !historical && !s.stale && s.risk !== null && s.risk > (w.pop ?? 0) ? `<small>未來六小時最高 ${s.risk}%</small>` : ''}`]);
   if (w.isNight) rows.push(['moon', `今晚是${moonName(moonPhase())}`]);
   rows.push(['sun', `晾衣分數 ${s.score}<small>本站自訂的生活參考，不是官方指數，也不預測晾乾時間</small>`]);
   for (const issue of w.issues || []) rows.push(['refresh', issue]);
