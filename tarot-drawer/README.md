@@ -1,128 +1,106 @@
 # 小小塔羅印刷所｜THE LITTLE TAROT PRESS
 
-洗牌、選牌、翻牌，得到一張像剛從孔版印刷機印出來的塔羅牌。
-22 張大阿爾克那、單張或三張牌陣、可開關逆位，結果可以存成一張直式海報。
+純前端塔羅抽牌工具：22 張大阿爾克那、單張／三張牌陣、逆位選項、洗牌翻牌動畫與 PNG 分享海報。
+HTML、CSS、原生 ES modules；不需要建置或安裝執行套件。
 
-純前端：HTML + CSS + 原生 ES modules + SVG，沒有建置步驟、沒有相依套件、沒有後端。
+## 現階段狀態（2026-11-16）
 
-## 啟動
+| 範圍 | 狀態 |
+|---|---|
+| 正式抽牌與海報 | 仍使用原版 22 張 SVG 正面 |
+| 隱者新版 | 已確認的歐洲寓言木刻樣張；寬袖、側身遮擋修訂保留 |
+| 月亮新版 | 試畫；已修狼、弦月側臉、木刻陰影、十五露滴及固定框色 |
+| 新版牌背 | 九款，含可編輯色版與 PNG；正式牌堆預設使用新版星芒之眼 |
+| 牌背收藏頁 | 可看九款與最初舊版 Before／After；正式抽牌的多牌背選擇器尚未加入 |
+| 其餘正面 | [20 張詳細重畫計劃](docs/redraw-plan.md)已完成；尚未繪製 |
 
-任何靜態伺服器都可以（ES modules 不能用 `file://` 直接開）：
+最新美術方向為「歐洲寓言、神秘、有一點擬真、木刻排線、四色套印」。角色要有可信的解剖與重量；不沿用早期圓頭點眼／細棍手腳的造型。`docs/prompt.md` 是歷史需求，遇到衝突以使用者最新指示與重畫計劃為準。
+
+## 啟動與測試
 
 ```bash
 npm run serve
-```
-
-然後開 `http://localhost:8000/`。
-
-- `index.html` — 抽牌工具
-- `gallery.html` — 美術檢查用，一次看完牌背與 22 張牌面（`?only=moon,sun`、`?w=360`）
-
-## 測試
-
-```bash
+# http://localhost:8000/
 npm test
 ```
 
-需要 Node 20 以上。測的是抽牌引擎與牌組資料：亂數範圍與分布、Fisher–Yates、正逆位比例、
-單張／三張不重複與順序、同一位置不能抽兩次、22 張牌都抽得到、每張牌面都畫得出來。
+需要 Python 3 靜態伺服器與 Node.js 20 以上；ES modules 不能以 `file://` 直接開啟。
 
-## 結構
+本次 `npm test` 的 14 項引擎／資料測試通過，包括抽牌順序、不重複、正逆位、亂數與原版 SVG 可生成性。這些測試不驗證新版插畫的解剖、牌義符號或瀏覽器海報；不能用測試通過代替美術驗收。
 
-```
-src/
-  config.js          站名、牌陣標籤、動畫時間與緩動（改站名改這裡與 index.html 的 <title>）
-  data/cards.js      22 張牌：編號、牌名、基本意涵、正逆位關鍵字
-  engine/
-    random.js        Web Crypto 亂數（拒絕取樣避開模數偏差）、Fisher–Yates、有種子的小亂數
-    draw.js          抽牌引擎：建立洗好的牌堆、依位置抽牌、不重複
-  art/
-    kit.js           插畫工具組：色盤、形狀、印版（留白／色版／墨線）、共用小圖樣
-    cards-a/b/c.js   22 張牌的插畫
-    index.js         插畫登記表（牌 → 底色與畫法）
-    frame.js         牌框、牌背、色版錯位
-  ui/
-    tokens.css       Design tokens
-    style.css        版面與元件
-    app.js           流程狀態機、牌堆／牌扇／翻牌動畫、設定、結果
-  poster/poster.js   分享海報排版與 PNG 輸出
-  audio/sound.js     Web Audio 合成的紙張音效（預設靜音）
-tests/engine.test.mjs
-```
+## 預覽頁
 
-## 抽牌規則
-
-- 按下洗牌的當下，`createSession()` 就用 `crypto.getRandomValues()` 把整副牌洗好（Fisher–Yates），
-  每張牌的正逆位也各自獨立擲好（開啟逆位時各 50%）。之後的洗牌動畫只是演出，不會再擲任何一次骰子。
-- 牌扇上由左到右第 n 張牌背對應牌堆的第 n 張。點哪一張，就拿到哪一張。
-- 三張模式：抽走的牌離開牌扇，不能再抽；第一張對應位置一，依此類推，結果不會重新排序。
-- 重抽、返回都會丟掉舊的 session 重新洗牌。
-- 流程狀態：`idle → shuffling → spreading → selecting → revealing → result`。
-  設定只有 `idle` 能改。每段流程有自己的編號（`run`），返回或重抽時編號 +1，
-  還在等動畫的舊流程醒來後發現編號不對就自己結束，所以連點或動畫途中返回都不會留下不一致的畫面。
-
-## 設計系統
-
-延續 `laundry-weather`、`retro-printer`：暖灰紙底、墨色字、白紙小圓鈕與膠囊、Riso 四色。
-介面上不放裝飾性文字，能用圖示表達的都用圖示（SVG symbol，每個按鈕都有 `aria-label`）。
-
-| | |
+| 頁面 | 內容 |
 |---|---|
-| 介面 | 底 `#e8e4dc`、墨 `#24221f`、紙 `#fbfaf6`、灰字 `#8b8984` |
-| 牌面油墨 | 紙 `#f6f0e2`、墨 `#1d2a4d`、朱橘 `#FF6B35`、黃 `#FFC629`、藍 `#0078BF`、螢光粉 `#FF48B0`，各有一個淡版 |
-| 字體 | Helvetica Neue／PingFang TC 等系統字體（不載入網路字體，海報輸出的字才會一致） |
-| 牌 | 300 × 500（3:5），圓角 16，上方牌號、中間拱窗插畫 248 × 342、下方中英文牌名 |
-| 線條 | 墨線 3（小物件 2～2.5），圓頭圓角 |
-| 角色 | 圓臉、兩顆點點眼，靠服裝、姿勢與道具區分 |
+| `index.html` | 正式抽牌工具 |
+| `gallery.html` | 原版正面圖鑑與目前牌背；支援 `?only=moon,sun`、`?w=360` |
+| `sample.html` | 新版隱者；完整圖、印刷局部與縮圖 |
+| `compare.html` | Claude 初版隱者印刷樣張與已確認修訂版對照 |
+| `moon-sample.html` | 原版月亮與新版試畫、120px 縮圖、動物局部、PNG 下載 |
+| `moon-sample.html?reference=hermit` | 以已確認隱者作筆觸、框色與重量參照 |
+| `back-sample.html` | 最初舊版 Before 與九款新版 After；各款可下載 PNG |
+| `back-sample.html?only=legacy,celestial-eye` | 舊版／新版星芒之眼並排 |
+| `back-sample.html?only=moon-flower,jade-maze` | 指定多款牌背；`only` 也支援單款 |
 
-**印刷語言**（`art/kit.js`）：每個形狀拆成三層——留白（紙色，不位移）、色版（以相乘疊印，各色版各自錯位 1～2 單位）、墨線（不位移）。
-錯位後一側露出細細的紙白、另一側壓到旁邊的顏色。陰影用 32° 的網點。
-錯位的方向由每次抽牌的種子決定，所以同一次結果在畫面上與海報上完全相同。
+預覽頁在瀏覽器即時印製樣張；正式牌背載入預先輸出的 PNG，避免每次開啟網站都重新計算高解析印刷。
 
-**牌背**對中心 180° 旋轉對稱，沒有文字，上下顛倒看起來一樣，不會提前洩漏正逆位。
+## 美術檔案
 
-**動畫**：洗牌（左右分開再交錯疊回，約 1.4 秒）、展牌（0.8 秒）、選牌（0.46 秒）、翻牌（0.78 秒，帶一點抬起與回彈）、
-揭曉時色版先出現、墨線隨後。支援 `prefers-reduced-motion`（所有等待時間歸零，流程照常完成）。
+### 新版正面
 
-## 操作
+- `src/print/press.js`：逐像素套印引擎。紙紋、纖維、飛白、網點、滲墨與套色偏移都由種子決定。
+- `src/print/hermit.js`：已確認隱者；`hermit-before.js` 保留其初版作對照。
+- `src/print/moon.js`：月亮試畫與獨立色盤；`moon-before-refinement.js` 保留首次試畫。
+- `src/print/frame.js`：與隱者一致的新版正面框與文字版式。
+- `assets/moon-sample.png`：最新月亮樣張（900 × 1500；seed 20261116）。
 
-- 滑鼠：滑過牌會抬起，點擊選牌。
-- 觸控：牌扇放不下時改為可左右拖曳（含慣性），正中央的牌抬起；點任何一張選牌。拖曳超過 8px 不算點擊。
-- 鍵盤：Tab 到牌扇，方向鍵／Home／End 移動，Enter 或空白鍵選牌；Esc 回到牌堆。
-- 手機的三張結果：上方三張總覽，點一張，下方顯示那張的牌義。
-- 儲存圖片：手機走系統分享面板（iOS 可「儲存影像」），桌機直接下載 PNG（1080 × 1620）。
+插畫可各有色盤；外框／牌號／牌名／裝飾固定用隱者的墨藍 `INKS.N` 與朱橘 `INKS.O`。月亮分成插畫四版及外框 FO／FN；`press.js` 可在預設四色後加入額外色版，`fixedRegistration` 固定墨線版套準。
 
-## 完成與未完成
+`printCard()` 可傳入 `inks` 與 `quietAreas`；局部減噪用於小臉、手、燈等，不能整張消除手工印刷質地。
 
-已完成
+### 九款牌背
 
-- 22 張原創牌面插畫與牌背（全部是程式化 SVG，沒有外部圖片）
-- 抽牌引擎、單張／三張、兩種三張牌陣、逆位開關
-- 洗牌、展牌、選牌、翻牌動畫；桌面牌扇與手機可拖曳牌扇
-- 單張與三張的結果版面、兩種版面的分享海報與 PNG 輸出
-- 鍵盤操作、朗讀用的狀態提示、Reduced Motion、音效開關
+登記表：`src/print/back-catalog.js`。每款有獨立 id、名稱、說明、PNG 檔與印製函式。
 
-未完成／可以再做
+| id／名稱 | 色版來源 | PNG |
+|---|---|---|
+| `celestial-eye` 星芒之眼 | `back.js` | `card-back.png` |
+| `moth-garden` 夜蛾花園 | `back-moth.js` | `card-back-moth.png` |
+| `tide-gate` 潮汐之門 | `back-tide.js` | `card-back-tide.png` |
+| `pomegranate-garden` 石榴秘園 | `back-pomegranate.js` | `card-back-pomegranate.png` |
+| `serpent-ring` 黑金蛇環 | `back-serpent.js` | `card-back-serpent.png` |
+| `snow-fox` 雪境雙狐 | `back-fox.js` | `card-back-fox.png` |
+| `vermilion-cranes` 朱砂雙鶴 | `back-crane.js` | `card-back-crane.png` |
+| `moon-flower` 月白花窗 | `back-flower.js` | `card-back-flower.png` |
+| `jade-maze` 翠玉迷宮 | `back-geometry.js` | `card-back-geometry.png` |
 
-- 沒有 OG 分享縮圖與 PNG 版 favicon（目前只有 `assets/icon.svg`）
-- 部分牌面的構圖還能再推敲（例如魔術師桌上的四樣道具偏小、死神的日出被斗篷擋住大半）
+色版在 `src/print/`，PNG 在 `assets/`。各款可以有自己的配色、裝飾框與滿版背景；紙紋和排線語言保持一致。星芒之眼已更新花冠拱框，夜蛾花園已加花冠藤蔓框。
 
-## 實際測試紀錄（2026-11-15）
+牌背先印出上半部，再旋轉 180° 得到下半部，包括紙紋、套色誤差也完全對稱；不透過背面洩漏正逆位。牌背固定 seed 20261115、scale 2.4，輸出 720 × 1200。改色版後從收藏頁下載 PNG 並更新對應資產。
 
-在 Chromium（桌面 1024 × 768、手機 375 × 812、平板 768 × 1024）實際操作：
+最初版本來自 commit `4cd0212`，保存在 `src/print/back-legacy.js` 與 `assets/card-back-legacy.svg`，只供對照，不參與正式牌背登記。
 
-- 單張與三張流程、逆位顯示、兩種牌陣標籤 — 通過
-- 手機拖曳牌扇、拖曳不會誤選、點選、三張結果切換 — 通過
-- 鍵盤完整抽完三張 — 通過
-- 洗牌途中連點／返回、選牌途中返回、連點同一張、抽滿後再點、翻牌途中返回、重抽 — 狀態皆一致
-- 非 idle 狀態下改設定 — 無效（符合預期）
-- 海報：單張與三張皆輸出 1080 × 1620 PNG，逆位維持倒置，同一次結果重複輸出為同一份 — 通過
-- 三種尺寸皆無水平或垂直溢出
-- `npm test` 14 項全數通過
+## 正式網站結構與規則
 
-尚未驗證
+```text
+src/config.js          站名、牌陣、動畫設定
+src/data/cards.js      22 張牌義與正逆位關鍵字
+src/engine/            Web Crypto／Fisher–Yates／抽牌 session
+src/art/               正式抽牌仍使用的原版正面 SVG、牌框及牌背資產入口
+src/print/             新版可編輯印刷色版與引擎
+src/ui/                抽牌流程、動畫、鍵盤／觸控、樣式
+src/poster/            分享海報與 PNG 輸出
+src/audio/             紙張音效
+```
 
-- 實機 iOS Safari／Android Chrome（含分享面板儲存圖片、瀏海安全區）
-- 實際開啟系統「減少動態效果」時的表現（只確認了程式路徑）
-- Firefox 與 Safari 桌面版
-- 音效的實際聽感
+洗牌時一次決定牌堆與每張正逆位；後續動畫不重新擲亂數。點選位置直接對應牌堆位置，三張模式依抽取順序放入牌陣，不重複。重抽／返回廢棄舊 session。設定僅 idle 可改，舊動畫由 run 編號失效以避免連點競態。
+
+桌面可滑過抬牌、點選；手機支援拖曳牌扇，拖動超過 8px 不算點選。方向鍵、Home／End 移動，Enter／空白選牌，Esc 返回。尊重 `prefers-reduced-motion`；音效預設靜音。手機儲存走系統分享（支援時），桌面下載 1080 × 1620 海報。
+
+## 後續工作與驗收範圍
+
+- 依 [逐牌重畫計劃](docs/redraw-plan.md)繪製其餘 20 張，圖像符號與解剖須人工驗收。
+- 新版隱者／月亮仍需統一整合到抽牌、圖鑑與海報來源；不能只改樣張就聲稱正式完成。
+- 正式 UI 的九款牌背選擇、OG 分享縮圖與 PNG favicon 尚未完成。
+- 原 README 記錄 Claude 曾測試桌面／手機／平板、單三張、連點／返回、鍵盤與海報；這是先前版本紀錄，並非本次全部重新執行。
+- 實機 iOS／Android 分享面板、桌面 Safari／Firefox、實際 Reduce Motion 與音效聽感仍需驗證。

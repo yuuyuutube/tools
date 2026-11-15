@@ -3,7 +3,7 @@
 import { SPREADS, DEFAULTS, MOTION, EASE } from '../config.js';
 import { CARDS, CARD_IDS, cardById, keywordsOf } from '../data/cards.js';
 import { createSession } from '../engine/draw.js';
-import { faceSVG, backSVG, offsetsFromSeed, svgDataURL } from '../art/frame.js';
+import { faceSVG, BACK_URL, offsetsFromSeed, svgDataURL } from '../art/frame.js';
 import { posterBlob, savePoster } from '../poster/poster.js';
 import { sfx, soundOn, setSound } from '../audio/sound.js';
 
@@ -44,7 +44,7 @@ function setState(s) {
 const say = text => { live.textContent = ''; requestAnimationFrame(() => { live.textContent = text; }); };
 
 // ---------------- 牌 ----------------
-stage.style.setProperty('--back', `url("${svgDataURL(backSVG())}")`);
+stage.style.setProperty('--back', `url("${BACK_URL}")`);
 const cards = Array.from({ length: N }, () => {
   const el = document.createElement('div');
   el.className = 'card';

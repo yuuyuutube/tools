@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-Hant">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>隱者 — Before / After</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#e8e4dc;color:#24221f;font-family:system-ui,sans-serif;padding:24px}main{max-width:1000px;margin:auto}h1{font-size:20px;margin:0 0 8px}p{font-size:13px;color:#6e6960;margin:0 0 20px}.pair{display:grid;grid-template-columns:1fr 1fr;gap:28px}figure{margin:0;text-align:center}figcaption{font-size:13px;margin-bottom:12px}canvas{display:block;width:100%;max-width:360px;height:auto;margin:auto;border-radius:5.4% / 3.2%;box-shadow:0 12px 24px -16px #40302080}.small{width:120px;margin-top:20px} @media(max-width:600px){body{padding:16px}.pair{gap:16px}}
+</style>
+<main><h1>隱者 · 畫風微調</h1><p>相同印刷種子 20261115 · 上方完整牌面，下方 120px 縮圖</p><div class="pair"><figure><figcaption>BEFORE · 原版</figcaption><canvas id="before"></canvas><canvas class="small" id="before-small"></canvas></figure><figure><figcaption>AFTER · 寬袖與側身遮擋修正</figcaption><canvas id="after"></canvas><canvas class="small" id="after-small"></canvas></figure></div></main>
+<script type="module">
+import {cardById} from './src/data/cards.js';
+import {printCard} from './src/print/press.js';
+import {hermitPlates as before} from './src/print/hermit-before.js';
+import {hermitPlates as after} from './src/print/hermit.js?v=wide-sleeve-1';
+const quietAreas=[{x:153,y:175,rx:24,ry:34},{x:106,y:260,rx:25,ry:30},{x:219,y:236,rx:15,ry:16}];
+for (const [id, plates] of [['before',before],['after',after]]) {
+ const cv=await printCard(plates(cardById('hermit')),{seed:20261115,scale:2.4,quietAreas:id==='after'?quietAreas:[]});
+ for (const target of [id,id+'-small']) {const el=document.getElementById(target);el.width=cv.width;el.height=cv.height;el.getContext('2d').drawImage(cv,0,0);}
+}
+</script>
+</html>

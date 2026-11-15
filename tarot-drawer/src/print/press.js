@@ -69,7 +69,7 @@ async function rasterPlate(svg, W, H) {
 
 // plates：{ Y: svg, O: svg, B: svg, N: svg }（缺的顏色就不印）
 // 回傳畫好的 canvas（寬 300 × scale）
-export async function printCard(plates, { seed = 1, scale = 2 } = {}) {
+export async function printCard(plates, { seed = 1, scale = 2, quietAreas = [], inks = INKS } = {}) {
   const W = Math.round(CW * scale), H = Math.round(CH * scale), n = W * H;
   const rnd = seeded(seed);
   const R = new Float32Array(n), G = new Float32Array(n), Bc = new Float32Array(n);
@@ -83,12 +83,14 @@ export async function printCard(plates, { seed = 1, scale = 2 } = {}) {
     R[i] = PAPER[0] * v; G[i] = PAPER[1] * v; Bc[i] = PAPER[2] * (v - .012 * pLow(x, y));
   }
 
-  for (const key of PRINT_ORDER) {
+  // 額外色版（例如固定色的共用牌框）依傳入順序，接在插畫四色之後。
+  const printOrder = [...PRINT_ORDER, ...Object.keys(plates).filter(key => !PRINT_ORDER.includes(key))];
+  for (const key of printOrder) {
     if (!plates[key]) continue;
-    const ink = INKS[key], data = await rasterPlate(plates[key], W, H);
+    const ink = inks[key], data = await rasterPlate(plates[key], W, H);
     const cr = ink.rgb[0] / 255, cg = ink.rgb[1] / 255, cb = ink.rgb[2] / 255;
     // 套色誤差：主版（墨線）不動，其他色版各偏一點
-    const mis = key === 'N' ? 0 : TUNE.misregister * scale, ang = rnd() * Math.PI * 2, len = .45 + rnd() * .55;
+    const mis = (key === 'N' || ink.fixedRegistration) ? 0 : TUNE.misregister * scale, ang = rnd() * Math.PI * 2, len = .45 + rnd() * .55;
     const ox = Math.cos(ang) * len * mis, oy = Math.sin(ang) * len * mis;
     const nJx = makeNoise(rnd, W, H, 34 * scale), nJy = makeNoise(rnd, W, H, 34 * scale);
     const nFx = makeNoise(rnd, W, H, 3.4 * scale), nFy = makeNoise(rnd, W, H, 3.4 * scale);
@@ -125,11 +127,17 @@ export async function printCard(plates, { seed = 1, scale = 2 } = {}) {
         }
         if (a <= .003) continue;
 
+        // 局部減少飛白與紙齒，保留細小的五官、手指和燈芯。
+        let quiet = 0;
+        for (const { x: qx, y: qy, rx, ry } of quietAreas) {
+          const distance = Math.hypot((x / scale - qx) / rx, (y / scale - qy) / ry);
+          quiet = Math.max(quiet, 1 - smooth(.5, 1, distance));
+        }
         // 飛白與紙的凹凸
         const v = nVoid(x, y) + .1 * (nPatch(x, y) - .5);
-        a *= 1 - .92 * smooth(TUNE.speckle, TUNE.speckle + .06, v);
+        a *= 1 - .92 * (1 - .8 * quiet) * smooth(TUNE.speckle, TUNE.speckle + .06, v);
         const t = tooth[i];
-        if (t > .9) a *= 1 - (t - .9) * 4.5;
+        if (t > .9) a *= 1 - (t - .9) * 4.5 * (1 - .8 * quiet);
         a *= ink.strength * (.83 + .17 * nDen(x, y));
 
         R[i] *= 1 - a + a * cr; G[i] *= 1 - a + a * cg; Bc[i] *= 1 - a + a * cb;

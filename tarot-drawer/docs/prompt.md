@@ -1,3 +1,5 @@
+> 歷史需求存檔：新版美術以使用者後續確認的隱者樣張及 [20 張重畫計劃](redraw-plan.md) 為準。本文早期的小角色／點眼風格不再適用；不代表本文每個設定都已實作。
+
 
 # PROJECT BRIEF
 # THE LITTLE TAROT PRESS
