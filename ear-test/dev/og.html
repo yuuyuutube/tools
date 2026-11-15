@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<!-- 產生分享圖與圖示用：?m=og（1200×630）、?m=touch（180）、?m=icon32（32）
+     用 headless Chrome 截圖（--screenshot --window-size=寬,高） -->
+<style>
+  html, body { margin: 0; background: #ECEBE7; overflow: hidden; }
+  body { font-family: "Helvetica Neue", Helvetica, "PingFang TC", "Noto Sans TC", sans-serif; color: #24221F; }
+  .og { width: 1200px; height: 630px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 46px; }
+  .og h1 { margin: 0; font-size: 92px; font-weight: 800; letter-spacing: .22em; padding-left: .22em; line-height: 1; }
+  .parade { display: flex; align-items: flex-end; width: 1040px; }
+  .parade svg { flex: none; margin: 0 -10px; }
+  .parade .flag { margin-left: 18px; margin-bottom: 14px; }
+  .icon { display: grid; place-items: center; background: #24221F; }
+</style>
+</head>
+<body>
+<div id="out"></div>
+<script type="module">
+  import { animalSVG, flagSVG, ANIMALS } from '../js/art.js';
+  const m = new URLSearchParams(location.search).get('m') || 'og';
+  const out = document.getElementById('out');
+  if (m === 'og') {
+    const sizes = ANIMALS.map((_, i) => 1 - i * 0.1);
+    const unit = 200;
+    out.innerHTML = `<div class="og"><h1>耳朵年齡機</h1><div class="parade">${
+      ANIMALS.map((id, i) => animalSVG(id, { size: Math.round(unit * sizes[i]) })).join('')
+    }${flagSVG({ size: 92 })}</div></div>`;
+  } else {
+    const s = m === 'touch' ? 180 : 32;
+    if (s === 32) document.documentElement.style.background = document.body.style.background = 'transparent';
+    out.innerHTML = `<div class="icon" style="width:${s}px;height:${s}px;border-radius:${s === 32 ? 7 : 0}px">${flagSVG({ size: Math.round(s * .74), color: '#F5F3EE', cloth: '#F5F3EE' })}</div>`;
+  }
+</script>
+</body>
+</html>

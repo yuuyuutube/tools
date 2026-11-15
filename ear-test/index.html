@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ECEBE7">
+<title>耳朵年齡機</title>
+<meta name="description" content="聽著聲音一路升高，撐不住就舉白旗，領一張耳朵年齡海報。趣味測驗，非醫療檢查。">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:title" content="耳朵年齡機">
+<meta property="og:description" content="聽著聲音一路升高，撐不住就舉白旗，領一張耳朵年齡海報。">
+<meta property="og:url" content="https://yuuyuutube.github.io/tools/ear-test/">
+<meta property="og:image" content="https://yuuyuutube.github.io/tools/ear-test/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="耳朵年齡機：鯨魚、大象、熊、貓、小鳥、蜜蜂、蚊子由大到小排成一列，最後是一面白旗。">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="耳朵年齡機">
+<meta name="twitter:description" content="聽著聲音一路升高，撐不住就舉白旗，領一張耳朵年齡海報。">
+<meta name="twitter:image" content="https://yuuyuutube.github.io/tools/ear-test/og.png">
+<script>
+  /* 版本號：每次推版都要改，讓手機一定讀到新檔案（CSS 與所有 JS 模組都會加上 ?v=版本號） */
+  window.EAR_V = '6';
+  (function () {
+    var V = window.EAR_V, base = new URL('js/', location.href).href, map = { imports: {} };
+    ['main', 'config', 'freq', 'audio', 'art', 'icons', 'age', 'poster']
+      .forEach(function (m) { map.imports[base + m + '.js'] = base + m + '.js?v=' + V; });
+    var s = document.createElement('script'); s.type = 'importmap'; s.textContent = JSON.stringify(map);
+    document.currentScript.after(s);
+    document.write('<link rel="stylesheet" href="css/app.css?v=' + V + '">');
+  })();
+</script>
+</head>
+<body>
+<main id="app">
+
+  <!-- 首頁 -->
+  <section class="screen" id="home" data-on>
+    <div class="parade" aria-hidden="true"></div>
+    <h1 class="title">耳朵年齡機</h1>
+    <button class="primary big" id="go">開始</button>
+    <ul class="hints">
+      <li><span data-i="headphones"></span>戴耳機</li>
+      <li><span data-i="volLow"></span>小聲就好</li>
+    </ul>
+    <p class="note">趣味測驗，不能取代聽力檢查</p>
+  </section>
+
+  <!-- 音量確認 -->
+  <section class="screen" id="ready" hidden>
+    <div class="stage" aria-hidden="true"><div class="rings"><i></i><i></i></div></div>
+    <p class="hz"><b id="refHz"></b><small>Hz</small></p>
+    <p class="say">聽得到、不刺耳就好</p>
+    <div class="row">
+      <button class="square" id="refToggle" aria-label="播放／停止"></button>
+      <button class="primary" id="refOk"><span data-i="check"></span>聽得到</button>
+    </div>
+  </section>
+
+  <!-- 聲音測試 -->
+  <section class="screen" id="test" hidden>
+    <div class="stage" aria-hidden="true"></div>
+    <p class="hz" aria-hidden="true"><b id="sweepHz">500</b><small>Hz</small></p>
+    <div class="track" aria-hidden="true"><i id="sweepBar"></i></div>
+    <button class="flagbtn" id="surrender"><span class="fl"></span>我聽不到了</button>
+    <button class="text" id="toEnd" hidden><span data-i="skip"></span>一路聽到了終點</button>
+  </section>
+
+  <!-- 頻率細修 -->
+  <section class="screen" id="tune" hidden>
+    <h2 class="q">你是在這裡投降的嗎？</h2>
+    <div class="stage small" aria-hidden="true"></div>
+    <p class="hz"><b id="tuneHz"></b><small>Hz</small></p>
+    <div class="slider" id="slider" role="slider" tabindex="0" aria-label="頻率">
+      <div class="rail"></div>
+      <i class="mark lo" hidden></i><i class="mark hi" hidden></i>
+      <div class="thumb"></div>
+    </div>
+    <div class="row nudge">
+      <button class="square" id="down" aria-label="降低頻率"></button>
+      <button class="square solid" id="probe" aria-label="播放這個頻率"></button>
+      <button class="square" id="up" aria-label="提高頻率"></button>
+      <button class="chip" id="fine" aria-pressed="false" aria-label="微調幅度">±100</button>
+    </div>
+    <div class="row ab">
+      <button class="ghost" id="heard"><span data-i="ear"></span>聽得到</button>
+      <button class="ghost" id="unheard"><span data-i="earOff"></span>聽不到</button>
+    </div>
+    <button class="primary big" id="confirm"><span class="fl"></span>確定，在這裡投降！</button>
+  </section>
+
+  <!-- 結果 -->
+  <section class="screen" id="result" hidden>
+    <figure class="poster"><img id="posterImg" alt=""></figure>
+    <div class="row">
+      <button class="square solid" id="share" aria-label="分享"></button>
+      <button class="square" id="save" aria-label="下載圖片"></button>
+      <button class="square" id="again" aria-label="重新測試"></button>
+    </div>
+  </section>
+
+</main>
+
+<!-- 角落按鈕 -->
+<button class="corner left" id="home-btn" aria-label="回首頁" hidden></button>
+<div class="corner right" id="tools" hidden>
+  <button class="cbtn" id="pause" aria-label="暫停"></button>
+  <button class="cbtn" id="restart" aria-label="從頭開始"></button>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<p class="sr" id="sr" aria-live="polite"></p>
+
+<script type="module">import './js/main.js';</script>
+</body>
+</html>
