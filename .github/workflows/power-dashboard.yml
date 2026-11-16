@@ -1,0 +1,39 @@
+name: Update power dashboard
+on:
+  schedule:
+    - cron: '4,14,24,34,44,54 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: power-dashboard-data
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/checkout@v4
+        with:
+          ref: weather-data
+          path: weather-output
+      - name: Fetch official Taipower data
+        working-directory: power-dashboard
+        env:
+          POWER_OUTPUT: ${{ runner.temp }}/power-dashboard.json
+          PREVIOUS_INPUT: ${{ github.workspace }}/weather-output/power-dashboard.json
+        run: node scripts/publish-power.js
+      - name: Publish data only
+        working-directory: weather-output
+        run: |
+          cp "${{ runner.temp }}/power-dashboard.json" power-dashboard.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add power-dashboard.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Update official Taipower data'
+          git push origin HEAD:weather-data

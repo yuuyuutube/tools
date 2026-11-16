@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#e8e4dc">
+<title>台灣發電中！｜POWER POWER!</title>
+<meta name="description" content="六座由台電即時資料驅動的虛擬發電廠。">
+<link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:title" content="台灣發電中！｜POWER POWER!">
+<meta property="og:description" content="六座由台電即時資料驅動的虛擬發電廠。">
+<meta property="og:url" content="https://yuuyuutube.github.io/tools/power-dashboard/">
+<meta property="og:image" content="https://yuuyuutube.github.io/tools/power-dashboard/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="台灣發電中！：燃氣、燃煤、太陽能、風力、水力與其他能源工坊六座小發電廠，各有一位角色在工作。">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="台灣發電中！｜POWER POWER!">
+<meta name="twitter:description" content="六座由台電即時資料驅動的虛擬發電廠。">
+<meta name="twitter:image" content="https://yuuyuutube.github.io/tools/power-dashboard/assets/og.png">
+<link rel="stylesheet" href="src/style.css?v=1">
+<script type="module" src="src/app.js?v=1"></script>
+</head>
+<body>
+<svg class="defs" aria-hidden="true">
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13.5 2.5 5 13.5h6l-1 8 8.5-11h-6Z"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M3.5 17a8.5 8.5 0 1 1 17 0"/><path d="m12 17 4-5.5"/><circle cx="12" cy="17" r="1.3"/></symbol>
+  <symbol id="i-peak" viewBox="0 0 24 24"><path d="M3 19h18M4 16l4.5-6 3.5 3.5L17 6l3 4"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4 20 20"/></symbol>
+  <symbol id="i-full" viewBox="0 0 24 24"><path d="M4 9V4h5m6 0h5v5M4 15v5h5m6 0h5v-5"/></symbol>
+  <symbol id="i-unfull" viewBox="0 0 24 24"><path d="M9 4v5H4m16 0h-5V4M4 15h5v5m6 0v-5h5"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.4v.2"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 8a8 8 0 1 0 0 8M20 3v6h-6"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></symbol>
+  <symbol id="i-windy" viewBox="0 0 24 24"><path d="M3 8h11a3 3 0 1 0-3-3M3 12h16a3 3 0 1 1-3 3M3 16h8"/></symbol>
+  <symbol id="i-calm" viewBox="0 0 24 24"><path d="M3 12h4m4 0h2m4 0h4"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 2.8 19.5h18.4Z"/><path d="M12 10v4.5M12 17v.2"/></symbol>
+  <symbol id="i-offline" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5.5 12.5a10 10 0 0 1 13 0M9 16a5 5 0 0 1 6 0"/><circle cx="12" cy="19.5" r=".6"/><path d="M3 3l18 18"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></symbol>
+  <symbol id="i-question" viewBox="0 0 24 24"><path d="M9 9a3 3 0 1 1 4 2.8c-.7.3-1 .8-1 1.5V14M12 17.5v.2"/></symbol>
+  <symbol id="i-source" viewBox="0 0 24 24"><path d="M5 4h10l4 4v12H5Z"/><path d="M14 4v5h5M8.5 13h7M8.5 16.5h5"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5Z"/><path d="m3 13 9 5 9-5"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5Z"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5.5 9.5A1.6 1.6 0 0 0 5.9 21h12.2a1.6 1.6 0 0 0 1.4-2.5L14 9V3"/><path d="M7.5 15h9"/></symbol>
+</svg>
+
+<main id="app">
+  <header class="board">
+    <div class="load" id="load-box" title="目前用電功率（台電今日電力資訊）">
+      <svg class="ic lg"><use href="#i-bolt"/></svg>
+      <b id="load">—</b><small>萬瓩</small>
+    </div>
+    <div class="meta">
+      <span class="chip" id="util-box" title="目前供電使用率"><svg class="ic"><use href="#i-gauge"/></svg><span>使用率</span><b id="util">—</b><small>%</small></span>
+      <span class="chip light" id="peak-box" data-tone="unknown" title=""><i class="lamp" aria-hidden="true"></i><span id="light">—</span><span class="sub">尖峰備轉</span><b id="resv">—</b><small>%</small></span>
+      <span class="stamp" id="stamp"><svg class="ic"><use href="#i-clock"/></svg><span id="stamp-t">—</span></span>
+      <span class="badge" id="badge" hidden>展示資料</span>
+    </div>
+    <div class="tools">
+      <div id="demo" class="seg" role="radiogroup" aria-label="展示情境" hidden>
+        <button role="radio" data-v="day" aria-label="白天：太陽能活躍"><svg class="ic"><use href="#i-sun"/></svg></button>
+        <button role="radio" data-v="night" aria-label="夜間：太陽能休息"><svg class="ic"><use href="#i-moon"/></svg></button>
+        <button role="radio" data-v="windy" aria-label="風力較高"><svg class="ic"><use href="#i-windy"/></svg></button>
+        <button role="radio" data-v="calm" aria-label="風力較低"><svg class="ic"><use href="#i-calm"/></svg></button>
+        <button role="radio" data-v="tight" aria-label="模擬官方燈號：供電吃緊"><svg class="ic"><use href="#i-alert"/></svg></button>
+        <button role="radio" data-v="offline" aria-label="模擬資料連線失敗"><svg class="ic"><use href="#i-offline"/></svg></button>
+      </div>
+      <button id="enjoy" class="dot" aria-label="觀賞模式" aria-pressed="false"><svg class="ic"><use href="#i-eye"/></svg></button>
+      <button id="full" class="dot chrome" aria-label="全螢幕"><svg class="ic"><use href="#i-full"/></svg></button>
+      <button id="info" class="dot chrome" aria-haspopup="dialog" aria-label="資料來源與說明"><svg class="ic"><use href="#i-info"/></svg></button>
+    </div>
+  </header>
+
+  <section id="grid" aria-label="六座發電廠"></section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <p id="sr" class="sr" aria-live="polite"></p>
+</main>
+
+<template id="tile-tpl">
+  <article class="tile" tabindex="0" role="button">
+    <div class="art"></div>
+    <div class="tag">
+      <h2 class="name"></h2>
+      <p class="val"><b class="mw">—</b><small>萬瓩</small><em class="share"></em></p>
+      <span class="state" hidden><svg class="ic"><use href="#i-pause"/></svg><span></span></span>
+    </div>
+    <div class="bubble" aria-hidden="true"></div>
+  </article>
+</template>
+
+<div id="veil" hidden></div>
+
+<section id="detail" role="dialog" aria-modal="true" aria-labelledby="d-name" hidden>
+  <div class="d-art"><div class="bubble" aria-hidden="true"></div></div>
+  <aside class="d-info">
+    <header>
+      <h2 id="d-name"></h2>
+      <button class="dot flat" data-close aria-label="返回六座發電廠"><svg class="ic"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="d-scroll">
+      <p class="d-big"><b id="d-mw">—</b><small>萬瓩</small><em id="d-share"></em></p>
+      <p class="d-state" id="d-state" hidden></p>
+      <dl class="d-stats">
+        <div><dt>淨發電／裝置容量</dt><dd id="d-cf">—</dd></div>
+        <div><dt>回報機組</dt><dd id="d-units">—</dd></div>
+      </dl>
+      <figure class="d-trend">
+        <svg id="d-spark" viewBox="0 0 300 70" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <figcaption id="d-trend-cap"></figcaption>
+      </figure>
+      <div id="d-comps" class="d-comps" hidden></div>
+      <p class="d-intro" id="d-intro"></p>
+      <ol class="d-units" id="d-list"></ol>
+    </div>
+  </aside>
+</section>
+
+<section id="about" class="sheet" role="dialog" aria-modal="true" aria-label="資料來源與說明" hidden>
+  <header>
+    <div class="seg" role="radiogroup" aria-label="資料模式" id="mode">
+      <button role="radio" data-v="live" aria-label="台電即時資料"><svg class="ic"><use href="#i-bolt"/></svg></button>
+      <button role="radio" data-v="demo" aria-label="展示資料"><svg class="ic"><use href="#i-flask"/></svg></button>
+    </div>
+    <span class="grow"></span>
+    <button id="refresh" class="dot flat" aria-label="重新取得資料"><svg class="ic"><use href="#i-refresh"/></svg></button>
+    <button class="dot flat" data-close aria-label="關閉"><svg class="ic"><use href="#i-close"/></svg></button>
+  </header>
+  <dl id="about-list"></dl>
+</section>
+
+<noscript>請啟用 JavaScript。</noscript>
+</body>
+</html>

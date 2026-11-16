@@ -1,0 +1,12 @@
+{
+  "name": "power-dashboard", "version": "1.0.0", "private": true, "type": "module",
+  "description": "台灣發電中！— 六座由台電即時資料驅動的虛擬發電廠",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server/index.js",
+    "dev": "node --watch --env-file-if-exists=.env server/index.js",
+    "test": "node --test tests/*.test.js",
+    "verify:live": "node scripts/verify-live.js",
+    "publish:data": "node scripts/publish-power.js"
+  }
+}

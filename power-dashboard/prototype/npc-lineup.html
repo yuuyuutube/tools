@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NPC 排排站｜POWER POWER!</title>
+<style>
+:root { --bg: #e8e4dc; --ink: #24221f; --paper: #fbfaf6; --mute: #8b8984; --line: #dedbd3;
+  --font: "Helvetica Neue", Helvetica, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+  --card: 0 0 0 1px rgba(36,34,31,.05), 0 8px 24px -14px rgba(40,30,10,.35); }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { background: var(--bg); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+body { padding: calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 24px); }
+button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; touch-action: manipulation; -webkit-appearance: none; appearance: none; }
+button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.ic { width: 18px; height: 18px; display: block; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+.bar { max-width: 1180px; margin: 0 auto 16px; display: flex; gap: 10px; flex-wrap: wrap; }
+.seg { display: flex; gap: 2px; background: var(--paper); box-shadow: var(--card); border-radius: 20px; padding: 4px; }
+.seg button { width: 36px; height: 32px; border-radius: 16px; display: grid; place-items: center; color: var(--mute); transition: background .2s, color .2s; }
+.seg button[aria-checked="true"] { background: var(--ink); color: var(--paper); }
+@media (hover: hover) { .seg button:not([aria-checked="true"]):hover { background: rgba(36,34,31,.06); } }
+.grid { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+.alt { margin-top: 28px; grid-template-columns: repeat(4, 1fr); max-width: 780px; }
+.card { position: relative; border-radius: 16px; overflow: hidden; background: var(--sky); box-shadow: var(--card); cursor: pointer; transition: transform .15s; }
+.card:active { transform: scale(.98); }
+.card svg { display: block; width: 100%; height: auto; }
+.card .name { position: absolute; left: 10px; top: 10px; padding: 4px 10px; border-radius: 10px; background: var(--paper); box-shadow: var(--card); font-size: 13px; font-weight: 700; letter-spacing: .14em; display: flex; align-items: center; gap: 6px; }
+.card .name::before { content: ""; width: 8px; height: 8px; border-radius: 3px; background: var(--key); }
+.alt .card { opacity: .92; }
+.alt .card .name { font-size: 12px; font-weight: 500; color: #4b4843; }
+@media (max-width: 960px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 560px) { .grid, .alt { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-off" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></symbol>
+  <symbol id="i-low" viewBox="0 0 24 24"><path d="M6 18v-3"/><path d="M12 18v-3M18 18v-3" opacity=".3"/></symbol>
+  <symbol id="i-mid" viewBox="0 0 24 24"><path d="M6 18v-3M12 18v-7"/><path d="M18 18v-3" opacity=".3"/></symbol>
+  <symbol id="i-high" viewBox="0 0 24 24"><path d="M6 18v-3M12 18v-7M18 18V6"/></symbol>
+  <symbol id="i-calm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 10v.5M15 10v.5M9.5 15h5"/></symbol>
+  <symbol id="i-happy" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 10.5q1-1.5 2 0M14 10.5q1-1.5 2 0M8.5 14q3.5 3 7 0"/></symbol>
+  <symbol id="i-think" viewBox="0 0 24 24"><path d="M9 9a3 3 0 1 1 4 2.8c-.7.3-1 .8-1 1.5V14M12 17.5v.2"/></symbol>
+  <symbol id="i-sleep" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></symbol>
+  <symbol id="i-talk" viewBox="0 0 24 24"><path d="M4 5h16v10H9l-5 4Z"/></symbol>
+</svg>
+
+<div class="bar">
+  <div class="seg" role="radiogroup" aria-label="發電活躍度" id="act">
+    <button role="radio" data-v="0" aria-label="未發電"><svg class="ic"><use href="#i-off"/></svg></button>
+    <button role="radio" data-v=".2" aria-label="低"><svg class="ic"><use href="#i-low"/></svg></button>
+    <button role="radio" data-v=".55" aria-label="中"><svg class="ic"><use href="#i-mid"/></svg></button>
+    <button role="radio" data-v="1" aria-label="高"><svg class="ic"><use href="#i-high"/></svg></button>
+  </div>
+  <div class="seg" role="radiogroup" aria-label="表情" id="mood">
+    <button role="radio" data-v="calm" aria-label="平常"><svg class="ic"><use href="#i-calm"/></svg></button>
+    <button role="radio" data-v="happy" aria-label="開心"><svg class="ic"><use href="#i-happy"/></svg></button>
+    <button role="radio" data-v="think" aria-label="思考"><svg class="ic"><use href="#i-think"/></svg></button>
+    <button role="radio" data-v="sleep" aria-label="睡覺"><svg class="ic"><use href="#i-sleep"/></svg></button>
+  </div>
+  <div class="seg"><button id="talk" aria-label="大家一起說話"><svg class="ic"><use href="#i-talk"/></svg></button></div>
+</div>
+
+<section class="grid" id="main"></section>
+<section class="grid alt" id="alt"></section>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg', INK = '#2a2622';
+const el = (tag, a, p) => { const n = document.createElementNS(NS, tag); for (const k in a || {}) n.setAttribute(k, a[k]); p && p.appendChild(n); return n; };
+const path = (p, d, fill, a = {}) => el('path', { d, fill, ...a }, p);
+const line = (p, d, stroke, w, a = {}) => el('path', { d, fill: 'none', stroke, 'stroke-width': w, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', ...a }, p);
+const circ = (p, cx, cy, r, fill, a = {}) => el('circle', { cx, cy, r, fill, ...a }, p);
+const rect = (p, x, y, w, h, fill, rx = 0, a = {}) => el('rect', { x, y, width: w, height: h, rx, fill, ...a }, p);
+const tf = (n, s) => n.setAttribute('transform', s);
+const lerp = (a, b, t) => a + (b - a) * t;
+let uid = 0;
+
+/** 共用臉：calm / happy / think / sleep；說話時嘴巴開合 */
+function face(p, x, y, { ink = INK, mouth = '#b84a3c', cheek = '#ef8c8c', s = 1 } = {}) {
+  const g = el('g', { transform: `translate(${x} ${y}) scale(${s})` }, p);
+  const ch = el('g', { opacity: .55 }, g); circ(ch, -8.4, 4.6, 2.6, cheek); circ(ch, 8.4, 4.6, 2.6, cheek);
+  const eyes = el('g', {}, g); el('ellipse', { cx: -4.6, cy: 0, rx: 1.7, ry: 2.3, fill: ink }, eyes); el('ellipse', { cx: 4.6, cy: 0, rx: 1.7, ry: 2.3, fill: ink }, eyes);
+  const happy = line(g, 'M-7 .8q2.4 -3.6 4.8 0M2.2 .8q2.4 -3.6 4.8 0', ink, 1.6);
+  const closed = line(g, 'M-7 0q2.4 2.4 4.8 0M2.2 0q2.4 2.4 4.8 0', ink, 1.6);
+  const look = el('g', {}, g); circ(look, -4.2, -1.4, 1.7, ink); circ(look, 5, -1.4, 1.7, ink);
+  const smile = line(g, 'M-2.6 5.6q2.6 2.2 5.2 0', ink, 1.5);
+  const flat = line(g, 'M-1.6 6.4h3.4', ink, 1.5);
+  const open = el('ellipse', { cx: 0, cy: 6.4, rx: 2.4, ry: 2, fill: mouth }, g);
+  const zz = el('g', {}, p); const zs = [0, 1, 2].map(() => line(zz, 'M0 0h5l-5 6h5', INK, 1.5));
+  let blink = 2 + Math.random() * 3, bt = 0;
+  const show = (n, v) => n.setAttribute('opacity', v ? 1 : 0);
+  return {
+    ch,
+    update(t, dt, mood, talking) {
+      blink -= dt; if (blink < 0) { bt = .13; blink = 2.5 + Math.random() * 4; } if (bt > 0) bt -= dt;
+      show(eyes, mood === 'calm'); if (bt > 0) tf(eyes, 'scale(1 .12)'); else eyes.removeAttribute('transform');
+      show(happy, mood === 'happy'); show(closed, mood === 'sleep'); show(look, mood === 'think');
+      const o = talking && Math.sin(t * 17) > 0;
+      show(open, o); show(smile, !o && mood !== 'think'); show(flat, !o && mood === 'think');
+      zz.setAttribute('opacity', mood === 'sleep' ? 1 : 0);
+      zs.forEach((z, i) => { const k = (t * .35 + i / 3) % 1; tf(z, `translate(${x + 10 + k * 10} ${y - 12 - k * 22}) scale(${.6 + k * .6})`); z.setAttribute('opacity', Math.max(0, Math.sin(k * Math.PI)).toFixed(2)); });
+    },
+  };
+}
+const shadow = (p, rx = 16) => el('ellipse', { cx: 60, cy: 117, rx, ry: 3.4, fill: INK, opacity: .14 }, p);
+const feet = (p, leg, y = 102) => { rect(p, 50, y, 7, 13, leg, 3); rect(p, 63, y, 7, 13, leg, 3); el('ellipse', { cx: 53, cy: 115, rx: 5, ry: 2.8, fill: INK }, p); el('ellipse', { cx: 67, cy: 115, rx: 5, ry: 2.8, fill: INK }, p); };
+
+/* ---------------- 01 燃氣：儲氣球「球球」 ---------------- */
+function gasBall(svg) {
+  const O = '#f2a46f', OD = '#df8550', CR = '#f7f0de', P = '#8a7bb5', PD = '#655692';
+  shadow(svg, 20); feet(svg, PD, 98);
+  const bob = el('g', {}, svg);
+  const armL = line(bob, 'M34 80L26 90', P, 5.5), armR = line(bob, 'M86 80L94 90', P, 5.5);
+  rect(bob, 57, 38, 6, 12, PD, 2);
+  const wheel = el('g', {}, bob); circ(wheel, 0, 0, 7, 'none', { stroke: P, 'stroke-width': 2.6 }); line(wheel, 'M-7 0H7M0 -7V7', P, 2.2);
+  const body = el('g', {}, bob);
+  const cid = 'c' + ++uid, cp = el('clipPath', { id: cid }, svg); circ(cp, 60, 74, 28, '#000');
+  circ(body, 60, 74, 28, O);
+  path(body, 'M32 74A28 28 0 0 0 88 74Z', OD, { opacity: .4 });
+  rect(body, 30, 80, 60, 8, CR, 0, { 'clip-path': `url(#${cid})` });
+  const lamps = [48, 60, 72].map(x => circ(body, x, 84, 2.4, '#e8dcc6'));
+  line(body, 'M41 62A21 21 0 0 1 52 52', CR, 3.2, { opacity: .8 });
+  const f = face(body, 60, 66);
+  let spin = 0;
+  return (t, dt, s) => {
+    const a = s.act;
+    spin += dt * (a > 0 ? .5 + a * 5 : 0);
+    tf(wheel, `translate(60 38) rotate(${spin * 57.3})`);
+    const hop = a > 0 ? Math.abs(Math.sin(t * (2 + a * 3))) * (1 + a * 2.5) : 0;
+    const puff = s.talking ? 1 + Math.sin(t * 9) * .025 : 1 + Math.sin(t * 1.6) * .015;
+    tf(bob, `translate(0 ${-hop}) translate(60 102) scale(${puff}) translate(-60 -102)`);
+    lamps.forEach((l, i) => l.setAttribute('fill', i < Math.round(a * 3) ? (i === 2 && Math.sin(t * 3) > .6 ? OD : '#ffd96b') : '#e8dcc6'));
+    if (s.talking) tf(armR, `rotate(${-40 + Math.sin(t * 8) * 15} 86 80)`); else armR.removeAttribute('transform');
+    f.update(t, dt, s.mood, s.talking);
+  };
+}
+
+/* ---------------- 02 燃煤：煤塊伯「炭伯」 ---------------- */
+function coalLump(svg) {
+  const C = '#3a322e', CL = '#5a4e47', CD = '#2a2420', T = '#8b7b6b', TD = '#665a4e', W = '#f4efe4';
+  shadow(svg, 22); feet(svg, TD, 98);
+  const bob = el('g', {}, svg);
+  line(bob, 'M31 82L24 94', TD, 5.5); const armR = line(bob, 'M89 82L96 94', TD, 5.5);
+  path(bob, 'M33 102L27 76L37 54L58 46L81 51L93 74L87 102Z', C);
+  path(bob, 'M37 54L58 46L51 63Z', CL); path(bob, 'M81 51L93 74L77 70Z', CL); path(bob, 'M33 102L27 76L42 88Z', CD); path(bob, 'M87 102L93 74L80 92Z', CD);
+  // 炭火般的暖臉頰：活躍度越高越亮
+  const glow = el('g', {}, bob); circ(glow, 48, 78, 4, '#ff8a4c'); circ(glow, 72, 78, 4, '#ff8a4c');
+  path(bob, 'M35 56Q37 38 60 36Q83 36 88 52Q88 56 82 55Q60 50 35 58Z', T);
+  line(bob, 'M44 50Q60 45 80 49', '#a89886', 1.6, { opacity: .7 });
+  const brows = line(bob, 'M46 61h9M65 61h9', W, 3.2);
+  const f = face(bob, 60, 69, { ink: '#fbf3df', mouth: '#e8735a', cheek: '#00000000', s: 1.25 });
+  path(bob, 'M50 76q5 -5 10 -1.5q5 -3.5 10 1.5q-5 4 -10 1q-5 3 -10 -1Z', W);
+  return (t, dt, s) => {
+    const a = s.act;
+    glow.setAttribute('opacity', (a * .75 + Math.sin(t * 1.2) * .08).toFixed(2));
+    const nod = s.talking ? Math.sin(t * 4) * 2.5 : Math.sin(t * .9) * .8;
+    tf(bob, `rotate(${nod} 60 110)`);
+    tf(brows, `translate(0 ${s.mood === 'think' ? -2 : s.mood === 'happy' ? -1 : 0})`);
+    if (s.talking) tf(armR, `rotate(${-30 + Math.sin(t * 5) * 10} 89 82)`); else armR.removeAttribute('transform');
+    f.update(t, dt, s.mood, s.talking);
+  };
+}
+
+/* ---------------- 03 太陽能：向日葵「小晴」 ---------------- */
+function sunflower(svg) {
+  const Y = '#f7c948', Y2 = '#f0b232', G = '#5e9a5c', GL = '#7fb174', BR = '#c98a4b';
+  el('ellipse', { cx: 60, cy: 116, rx: 20, ry: 4.5, fill: GL }, svg);
+  const stem = line(svg, '', G, 5);
+  const leafL = path(svg, 'M59 96Q42 86 36 96Q46 104 59 99Z', G), leafR = path(svg, 'M61 88Q78 78 85 88Q74 96 61 91Z', G);
+  const head = el('g', {}, svg);
+  const petals = Array.from({ length: 14 }, (_, i) => el('ellipse', { cx: 0, cy: -20, rx: 5.2, ry: 11, fill: i % 2 ? Y : Y2 }, head));
+  circ(head, 0, 0, 16, BR);
+  [[-7, -9], [7, -9], [-10, 4], [10, 4], [0, 11]].forEach(([x, y]) => circ(head, x, y, 1.1, '#a56a35'));
+  const f = face(head, 0, 0);
+  let open = .6;
+  return (t, dt, s) => {
+    const a = s.act, sleeping = s.mood === 'sleep' || a === 0;
+    const target = sleeping ? .05 : .35 + a * .65;
+    open += (target - open) * (1 - Math.exp(-dt / .6));
+    petals.forEach((p, i) => { const r = 14 + 7 * open; tf(p, `rotate(${i * 360 / 14 + (1 - open) * 8 * (i % 2 ? 1 : -1)}) translate(0 ${-r + 20})`); p.setAttribute('ry', (5 + 7 * open).toFixed(1)); });
+    // 白天臉朝太陽慢慢轉；睡覺時垂頭
+    const droop = sleeping ? 28 : 0, track = sleeping ? 0 : Math.sin(t * .25) * 10;
+    const hx = 60 + Math.sin((droop + track) * Math.PI / 180) * 6, hy = 52 + droop * .2;
+    stem.setAttribute('d', `M60 116Q58 92 ${hx} ${hy + 14}`);
+    tf(head, `translate(${hx} ${hy}) rotate(${droop + track + (s.talking ? Math.sin(t * 6) * 4 : 0)})`);
+    const wave = s.talking ? Math.sin(t * 8) * 10 : Math.sin(t * 1.1) * 3;
+    tf(leafR, `rotate(${-wave} 61 90)`); tf(leafL, `rotate(${wave * .5} 59 97)`);
+    f.update(t, dt, s.mood === 'sleep' || a === 0 ? 'sleep' : s.mood, s.talking);
+  };
+}
+
+/* ---------------- 04 風力：風向袋「阿颯」 ---------------- */
+function windsock(svg) {
+  const R = '#e8735a', CR = '#fbf7ec', P = '#8d7cab';
+  el('ellipse', { cx: 40, cy: 116, rx: 14, ry: 3.6, fill: INK, opacity: .14 }, svg);
+  rect(svg, 37, 30, 5, 86, P, 2.5); circ(svg, 39.5, 29, 4, '#6b5e8c');
+  const sock = el('g', {}, svg);
+  const cid = 'c' + ++uid, cp = el('clipPath', { id: cid }, svg), shape = path(cp, '', '#000');
+  const stripes = el('g', { 'clip-path': `url(#${cid})` }, sock);
+  [0, 1, 2, 3, 4].forEach(i => rect(stripes, i * 14 - 2, -20, 14, 40, i % 2 ? R : CR));
+  const outline = path(sock, '', 'none', { stroke: '#c95c45', 'stroke-width': 1.2, opacity: .5 });
+  rect(sock, -2.5, -13, 5, 26, P, 2.5);
+  const f = face(sock, 7, -.5, { ink: INK, s: .78 });
+  let ang = 40;
+  return (t, dt, s) => {
+    const a = s.act;
+    const target = lerp(80, 6, a) + Math.sin(t * (1 + a * 3)) * (2 + a * 5);
+    ang += (target - ang) * (1 - Math.exp(-dt / .8));
+    const tail = 3 + a * 7, w = Math.sin(t * (3 + a * 5)) * (1 + a * 2.5), w2 = Math.sin(t * (3 + a * 5) + 1.4) * (1.5 + a * 3);
+    const len = 52 + a * 10;
+    const d = `M0 -12Q${len / 2} ${-(12 + tail) / 2 + w} ${len} ${-tail + w2}L${len} ${tail + w2}Q${len / 2} ${(12 + tail) / 2 + w} 0 12Z`;
+    shape.setAttribute('d', d); outline.setAttribute('d', d);
+    tf(sock, `translate(42 36) rotate(${ang + (s.talking ? Math.sin(t * 7) * 4 : 0)})`);
+    f.update(t, dt, s.mood, s.talking);
+  };
+}
+
+/* ---------------- 05 水力：小水滴「滴滴」（現行） ---------------- */
+function drop(svg) {
+  shadow(svg, 17);
+  const bob = el('g', {}, svg);
+  rect(bob, 51, 108, 7, 7, INK, 3.5); rect(bob, 62, 108, 7, 7, INK, 3.5);
+  const body = el('g', {}, bob);
+  path(body, 'M60 50C68 62 79 73 79 86A19 19 0 0 1 41 86C41 73 52 62 60 50Z', '#8fcac1');
+  line(body, 'M47 80A13 13 0 0 0 53 95', '#ffffff', 3.2, { opacity: .55 });
+  path(bob, 'M47 66A13 11 0 0 1 73 66Z', '#f1d77a'); rect(bob, 44, 64.5, 32, 3.6, '#e3bf4f', 1.8); rect(bob, 58.4, 54, 3.2, 10, '#e3bf4f', 1.6);
+  const f = face(bob, 60, 86);
+  return (t, dt, s) => {
+    const b = 1 + Math.sin(t * 1.6) * .02 + (s.talking ? Math.abs(Math.sin(t * 8)) * .03 : 0);
+    tf(body, `translate(60 115) scale(${2 - b} ${b}) translate(-60 -115)`);
+    f.update(t, dt, s.mood, s.talking);
+  };
+}
+
+/* ---------------- 06 其他：發明家「博士」（現行） ---------------- */
+function doctor(svg) {
+  const coat = '#fbf7ec', P = '#7d6f8e', W = '#f4efe4';
+  shadow(svg, 15); feet(svg, '#4a3a30', 100);
+  const bob = el('g', {}, svg);
+  rect(bob, 46, 74, 28, 30, coat, 9); rect(bob, 49, 74, 22, 22, P, 8); rect(bob, 46, 78, 7, 24, coat, 3); rect(bob, 67, 78, 7, 24, coat, 3);
+  line(bob, 'M48 80L42 92', coat, 6); const armR = line(bob, 'M72 80L78 92', coat, 6);
+  const head = el('g', {}, bob);
+  [[-13, -3], [13, -3], [-9, -11], [9, -11]].forEach(([x, y]) => circ(head, 60 + x, 58 + y, 6.8, W));
+  circ(head, 60, 60, 14, '#f2d6b8');
+  rect(head, 46, 50, 28, 3, INK, 1.5, { opacity: .7 });
+  [55, 65].forEach(x => { circ(head, x, 51.5, 4.8, '#cfe3e0', { stroke: INK, 'stroke-width': 1.6 }); circ(head, x - 1.2, 50.3, 1.2, '#fff', { opacity: .8 }); });
+  const f = face(head, 60, 61);
+  return (t, dt, s) => {
+    tf(bob, `translate(0 ${Math.sin(t * 1.6) * .5})`);
+    if (s.talking) { tf(armR, `rotate(${-70 + Math.sin(t * 6) * 15} 72 80)`); tf(head, `rotate(${Math.sin(t * 5) * 3} 60 74)`); } else { armR.removeAttribute('transform'); head.removeAttribute('transform'); }
+    f.update(t, dt, s.mood, s.talking);
+  };
+}
+
+/* ---------------- 備選 ---------------- */
+function flame(svg) {
+  shadow(svg, 15); const bob = el('g', {}, svg);
+  const outer = path(bob, '', '#8b7fd6'), inner = path(bob, '', '#b9b0ef');
+  const f = face(bob, 60, 94);
+  return (t, dt, s) => {
+    const k = Math.sin(t * 6) * 2 * (.4 + s.act), h = 44 - s.act * 10;
+    outer.setAttribute('d', `M${60 + k} ${h}C${74} ${h + 18} 82 78 79 94A19 19 0 0 1 41 94C38 78 ${48} ${h + 18} ${60 + k} ${h}Z`);
+    inner.setAttribute('d', `M${60 - k * .6} ${h + 24}C68 ${h + 36} 70 84 68 92A8 8 0 0 1 52 92C50 84 ${53} ${h + 36} ${60 - k * .6} ${h + 24}Z`);
+    inner.setAttribute('opacity', .5);
+    f.update(t, dt, s.mood, s.talking);
+  };
+}
+function boiler(svg) {
+  shadow(svg, 18); feet(svg, '#665a4e', 104); const bob = el('g', {}, svg);
+  rect(bob, 66, 34, 11, 26, '#8b7b6b', 3); rect(bob, 64, 30, 15, 7, '#665a4e', 3);
+  rect(bob, 38, 56, 44, 50, '#a8493b', 12); rect(bob, 38, 92, 44, 6, '#7f3429');
+  [44, 76].forEach(x => [62, 86].forEach(y => circ(bob, x, y, 1.6, '#f6ecd9')));
+  circ(bob, 60, 84, 0.1, 'none');
+  const f = face(bob, 60, 72, { ink: '#f6ecd9', mouth: '#ffcf8a', cheek: '#ff8a4c' });
+  return (t, dt, s) => { tf(bob, `translate(0 ${Math.sin(t * 1.4) * .6})`); f.update(t, dt, s.mood, s.talking); };
+}
+function panel(svg) {
+  shadow(svg, 20); feet(svg, '#c97767', 98); const bob = el('g', {}, svg);
+  path(bob, 'M34 100L42 54H78L86 100Z', '#3f5d7d');
+  for (let i = 1; i < 4; i++) line(bob, `M${42 + i * 9} 54L${34 + i * 13} 100`, '#7f9dbb', 1.2);
+  line(bob, 'M38 77H82', '#7f9dbb', 1.2);
+  const f = face(bob, 60, 74, { ink: '#f6ecd9', mouth: '#f6d76b' });
+  return (t, dt, s) => { tf(bob, `translate(0 ${Math.sin(t * 1.4) * .6})`); f.update(t, dt, s.mood, s.talking); };
+}
+function cloud(svg) {
+  const bob = el('g', {}, svg);
+  [[44, 84, 15], [60, 74, 19], [77, 84, 14], [60, 90, 16]].forEach(([x, y, r]) => circ(bob, x, y, r, '#fbf7ec'));
+  const f = face(bob, 60, 82);
+  return (t, dt, s) => { tf(bob, `translate(${Math.sin(t * .5) * 3} ${Math.sin(t * .9) * 3})`); f.update(t, dt, s.mood, s.talking); };
+}
+
+const MAIN = [
+  ['球球', gasBall, '#e6dfee', '#a99bc9', '#8a7bb5'],
+  ['炭伯', coalLump, '#f0e4cd', '#c9b391', '#a8493b'],
+  ['小晴', sunflower, '#fbefc6', '#9cc68f', '#f2b84b'],
+  ['阿颯', windsock, '#f4efe3', '#a9c09d', '#8fab84'],
+  ['滴滴', drop, '#f5ebc8', '#7fae7b', '#4f8d85'],
+  ['博士', doctor, '#efe4c9', '#4a3a30', '#d6a93a'],
+];
+const ALT = [
+  ['小火苗', flame, '#e6dfee', '#a99bc9', '#8a7bb5'],
+  ['小鍋爐', boiler, '#f0e4cd', '#c9b391', '#a8493b'],
+  ['太陽能板', panel, '#fbefc6', '#9cc68f', '#f2b84b'],
+  ['小雲朵', cloud, '#f4efe3', '#a9c09d', '#8fab84'],
+];
+
+const S = { act: .55, mood: 'calm', talkAll: 0 };
+const chars = [];
+function make(list, host) {
+  for (const [name, fn, sky, ground, key] of list) {
+    const card = document.createElement('button'); card.className = 'card'; card.setAttribute('aria-label', `${name}：說句話`);
+    card.style.setProperty('--sky', sky); card.style.setProperty('--key', key);
+    const svg = el('svg', { viewBox: '0 0 120 140', 'aria-hidden': 'true' }, card);
+    rect(svg, 0, 0, 120, 140, sky); rect(svg, 0, 117, 120, 30, ground);
+    const n = document.createElement('span'); n.className = 'name'; n.textContent = name; card.appendChild(n);
+    const g = el('g', { transform: 'translate(0 6)' }, svg);
+    const c = { update: fn(g), talk: 0 };
+    card.addEventListener('click', () => { c.talk = 2.4; });
+    host.appendChild(card); chars.push(c);
+  }
+}
+make(MAIN, document.getElementById('main'));
+make(ALT, document.getElementById('alt'));
+
+function seg(id, key, parse) {
+  const box = document.getElementById(id), bs = [...box.querySelectorAll('button')];
+  const sync = () => bs.forEach(b => b.setAttribute('aria-checked', String(parse(b.dataset.v) === S[key])));
+  bs.forEach(b => b.addEventListener('click', () => { S[key] = parse(b.dataset.v); sync(); }));
+  box.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    e.preventDefault(); const i = bs.findIndex(b => b.getAttribute('aria-checked') === 'true');
+    const n = bs[(i + (e.key === 'ArrowRight' ? 1 : -1) + bs.length) % bs.length]; n.focus(); n.click();
+  });
+  sync();
+}
+seg('act', 'act', Number); seg('mood', 'mood', String);
+document.getElementById('talk').addEventListener('click', () => chars.forEach((c, i) => { c.talk = 2.4; c.delay = i * .12; }));
+
+let last = performance.now();
+const still = matchMedia('(prefers-reduced-motion: reduce)');
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dt = Math.min(.1, (now - last) / 1000); last = now;
+  const t = still.matches ? 0 : now / 1000;
+  for (const c of chars) {
+    if (c.delay > 0) c.delay -= dt; else if (c.talk > 0) c.talk -= dt;
+    c.update(t, still.matches ? 1 : dt, { act: S.act, mood: S.mood, talking: c.talk > 0 && !(c.delay > 0) });
+  }
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
