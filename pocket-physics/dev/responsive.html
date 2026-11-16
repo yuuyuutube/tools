@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Responsive exhibit preview</title>
+<style>html,body{margin:0;background:#eef8f5}iframe{display:block;border:0}</style>
+<iframe title="Responsive Pocket Physics" id="preview"></iframe>
+<script>
+  const params = new URLSearchParams(location.search);
+  const width = Math.max(280,Math.min(1600,Number(params.get('width'))||390));
+  const height = Math.max(500,Math.min(1200,Number(params.get('height'))||844));
+  const frame = document.getElementById('preview');
+  frame.width = width; frame.height = height;
+  frame.onload = () => {
+    const doc = frame.contentDocument;
+    document.body.dataset.viewport = `${doc.defaultView.innerWidth}x${doc.defaultView.innerHeight}`;
+    document.body.dataset.scrollWidth = doc.documentElement.scrollWidth;
+    document.body.dataset.controlsBottom = doc.querySelector('.transport').getBoundingClientRect().bottom;
+  };
+  const scenario = params.get('scenario') === 'fallback' ? '?qa&preview=fallback' : '';
+  const exhibit = ['hourglass','bubble','mirror','liquid'].includes(params.get('exhibit')) ? params.get('exhibit') : 'bubble';
+  frame.src = '../' + scenario + '#' + exhibit;
+</script></html>

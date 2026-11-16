@@ -1,0 +1,51 @@
+PASS Pause freezes wave time and RAF
+PASS Two touches change actual simulated velocity
+PASS Touch cancellation and release clear all pointers
+PASS Keyboard moves the visible contact location
+PASS Keyboard impulse changes actual wave state
+PASS Custom sliders change sensitivity and damping
+PASS Mute is explicit and accessible
+PASS Denied microphone leaves demo/touch fallback
+PASS Live capture analysis measures amplitude and spectrum
+PASS Captured sound excites the numerical wave surface
+PASS Opening notes stops microphone tracks and RAF
+PASS Closing notes never restarts capture
+PASS Window blur releases capture resources
+PASS Pausing releases audio and pointers
+PASS All four exhibits are reachable with independent retained state
+PASS Inactive rooms stop animation and capture
+PASS Collection includes the fourth exhibit and selected state
+PASS Disposal releases GPU/audio, observers and input handlers
+PASS Reset restores parameters and deterministic initial wave
+PASS Extreme audio remains finite
+PASS GPU rendering produces visible surface pixels without errors
+PASS Canvas fallback renders a visible wave surface without WebGL
+PASS Layout has no horizontal overflow
+PASS A user gesture starts real oscillators and analyser
+PASS Generated demo audio traverses the real analysis pipeline
+PASS Mute silences only the speaker output
+PASS Leaving a room stops oscillators and closes the audio context
+PASS Returning never autoplays sound
+
+{
+  "simulation": {
+    "meanMs": 0.037,
+    "p95Ms": 0.1
+  },
+  "renderAndGPUFinish": {
+    "meanMs": 0.019,
+    "p95Ms": 0.1
+  },
+  "grid": 65,
+  "viewport": [
+    1280,
+    720
+  ],
+  "renderer": "WebGL",
+  "frameInterval": {
+    "meanMs": 8.333,
+    "p95Ms": 9
+  }
+}
+Synthetic touch and injected microphone lifecycle; real demo Web Audio pipeline. Physical microphone unverified.
+COMPLETE

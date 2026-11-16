@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Local microphone pipeline checks</title>
+<style>body{background:#eef8f5;color:#244854;font:14px/1.8 system-ui;padding:20px}button{background:#912844;color:white;border:0;border-radius:8px;padding:14px 22px;font:inherit;cursor:pointer}pre{white-space:pre-wrap}</style>
+<button id="start">Run audio pipeline checks</button><pre id="results">Generated audio only. No microphone permission, recording, upload or speaker output.</pre>
+<script type="module">
+import {MicrophoneBreath} from '../src/microphone.js';
+import {BubbleSimulation} from '../src/bubble-simulation.js';
+const output=document.getElementById('results'),button=document.getElementById('start');
+button.addEventListener('click',async()=>{
+  button.disabled=true; output.textContent=''; let producer,mic;
+  const check=(name,result)=>{output.textContent+=(result?'PASS  ':'FAIL  ')+name+'\n';if(!result)throw new Error(name);};
+  const frame=()=>new Promise(resolve=>requestAnimationFrame(resolve));
+  try {
+    producer=new AudioContext();
+    const noise=producer.createBuffer(1,producer.sampleRate,producer.sampleRate);let seed=42;
+    for(let i=0;i<noise.length;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;noise.getChannelData(0)[i]=(seed/4294967296)*2-1;}
+    const source=producer.createBufferSource(),gain=producer.createGain(),destination=producer.createMediaStreamDestination();
+    source.buffer=noise;source.loop=true;gain.gain.value=0;source.connect(gain);gain.connect(destination);source.start();
+    mic=new MicrophoneBreath({mediaDevices:{getUserMedia:async()=>destination.stream.clone()}});
+    const enabled=mic.enable();await Promise.all([producer.resume(),enabled]);
+    check('Real Web Audio stream and analyser start on a user gesture',mic.state==='listening');
+    for(let i=0;i<30;i++){await frame();mic.sample(1/120);}
+    check('Silence does not inflate',mic.level===0);
+    const simulation=new BubbleSimulation();gain.gain.value=.2;
+    for(let i=0;i<90;i++){await frame();simulation.breathStrength=mic.sample(1/120);simulation.blowing=mic.level>.025;simulation.step();simulation.step();}
+    check('Generated broadband breath is detected',mic.level>.8);
+    check('Analysed audio increases real simulated membrane area',simulation.inflation>1.25);
+    gain.gain.value=0;
+    for(let i=0;i<120;i++){await frame();mic.sample(1/120);}
+    check('Stopping the input clears the breath signal',mic.level<.005);
+    const tracks=mic.stream.getTracks(),context=mic.context;mic.stop();
+    check('Stopping releases every track and closes the consumer context',tracks.every(t=>t.readyState==='ended')&&context.state==='closed');
+    output.dataset.state='passed';output.textContent+='COMPLETE';
+  }catch(error){output.dataset.state='failed';output.textContent+='ERROR: '+error.stack;console.error(error);}
+  finally{mic?.dispose();if(producer&&producer.state!=='closed')await producer.close();button.disabled=false;}
+});
+</script></html>

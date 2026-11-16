@@ -1,0 +1,13 @@
+{
+  "name": "pocket-physics",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node dev/server.js",
+    "start": "node dev/server.js",
+    "test": "node --test tests/*.test.js",
+    "check": "node dev/check.js"
+  },
+  "engines": { "node": ">=20" }
+}
