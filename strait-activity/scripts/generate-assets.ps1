@@ -43,17 +43,15 @@ $badgeFont=[System.Drawing.Font]::new($font,24,[System.Drawing.FontStyle]::Bold,
 # 左側：標記、標題、三色指標
 $g.FillPath((B $ink),(New-RoundRect 64 64 64 64 14)); Draw-Mark $g 64 64 64
 $g.DrawString('台海觀測所',$titleFont,(B $ink),52,170)
-$g.DrawString('看懂每天的共機數字',$bodyFont,(B $ink),62,280)
 $x=64
 foreach ($pair in @(@('共機',$blue),@('越過中線',$coral),@('具名軍演',$teal))) {
     $w=[int]$g.MeasureString($pair[0],$badgeFont).Width+30
-    $g.FillPath((B $pair[1]),(New-RoundRect $x 352 $w 46 23))
-    $g.DrawString($pair[0],$badgeFont,(B '#ffffff'),[single]($x+14),[single]360)
+    $g.FillPath((B $pair[1]),(New-RoundRect $x 300 $w 46 23))
+    $g.DrawString($pair[0],$badgeFont,(B '#ffffff'),[single]($x+14),[single]308)
     $x+=$w+12
 }
 # 年曆色階示意（僅圖例，不代表實際資料）
-for ($i=0;$i -lt 6;$i++) { $g.FillPath((B $scale[$i]),(New-RoundRect ([single](64+$i*52)) 456 44 44 7)) }
-$g.DrawString('少',$smallFont,(B '#5b6478'),64,508); $g.DrawString('多',$smallFont,(B '#5b6478'),334,508)
+for ($i=0;$i -lt 6;$i++) { $g.FillPath((B $scale[$i]),(New-RoundRect ([single](64+$i*52)) 386 44 44 7)) }
 $g.DrawString('資料來源：國防部公開資料',$smallFont,(B '#5b6478'),64,560)
 # 右側：深藍舞台與符號
 $g.FillRectangle((B $ink),660,0,540,630)
@@ -68,7 +66,6 @@ $g.FillRectangle((B $pink),800,325,170,115); $g.Restore($clip); $path.Dispose()
 $shipPen=[System.Drawing.Pen]::new((C $yellow),6); $shipPen.LineJoin=[System.Drawing.Drawing2D.LineJoin]::Round
 $hull=[System.Drawing.PointF[]]@([System.Drawing.PointF]::new(1000,392),[System.Drawing.PointF]::new(1052,410),[System.Drawing.PointF]::new(1104,392),[System.Drawing.PointF]::new(1094,433),[System.Drawing.PointF]::new(1010,433))
 $g.DrawPolygon($shipPen,$hull); $g.DrawLines($shipPen,[System.Drawing.PointF[]]@([System.Drawing.PointF]::new(1014,391),[System.Drawing.PointF]::new(1014,357),[System.Drawing.PointF]::new(1090,357),[System.Drawing.PointF]::new(1090,391))); $g.DrawRectangle($shipPen,1040,335,24,22)
-$g.DrawString('yuuyuutube.github.io/tools',$smallFont,(B '#b8c2de'),800,548)
 $bitmap.Save((Join-Path $assetRoot 'og.png'),[System.Drawing.Imaging.ImageFormat]::Png)
 $shipPen.Dispose(); $titleFont.Dispose(); $bodyFont.Dispose(); $smallFont.Dispose(); $badgeFont.Dispose(); $g.Dispose(); $bitmap.Dispose()
 Write-Output 'Generated favicon PNGs and 1200x630 OG image.'
