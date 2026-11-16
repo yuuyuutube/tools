@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ece5d6">
+<title>海洋呼吸觀測所｜OCEAN BREATH</title>
+<meta name="description" content="由臺灣真實潮汐與海象資料驅動的動態海景。">
+<link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:title" content="海洋呼吸觀測所｜OCEAN BREATH">
+<meta property="og:description" content="由臺灣真實潮汐與海象資料驅動的動態海景。">
+<meta property="og:url" content="https://yuuyuutube.github.io/tools/ocean-breath/">
+<meta property="og:image" content="https://yuuyuutube.github.io/tools/ocean-breath/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="海洋呼吸觀測所：花蓮的山層層落進太平洋，礫石灘上的潮水緩緩起落。">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="海洋呼吸觀測所｜OCEAN BREATH">
+<meta name="twitter:description" content="由臺灣真實潮汐與海象資料驅動的動態海景。">
+<meta name="twitter:image" content="https://yuuyuutube.github.io/tools/ocean-breath/assets/og.png">
+<link rel="stylesheet" href="src/style.css?v=1">
+<script type="module" src="src/app.js?v=1"></script>
+</head>
+<body>
+<svg class="defs" aria-hidden="true">
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4 20 20"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></symbol>
+  <symbol id="i-full" viewBox="0 0 24 24"><path d="M4 9V4h5m6 0h5v5M4 15v5h5m6 0h5v-5"/></symbol>
+  <symbol id="i-unfull" viewBox="0 0 24 24"><path d="M9 4v5H4m16 0h-5V4M4 15h5v5m6 0v-5h5"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.4v.2"/></symbol>
+  <symbol id="i-rise" viewBox="0 0 24 24"><path d="M3 17c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 3 2M12 12V3m0 0L8.5 6.5M12 3l3.5 3.5"/></symbol>
+  <symbol id="i-fall" viewBox="0 0 24 24"><path d="M3 17c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 3 2M12 3v9m0 0-3.5-3.5M12 12l3.5-3.5"/></symbol>
+  <symbol id="i-high" viewBox="0 0 24 24"><path d="M3 9c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 3 2M4 20h16M12 17v-4"/></symbol>
+  <symbol id="i-low" viewBox="0 0 24 24"><path d="M3 17c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 3 2M4 4h16M12 7v4"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M8 3v18M8 6h3M8 10h2M8 14h3M8 18h2M13 14c1.5 0 1.5-1.4 3-1.4s1.5 1.4 3 1.4"/></symbol>
+  <symbol id="i-wave" viewBox="0 0 24 24"><path d="M2 15c3 0 3.5-7 8-7 3 0 4 3 2.5 4.5C11 14 9 12 10 11M2 19c2.5 0 2.5-1.6 5-1.6s2.5 1.6 5 1.6 2.5-1.6 5-1.6 2.5 1.6 5 1.6"/></symbol>
+  <symbol id="i-temp" viewBox="0 0 24 24"><path d="M9.5 14.5V5a2.5 2.5 0 0 1 5 0v9.5a4.5 4.5 0 1 1-5 0Z"/><path d="M12 9v8"/></symbol>
+  <symbol id="i-wind" viewBox="0 0 24 24"><path d="M3 9h11a3 3 0 1 0-3-3M3 14h15a3 3 0 1 1-3 3"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9Z"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7M6 9.5V20h12V9.5"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5Z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+  <symbol id="i-now" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.6"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+  <symbol id="i-land" viewBox="0 0 24 24"><rect x="3" y="6.5" width="18" height="11" rx="2"/></symbol>
+  <symbol id="i-port" viewBox="0 0 24 24"><rect x="6.5" y="3" width="11" height="18" rx="2"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></symbol>
+  <symbol id="i-calm" viewBox="0 0 24 24"><path d="M3 12c2.5 0 2.5-1 5-1s2.5 1 5 1 2.5-1 5-1 2.5 1 3 1"/></symbol>
+  <symbol id="i-rough" viewBox="0 0 24 24"><path d="M2 16c3 0 3.5-9 9-9 3.5 0 4.5 3.5 2.5 5-1.5 1-3-.5-2-1.5M2 20h20"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m14 7-5 5 5 5"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m10 7 5 5-5 5"/></symbol>
+  <symbol id="i-source" viewBox="0 0 24 24"><path d="M5 4h10l4 4v12H5Z"/><path d="M14 4v5h5M8.5 13h7M8.5 16.5h5"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 2.8 19.5h18.4Z"/><path d="M12 10v4.5M12 17v.2"/></symbol>
+  <symbol id="i-station" viewBox="0 0 24 24"><path d="M12 21v-9M8.5 8.5a5 5 0 0 1 7 0M6 6a8.5 8.5 0 0 1 12 0"/><circle cx="12" cy="11" r="1.4"/></symbol>
+</svg>
+
+<main id="app">
+  <div id="stage" role="img" aria-label=""></div>
+  <div id="grain"></div>
+
+  <div class="top chrome">
+    <button id="place" class="pill" aria-haspopup="dialog" aria-label="切換海岸">
+      <span id="place-name"></span><svg class="ic sm"><use href="#i-down"/></svg>
+    </button>
+    <div class="tools">
+      <button id="mode" class="dot" aria-label="純觀賞模式" aria-pressed="false"><svg class="ic"><use href="#i-eye"/></svg></button>
+      <button id="time" class="dot" aria-label="潮汐時間軸" aria-pressed="false"><svg class="ic"><use href="#i-clock"/></svg></button>
+      <button id="share" class="dot" aria-haspopup="dialog" aria-label="分享海景"><svg class="ic"><use href="#i-share"/></svg></button>
+      <button id="full" class="dot" aria-label="全螢幕"><svg class="ic"><use href="#i-full"/></svg></button>
+      <button id="info" class="dot" aria-haspopup="dialog" aria-label="資料來源與說明"><svg class="ic"><use href="#i-info"/></svg></button>
+    </div>
+  </div>
+
+  <div class="verdict obs" aria-live="polite" aria-atomic="true">
+    <h1><svg class="ic" id="state-ic"><use href="#i-rise"/></svg><span id="state"></span></h1>
+    <p id="next" hidden><svg class="ic"><use id="next-ic" href="#i-high"/></svg><span id="next-text"></span></p>
+    <p id="replay" class="badge" hidden></p>
+  </div>
+
+  <div id="tag" class="tag obs">
+    <ul class="nums">
+      <li id="v-tide"><svg class="ic"><use href="#i-gauge"/></svg><span>—</span><small>cm</small></li>
+      <li id="v-wave"><svg class="ic"><use href="#i-wave"/></svg><span>—</span><small>m</small></li>
+      <li id="v-temp"><svg class="ic"><use href="#i-temp"/></svg><span>—</span><small>°C</small></li>
+      <li id="v-wind"><svg class="ic"><use href="#i-wind"/></svg><span>—</span><small>m/s</small></li>
+    </ul>
+    <div class="foot">
+      <span id="stamp"></span>
+      <div id="demo" class="seg" hidden>
+        <div class="seg" role="radiogroup" aria-label="展示潮汐" data-group="tide">
+          <button role="radio" data-v="rising" aria-label="漲潮"><svg class="ic"><use href="#i-rise"/></svg></button>
+          <button role="radio" data-v="falling" aria-label="退潮"><svg class="ic"><use href="#i-fall"/></svg></button>
+          <button role="radio" data-v="nearHigh" aria-label="接近滿潮"><svg class="ic"><use href="#i-high"/></svg></button>
+          <button role="radio" data-v="nearLow" aria-label="接近乾潮"><svg class="ic"><use href="#i-low"/></svg></button>
+        </div>
+        <i></i>
+        <div class="seg" role="radiogroup" aria-label="展示海況" data-group="sea">
+          <button role="radio" data-v="calm" aria-label="平靜海面"><svg class="ic"><use href="#i-calm"/></svg></button>
+          <button role="radio" data-v="rough" aria-label="較大浪高"><svg class="ic"><use href="#i-rough"/></svg></button>
+        </div>
+        <i></i>
+        <div class="seg" role="radiogroup" aria-label="展示時間" data-group="sky">
+          <button role="radio" data-v="day" aria-label="白天"><svg class="ic"><use href="#i-sun"/></svg></button>
+          <button role="radio" data-v="night" aria-label="夜晚"><svg class="ic"><use href="#i-moon"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section id="timeline" class="panel" aria-label="潮汐時間軸" hidden>
+    <div class="tl-bar">
+      <button id="tl-play" class="dot flat" aria-label="以 30 秒回放今天"><svg class="ic"><use href="#i-play"/></svg></button>
+      <button id="tl-now" class="dot flat" aria-label="回到現在"><svg class="ic"><use href="#i-now"/></svg></button>
+      <span id="tl-time"></span>
+      <span id="tl-kind" class="badge"></span>
+      <div id="tl-range" class="seg" role="radiogroup" aria-label="時間範圍">
+        <button role="radio" data-v="days" aria-label="前後三天">3天</button>
+        <button role="radio" data-v="month" aria-label="過去三十天">30天</button>
+      </div>
+      <button class="dot flat" id="tl-close" aria-label="關閉時間軸"><svg class="ic"><use href="#i-close"/></svg></button>
+    </div>
+    <div id="tl-ruler" tabindex="0" role="slider" aria-label="選擇時間"></div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+</main>
+
+<div id="veil" hidden></div>
+
+<section id="atlas" class="sheet wide" role="dialog" aria-modal="true" aria-label="海岸圖鑑" hidden>
+  <header><span class="grow"></span><button class="dot flat" data-close aria-label="關閉"><svg class="ic"><use href="#i-close"/></svg></button></header>
+  <div id="atlas-list" class="cards"></div>
+</section>
+
+<section id="about" class="sheet" role="dialog" aria-modal="true" aria-label="資料來源與說明" hidden>
+  <header><h2 id="about-title"></h2><button class="dot flat" data-close aria-label="關閉"><svg class="ic"><use href="#i-close"/></svg></button></header>
+  <dl id="about-list"></dl>
+</section>
+
+<section id="poster" class="sheet" role="dialog" aria-modal="true" aria-label="分享海景" hidden>
+  <header>
+    <div class="seg" role="radiogroup" aria-label="圖片方向" id="poster-ori">
+      <button role="radio" data-v="land" aria-label="橫式"><svg class="ic"><use href="#i-land"/></svg></button>
+      <button role="radio" data-v="port" aria-label="直式"><svg class="ic"><use href="#i-port"/></svg></button>
+    </div>
+    <span class="grow"></span>
+    <button class="dot flat" data-close aria-label="關閉"><svg class="ic"><use href="#i-close"/></svg></button>
+  </header>
+  <div class="preview"><img id="poster-img" alt=""></div>
+  <div class="actions">
+    <button id="p-save" class="dot" aria-label="儲存 PNG"><svg class="ic"><use href="#i-download"/></svg></button>
+    <button id="p-share" class="dot" aria-label="分享圖片" hidden><svg class="ic"><use href="#i-share"/></svg></button>
+    <button id="p-link" class="dot" aria-label="複製分享連結"><svg class="ic"><use href="#i-link"/></svg></button>
+  </div>
+</section>
+
+<noscript>請啟用 JavaScript。</noscript>
+</body>
+</html>

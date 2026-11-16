@@ -1,0 +1,12 @@
+{
+  "name": "ocean-breath", "version": "1.0.0", "private": true, "type": "module",
+  "description": "海洋呼吸觀測所 — 由臺灣真實潮汐與海象資料驅動的動態海景",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server/index.js",
+    "dev": "node --watch --env-file-if-exists=.env server/index.js",
+    "test": "node --test tests/*.test.js",
+    "verify:live": "node --env-file-if-exists=.env scripts/verify-live.js",
+    "publish:data": "node --env-file-if-exists=.env scripts/publish-ocean.js"
+  }
+}
