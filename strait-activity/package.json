@@ -1,0 +1,1 @@
+{"name":"strait-activity","private":true,"type":"module","scripts":{"start":"node scripts/serve.mjs","update":"node scripts/update.mjs","test":"node tests/data.test.mjs && node tests/sync.test.mjs && node tests/charts.test.mjs && node tests/insights.test.mjs"}}

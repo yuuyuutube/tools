@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {verdict,highlights,rolling,events,eventOf,eventPeak} from '../insights.mjs';
+const rows=JSON.parse(fs.readFileSync(new URL('../data/records.json',import.meta.url))).records;
+let count=0;const test=(name,fn)=>{fn();count++;console.log('PASS '+name);};
+test('verdict uses past 365 days only',()=>{const v=verdict(rows,'2024-10-15');assert.equal(v.tone.label,'極高');assert.ok(v.days<=366);assert.ok(v.year.every(r=>r.date<'2024-10-15'));});
+test('verdict handles missing value',()=>assert.equal(verdict([{date:'2026-01-01',aircraft_total:null}],'2026-01-01').tone,null));
+test('rolling skips nulls',()=>assert.deepEqual(rolling([{a:2},{a:null},{a:4}],'a',7),[2,2,3]));
+test('every named event has a peak in data',()=>events.forEach(e=>assert.ok(eventPeak(rows,e),e.name)));
+test('eventOf matches inclusive range',()=>{assert.equal(eventOf('2023-04-11').id,'js2023');assert.equal(eventOf('2023-04-12'),null);});
+test('highlights produce finite text',()=>{const h=highlights(rows,rows.at(-1).date);assert.ok(h.length>=3);h.forEach(x=>assert.ok(!/NaN|undefined/.test(x.value+x.text)));});
+console.log(`${count} insight tests passed`);

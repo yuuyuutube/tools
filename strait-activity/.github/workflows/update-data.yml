@@ -1,0 +1,38 @@
+name: Update Strait activity
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: strait-data
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Synchronize complete source
+        id: sync
+        continue-on-error: true
+        working-directory: tools/strait-activity
+        run: npm run update
+      - name: Validate retained or updated snapshot
+        working-directory: tools/strait-activity
+        run: npm test
+      - name: Commit snapshot and attempt status
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/strait-activity/data/records.json tools/strait-activity/data/status.json tools/strait-activity/data/records.csv
+          if ! git diff --staged --quiet; then
+            git commit -m "Update Strait activity data"
+            git push
+          fi
+      - name: Report source failure
+        if: steps.sync.outcome == 'failure'
+        run: exit 1
