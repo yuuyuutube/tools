@@ -1,0 +1,6 @@
+.env
+node_modules/
+.DS_Store
+.ocean-cache/
+ocean-breath.json
+ocean-breath-history.json

@@ -1,0 +1,42 @@
+name: Update ocean breath
+on:
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: ocean-breath-data
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/checkout@v4
+        with:
+          ref: weather-data
+          path: weather-output
+      - name: Fetch official tide and marine data
+        working-directory: ocean-breath
+        env:
+          CWA_API_KEY: ${{ secrets.CWA_API_KEY }}
+          OCEAN_OUTPUT: ${{ runner.temp }}/ocean-breath.json
+          HISTORY_OUTPUT: ${{ runner.temp }}/ocean-breath-history.json
+          HISTORY_INPUT: ${{ github.workspace }}/weather-output/ocean-breath-history.json
+        run: node scripts/publish-ocean.js
+      - name: Publish data only
+        working-directory: weather-output
+        run: |
+          cp "${{ runner.temp }}/ocean-breath.json" ocean-breath.json
+          cp "${{ runner.temp }}/ocean-breath-history.json" ocean-breath-history.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add ocean-breath.json ocean-breath-history.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Update official ocean breath data'
+          git push origin HEAD:weather-data
