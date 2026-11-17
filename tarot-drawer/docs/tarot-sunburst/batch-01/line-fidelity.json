@@ -1,0 +1,54 @@
+{
+  "cards" : [
+    {
+      "authorizedChangeOriginalBlackPixelsExcluded" : 0,
+      "inkMasterSize" : [
+        1024,
+        1536
+      ],
+      "number" : 1,
+      "originalBlackPixels" : 135811,
+      "originalBlackPixelsNearFinishedInk" : 135811,
+      "originalSize" : [
+        819,
+        1229
+      ],
+      "representativeShadowInkFraction" : 0.38272910919970149,
+      "retentionWithin3MasterPixels" : 1
+    },
+    {
+      "authorizedChangeOriginalBlackPixelsExcluded" : 0,
+      "inkMasterSize" : [
+        1024,
+        1536
+      ],
+      "number" : 2,
+      "originalBlackPixels" : 135200,
+      "originalBlackPixelsNearFinishedInk" : 135190,
+      "originalSize" : [
+        819,
+        1229
+      ],
+      "representativeShadowInkFraction" : 0.31313714793063652,
+      "retentionWithin3MasterPixels" : 0.99992603550295855
+    },
+    {
+      "authorizedChangeOriginalBlackPixelsExcluded" : 2908,
+      "inkMasterSize" : [
+        1024,
+        1536
+      ],
+      "number" : 3,
+      "originalBlackPixels" : 151007,
+      "originalBlackPixelsNearFinishedInk" : 151007,
+      "originalSize" : [
+        819,
+        1229
+      ],
+      "representativeShadowInkFraction" : 0.30851577666482632,
+      "retentionWithin3MasterPixels" : 1
+    }
+  ],
+  "foolTunicReferenceInkFraction" : 0.40541478650115809,
+  "method" : "Read-only raster audit. Original dark pixels must have finished ink within 3 master pixels; tolerates subpixel waviness, local line thickening and authorized finger thinning. Ink fractions are local comparison guides, not whole-card style scores."
+}

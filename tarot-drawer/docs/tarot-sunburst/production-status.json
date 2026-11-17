@@ -1,0 +1,68 @@
+{
+  "workflow": "PNG woodcut ink master + Web colour masks and print",
+  "cardSize": [
+    300,
+    500
+  ],
+  "exportSize": [
+    900,
+    1500
+  ],
+  "defaultInkSpread": 0.5,
+  "approved": [
+    0
+  ],
+  "awaitingUserReview": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "remainingBatches": [
+    [
+      7,
+      8,
+      9
+    ],
+    [
+      10,
+      11,
+      12
+    ],
+    [
+      13,
+      14,
+      15
+    ],
+    [
+      16,
+      17,
+      18
+    ],
+    [
+      19,
+      20,
+      21
+    ]
+  ],
+  "currentPreview": "sunburst-batch.html?batch=01",
+  "currentAudit": "docs/tarot-sunburst/batch-01/review.md",
+  "rule": "Batches 01 and 02 were rebuilt directly from user line PNGs. Preserve source geometry; use authored line hierarchy and woodcut shadows, with explicitly recorded symbolic corrections. Pause after every completed batch for user review. Do not start cards 7–21 without user instruction.",
+  "produced": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "automaticContinuationAuthorized": false,
+  "superseded": [
+    "batch-02-superseded",
+    "batch-01-superseded"
+  ],
+  "status": "paused_for_batch_01_review"
+}
