@@ -155,6 +155,7 @@ export function mountPlates(root, { image, state, onDone, onBack }) {
       }
       seg(row.querySelector('.seg.mini'), [['solid', '實色'], ['dots', '網點']], state.modes[i], v => {
         if (state.modes[i] === v) return;
+        if (v === 'dots') cue('dots');
         state.modes[i] = v; state.active = i;
         separateNow(); renderSeparate();
       });
@@ -197,7 +198,6 @@ export function mountPlates(root, { image, state, onDone, onBack }) {
     renderBurn();
     drawBurn(0);
     later(runStep, 600);
-    cue('idle');   // 曬版要等一下：師傅聊一句
   }
 
   // 曬版自動進行：曝光 → 沖水 → 下一層，不需要再按按鈕
@@ -205,6 +205,7 @@ export function mountPlates(root, { image, state, onDone, onBack }) {
   function runStep() {
     burn.anim = { step: burn.step, t0: performance.now() };
     if (burn.step === 'expose') sfx.expose(EXPOSE_MS / 1000); else sfx.wash(WASH_MS / 1000);
+    cue(burn.step);   // 師傅：曝光、沖水各講一次
     tick();
   }
   // 整個曬版的進度：每一層有曝光、沖水兩步
@@ -297,6 +298,7 @@ export function mountPlates(root, { image, state, onDone, onBack }) {
 
   analyse();
   renderSeparate();
+  cue(fixed ? 'plates-fixed' : 'plates-own');
 
   return {
     destroy() {

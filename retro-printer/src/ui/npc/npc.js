@@ -111,10 +111,15 @@ export function npcScene(name) {
   }, T.enterDelay);
 }
 
-// 各站的事件。'idle'：站裡有等待的空檔（例如曬版、等乾），可以閒聊
+// 各站的事件。'idle'：站裡有等待的空檔（例如等乾），可以閒聊；有聊到才回傳 true
 export function cue(key) {
-  if (!el || !who) return;
-  if (key === 'idle') { if (!speaking && !entering) chat(false); return; }
+  if (!el || !who) return false;
+  if (key === 'idle') {
+    if (speaking || entering) return false;
+    const before = chatAt[who] || 0;
+    chat(false);
+    return (chatAt[who] || 0) > before;
+  }
   let c = LINES[who].cues?.[key];
   if (!c) return;
   if (!Array.isArray(c)) {

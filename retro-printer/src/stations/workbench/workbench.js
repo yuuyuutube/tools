@@ -28,6 +28,7 @@ const DARK = [21, 21, 20];
 const NPC = {
   stuckPlace: 10,   // 放網框這一步停超過幾秒
   stuckInk: 8,      // 倒墨這一步還沒開始倒，停超過幾秒
+  stuckSqueegee: 8, // 倒好墨，還沒開始刮，停超過幾秒
   fast: 0.3,        // 這一刮最快的時候，飛白程度超過多少（record.js 的 fastness）
   dryer: 1.8,       // 吹風機連續按住幾秒
   idle: 3.5         // 等乾開始後幾秒，可以閒聊
@@ -171,14 +172,15 @@ export function mountWorkbench(root, { plates, inks, medium, onBack, onFinish })
   function finishLift() {
     st.liftStart = 0;
     st.busy = false;
-    if (isLast()) st.phase = 'done';
-    else { st.phase = 'dry'; layer().wet = 1; }
+    if (isLast()) { st.phase = 'done'; cue('done'); }
+    else { st.phase = 'dry'; layer().wet = 1; cue('lifted'); cue('dry-first'); }
     ui();
   }
 
   function nextLayer() {
     st.L++;
     st.phase = 'place';
+    cue('align');
     layer().offset = scatter();
     st.inkPlaced = false;
     st.pour = newPour();
@@ -495,10 +497,11 @@ export function mountWorkbench(root, { plates, inks, medium, onBack, onFinish })
     const ph = st.phase, sec = (now - st.phaseT) / 1000, wet = maxWet() > 0;
     if (ph === 'place' && !st.drag && sec > NPC.stuckPlace) cue('stuck-place');
     if (ph === 'ink' && st.pour.a < 0 && sec > NPC.stuckInk) cue('stuck-ink');
+    if (ph === 'squeegee' && !st.pressing && layer().rec.strokes === 0 && sec > NPC.stuckSqueegee) cue('stuck-squeegee');
     if (ph === 'squeegee' && layer().clog > 0) cue('clog');
     st.dryerHeld = st.dryer && wet ? st.dryerHeld + dt : 0;
     if (st.dryerHeld > NPC.dryer) cue('dryer');
-    if (ph === 'dry' && wet && !st.idleCued && sec > NPC.idle) { st.idleCued = true; cue('idle'); }
+    if (ph === 'dry' && wet && !st.idleCued && sec > NPC.idle && cue('idle')) st.idleCued = true;
   }
 
   /* ───────── 輸入 ───────── */
@@ -554,6 +557,7 @@ export function mountWorkbench(root, { plates, inks, medium, onBack, onFinish })
     if (st.pressing) {
       st.pressing = false;
       if (fastness(st.maxV, C) > NPC.fast) cue('too-fast');
+      if (layer().rec.strokes > C.freePasses) cue('overflow');   // 超過免費次數，開始溢墨
       ui();
     }
   };

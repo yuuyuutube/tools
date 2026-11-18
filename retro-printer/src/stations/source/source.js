@@ -2,6 +2,7 @@ import { S, PW } from '../../engine/geometry.js';
 import { DESIGN, DESIGN_PX, drawRegistration } from '../../plates/registration.js';
 import { itemImage, itemThumb } from '../../gallery/render.js';
 import { fitRect, panBy } from '../../plates/fit.js';
+import { cue } from '../../ui/npc/npc.js';
 
 // 提供圖片：從圖庫挑，或上傳自己的圖（只在瀏覽器裡處理，不會送出）。
 //   source：在各站之間保留的選擇 { kind: 'library' | 'upload', id, bitmap, mode, pan }
@@ -151,7 +152,7 @@ export function mountSource(root, { source, library, onNext, onBack }) {
       b.setAttribute('role', 'radio');
       b.setAttribute('aria-checked', String(source.mode === mode));
       b.textContent = label;
-      b.addEventListener('click', () => { source.mode = mode; select(); });
+      b.addEventListener('click', () => { source.mode = mode; select(); if (mode === 'cover') cue('cover'); });
       seg.appendChild(b);
     }
   }
