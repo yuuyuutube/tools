@@ -11,6 +11,7 @@ import { addWork } from './works.js';
 import { makeLibrary } from './gallery/library.js';
 import { itemImage } from './gallery/render.js';
 import { mountSoundToggle } from './ui/sound-toggle.js';
+import { mountNpc, npcScene } from './ui/npc/npc.js';
 
 // 各站依 brief.md 的流程串接：
 //   入口 → 提供圖片 → 製版 → 欣賞版子 → 選墨水 → 選媒材 → 工作桌 → 完成
@@ -30,6 +31,7 @@ let current = null;
 
 export function go(name, data) {
   if (current) current.destroy();
+  npcScene(name);   // 先換人：各站掛載時送出的反應，等進站的話講完再講
   current = stations[name](app, data);
   window.scrollTo(0, 0);
 }
@@ -131,4 +133,5 @@ function toFinish(work) {
 }
 
 mountSoundToggle();
+mountNpc();
 toEntrance();

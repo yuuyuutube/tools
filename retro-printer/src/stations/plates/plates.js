@@ -5,6 +5,7 @@ import { PALETTE } from '../../inks.js';
 import { designToSheet, sheetMaskWithMarks, plateFromDesignMask } from '../../plates/registration.js';
 import { screenCanvas, maskCanvas, drawScreen, MESH } from './screen.js';
 import * as sfx from '../../audio/sound.js';
+import { cue } from '../../ui/npc/npc.js';
 
 // 製版：選色數、自動分色、調各層門檻；然後曬版、沖水。
 //   image：提供圖片站傳來的圖 { id, name, colors, canvas, data, w, h }
@@ -196,6 +197,7 @@ export function mountPlates(root, { image, state, onDone, onBack }) {
     renderBurn();
     drawBurn(0);
     later(runStep, 600);
+    cue('idle');   // 曬版要等一下：師傅聊一句
   }
 
   // 曬版自動進行：曝光 → 沖水 → 下一層，不需要再按按鈕

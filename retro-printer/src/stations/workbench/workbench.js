@@ -1,7 +1,7 @@
 import { CONFIG as C } from '../../config.js';
 import { W, S, PW } from '../../engine/geometry.js';
 import { clamp } from '../../engine/util.js';
-import { startStroke, moveStroke, dwell } from '../../engine/record.js';
+import { startStroke, moveStroke, dwell, fastness } from '../../engine/record.js';
 import { printLayer, compositeJob } from '../../engine/print.js';
 import { createJob } from '../../state.js';
 import { createPanel } from '../../ui/panel.js';
@@ -9,6 +9,7 @@ import { FRAME, MESH, buildFrame, buildMarks, createMeshInk } from './overlay.js
 import { DESIGN } from '../../plates/registration.js';
 import * as sfx from '../../audio/sound.js';
 import { showCanvas } from '../../ui/display.js';
+import { cue } from '../../ui/npc/npc.js';
 
 // 工作桌：一層一層 放下網框 → 倒墨 → 刮印 → 掀框 → 等乾。
 // 每層都經過同樣的五步，最後一層的第五步為「完成」。
@@ -23,6 +24,14 @@ const POUR_GROW = 0.16; // 墨滴從一點長到半徑 BEAD_R 的秒數
 const POUR_SPEED = 420; // 自動補齊時，兩端每秒往外流多遠
 const FLASH_MS = 500;   // 倒好時墨邊閃一下
 const DARK = [21, 21, 20];
+// 角落的常客什麼時候開口（npc.js 會再擋：手按在紙上時不講、每種反應只講一次）
+const NPC = {
+  stuckPlace: 10,   // 放網框這一步停超過幾秒
+  stuckInk: 8,      // 倒墨這一步還沒開始倒，停超過幾秒
+  fast: 0.3,        // 這一刮最快的時候，飛白程度超過多少（record.js 的 fastness）
+  dryer: 1.8,       // 吹風機連續按住幾秒
+  idle: 3.5         // 等乾開始後幾秒，可以閒聊
+};
 const mixTo = (a, b, k) => a.map((v, i) => Math.round(v + (b[i] - v) * k));
 const ease = p => 1 - Math.pow(1 - clamp(p, 0, 1), 3);
 
@@ -65,7 +74,8 @@ export function mountWorkbench(root, { plates, inks, medium, onBack, onFinish })
       L: 0, phase: 'place', inkPlaced: false,
       pressing: false, lastMoveT: 0, vShow: 0,
       hover: null, drag: null, dryer: false, liftStart: 0, busy: false,
-      drop: 0, pour: newPour(), dryVis: 0
+      drop: 0, pour: newPour(), dryVis: 0,
+      shown: null, phaseT: performance.now(), idleCued: false, maxV: 0, dryerHeld: 0
     };
     layer().offset = scatter();
     paintPrint(); // 還沒印時，畫出媒材本身（含織紋）
@@ -202,6 +212,8 @@ export function mountWorkbench(root, { plates, inks, medium, onBack, onFinish })
     startStroke(l.rec, bladePos(p), strokeTime(t));
     st.lastMoveT = t;
     for (let j = 0; j < st.L; j++) l.wetAt[j] = Math.max(l.wetAt[j], job.layers[j].wet);
+    st.maxV = 0;
+    if (job.layers.slice(0, st.L).some(u => u.wet > 0.02)) cue('wet-print');
     ui();
   }
 
@@ -209,6 +221,7 @@ export function mountWorkbench(root, { plates, inks, medium, onBack, onFinish })
     const l = layer();
     if (moveStroke(l.rec, bladePos(p), strokeTime(t), underLayers(), C)) {
       st.vShow = l.rec.v;
+      st.maxV = Math.max(st.maxV, l.rec.v);
       st.lastMoveT = t;
       meshInk.markDirty();
     }
@@ -217,6 +230,9 @@ export function mountWorkbench(root, { plates, inks, medium, onBack, onFinish })
   /* ───────── 介面 ───────── */
   function ui() {
     const l = layer(), ph = st.phase, n = job.layers.length;
+    if (st.shown !== ph || st.shownL !== st.L) {   // 換步驟：重新計時
+      st.shown = ph; st.shownL = st.L; st.phaseT = performance.now(); st.idleCued = false;
+    }
     panel.setLayer(st.L, n, l.ink);
     panel.setSteps(isLast() ? STEPS_LAST : STEPS, PHASE_STEP[ph]);
 
@@ -468,9 +484,21 @@ export function mountWorkbench(root, { plates, inks, medium, onBack, onFinish })
       st.vShow *= 0.9;
     }
     if (st.phase === 'squeegee') panel.setMeter(clamp(st.vShow / VMAX, 0, 1));
+    npcWatch(now, dt);
 
     drawOverlay(now);
     raf = requestAnimationFrame(frame);
+  }
+
+  // 角落的常客：卡住太久、塞網、一直吹、等乾的空檔
+  function npcWatch(now, dt) {
+    const ph = st.phase, sec = (now - st.phaseT) / 1000, wet = maxWet() > 0;
+    if (ph === 'place' && !st.drag && sec > NPC.stuckPlace) cue('stuck-place');
+    if (ph === 'ink' && st.pour.a < 0 && sec > NPC.stuckInk) cue('stuck-ink');
+    if (ph === 'squeegee' && layer().clog > 0) cue('clog');
+    st.dryerHeld = st.dryer && wet ? st.dryerHeld + dt : 0;
+    if (st.dryerHeld > NPC.dryer) cue('dryer');
+    if (ph === 'dry' && wet && !st.idleCued && sec > NPC.idle) { st.idleCued = true; cue('idle'); }
   }
 
   /* ───────── 輸入 ───────── */
@@ -523,7 +551,11 @@ export function mountWorkbench(root, { plates, inks, medium, onBack, onFinish })
       if (st.drag.moved) { st.drag = null; ui(); } else placeFrame(); // 點一下（沒有拖動）就放下
     }
     if (st.pour.drag) autoPour(st.pour.b);
-    if (st.pressing) { st.pressing = false; ui(); }
+    if (st.pressing) {
+      st.pressing = false;
+      if (fastness(st.maxV, C) > NPC.fast) cue('too-fast');
+      ui();
+    }
   };
   overlay.addEventListener('pointerup', endPointer);
   overlay.addEventListener('pointercancel', endPointer);

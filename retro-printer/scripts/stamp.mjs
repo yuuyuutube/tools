@@ -19,7 +19,7 @@ const CSS = [
   'src/ui/tokens.css', 'src/ui/layout.css', 'src/ui/panel.css',
   'src/stations/entrance/entrance.css', 'src/stations/source/source.css', 'src/stations/plates/plates.css',
   'src/stations/inks/inks.css', 'src/stations/media/media.css', 'src/stations/workbench/workbench.css',
-  'src/stations/finish/finish.css'
+  'src/stations/finish/finish.css', 'src/ui/npc/npc.css'
 ];
 const js = walk('src').filter(f => f.endsWith('.js')).sort();
 const imports = Object.fromEntries(js.map(f => [`./${f}`, `./${f}?v=${hash(f)}`]));

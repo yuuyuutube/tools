@@ -3,6 +3,7 @@ import { textureField } from '../../engine/texture.js';
 import { MEDIA_LIST } from '../../state.js';
 import { samplePrint } from './sample.js';
 import { showCanvas } from '../../ui/display.js';
+import { cue } from '../../ui/npc/npc.js';
 
 // 選媒材：左邊是選取媒材的試印，右邊是媒材卡片。
 const THUMB = 112;
@@ -43,7 +44,7 @@ export function mountMedia(root, { plates, inks, selected = 'paper', onPick, onB
     b.querySelector('.m-name').textContent = m.name;
     b.querySelector('.m-note').textContent = m.note;
     drawThumb(b.querySelector('.thumb'), m);
-    b.addEventListener('click', () => select(m.id));
+    b.addEventListener('click', () => { select(m.id); if (m.id === 'hanky') cue('hanky'); });
     list.appendChild(b);
     return { m, el: b };
   });
