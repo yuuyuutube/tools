@@ -3,6 +3,7 @@ import {printCard,plateSVG,INKS,WINDOW} from '../press.js';
 import {printFrame} from '../frame.js';
 import {cardById} from '../../data/cards.js';
 import {finishLine} from './line-finishing.js';
+import {buildInk} from './ink-pipeline.js';
 const PALETTE={...INKS,Y:{...INKS.Y,rgb:[232,183,77]},O:{...INKS.O,rgb:[222,83,43]},B:{...INKS.B,rgb:[62,112,150]}};
 const ROOT='/docs/tarot-sunburst/';
 const make=(w,h)=>Object.assign(document.createElement('canvas'),{width:w,height:h});
@@ -14,9 +15,10 @@ const WIN=new Path2D('M26 400V98a40 40 0 0 1 40-40h168a40 40 0 0 1 40 40v302z');
 
 export const SETTINGS={seed:20261117,scale:3,tune:{jitter:.28,jitterFine:.1,bleed:.12,speckle:.94,misregister:.55,period:1.55}};
 export async function buildBatch(number,{jitter=true,grain=true,inkSpread=.5}={}){
- const config=BATCH[number],ROLES=config.roles,MAP={width:1024,height:1536,...config.map},INK_PATH=ROOT+(config.finishing?`line/${number}.png`:`batch-${config.batch}/${number}-ink.png`);
+ if(BATCH[number].inkOnly)return buildInk(number,BATCH[number],{inkSpread});
+ const config=BATCH[number],applyFinishing=config.finishing&&!config.frozenInkMaster,ROLES=config.roles,MAP={width:1024,height:1536,...config.map},INK_PATH=ROOT+(applyFinishing?`line/${number}.png`:`batch-${config.batch}/${number}-ink.png`);
  const img=await load(INK_PATH),w=MAP.width,h=MAP.height,n=w*h,source=make(w,h),ctx=source.getContext('2d',{willReadFrequently:true});
- ctx.drawImage(config.finishing?finishLine(img,config.finishing):img,0,0,w,h);const pixels=ctx.getImageData(0,0,w,h).data;
+ ctx.drawImage(applyFinishing?finishLine(img,config.finishing):img,0,0,w,h);const pixels=ctx.getImageData(0,0,w,h).data;
  const labelCanvas=make(w,h),lc=labelCanvas.getContext('2d',{willReadFrequently:true});
  lc.fillStyle='#000';lc.fillRect(0,0,w,h);
  lc.save();if(config.designSize)lc.scale(w/config.designSize[0],h/config.designSize[1]);
@@ -83,5 +85,6 @@ export async function buildBatch(number,{jitter=true,grain=true,inkSpread=.5}={}
   }}
  for(const mark of config.marks||[]){if(mark.type==='star-arc'){let bg=[246,239,224];['Y','O','B'].forEach((k,i)=>bg=rgbInk(bg,config.roles[0].ink[i],pal[k].rgb));for(const [cv,isInk]of [[flat,false],[inkStage,true]]){const g=cv.getContext('2d');g.save();g.translate(MAP.x,MAP.y);g.scale(MAP.scale,MAP.scale);g.fillStyle=isInk?'#fff':`rgb(${bg.join(',')})`;for(const [x,y]of mark.old){g.beginPath();g.arc(x,y,23,0,Math.PI*2);g.fill();}for(const path of arcStars(mark)){g.fillStyle=isInk?'#fff':'#e8b74d';g.fill(path);g.strokeStyle='#1e284a';g.lineWidth=4.5;g.stroke(path);}g.restore();}continue;}if(mark.type==='crown'){for(const [cv,isInk]of [[flat,false],[inkStage,true]]){const cg=cv.getContext('2d');cg.save();cg.translate(MAP.x,MAP.y);cg.scale(MAP.scale,MAP.scale);cg.fillStyle=isInk?'#fff':'#e7c992';cg.fillRect(...mark.rect);cg.fillStyle=isInk?'#fff':'#e8b74d';cg.fill(new Path2D(mark.path));cg.strokeStyle='#1e284a';cg.lineWidth=5;cg.stroke(new Path2D(mark.path));cg.stroke(new Path2D('M439 329Q506 309 575 329M443 339Q506 319 572 339'));cg.restore();}continue;}const g=flat.getContext('2d');g.save();g.translate(MAP.x,MAP.y);g.scale(MAP.scale,MAP.scale);g.font=`bold ${mark.size||30}px Georgia`;g.textAlign='center';g.fillStyle=mark.inverse?'#f6efe0':'#1e284a';if(mark.type==='star'){const p=new Path2D(Array.from({length:10},(_,i)=>{const a=-Math.PI/2+i*Math.PI/5,r=i%2?mark.r*.43:mark.r;return `${i?'L':'M'}${mark.x+Math.cos(a)*r} ${mark.y+Math.sin(a)*r}`;}).join('')+'Z');g.fillStyle='#e8b74d';g.fill(p);g.strokeStyle='#1e284a';g.lineWidth=4;g.stroke(p);}else g.fillText(mark.text,mark.x,mark.y);g.restore();}
  await addFrame(flat);await addFrame(inkStage);await addFrame(smoothStage);await addFrame(maskStage);
- return {smooth:smoothStage,ink:inkStage,inkMaster:source,masks:maskStage,flat,final,sourcePlates,inkAlpha,snapped,labels};
+ const {proof}=await buildInk(number,config,{inkSpread,sourceMaster:source});
+ return {smooth:smoothStage,ink:inkStage,inkMaster:source,proof,masks:maskStage,flat,final,sourcePlates,inkAlpha,snapped,labels};
 }

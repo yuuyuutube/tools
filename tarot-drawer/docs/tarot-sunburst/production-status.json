@@ -1,5 +1,5 @@
 {
-  "workflow": "PNG woodcut ink master + Web colour masks and print",
+  "workflow": "Original PNG finishing + monochrome ink-spread proofs; colour deferred for cards 7–21",
   "cardSize": [
     300,
     500
@@ -10,47 +10,116 @@
   ],
   "defaultInkSpread": 0.5,
   "approved": [
-    0
+    0,
+    1,
+    2,
+    3
   ],
   "awaitingUserReview": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21
+  ],
+  "remainingBatches": [],
+  "currentPreview": "sunburst-batch.html?view=all",
+  "currentAudit": "docs/tarot-sunburst/ink-review-index.md",
+  "rule": "Continue ink-master batches automatically through 21; notify after each completed batch. Preserve supplied line geometry, compare with approved Fool, and provide monochrome ink-spread 0.5 proofs. Do not create new colour plates.",
+  "produced": [
+    0,
     1,
     2,
     3,
     4,
     5,
-    6
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21
   ],
-  "remainingBatches": [
-    [
-      7,
-      8,
-      9
-    ],
-    [
-      10,
-      11,
-      12
-    ],
-    [
-      13,
-      14,
-      15
-    ],
-    [
-      16,
-      17,
-      18
-    ],
-    [
-      19,
-      20,
-      21
-    ]
+  "automaticContinuationAuthorized": true,
+  "superseded": [
+    "batch-02-superseded",
+    "batch-01-superseded"
   ],
-  "currentPreview": "sunburst-batch.html?batch=01",
-  "currentAudit": "docs/tarot-sunburst/batch-01/review.md",
-  "rule": "Batches 01 and 02 were rebuilt directly from user line PNGs. Preserve source geometry; use authored line hierarchy and woodcut shadows, with explicitly recorded symbolic corrections. Pause after every completed batch for user review. Do not start cards 7–21 without user instruction.",
-  "produced": [
+  "status": "ink_masters_complete_awaiting_review",
+  "approvedScope": {
+    "1-3": "User approved the rebuilt original-line batch before commit 53d12c1."
+  },
+  "inkMastersCompleted": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21
+  ],
+  "remainingInkBatches": [],
+  "monochromeProofsCompleted": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21
+  ],
+  "colourCompleted": [
     0,
     1,
     2,
@@ -59,10 +128,45 @@
     5,
     6
   ],
-  "automaticContinuationAuthorized": false,
-  "superseded": [
-    "batch-02-superseded",
-    "batch-01-superseded"
+  "colourDeferred": [
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21
   ],
-  "status": "paused_for_batch_01_review"
+  "lastCompletedBatch": "07",
+  "symbolCorrectionsPending": [
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21
+  ],
+  "sourceStructureReviewPending": [
+    21
+  ]
 }

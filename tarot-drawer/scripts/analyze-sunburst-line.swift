@@ -9,7 +9,8 @@ struct Raster {
 }
 let root=CommandLine.arguments[1]
 let batch=CommandLine.arguments.count>2 ? CommandLine.arguments[2] : "02"
-let numbers=batch=="01" ? [1,2,3] : [4,5,6]
+let start=(Int(batch)!-1)*3+1
+let numbers=Array(start...(start+2))
 let specPath=root+"/docs/tarot-sunburst/batch-\(batch)/source-integrity.json"
 let specs=(try? JSONSerialization.jsonObject(with:Data(contentsOf:URL(fileURLWithPath:specPath)))) as? [String:[String:Any]] ?? [:]
 var records:[[String:Any]]=[]
@@ -24,7 +25,7 @@ for n in numbers{
   if found{retained+=1}
  }}
  let rects:[Int:[Int]]=[1:[348,575,426,797],2:[350,882,428,1070],3:[419,825,576,1086],4:[340,738,688,922],5:[349,684,454,859],6:[390,405,625,650]]
- records.append(["number":n,"originalSize":[source.w,source.h],"inkMasterSize":[finished.w,finished.h],"originalBlackPixels":originalBlack,"authorizedChangeOriginalBlackPixelsExcluded":authorizedExcluded,"originalBlackPixelsNearFinishedInk":retained,"retentionWithin3MasterPixels":Double(retained)/Double(originalBlack),"representativeShadowInkFraction":finished.density(rects[n]!)])
+ records.append(["number":n,"originalSize":[source.w,source.h],"inkMasterSize":[finished.w,finished.h],"originalBlackPixels":originalBlack,"authorizedChangeOriginalBlackPixelsExcluded":authorizedExcluded,"originalBlackPixelsNearFinishedInk":retained,"retentionWithin3MasterPixels":Double(retained)/Double(originalBlack),"representativeShadowInkFraction":finished.density(rects[n] ?? [300,400,720,1100])])
 }
 let fool=Raster(root+"/docs/tarot-sunburst/fool-pipeline/ink-generated.png")
 let data=try! JSONSerialization.data(withJSONObject:["method":"Read-only raster audit. Original dark pixels must have finished ink within 3 master pixels; tolerates subpixel waviness, local line thickening and authorized finger thinning. Ink fractions are local comparison guides, not whole-card style scores.","cards":records,"foolTunicReferenceInkFraction":fool.density([445,515,630,750])],options:[.prettyPrinted,.sortedKeys])

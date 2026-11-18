@@ -3,7 +3,7 @@
 // Guide paths select existing strokes or contain hatch marks; they are never
 // painted as replacement silhouettes, faces, limbs, clothes, or symbols.
 const make=(w,h)=>Object.assign(document.createElement('canvas'),{width:w,height:h});
-export function finishLine(image,{outlines=[],hatching=[],bands=[],protectedAreas=[],thinLines=[],corrections=[],outlineRadius=2}={}){
+export function finishLine(image,{outlines=[],hatching=[],bands=[],protectedAreas=[],hatchExclusions=[],thinLines=[],corrections=[],outlineRadius=2}={}){
  const w=1024,h=1536,cv=make(w,h),g=cv.getContext('2d',{willReadFrequently:true});
  g.fillStyle='white';g.fillRect(0,0,w,h);g.drawImage(image,0,0,w,h);
  // Explicitly authorized symbolic corrections are separate from finishing.
@@ -89,6 +89,10 @@ export function finishLine(image,{outlines=[],hatching=[],bands=[],protectedArea
    hg.quadraticCurveTo(mx-nx*width*.4,my-ny*width*.4,a[0]-nx*width/2,a[1]-ny*width/2);hg.closePath();hg.fill();
   }
  }hg.restore();
+ // Optional openings keep authored shadows off windows or other negative space.
+ // This does not erase any original linework.
+ hg.save();hg.scale(w/819,h/1229);hg.globalCompositeOperation='destination-out';
+ for(const path of hatchExclusions)hg.fill(new Path2D(path));hg.restore();
  // Do not add a single hatch to the exterior white component. This clips
  // shadows to actual closed regions of the supplied linework, not guessed
  // replacement contours. In particular, no marks hang outside throne edges.
