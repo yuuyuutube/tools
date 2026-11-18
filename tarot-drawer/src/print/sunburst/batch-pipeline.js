@@ -4,6 +4,7 @@ import {WINDOW,sunburstFrame as printFrame,shiftMap,shiftAreas} from './layout.j
 import {cardById} from '../../data/cards.js';
 import {finishLine} from './line-finishing.js';
 import {buildInk} from './ink-pipeline.js';
+import {repairColours} from './colour-repairs.js';
 const PALETTE={...INKS,Y:{...INKS.Y,rgb:[232,183,77]},O:{...INKS.O,rgb:[222,83,43]},B:{...INKS.B,rgb:[62,112,150]}};
 const ROOT='/docs/tarot-sunburst/';
 const make=(w,h)=>Object.assign(document.createElement('canvas'),{width:w,height:h});
@@ -75,6 +76,7 @@ export async function buildBatch(number,{jitter=true,grain=true,inkSpread=.5}={}
  if(config.sparkle){const sp=config.sparkle,id=ROLES.findIndex(r=>r.id===sp.role),onto=sp.on.map(o=>ROLES.findIndex(r=>r.id===o));let seed=sp.seed||7;const rnd=()=>((seed=(seed*16807)%2147483647)/2147483647);
   const [x0,y0,x1,y1]=sp.box;for(let t=0;t<sp.count;t++){const cx=Math.round((x0+(x1-x0)*rnd())*sx2d),cy=Math.round((y0+(y1-y0)*rnd())*sy2d),rx=2+rnd()*3*(sp.size||1),ry=1.2+rnd()*1.3;if(!onto.includes(labels[cy*w+cx]))continue;
    for(let y=Math.floor(cy-ry);y<=cy+ry;y++)for(let x=Math.floor(cx-rx);x<=cx+rx;x++){const i=y*w+x;if(((x-cx)/rx)**2+((y-cy)/ry)**2<=1&&onto.includes(labels[i])&&ink[i]<=.22)labels[i]=id;}}}
+ await repairColours(number,labels,ROLES,w,h);
  const pal={...PALETTE,...config.palette},keys=['Y','O','B'];
  const sourcePlates=Object.fromEntries([...keys,'N'].map(k=>[k,make(w,h)]));
  const diagnostic=make(w,h),di=diagnostic.getContext('2d').createImageData(w,h);

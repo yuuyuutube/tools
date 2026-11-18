@@ -17,6 +17,8 @@ document.querySelector('.intro').textContent=inkOnly?'直接加工你的原線�
 document.querySelector('a[href$="review.md"]').href=`docs/tarot-sunburst/batch-${batchId}/review.md`;
 const nav=document.createElement('nav');nav.className='controls';
 for(const [id,b]of Object.entries(BATCHES)){const a=document.createElement('a');a.href='?batch='+id;a.textContent=id+' · '+b.title;nav.append(a);}document.querySelector('.controls').after(nav);
+const colourReview=document.createElement('a');colourReview.href='colour-repair-review.html';colourReview.textContent='色版修正 · 前後對照';nav.prepend(colourReview);
+const paintProjects=document.createElement('a');paintProjects.href='docs/tarot-sunburst/light-paint/';paintProjects.textContent='Light Paint 分層專案';nav.prepend(paintProjects);
 const allLink=document.createElement('a');allLink.href='?view=all';allLink.textContent='1–21 全套總覽';nav.prepend(allLink);
 const inkReview=document.createElement('section');inkReview.id='ink-review';inkReview.innerHTML=`<h2>墨線疏密對照 · 愚者／${batch.title.replaceAll('、','／')}</h2><p>相同比例查看墨線母稿；黏墨樣張另保留實際的細線合墨、飛白與紙紋，插畫不加入色版或網點。</p><canvas id="ink-comparison"></canvas>`;document.getElementById('cards').before(inkReview);
 const jump=document.createElement('a');jump.href='#ink-review';jump.textContent='與愚者比較墨線';document.querySelector('.controls').append(jump);
