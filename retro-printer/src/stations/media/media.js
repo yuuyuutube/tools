@@ -44,7 +44,7 @@ export function mountMedia(root, { plates, inks, selected = 'paper', onPick, onB
     b.querySelector('.m-name').textContent = m.name;
     b.querySelector('.m-note').textContent = m.note;
     drawThumb(b.querySelector('.thumb'), m);
-    b.addEventListener('click', () => { select(m.id); if (m.id === 'hanky') cue('hanky'); });
+    b.addEventListener('click', () => { select(m.id); if (m.id !== 'paper') cue(m.id); });   // 帆布袋、T 恤、手帕各有一句
     list.appendChild(b);
     return { m, el: b };
   });
