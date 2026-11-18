@@ -28,8 +28,29 @@ const halftone = (id, key, color) =>
 
 let uid = 0;
 
+// 印好的牌面：Sunburst 成品縮成 600 × 1000（scripts/export-faces.py 輸出）。
+// 抽牌畫面與海報用 printed: true 取用；其他頁面仍畫原本的 SVG 插畫。
+const FACE_URL = id => new URL(`../../assets/faces/${id}.webp`, import.meta.url).href;
+const faceData = new Map();
+// 海報的 SVG 是當成圖片載入的，那時不會去抓外部圖檔，所以先把牌面轉成 data URL
+export async function loadFaces(ids) {
+  await Promise.all(ids.filter(id => !faceData.has(id)).map(async id => {
+    const res = await fetch(FACE_URL(id));
+    if (!res.ok) throw new Error('牌面圖片載入失敗');
+    const blob = await res.blob();
+    faceData.set(id, await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(blob); }));
+  }));
+}
+function printedFace(card, id, attrs) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${CARD_W} ${CARD_H}" ${attrs}>` +
+    `<defs><clipPath id="${id}c"><rect width="${CARD_W}" height="${CARD_H}" rx="16"/></clipPath></defs>` +
+    `<rect width="${CARD_W}" height="${CARD_H}" rx="16" fill="${P}"/>` +
+    `<image class="kf" href="${faceData.get(card.id) || FACE_URL(card.id)}" width="${CARD_W}" height="${CARD_H}" preserveAspectRatio="none" clip-path="url(#${id}c)"/></svg>`;
+}
+
 // 牌的正面。attrs 會加在最外層 <svg> 上（放進海報時用來指定位置與大小）
-export function faceSVG(card, { offsets = DEFAULT_OFFSETS, id = `f${uid++}_`, attrs = '' } = {}) {
+export function faceSVG(card, { offsets = DEFAULT_OFFSETS, id = `f${uid++}_`, attrs = '', printed = false } = {}) {
+  if (printed) return printedFace(card, id, attrs);
   const art = ART[card.artwork];
   const a = plate();
   art.draw(a);
@@ -54,6 +75,9 @@ export function faceSVG(card, { offsets = DEFAULT_OFFSETS, id = `f${uid++}_`, at
 // 牌背使用同一套四色印刷引擎預先輸出的成品，載入時不重算。
 // print/back.js 保留可編輯的色版；包括紙紋在內皆為 180° 旋轉對稱。
 export const BACK_URL = new URL('../../assets/card-back.png', import.meta.url).href;
+// 抽牌畫面輪流使用的牌背（scripts/export-backs.py 輸出的 WebP，清單要一致）
+export const BACKS = ['card-back', 'card-back-moth', 'card-back-tide', 'card-back-pomegranate', 'card-back-serpent', 'card-back-flower', 'card-back-geometry']
+  .map(name => new URL(`../../assets/backs/${name}.webp`, import.meta.url).href);
 export function backSVG() {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${CARD_W} ${CARD_H}">` +
     `<image href="${BACK_URL}" width="${CARD_W}" height="${CARD_H}"/></svg>`;

@@ -69,7 +69,8 @@ async function rasterPlate(svg, W, H) {
 
 // plates：{ Y: svg, O: svg, B: svg, N: svg }（缺的顏色就不印）
 // 回傳畫好的 canvas（寬 300 × scale）
-export async function printCard(plates, { seed = 1, scale = 2, quietAreas = [], inks = INKS } = {}) {
+export async function printCard(plates, { seed = 1, scale = 2, quietAreas = [], inks = INKS, tune = {} } = {}) {
+  const tuning = { ...TUNE, ...tune };
   const W = Math.round(CW * scale), H = Math.round(CH * scale), n = W * H;
   const rnd = seeded(seed);
   const R = new Float32Array(n), G = new Float32Array(n), Bc = new Float32Array(n);
@@ -90,14 +91,14 @@ export async function printCard(plates, { seed = 1, scale = 2, quietAreas = [], 
     const ink = inks[key], data = await rasterPlate(plates[key], W, H);
     const cr = ink.rgb[0] / 255, cg = ink.rgb[1] / 255, cb = ink.rgb[2] / 255;
     // 套色誤差：主版（墨線）不動，其他色版各偏一點
-    const mis = (key === 'N' || ink.fixedRegistration) ? 0 : TUNE.misregister * scale, ang = rnd() * Math.PI * 2, len = .45 + rnd() * .55;
+    const mis = (key === 'N' || ink.fixedRegistration) ? 0 : tuning.misregister * scale, ang = rnd() * Math.PI * 2, len = .45 + rnd() * .55;
     const ox = Math.cos(ang) * len * mis, oy = Math.sin(ang) * len * mis;
     const nJx = makeNoise(rnd, W, H, 34 * scale), nJy = makeNoise(rnd, W, H, 34 * scale);
     const nFx = makeNoise(rnd, W, H, 3.4 * scale), nFy = makeNoise(rnd, W, H, 3.4 * scale);
     const nBleed = makeNoise(rnd, W, H, 7 * scale), nDen = makeNoise(rnd, W, H, 46 * scale);
     const nVoid = makeNoise(rnd, W, H, 1.5 * scale), nPatch = makeNoise(rnd, W, H, 24 * scale);
-    const J = TUNE.jitter * scale, JF = TUNE.jitterFine * scale;
-    const p = TUNE.period * scale, th0 = ink.angle * Math.PI / 180, ca = Math.cos(th0) / p * 2 * Math.PI, sa = Math.sin(th0) / p * 2 * Math.PI;
+    const J = tuning.jitter * scale, JF = tuning.jitterFine * scale;
+    const p = tuning.period * scale, th0 = ink.angle * Math.PI / 180, ca = Math.cos(th0) / p * 2 * Math.PI, sa = Math.sin(th0) / p * 2 * Math.PI;
 
     for (let y = 0, i = 0; y < H; y++) {
       for (let x = 0; x < W; x++, i++) {
@@ -115,7 +116,7 @@ export async function printCard(plates, { seed = 1, scale = 2, quietAreas = [], 
         // 實地：門檻跟著噪聲浮動，墨多的地方往外暈、少的地方往內縮
         let a = 0;
         if (solid > .04) {
-          const th = .42 - TUNE.bleed * (nBleed(x, y) - .5);
+          const th = .42 - tuning.bleed * (nBleed(x, y) - .5);
           a = smooth(th - .11, th + .11, solid);
         }
         // 網點
@@ -135,7 +136,7 @@ export async function printCard(plates, { seed = 1, scale = 2, quietAreas = [], 
         }
         // 飛白與紙的凹凸
         const v = nVoid(x, y) + .1 * (nPatch(x, y) - .5);
-        a *= 1 - .92 * (1 - .8 * quiet) * smooth(TUNE.speckle, TUNE.speckle + .06, v);
+        a *= 1 - .92 * (1 - .8 * quiet) * smooth(tuning.speckle, tuning.speckle + .06, v);
         const t = tooth[i];
         if (t > .9) a *= 1 - (t - .9) * 4.5 * (1 - .8 * quiet);
         a *= ink.strength * (.83 + .17 * nDen(x, y));
@@ -178,10 +179,10 @@ export const g255 = t => `rgb(0,${Math.round(t * 255)},0)`;
 export const WINDOW = 'M26 400V98a40 40 0 0 1 40 -40h168a40 40 0 0 1 40 40v302z';
 
 // 把「牌框層」與「窗格裡的插畫」組成一張版。整張先做一點點模糊，門檻化之後轉角才會像墨一樣圓
-export function plateSVG({ defs = '', frame = '', art = '' }) {
+export function plateSVG({ defs = '', frame = '', art = '', window = WINDOW }) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${CW}" height="${CH}" viewBox="0 0 ${CW} ${CH}">` +
     `<defs><filter id="soft" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation=".5"/></filter>` +
-    `<clipPath id="win"><path d="${WINDOW}"/></clipPath>${defs}</defs>` +
+    `<clipPath id="win"><path d="${window}"/></clipPath>${defs}</defs>` +
     `<g filter="url(#soft)"><rect width="${CW}" height="${CH}" fill="#000"/>` +
     `<g clip-path="url(#win)"><rect width="${CW}" height="${CH}" fill="#000"/><g transform="translate(26 58)">${art}</g></g>` +
     `${frame}</g></svg>`;

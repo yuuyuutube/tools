@@ -1,0 +1,62 @@
+{
+  "1": {
+    "path": "line/1.png",
+    "sha256": "0208772cc6cf6b32adafd303a347eca085c7f29f177a28bc5346ebdafdc22fd7"
+  },
+  "2": {
+    "path": "line/2.png",
+    "sha256": "564f36c182147d8399e212f5e9ed27d673e54c6561fd4422413cc2a9804e8802"
+  },
+  "3": {
+    "path": "line/3.png",
+    "sha256": "b34c3b57483b9e8a228a1fe22020be3827705947bf2254cbb13c06c7b471603b",
+    "authorizedChange": "Replace nine outer arc stars with twelve along the same arc. Preserve the original crown and all its ornaments, as previously requested.",
+    "fidelityIgnoreCircles": [
+      [
+        303,
+        272,
+        21.5
+      ],
+      [
+        316,
+        240,
+        21.5
+      ],
+      [
+        343,
+        218,
+        21.5
+      ],
+      [
+        375,
+        202,
+        21.5
+      ],
+      [
+        410,
+        194,
+        21.5
+      ],
+      [
+        444,
+        202,
+        21.5
+      ],
+      [
+        475,
+        218,
+        21.5
+      ],
+      [
+        501,
+        240,
+        21.5
+      ],
+      [
+        515,
+        272,
+        21.5
+      ]
+    ]
+  }
+}

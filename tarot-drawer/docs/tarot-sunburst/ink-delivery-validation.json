@@ -1,0 +1,646 @@
+{
+  "cards": [
+    {
+      "number": 1,
+      "batch": "01",
+      "sourceHashMatches": true,
+      "outputs": {
+        "1-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "2ba1e08f881b7a2243d2fcb3eabbf83be6b67c4303692f40be81b1ac3f0911db"
+        },
+        "1-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "c69fce1cd04d7dee0027ea92839adb0e66431cb325c85fe94a65c2d30d1e7565"
+        },
+        "1-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "4faa3e80a8f2bc1d73aa579c606c517723024a7a0adc2f0fbacb3d6bba567d85"
+        }
+      },
+      "colourDeferred": false,
+      "storedMasterUsedForProof": true
+    },
+    {
+      "number": 2,
+      "batch": "01",
+      "sourceHashMatches": true,
+      "outputs": {
+        "2-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "ea54a44993346f96ad7c899bea7c6e725c862e63ca0ddfac7b2b7bc9cfb6a67a"
+        },
+        "2-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "5a0a915114c82b49995f4d184023a93a2ab7790a1483d490bfa7024d6a50aab1"
+        },
+        "2-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "eb85827947e0f7460c9a15be9f376e354371b2b91b9b58fca085d6d1fb3d6075"
+        }
+      },
+      "colourDeferred": false,
+      "storedMasterUsedForProof": true
+    },
+    {
+      "number": 3,
+      "batch": "01",
+      "sourceHashMatches": true,
+      "outputs": {
+        "3-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "55d95415609ba2d1ffe56202b37f62bafa8c704b9b14d7ac9318fededab60003"
+        },
+        "3-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "6678e3acb117a8c09a49ae92d2fceecafea0ad10d865bee190db78ca06d57600"
+        },
+        "3-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "d9f6469bc390d8755f8b4718a0681d102cf4bf6e7e3404396fb8f5b4fad35fff"
+        }
+      },
+      "colourDeferred": false,
+      "storedMasterUsedForProof": true
+    },
+    {
+      "number": 4,
+      "batch": "02",
+      "sourceHashMatches": true,
+      "outputs": {
+        "4-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "829327fe8d0056eeeb5f5260147f733d8db8c31187f44ab5540f7d0e50616461"
+        },
+        "4-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "1270b31bd8e52d2704814e1f506c0292dc03abb3974c00d4ac476c49dd142dbf"
+        },
+        "4-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "4e88e7ea67dccfd75038ff6c4b6835bde89b1471969e31a763d1312026da7b13"
+        }
+      },
+      "colourDeferred": false,
+      "storedMasterUsedForProof": true
+    },
+    {
+      "number": 5,
+      "batch": "02",
+      "sourceHashMatches": true,
+      "outputs": {
+        "5-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "7e0b0fc0181582c9f26b10e6f40fa7cbf253e4f27e2b8eda5e834de299010052"
+        },
+        "5-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "c0b97cc78f9efb8ee29d1f23b54f0613fda5aa44be3bd5a2f6731331e4880870"
+        },
+        "5-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "89e40faa4a881c6eb7f9ede87c05f464f582d28cd4ad67c120effdfb7cd665dd"
+        }
+      },
+      "colourDeferred": false,
+      "storedMasterUsedForProof": true
+    },
+    {
+      "number": 6,
+      "batch": "02",
+      "sourceHashMatches": true,
+      "outputs": {
+        "6-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "3cf31b9845d2e1d0221e7a4ef0ac36cf16d553702d7e13d803cd50e690921f04"
+        },
+        "6-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "ebd2d0ee6edde042034ab9dee56748ed6d8d04b9e76c4860103c1d6436568506"
+        },
+        "6-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "1787611adf81a9e16b08b5aa34b6d9b194b58298d24e7aef282caf92b20fd32a"
+        }
+      },
+      "colourDeferred": false,
+      "storedMasterUsedForProof": true
+    },
+    {
+      "number": 7,
+      "batch": "03",
+      "sourceHashMatches": true,
+      "outputs": {
+        "7-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "24033519bd7cfbe8356ac47803aef2dd7cbab42d93b7ba907f9c2a909a9f5145"
+        },
+        "7-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "7be40d73f7aa087488f2f281e1e18d2053a12494113bbfdd0d75e8e6d883d3f9"
+        },
+        "7-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "14d6488589df0d4aec944bd077cc845404db7bba0fc9bc71e26bae87739b3aba"
+        }
+      },
+      "colourDeferred": true,
+      "storedMasterUsedForProof": false
+    },
+    {
+      "number": 8,
+      "batch": "03",
+      "sourceHashMatches": true,
+      "outputs": {
+        "8-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "add6b4cca799618ef11257047e4c064835a6e93f18d6143416370e87d9159ef8"
+        },
+        "8-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "b6212f7b64ac9bf53077af84e9cc9505e814b3447d725d01ade8652f852b494f"
+        },
+        "8-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "f5f37e961dc145ddf63397a4dc22a173ef970f11b77d3d2a77cb9bfdcb418727"
+        }
+      },
+      "colourDeferred": true,
+      "storedMasterUsedForProof": false
+    },
+    {
+      "number": 9,
+      "batch": "03",
+      "sourceHashMatches": true,
+      "outputs": {
+        "9-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "972161e02594fff74de692fbe79f3fa352a871d7c0859a8d1332709b3bf1d05f"
+        },
+        "9-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "d1d72011b485a1825c4e151c3d676fc31b820af6f24ec6a11d9f7ba031695d00"
+        },
+        "9-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "ab8c043f1b4b53b4bf97765bf99e556271a16369b1e2625f2451be780ca4cf70"
+        }
+      },
+      "colourDeferred": true,
+      "storedMasterUsedForProof": false
+    },
+    {
+      "number": 10,
+      "batch": "04",
+      "sourceHashMatches": true,
+      "outputs": {
+        "10-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "32144a0e5d2eca2f90ba22158335f541c4ae9215203379d0d3294ec4e41e1799"
+        },
+        "10-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "7d2b04b35c9fb69b52ab745c71958103c5cdff253f39066555bf352e107ffe41"
+        },
+        "10-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "1fea78eccd731a9913918c407b69711db8c4403e910f0f1dc25d69c5e977fec8"
+        }
+      },
+      "colourDeferred": true,
+      "storedMasterUsedForProof": false
+    },
+    {
+      "number": 11,
+      "batch": "04",
+      "sourceHashMatches": true,
+      "outputs": {
+        "11-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "cd2dd5770a3ef391f8b7812a68b7ac0606d4d008d3aa218fa4c4889e6e1c77bd"
+        },
+        "11-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "9914a60146345ba1747af3351fdcb48319855844a9401611774f1a5a97eeaefe"
+        },
+        "11-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "f1d6c819944afe553d481f291b20c0a42d47100b26bf18598f6582da9c12238c"
+        }
+      },
+      "colourDeferred": true,
+      "storedMasterUsedForProof": false
+    },
+    {
+      "number": 12,
+      "batch": "04",
+      "sourceHashMatches": true,
+      "outputs": {
+        "12-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "e130bcc51998972c1a057139e9a5b8d88b144e1767eb9d1ba73abb52aa4b57bb"
+        },
+        "12-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "db93f64109efe8fd6b602c28d2331e4dbcb0df4e44d2c49e94c20be95de80da1"
+        },
+        "12-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "15cdb964909dd7d5711747c0079fea0e75d002efc28f4b05e9f5e468e66fb312"
+        }
+      },
+      "colourDeferred": true,
+      "storedMasterUsedForProof": false
+    },
+    {
+      "number": 13,
+      "batch": "05",
+      "sourceHashMatches": true,
+      "outputs": {
+        "13-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "4dcef8499d3118e2a653a507740cbdf061954a579aae3a4a887dd876a890899c"
+        },
+        "13-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "36e376f095f9b44bd01c1f090b354534bfcdef7b247b7602e25e5356e8cfd5ba"
+        },
+        "13-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "529a51f3610f7b0e5f89957fee8bd5532f4bf8469b0a8548463ec652c87c0360"
+        }
+      },
+      "colourDeferred": true,
+      "storedMasterUsedForProof": false
+    },
+    {
+      "number": 14,
+      "batch": "05",
+      "sourceHashMatches": true,
+      "outputs": {
+        "14-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "ccee0c5982e7071d866679c245c1bbe3a96343fa8117f30dfbd832fac6d74ee4"
+        },
+        "14-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "507e55a80ace4f78e9dbb691a49dece80d34242475400b2de6d1fc08a5810494"
+        },
+        "14-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "ca4fb117721a94bb46f1b15513a8d80e3eaf143950216087e55c14e7d098d91d"
+        }
+      },
+      "colourDeferred": true,
+      "storedMasterUsedForProof": false
+    },
+    {
+      "number": 15,
+      "batch": "05",
+      "sourceHashMatches": true,
+      "outputs": {
+        "15-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "6ad4f7492db854673bba52955bdb9f022dc20521f30073d80f54dad886ebd8aa"
+        },
+        "15-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "61cee4855809f4025e73e927e93c695abb07ca1ae4f542149152864b8d5eb339"
+        },
+        "15-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "09a480085e632a8d1c1cbed106b761ddf95127095347ab990f5342b7a33a1796"
+        }
+      },
+      "colourDeferred": true,
+      "storedMasterUsedForProof": false
+    },
+    {
+      "number": 16,
+      "batch": "06",
+      "sourceHashMatches": true,
+      "outputs": {
+        "16-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "bca6531e0c2f569cc8aec79d5039bc02da3e19f3b881762a78e0771d1844520f"
+        },
+        "16-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "23fdbb4661fb62bb9919f52fdcb948e6c7a9eb3786b016d00c90088b20bad156"
+        },
+        "16-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "1f2f487e6c31d7db50eb5618fa229826edcdb83dce6fc7c010868cbcddb76e09"
+        }
+      },
+      "colourDeferred": true,
+      "storedMasterUsedForProof": false
+    },
+    {
+      "number": 17,
+      "batch": "06",
+      "sourceHashMatches": true,
+      "outputs": {
+        "17-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "b5d6e5afa4a7174a7d57bcbcde4b2e668c43afb11735feefb8ebb792282539c6"
+        },
+        "17-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "3cd63a882b108b9438076a97b74608a10ecc91f67eea35e2aa2f5589c60fe567"
+        },
+        "17-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "2e5b33a610ff4124632eca440029bd904b00b35f962004258a15772c1a4e94c1"
+        }
+      },
+      "colourDeferred": true,
+      "storedMasterUsedForProof": false
+    },
+    {
+      "number": 18,
+      "batch": "06",
+      "sourceHashMatches": true,
+      "outputs": {
+        "18-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "68d91cef9634d8488619f2c18807e34e382fb14ac18f04f62393d632032c72f9"
+        },
+        "18-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "d17d2246a2ae807b9dd7e920f9010106cada610e95dc5b323765cd51f17aad85"
+        },
+        "18-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "0d6ac04fe36f609fc0012518f56418bae6edf31b7cd2e4113f95bf10fd1445cb"
+        }
+      },
+      "colourDeferred": true,
+      "storedMasterUsedForProof": false
+    },
+    {
+      "number": 19,
+      "batch": "07",
+      "sourceHashMatches": true,
+      "outputs": {
+        "19-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "496b14d4b32af6df3aba772f60d06c8f83cb6436ce0711faea881ccc060cd668"
+        },
+        "19-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "1964772dd1172f8084c1f85d305e476c63024ff5b43834461f579a85c581dc37"
+        },
+        "19-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "3ca1a65f1f93d5a34c5352d612b5f3a8e21803a93e8cf30b2ee70b21cb0d1343"
+        }
+      },
+      "colourDeferred": true,
+      "storedMasterUsedForProof": false
+    },
+    {
+      "number": 20,
+      "batch": "07",
+      "sourceHashMatches": true,
+      "outputs": {
+        "20-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "736670ab040ca2f33b77a78df0ffbf440eda6dad673e79722b10b2ac0e4af48c"
+        },
+        "20-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "037de9b3194ae58dd3194453a7f00788ec8276f1ab3bd38bb801f98c4f1e0b0a"
+        },
+        "20-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "10fff4a1bce53537b43f9763fd28b7f190fadf7e11de62f3904d62af0aad64b4"
+        }
+      },
+      "colourDeferred": true,
+      "storedMasterUsedForProof": false
+    },
+    {
+      "number": 21,
+      "batch": "07",
+      "sourceHashMatches": true,
+      "outputs": {
+        "21-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "bae568961942cbd71c7cdb33eed59107c645668d7787be1e4c612543be159527"
+        },
+        "21-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "6e86cc3904c81c95f20ad282ede0312adf6277626fa57048c61ac063c0888ca7"
+        },
+        "21-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "12d99b4d1d03d18f0ace687e5922bbd6dd78c5b5d533d6939834f4604e919c04"
+        }
+      },
+      "colourDeferred": true,
+      "storedMasterUsedForProof": false
+    }
+  ],
+  "defaultInkSpread": 0.5,
+  "existingMasters1To6UnchangedFrom": "53d12c1",
+  "foolMasterSHA256": "abe7cec50ac4c7b2f251bc4fb149b0a0e0fdadb78d89972823ae1063006b2fb4",
+  "pngFilesWithValidCRCAndIEND": 198,
+  "existingTestsPassed": 28,
+  "testsScope": "Existing app and SVG tests; these do not validate PNG symbols or art quality.",
+  "uiChecks": [
+    "batch 03\u201307 ink and monochrome proof views",
+    "all 21 proof images load",
+    "all 21 master images load",
+    "overview mode toggle works"
+  ]
+}
