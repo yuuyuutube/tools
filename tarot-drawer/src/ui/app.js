@@ -3,7 +3,7 @@
 import { SPREADS, DEFAULTS, MOTION, EASE } from '../config.js';
 import { CARDS, CARD_IDS, cardById, keywordsOf } from '../data/cards.js';
 import { createSession } from '../engine/draw.js';
-import { faceSVG, BACK_URL, offsetsFromSeed, svgDataURL } from '../art/frame.js';
+import { faceSVG, BACKS, offsetsFromSeed, svgDataURL } from '../art/frame.js';
 import { posterBlob, savePoster } from '../poster/poster.js';
 import { sfx, soundOn, setSound } from '../audio/sound.js';
 
@@ -44,7 +44,21 @@ function setState(s) {
 const say = text => { live.textContent = ''; requestAnimationFrame(() => { live.textContent = text; }); };
 
 // ---------------- 牌 ----------------
-stage.style.setProperty('--back', `url("${BACK_URL}")`);
+// 牌背輪換：每次回到牌堆（打開網頁、再抽一次、中途返回）就換下一款。
+// 第一次來從隨機一款開始，之後依序輪流並記在瀏覽器裡，所以連續兩次不會一樣、每一款都會輪到。
+let backIndex = -1;
+try { backIndex = parseInt(localStorage.getItem('tarot-back'), 10); } catch { /* 沒有紀錄 */ }
+if (!(backIndex >= 0 && backIndex < BACKS.length)) backIndex = Math.floor(Math.random() * BACKS.length) - 1;
+let backReady = false;
+function nextBack() {
+  backIndex = (backIndex + 1) % BACKS.length;
+  try { localStorage.setItem('tarot-back', backIndex); } catch { /* 存不了就只換這一次 */ }
+  const url = BACKS[backIndex], set = () => { if (url === BACKS[backIndex]) stage.style.setProperty('--back', `url("${url}")`); };
+  if (!backReady) { backReady = true; set(); return; }       // 第一次直接用，牌背底色會先墊著
+  const img = new Image();                                   // 之後先載好再換，收牌時不會閃一下空白
+  img.onload = img.onerror = set;
+  img.src = url;
+}
 const cards = Array.from({ length: N }, () => {
   const el = document.createElement('div');
   el.className = 'card';
@@ -109,6 +123,7 @@ function resetCard(cd) {
 // ---------------- IDLE ----------------
 function toIdle(animate = true) {
   run++;
+  nextBack();
   cancelAnimationFrame(raf); raf = 0; drag = null;
   session = null; result = null; fan = []; focus = -1; saving = false;
   $('#save').classList.remove('busy');
@@ -231,14 +246,17 @@ function announcePick() {
 }
 
 // 拖曳與慣性（只有放不下的牌扇才會捲）
+// 手機牌扇：手指移動 3.2 個牌距才換一張；放手後的慣性打七折、摩擦較大、也有上限，比較好停在想要的那張
+const SWIPE = { perCard: 3.2, fling: .7, friction: .99, maxV: .0075 };
 let drag = null, raf = 0, suppressClick = false;
 function fling(v) {
   cancelAnimationFrame(raf);
+  v = clamp(v * SWIPE.fling, -SWIPE.maxV, SWIPE.maxV);
   if (reduced.matches || Math.abs(v) < .002) return;
   let last = performance.now();
   const step = t => {
     const dt = Math.min(32, t - last); last = t;
-    pos += v * dt; v *= Math.pow(.995, dt);
+    pos += v * dt; v *= Math.pow(SWIPE.friction, dt);
     if (pos < 0 || pos > fan.length - 1) { pos = clamp(pos, 0, fan.length - 1); v = 0; }
     focus = Math.round(pos);
     layoutFan();
@@ -271,9 +289,9 @@ stage.addEventListener('pointermove', e => {
   }
   if (drag.moved && G.scroll) {
     const dt = Math.max(1, e.timeStamp - drag.lt);
-    drag.v = drag.v * .6 + (-(e.clientX - drag.lx) / G.s / dt) * .4;
+    drag.v = drag.v * .6 + (-(e.clientX - drag.lx) / (G.s * SWIPE.perCard) / dt) * .4;
     drag.lx = e.clientX; drag.lt = e.timeStamp;
-    pos = clamp(drag.pos0 - dx / G.s, 0, fan.length - 1);
+    pos = clamp(drag.pos0 - dx / (G.s * SWIPE.perCard), 0, fan.length - 1);
     focus = Math.round(pos);
     layoutFan();
   }
@@ -337,7 +355,7 @@ function pick(cd) {
   cd.el.style.zIndex = 100 + d.position;
   cd.el.tabIndex = -1;
   cd.el.setAttribute('aria-label', `第 ${d.position + 1} 張牌，尚未翻開`);
-  cd.face.innerHTML = faceSVG(cardById(d.cardId), { offsets: session.offsets });
+  cd.face.innerHTML = faceSVG(cardById(d.cardId), { offsets: session.offsets, printed: true });
   cd.face.classList.toggle('rev', d.orientation === 'reversed');
   sfx.slide();
 

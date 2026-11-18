@@ -1,6 +1,6 @@
 import {BATCH} from './registry.js';
-import {printCard,plateSVG,INKS,WINDOW} from '../press.js';
-import {printFrame} from '../frame.js';
+import {printCard,plateSVG,INKS} from '../press.js';
+import {WINDOW,sunburstFrame as printFrame,shiftMap,shiftAreas} from './layout.js';
 import {cardById} from '../../data/cards.js';
 import {finishLine} from './line-finishing.js';
 import {buildInk} from './ink-pipeline.js';
@@ -11,25 +11,33 @@ const load=src=>new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>
 const rgbInk=(base,density,rgb)=>base.map((v,i)=>v*(1-density+density*rgb[i]/255));
 const starPath=(x,y,r)=>new Path2D(Array.from({length:10},(_,i)=>{const a=-Math.PI/2+i*Math.PI/5,v=i%2?r*.43:r;return `${i?'L':'M'}${x+Math.cos(a)*v} ${y+Math.sin(a)*v}`;}).join('')+'Z');
 const arcStars=m=>Array.from({length:m.count},(_,i)=>{const a=(m.start+(m.end-m.start)*i/(m.count-1))*Math.PI/180;return starPath(m.cx+m.rx*Math.cos(a),m.cy+m.ry*Math.sin(a),m.r);});
-const WIN=new Path2D('M26 400V98a40 40 0 0 1 40-40h168a40 40 0 0 1 40 40v302z');
+const WIN=new Path2D(WINDOW);
 
 export const SETTINGS={seed:20261117,scale:3,tune:{jitter:.28,jitterFine:.1,bleed:.12,speckle:.94,misregister:.55,period:1.55}};
 export async function buildBatch(number,{jitter=true,grain=true,inkSpread=.5}={}){
  if(BATCH[number].inkOnly)return buildInk(number,BATCH[number],{inkSpread});
- const config=BATCH[number],applyFinishing=config.finishing&&!config.frozenInkMaster,ROLES=config.roles,MAP={width:1024,height:1536,...config.map},INK_PATH=ROOT+(applyFinishing?`line/${number}.png`:`batch-${config.batch}/${number}-ink.png`);
+ const config=BATCH[number],applyFinishing=config.finishing&&!config.frozenInkMaster,ROLES=config.roles,MAP=shiftMap({width:1024,height:1536,...config.map},number),INK_PATH=ROOT+(applyFinishing?`line/${number}.png`:`batch-${config.batch}/${number}-ink.png`);
  const img=await load(INK_PATH),w=MAP.width,h=MAP.height,n=w*h,source=make(w,h),ctx=source.getContext('2d',{willReadFrequently:true});
  ctx.drawImage(applyFinishing?finishLine(img,config.finishing):img,0,0,w,h);const pixels=ctx.getImageData(0,0,w,h).data;
  const labelCanvas=make(w,h),lc=labelCanvas.getContext('2d',{willReadFrequently:true});
- lc.fillStyle='#000';lc.fillRect(0,0,w,h);
+ // G carries a check value so antialiased path edges (a blend of two ids) can be detected.
+ const tag=id=>`rgb(${id},${(id*67+13)&255},0)`;
+ lc.fillStyle=tag(0);lc.fillRect(0,0,w,h);
  lc.save();if(config.designSize)lc.scale(w/config.designSize[0],h/config.designSize[1]);
- ROLES.forEach((role,id)=>{if(role.path){lc.fillStyle=`rgb(${id},0,0)`;lc.fill(new Path2D(role.path));}});lc.restore();
- const raw=lc.getImageData(0,0,w,h).data;
- const bc=make(w,h),bg=bc.getContext('2d');bg.fillStyle='#000';bg.fillRect(0,0,w,h);bg.save();if(config.designSize)bg.scale(w/config.designSize[0],h/config.designSize[1]);ROLES.forEach((role,id)=>{if(role.path&&!role.componentOnly){bg.fillStyle=`rgb(${id},0,0)`;bg.fill(new Path2D(role.path));}});bg.restore();const base=bg.getImageData(0,0,w,h).data;
+ ROLES.forEach((role,id)=>{if(role.path){lc.fillStyle=tag(id);lc.fill(new Path2D(role.path));}});lc.restore();
+ const bc=make(w,h),bg=bc.getContext('2d',{willReadFrequently:true});bg.fillStyle=tag(0);bg.fillRect(0,0,w,h);bg.save();if(config.designSize)bg.scale(w/config.designSize[0],h/config.designSize[1]);ROLES.forEach((role,id)=>{if(role.path&&!role.componentOnly){bg.fillStyle=tag(id);bg.fill(new Path2D(role.path));}});bg.restore();
+ // Cards 7–21: region labels read from the colour reference (scripts/sunburst-colour-labels.py);
+ // the R value is the swatch index, used for both votes and open areas.
+ if(config.labelMap){const map=await load(ROOT+config.labelMap);for(const g of [lc,bg]){g.imageSmoothingEnabled=false;g.drawImage(map,0,0,w,h);}}
+ const raw=lc.getImageData(0,0,w,h).data,base=bg.getImageData(0,0,w,h).data;
+ // A blended edge pixel takes the id of its left (or upper) neighbour instead of an unrelated id.
+ if(!config.labelMap)for(const d of [raw,base])for(let i=0;i<n;i++)if(d[i*4]>=ROLES.length||d[i*4+1]!==((d[i*4]*67+13)&255))d[i*4]=i%w?d[i*4-4]:i>=w?d[(i-w)*4]:0;
  const labels=new Uint8Array(n),visited=new Uint8Array(n),ink=new Float32Array(n);
  for(let i=0;i<n;i++){labels[i]=base[i*4];ink[i]=1-(pixels[i*4]*.2126+pixels[i*4+1]*.7152+pixels[i*4+2]*.0722)/255;}
  // Flood-fill is used to refine masks, not to invent colours. Large open
  // landscape components keep their explicitly authored spatial masks.
  const queue=new Int32Array(n),votes=new Int32Array(ROLES.length),pins=new Int16Array(n).fill(-1);let snapped=0;
+ const sx2d=w/(config.designSize?.[0]||w),sy2d=h/(config.designSize?.[1]||h);
  for(const seed of config.seeds||[]){const id=ROLES.findIndex(r=>r.id===seed.role),x=Math.round(seed.x*w/(config.designSize?.[0]||w)),y=Math.round(seed.y*h/(config.designSize?.[1]||h));if(id>=0)pins[y*w+x]=id;}
  for(let start=0;start<n;start++){
   if(visited[start]||ink[start]>.22)continue;
@@ -38,7 +46,35 @@ export async function buildBatch(number,{jitter=true,grain=true,inkSpread=.5}={}
    for(const j of [x>0?i-1:-1,x<w-1?i+1:-1,y>0?i-w:-1,y<h-1?i+w:-1])if(j>=0&&!visited[j]&&ink[j]<=.22){visited[j]=1;queue[tail++]=j;}
   }
   if(!touch&&!preserveSpatial&&tail<150000){let id=0;for(let k=1;k<votes.length;k++)if(votes[k]>votes[id])id=k;if(pinnedId>=0)id=pinnedId;if(pinnedId>=0||votes[id]/tail>.55){for(let k=0;k<tail;k++)labels[queue[k]]=id;snapped++;}}
+  // Region rules: every enclosed shape whose centre lies in a box takes a role
+  // (leaves of a canopy, bushes along a bank), optionally only from given roles.
+  if(config.regionRoles&&!touch&&tail<40000){let sx=0,sy=0;for(let k=0;k<tail;k++){sx+=queue[k]%w;sy+=(queue[k]/w)|0;}const cx=sx/tail/sx2d,cy=sy/tail/sy2d,cur=ROLES[labels[queue[0]]].id;
+   for(const rule of config.regionRoles){const [x0,y0,x1,y1]=rule.box;if(cx<x0||cx>x1||cy<y0||cy>y1||(rule.from&&!rule.from.includes(cur))||(rule.maxSize&&tail>rule.maxSize))continue;const id=ROLES.findIndex(r=>r.id===rule.role);for(let k=0;k<tail;k++)labels[queue[k]]=id;}}
  }
+ // Paint: a traced shape (design units) takes a role where the colour is one of `from`,
+ // for two parts sharing one open outline (a lion's face inside its mane).
+ for(const p of config.paint||[]){const id=ROLES.findIndex(r=>r.id===p.role),from=(p.from||[]).map(f=>ROLES.findIndex(r=>r.id===f)),mg=make(w,h).getContext('2d',{willReadFrequently:true});mg.scale(sx2d,sy2d);mg.fill(new Path2D(p.path));const a=mg.getImageData(0,0,w,h).data;
+  for(let i=0;i<n;i++)if(a[i*4+3]>127&&ink[i]<=.22&&(!from.length||from.includes(labels[i])))labels[i]=id;}
+ // Bounded fills reach open shapes (a bank or rock that opens to the margin):
+ // flood from the point, but never past the box.
+ for(const f of config.fills||[]){const id=ROLES.findIndex(r=>r.id===f.role),[x0,y0,x1,y1]=(f.box||[0,0,1e5,1e5]).map((v,k)=>Math.round(v*(k%2?sy2d:sx2d))),s=Math.round(f.y*sy2d)*w+Math.round(f.x*sx2d);if(id<0||ink[s]>.22)continue;
+  const seen=new Uint8Array(n);let tail=1,head=0;queue[0]=s;seen[s]=1;
+  while(head<tail){const i=queue[head++],x=i%w,y=(i/w)|0;labels[i]=id;for(const j of [x>x0?i-1:-1,x<x1-1?i+1:-1,y>y0?i-w:-1,y<y1-1?i+w:-1])if(j>=0&&!seen[j]&&ink[j]<=.22){seen[j]=1;queue[tail++]=j;}}
+ }
+ // Gap roles: shapes whose outline has small breaks (wheat kernels) are found
+ // with the ink thickened by r, kept if small and short, then grown back to the line.
+ for(const g of config.gapRoles||[]){const id=ROLES.findIndex(r=>r.id===g.role),from=(g.from||[]).map(f=>ROLES.findIndex(r=>r.id===f)),r=g.r||3,[x0,y0,x1,y1]=g.box.map((v,k)=>Math.round(v*(k%2?sy2d:sx2d))),bw=x1-x0,bh=y1-y0,bn=bw*bh;
+  const blocked=new Uint8Array(bn),seen=new Uint8Array(bn),sel=new Uint8Array(bn),disk=[];for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++)if(dx*dx+dy*dy<=r*r)disk.push([dx,dy]);
+  for(let y=0;y<bh;y++)for(let x=0;x<bw;x++)if(ink[(y+y0)*w+x+x0]>.22)for(const [dx,dy]of disk){const X=x+dx,Y=y+dy;if(X>=0&&Y>=0&&X<bw&&Y<bh)blocked[Y*bw+X]=1;}
+  for(let s=0;s<bn;s++){if(seen[s]||blocked[s])continue;let tail=1,head=0,edge=false,ya=1e9,yb=0;queue[0]=s;seen[s]=1;
+   while(head<tail){const i=queue[head++],x=i%bw,y=(i/bw)|0;if(x===0||y===0||x===bw-1||y===bh-1)edge=true;if(y<ya)ya=y;if(y>yb)yb=y;for(const j of [x>0?i-1:-1,x<bw-1?i+1:-1,y>0?i-bw:-1,y<bh-1?i+bw:-1])if(j>=0&&!seen[j]&&!blocked[j]){seen[j]=1;queue[tail++]=j;}}
+   if(!edge&&tail>=(g.minSize||0)&&tail<=g.maxSize&&yb-ya<=(g.maxHeight||1e9))for(let k=0;k<tail;k++)sel[queue[k]]=1;}
+  for(let y=0;y<bh;y++)for(let x=0;x<bw;x++){if(!sel[y*bw+x])continue;for(const [dx,dy]of disk){const X=x+dx,Y=y+dy;if(X<0||Y<0||X>=bw||Y>=bh)continue;const i=(Y+y0)*w+X+x0;if(ink[i]<=.22&&(!from.length||from.includes(labels[i])))labels[i]=id;}}
+ }
+ // Sparkle: small light flecks on water, as on the colour reference.
+ if(config.sparkle){const sp=config.sparkle,id=ROLES.findIndex(r=>r.id===sp.role),onto=sp.on.map(o=>ROLES.findIndex(r=>r.id===o));let seed=sp.seed||7;const rnd=()=>((seed=(seed*16807)%2147483647)/2147483647);
+  const [x0,y0,x1,y1]=sp.box;for(let t=0;t<sp.count;t++){const cx=Math.round((x0+(x1-x0)*rnd())*sx2d),cy=Math.round((y0+(y1-y0)*rnd())*sy2d),rx=2+rnd()*3*(sp.size||1),ry=1.2+rnd()*1.3;if(!onto.includes(labels[cy*w+cx]))continue;
+   for(let y=Math.floor(cy-ry);y<=cy+ry;y++)for(let x=Math.floor(cx-rx);x<=cx+rx;x++){const i=y*w+x;if(((x-cx)/rx)**2+((y-cy)/ry)**2<=1&&onto.includes(labels[i])&&ink[i]<=.22)labels[i]=id;}}}
  const pal={...PALETTE,...config.palette},keys=['Y','O','B'];
  const sourcePlates=Object.fromEntries([...keys,'N'].map(k=>[k,make(w,h)]));
  const diagnostic=make(w,h),di=diagnostic.getContext('2d').createImageData(w,h);
@@ -68,12 +104,12 @@ export async function buildBatch(number,{jitter=true,grain=true,inkSpread=.5}={}
  // place() leaves its context at the card-unit scale.
  fg.save();fg.clip(WIN);fg.translate(MAP.x,MAP.y);fg.scale(MAP.scale,MAP.scale);fg.drawImage(inkAlpha,0,0);fg.restore();
  const fr=printFrame(cardById(config.id)),plates={};
- for(const key of [...keys,'N'])plates[key]=plateSVG({art:`<image href="${sourcePlates[key].toDataURL()}" x="${MAP.x-26}" y="${MAP.y-58}" width="${w*MAP.scale}" height="${h*MAP.scale}"/>`});
+ for(const key of [...keys,'N'])plates[key]=plateSVG({art:`<image href="${sourcePlates[key].toDataURL()}" x="${MAP.x-26}" y="${MAP.y-58}" width="${w*MAP.scale}" height="${h*MAP.scale}"/>`,window:WINDOW});
  plates.N=`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="500" viewBox="0 0 300 500"><defs><filter id="ink-spread" x="-2%" y="-2%" width="104%" height="104%"><feGaussianBlur stdDeviation="${Math.max(0,Math.min(.5,inkSpread))}"/></filter><clipPath id="window"><path d="${WINDOW}"/></clipPath></defs><rect width="300" height="500" fill="black"/><g clip-path="url(#window)"><g filter="url(#ink-spread)"><image href="${sourcePlates.N.toDataURL()}" x="${MAP.x}" y="${MAP.y}" width="${w*MAP.scale}" height="${h*MAP.scale}"/></g></g></svg>`;
- plates.FO=plateSVG({frame:fr.O});plates.FN=plateSVG({frame:fr.N});
+ plates.FO=plateSVG({frame:fr.O,window:WINDOW});plates.FN=plateSVG({frame:fr.N,window:WINDOW});
  const inks={...PALETTE,...config.palette,FO:INKS.O,FN:{...INKS.N,fixedRegistration:true}};
  const quietAreas=[{x:147,y:155,rx:17,ry:23},{x:104,y:204,rx:18,ry:18},{x:159,y:192,rx:19,ry:20},{x:104,y:176,rx:17,ry:17}];
- const final=await printCard(plates,{...SETTINGS,seed:20261117+number,inks,quietAreas:config.quiet||quietAreas,tune:{...SETTINGS.tune,...(!jitter?{jitter:0,jitterFine:0,bleed:0,misregister:0}:{}),...(!grain?{speckle:1}: {})}});
+ const final=await printCard(plates,{...SETTINGS,seed:20261117+number,inks,quietAreas:shiftAreas(config.quiet||quietAreas,number),tune:{...SETTINGS.tune,...(!jitter?{jitter:0,jitterFine:0,bleed:0,misregister:0}:{}),...(!grain?{speckle:1}: {})}});
  // Raster ink master and masks remain available without any print effect.
  const inkStage=place(source),maskStage=place(ids);
  const smoothImage=await load(ROOT+`line/${number}.png`),smooth=make(1024,1536);smooth.getContext('2d').drawImage(smoothImage,0,0,1024,1536);

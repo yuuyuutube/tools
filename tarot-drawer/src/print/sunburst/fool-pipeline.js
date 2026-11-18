@@ -1,13 +1,13 @@
-import {ROLES,MAP,SUN_RAYS} from './fool-masks.js';
-import {printCard,plateSVG,INKS,WINDOW} from '../press.js';
-import {printFrame} from '../frame.js';
+import {ROLES,MAP as FOOL_MAP,SUN_RAYS} from './fool-masks.js';
+import {printCard,plateSVG,INKS} from '../press.js';
+import {WINDOW,sunburstFrame as printFrame,shiftMap,shiftAreas} from './layout.js';
 import {cardById} from '../../data/cards.js';
 const PALETTE={...INKS,Y:{...INKS.Y,rgb:[232,183,77]},O:{...INKS.O,rgb:[222,83,43]},B:{...INKS.B,rgb:[62,112,150]}};
 const ROOT='/docs/tarot-sunburst/';
 const make=(w,h)=>Object.assign(document.createElement('canvas'),{width:w,height:h});
 const load=src=>new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=src;});
 const rgbInk=(base,density,rgb)=>base.map((v,i)=>v*(1-density+density*rgb[i]/255));
-const WIN=new Path2D('M26 400V98a40 40 0 0 1 40-40h168a40 40 0 0 1 40 40v302z');
+const WIN=new Path2D(WINDOW),MAP=shiftMap(FOOL_MAP,0);
 export const INK_PATH=ROOT+'fool-pipeline/ink-generated.png';
 export const SETTINGS={seed:20261117,scale:3,tune:{jitter:.28,jitterFine:.1,bleed:.12,speckle:.94,misregister:.55,period:1.55}};
 export async function buildFool({jitter=true,grain=true,inkSpread=.5}={}){
@@ -74,12 +74,12 @@ export async function buildFool({jitter=true,grain=true,inkSpread=.5}={}){
  // place() leaves its context at the card-unit scale.
  fg.save();fg.clip(WIN);fg.translate(MAP.x,MAP.y);fg.scale(MAP.scale,MAP.scale);fg.drawImage(inkAlpha,0,0);fg.restore();
  const fr=printFrame(cardById('fool')),plates={};
- for(const key of [...keys,'N'])plates[key]=plateSVG({art:`<image href="${sourcePlates[key].toDataURL()}" x="${MAP.x-26}" y="${MAP.y-58}" width="${w*MAP.scale}" height="${h*MAP.scale}"/>`});
+ for(const key of [...keys,'N'])plates[key]=plateSVG({art:`<image href="${sourcePlates[key].toDataURL()}" x="${MAP.x-26}" y="${MAP.y-58}" width="${w*MAP.scale}" height="${h*MAP.scale}"/>`,window:WINDOW});
  plates.N=`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="500" viewBox="0 0 300 500"><defs><filter id="ink-spread" x="-2%" y="-2%" width="104%" height="104%"><feGaussianBlur stdDeviation="${Math.max(0,Math.min(.5,inkSpread))}"/></filter><clipPath id="window"><path d="${WINDOW}"/></clipPath></defs><rect width="300" height="500" fill="black"/><g clip-path="url(#window)"><g filter="url(#ink-spread)"><image href="${sourcePlates.N.toDataURL()}" x="${MAP.x}" y="${MAP.y}" width="${w*MAP.scale}" height="${h*MAP.scale}"/></g></g></svg>`;
- plates.FO=plateSVG({frame:fr.O});plates.FN=plateSVG({frame:fr.N});
+ plates.FO=plateSVG({frame:fr.O,window:WINDOW});plates.FN=plateSVG({frame:fr.N,window:WINDOW});
  const inks={...PALETTE,FO:INKS.O,FN:{...INKS.N,fixedRegistration:true}};
  const quietAreas=[{x:147,y:155,rx:17,ry:23},{x:104,y:204,rx:18,ry:18},{x:159,y:192,rx:19,ry:20},{x:104,y:176,rx:17,ry:17}];
- const final=await printCard(plates,{...SETTINGS,inks,quietAreas,tune:{...SETTINGS.tune,...(!jitter?{jitter:0,jitterFine:0,bleed:0,misregister:0}:{}),...(!grain?{speckle:1}: {})}});
+ const final=await printCard(plates,{...SETTINGS,inks,quietAreas:shiftAreas(quietAreas,0),tune:{...SETTINGS.tune,...(!jitter?{jitter:0,jitterFine:0,bleed:0,misregister:0}:{}),...(!grain?{speckle:1}: {})}});
  // Raster ink master and masks remain available without any print effect.
  const inkStage=place(source),maskStage=place(ids);
  const smoothImage=await load(ROOT+'line/0-smooth-aligned-rays.png'),smooth=make(1024,1536);smooth.getContext('2d').drawImage(smoothImage,0,0,1024,1536);

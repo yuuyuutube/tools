@@ -179,10 +179,10 @@ export const g255 = t => `rgb(0,${Math.round(t * 255)},0)`;
 export const WINDOW = 'M26 400V98a40 40 0 0 1 40 -40h168a40 40 0 0 1 40 40v302z';
 
 // 把「牌框層」與「窗格裡的插畫」組成一張版。整張先做一點點模糊，門檻化之後轉角才會像墨一樣圓
-export function plateSVG({ defs = '', frame = '', art = '' }) {
+export function plateSVG({ defs = '', frame = '', art = '', window = WINDOW }) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${CW}" height="${CH}" viewBox="0 0 ${CW} ${CH}">` +
     `<defs><filter id="soft" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation=".5"/></filter>` +
-    `<clipPath id="win"><path d="${WINDOW}"/></clipPath>${defs}</defs>` +
+    `<clipPath id="win"><path d="${window}"/></clipPath>${defs}</defs>` +
     `<g filter="url(#soft)"><rect width="${CW}" height="${CH}" fill="#000"/>` +
     `<g clip-path="url(#win)"><rect width="${CW}" height="${CH}" fill="#000"/><g transform="translate(26 58)">${art}</g></g>` +
     `${frame}</g></svg>`;

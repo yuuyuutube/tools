@@ -3,7 +3,7 @@
 // 版面裡會變的東西（錯位、印章角度、紙張顆粒）都由這次抽牌的 seed 決定，重複下載會得到同一張圖。
 import { SITE } from '../config.js';
 import { keywordsOf } from '../data/cards.js';
-import { faceSVG, FONT } from '../art/frame.js';
+import { faceSVG, loadFaces, FONT } from '../art/frame.js';
 import { P, N, O, Y, B, K, burst } from '../art/kit.js';
 import { seeded } from '../engine/random.js';
 
@@ -61,7 +61,7 @@ const cardShadow = (x, y, w, h, d, ox, oy) =>
 
 function placeCard(item, x, y, w, i, offsets) {
   const h = w * 5 / 3;
-  const svg = faceSVG(item.card, { offsets, id: `p${i}_`, attrs: `x="${x}" y="${y}" width="${w}" height="${h}"` });
+  const svg = faceSVG(item.card, { offsets, id: `p${i}_`, attrs: `x="${x}" y="${y}" width="${w}" height="${h}"`, printed: true });
   // 逆位的牌在海報上也維持逆位
   return item.orientation === 'reversed' ? `<g transform="rotate(180 ${x + w / 2} ${y + h / 2})">${svg}</g>` : svg;
 }
@@ -138,6 +138,7 @@ function grain(g, seed) {
 }
 
 async function render(res) {
+  await loadFaces(res.cards.map(it => it.card.id));
   const img = await loadImage('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(posterSVG(res)));
   const cv = document.createElement('canvas');
   cv.width = POSTER_W; cv.height = POSTER_H;

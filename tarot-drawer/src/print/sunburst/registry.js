@@ -5,6 +5,7 @@ import {BATCH as fourth} from './batch-04-ink.js';
 import {BATCH as fifth} from './batch-05-ink.js';
 import {BATCH as sixth} from './batch-06-ink.js';
 import {BATCH as seventh} from './batch-07-ink.js';
+import {SWATCHES} from './colour-swatches.js';
 
 // Completed production batches remain individually addressable for review.
 export const BATCHES={
@@ -23,3 +24,9 @@ for(const [batch,entry] of Object.entries(BATCHES))for(const n of entry.numbers)
 // Existing reviewed masters are immutable inputs to new monochrome proofs.
 // Unfreeze explicitly when a future edit to one of these masters is authorized.
 for(let n=1;n<=6;n++)BATCH[n].frozenInkMaster=true;
+
+// Colour for 7–21: same Y/O/B/N plates and densities as batches 01–02, with
+// region labels taken from the original colour reference instead of polygons.
+for(let n=7;n<=21;n++)Object.assign(BATCH[n],{inkOnly:false,roles:SWATCHES,labelMap:`batch-${BATCH[n].batch}/${n}-labels.png`});
+// Strength: the lion's face shares one open outline with its mane, so it is traced here.
+BATCH[8].paint=[{role:'gold',from:['red','orange'],path:'M333 440L350 428L376 427L398 446L420 446L442 453L460 459L475 473L484 482L490 495L482 509L470 509L460 505L433 493L424 504L384 516L360 511L335 498L330 470Z'}];

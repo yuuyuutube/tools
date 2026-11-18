@@ -9,7 +9,10 @@ const text=(text,x,y,size)=>({type:'text',text,x,y,size});
 const masterText=m=>({...m,x:m.x*1024/819,y:m.y*1536/1229,size:m.size*1024/819});
 const priestessText=[text('B',169,443,58),text('J',652,443,58),text('TORA',410,651,25)];
 export const BATCH={
- 1:{id:'magician',map:{scale:.285,x:4,y:38},designSize:[819,1229],finishing:{outlineRadius:1.5,bands:BANDS[1],
+ 1:{id:'magician',
+  // The rail under the table top runs in front of the robe; legs are table wood, not leaves.
+  seeds:[{role:'table-apron',x:400,y:742},{role:'table-apron',x:190,y:800},{role:'table-apron',x:625,y:800}],
+  map:{scale:.285,x:4,y:38},designSize:[819,1229],finishing:{outlineRadius:1.5,bands:BANDS[1],
   protectedAreas:[box(238,212,47,90),box(550,535,65,94),box(370,299,65,62)],
   thinLines:['M258 233Q265 229 276 232','M258 243Q268 241 276 244','M259 254Q268 252 276 255'],
   outlines:[
@@ -25,6 +28,8 @@ export const BATCH={
    r('raised-arm',SKIN,'M246 218L272 217L278 234L276 260L269 282L285 315L278 345L267 346L253 316L245 279L242 253Z'),
    r('pointing-hand',SKIN,'M568 535L580 545L594 566L607 588L600 593L608 613L599 623L583 597L573 596L564 585L559 568L550 558Z'),
    r('snake-belt',GOLD,'M352 506Q400 484 449 513L461 540L447 562Q404 582 365 561L352 546Z'),
+   // The ring's open centre shows the linen tunic, not the snake's gold.
+   r('snake-belt-centre',WHITE,'M449 537A42 18 0 1 1 365 537A42 18 0 1 1 449 537Z'),
    r('table-top',[.32,.16,.08],'M167 647H655L695 711H125Z'),
    r('table-apron',WOOD,'M126 713H695L686 735H139ZM167 736H215V765H167ZM168 763H211V850H168ZM603 738H653V768H603ZM608 767H645V853H608Z'),
    r('chalice',GOLD,'M174 551H252L247 584L232 615L221 627L221 659L244 675L234 688H184L179 678L203 658L203 626L189 615L183 584Z'),
@@ -65,7 +70,14 @@ export const BATCH={
    ...[[301,222,33],[520,223,33],[300,398,34],[519,400,34]].map(([x,y,z],i)=>r('pomegranate-'+i,RED,circle(x,y,z))),
    r('palms',GREEN,'M351 173H470V265H351ZM254 261H343V357H254ZM474 261H565V358H474ZM253 435H343V535H253ZM476 434H565V538H476Z'),
   ]},
- 3:{id:'empress',map:{scale:.27,x:11.8,y:36},designSize:[819,1229],finishing:{outlineRadius:1.5,bands:BANDS[3],
+ 3:{id:'empress',
+  // Left bank: grass mound, two rocks and a lower rock open to the margin; the falls and foam are white water.
+  fills:[{role:'bank-grass',x:70,y:529,box:[42,470,135,600]},{role:'bank-rock',x:70,y:577,box:[42,550,128,605]},{role:'bank-rock',x:70,y:608,box:[42,590,125,640]},{role:'bank-rock',x:70,y:717,box:[42,688,125,750]},
+   {role:'falls',x:115,y:545,box:[95,505,135,592]},{role:'falls',x:139,y:549,box:[128,500,196,600]},{role:'falls',x:159,y:529,box:[128,500,196,600]},{role:'falls',x:178,y:529,box:[128,500,196,600]},{role:'falls',x:143,y:604,box:[125,585,200,625]},{role:'falls',x:169,y:606,box:[125,585,200,625]}],
+  // Wheat kernels whose outlines open onto the field: close small breaks, keep kernel-sized shapes.
+  gapRoles:[{role:'wheat',box:[44,840,776,1060],r:3,minSize:30,maxSize:700,maxHeight:36,from:['meadow']}],
+  sparkle:{role:'falls',on:['water'],box:[44,600,195,790],count:260,seed:31},
+ map:{scale:.27,x:11.8,y:36},designSize:[819,1229],finishing:{outlineRadius:1.5,bands:BANDS[3],
   corrections:[{type:'star-arc',old:[[303,272],[316,240],[343,218],[375,202],[410,194],[444,202],[475,218],[501,240],[515,272]],eraseRadius:21.5,cx:410,cy:289,rx:110,ry:96,start:190,end:350,count:12,r:10.5,weight:2.5}],
   protectedAreas:[box(264,357,41,53),box(434,566,89,82),box(375,294,65,69),box(329,225,140,79)],
   thinLines:['M450 611L448 633','M459 607L455 638','M467 604L463 635'],
@@ -88,5 +100,6 @@ export const BATCH={
    r('sceptre',GOLD,'M267 335H289L307 470L287 479Z'),r('orb',GOLD,circle(275,319,22)),
    r('venus-shield',GOLD,'M588 751Q610 679 666 697L679 709Q739 674 764 735L771 788L737 849L692 916L656 894L617 841Z'),
    r('wheat',GOLD,'M49 778H151L188 901L265 904L449 910L601 925L675 902L770 850V1054H49Z'),
+   r('bank-grass',GREEN),r('bank-rock',[.18,.055,.14]),r('falls',WHITE),
   ]},
 };

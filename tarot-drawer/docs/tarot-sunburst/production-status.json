@@ -1,5 +1,5 @@
 {
-  "workflow": "Original PNG finishing + monochrome ink-spread proofs; colour deferred for cards 7–21",
+  "workflow": "Original PNG finishing + Y/O/B/N colour plates; cards 7–21 coloured from the original colour reference via scripts/sunburst-colour-labels.py",
   "cardSize": [
     300,
     500
@@ -68,7 +68,7 @@
     "batch-02-superseded",
     "batch-01-superseded"
   ],
-  "status": "ink_masters_complete_awaiting_review",
+  "status": "colour_complete_awaiting_review",
   "approvedScope": {
     "1-3": "User approved the rebuilt original-line batch before commit 53d12c1."
   },
@@ -126,9 +126,7 @@
     3,
     4,
     5,
-    6
-  ],
-  "colourDeferred": [
+    6,
     7,
     8,
     9,
@@ -145,6 +143,7 @@
     20,
     21
   ],
+  "colourDeferred": [],
   "lastCompletedBatch": "07",
   "symbolCorrectionsPending": [
     2,
@@ -168,5 +167,9 @@
   ],
   "sourceStructureReviewPending": [
     21
-  ]
+  ],
+  "colourMethod": {
+    "1-6": "hand-authored region polygons (batch-01/02-masks.js)",
+    "7-21": "region labels from color-spec-with-effect-demo snapped to the batch-01/02 swatch densities; per-card fixes in scripts/sunburst-colour-overrides.json; frame and text of the reference are not sampled"
+  }
 }
