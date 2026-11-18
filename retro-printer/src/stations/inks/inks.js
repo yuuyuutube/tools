@@ -5,11 +5,13 @@ import { flatComposite } from '../../engine/flat.js';
 import { PALETTE, inkById } from '../../inks.js';
 import { createMixer } from './mixer.js';
 import * as sfx from '../../audio/sound.js';
+import { cue } from '../../ui/npc/npc.js';
 
 // 選墨水：左邊是試配色（版直接以墨色相乘，不算瑕疵），右邊是各層的墨與色卡。
 // 切到調墨台時，左邊換成調墨台，可以混出自己的墨。
 const PREVIEW_PAPER = [245, 240, 230];
 const SLAB = [226, 224, 219];   // 調墨台台面
+const STUCK_MIX_MS = 9000;      // 打開調墨台後放著沒攪多久，師傅提醒
 const SLAB_RES = 480;           // 調墨台畫面解析度（墨的比例只有 96 格，畫的時候逐點取樣，邊緣才俐落）
 const two = n => String(n).padStart(2, '0');
 const css = rgb => `rgb(${rgb.join(',')})`;
@@ -108,6 +110,9 @@ export function mountInks(root, { plates, session, onNext, onBack }) {
 
     const pal = panel.querySelector('.palette');
     const pick = ink => {
+      const prev = session.inks[active];
+      if (ink.id === 'ultra') cue('ultra');
+      else if (prev.id === 'ultra') cue('ultra-swap');
       session.inks[active] = ink;
       active = Math.min(L - 1, active + 1);
       renderPick();
@@ -141,6 +146,10 @@ export function mountInks(root, { plates, session, onNext, onBack }) {
   function repour() { mixer.pour(mix.ratio); drawSlab(); }
 
   function renderMix() {
+    if (mode !== 'mix') {   // 剛打開調墨台：放著不攪，師傅提醒一下
+      clearTimeout(stuckTimer);
+      stuckTimer = setTimeout(() => { if (mode === 'mix' && !stirred) cue('stuck-mix'); }, STUCK_MIX_MS);
+    }
     mode = 'mix';
     preview.hidden = true;
     slab.hidden = false;
@@ -203,6 +212,7 @@ export function mountInks(root, { plates, session, onNext, onBack }) {
         a: mix.a, b: mix.b, ratio: mix.ratio, evenness: mixer.evenness
       });
       session.customInks.push(ink);
+      if (mixer.evenness < 0.9) cue('streaky');
       session.inks[active] = ink;
       evenEl = null;
       renderPick();
@@ -216,8 +226,8 @@ export function mountInks(root, { plates, session, onNext, onBack }) {
     const r = slab.getBoundingClientRect();
     return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height];
   };
-  let lastT = 0;
-  slab.addEventListener('pointerdown', e => { last = toUnit(e); lastT = e.timeStamp; try { slab.setPointerCapture(e.pointerId); } catch {} });
+  let lastT = 0, stirred = false, stuckTimer = 0;
+  slab.addEventListener('pointerdown', e => { stirred = true; last = toUnit(e); lastT = e.timeStamp; try { slab.setPointerCapture(e.pointerId); } catch {} });
   slab.addEventListener('pointermove', e => {
     if (!last) return;
     const p = toUnit(e);
@@ -235,7 +245,7 @@ export function mountInks(root, { plates, session, onNext, onBack }) {
   renderPick();
 
   return {
-    destroy() { root.innerHTML = ''; },
+    destroy() { clearTimeout(stuckTimer); root.innerHTML = ''; },
     get mode() { return mode; }
   };
 }

@@ -1,0 +1,89 @@
+/* 角落的 NPC（npc.js）
+   桌機寬螢幕：左下角，對話框往上長，待在紙張左邊的空白裡，不蓋到紙
+   桌機窄螢幕：左下角，對話框往右長
+   手機：左上角，和右上角的聲音開關對稱 */
+.npc {
+  position: fixed; z-index: 19;
+  left: 24px; bottom: 24px;
+  display: flex; flex-direction: column-reverse; align-items: flex-start; gap: 12px;
+  pointer-events: none;
+}
+.npc-head {
+  pointer-events: auto;
+  width: 64px; height: 70px; padding: 0; border: 0; background: none;
+  -webkit-appearance: none; appearance: none;
+}
+.npc-head.hop { animation: npc-hop .42s cubic-bezier(.3, 1.6, .5, 1); }
+.npc.arrive .npc-head { animation: npc-arrive .5s cubic-bezier(.3, 1.5, .5, 1); }
+/* 淡淡的影子：入口那面滿版的牆上也看得出他是浮在上面的 */
+.npc-face { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 6px 8px rgba(20, 18, 14, .22)); }
+
+.npc-bubble {
+  position: relative;
+  max-width: 160px;   /* 1260px 寬時紙張左邊約有 190px 空白 */
+  padding: 10px 13px;
+  background: var(--paper); color: var(--ink);
+  font-size: 13px; line-height: 1.65; letter-spacing: .04em;
+  box-shadow: 0 1px 1px rgba(20, 18, 14, .06), 0 10px 22px -12px rgba(20, 18, 14, .35);
+  opacity: 0; transform: translateY(4px);
+  transition: opacity .22s ease, transform .22s ease;
+}
+.npc-bubble.in { opacity: 1; transform: none; }
+/* 小尖角：指向頭 */
+.npc-bubble::before {
+  content: ""; position: absolute; left: 26px; bottom: -4px;
+  width: 8px; height: 8px; background: var(--paper); transform: rotate(45deg);
+}
+/* 後面還有話：右下角一個小三角 */
+.npc-more {
+  display: inline-block; width: 0; height: 0; margin-left: 6px; vertical-align: middle;
+  border-left: 5px solid var(--faint); border-top: 3.5px solid transparent; border-bottom: 3.5px solid transparent;
+}
+.npc-more[hidden] { display: none; }
+
+/* 表情 */
+.npc-eyes { transform-box: fill-box; transform-origin: 50% 50%; animation: npc-blink 4.2s infinite; }
+.npc-happy, .npc-mouth-open { opacity: 0; }
+.npc[data-mood="happy"] .npc-eyes { opacity: 0; }
+.npc[data-mood="happy"] .npc-happy { opacity: 1; }
+.talking .npc-mouth-open { animation: npc-mouth .26s steps(1) infinite; }
+.talking .npc-mouth-closed { animation: npc-mouth .26s steps(1) infinite reverse; }
+
+/* 師傅沒有嘴巴：說話時小鬍子輕輕上下動 */
+.npc-moustache { transform-box: view-box; transform-origin: 60px 72px; }
+.talking .npc-moustache { animation: npc-moustache .3s ease-in-out infinite; }
+@keyframes npc-moustache { 0%, 100% { transform: translateY(0); } 35% { transform: translateY(-.7px); } 70% { transform: translateY(.25px); } }
+
+@keyframes npc-blink { 0%, 93%, 100% { transform: scaleY(1); } 95.5% { transform: scaleY(.1); } }
+@keyframes npc-mouth { 0% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes npc-hop { 0% { transform: translateY(0); } 40% { transform: translateY(-5px); } 100% { transform: translateY(0); } }
+@keyframes npc-arrive { from { opacity: 0; transform: translateY(14px) scale(.7); } to { opacity: 1; transform: none; } }
+
+/* 桌機窄螢幕：紙張左邊和下面都沒有空白了，改到左上角（頁面上方固定留 64px），對話框往右長 */
+@media (min-width: 901px) and (max-width: 1259px) {
+  .npc { left: 16px; top: 10px; bottom: auto; flex-direction: row; align-items: flex-start; gap: 10px; }
+  .npc-head { width: 44px; height: 48px; }
+  .npc-bubble { max-width: 340px; padding: 8px 12px; transform: translateY(-3px); }
+  .npc-bubble::before { left: -4px; top: 15px; bottom: auto; }
+}
+
+/* 手機：左上角，對話框往右長，避開右上角的聲音開關 */
+@media (max-width: 900px) {
+  .npc {
+    left: max(12px, env(safe-area-inset-left)); top: max(10px, env(safe-area-inset-top)); bottom: auto;
+    flex-direction: row; align-items: flex-start; gap: 8px;
+  }
+  .npc-head { width: 40px; height: 44px; }
+  .npc-bubble {
+    max-width: calc(100vw - 128px);
+    padding: 7px 10px; font-size: 12.5px; line-height: 1.55;
+    transform: translateY(-3px);
+  }
+  .npc-bubble::before { left: -4px; top: 14px; bottom: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .npc-eyes, .talking .npc-mouth-open, .talking .npc-mouth-closed, .talking .npc-moustache,
+  .npc-head.hop, .npc.arrive .npc-head { animation: none; }
+  .npc-bubble { transition: opacity .2s; transform: none; }
+}

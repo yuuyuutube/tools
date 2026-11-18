@@ -1,6 +1,7 @@
 import { PALETTE, paletteByHue, START_COLORS, inkById } from '../../inks.js';
 import { wallItems } from '../../works.js';
 import { drawWallPrint } from '../../gallery/render.js';
+import { cue } from '../../ui/npc/npc.js';
 
 // 入口：滿版的一面牆，左半邊是作品、右半邊是色票；標準字與「開始製作」浮在正中間。
 // 畫面不捲動；卡片不夠填滿時重複排列，邊緣的卡片直接被切掉，像一整面牆。
@@ -62,6 +63,7 @@ export function mountEntrance(root, { works, library, onStart, onOpenWork, onPic
 
   /* ───────── 作品牆 ───────── */
   const items = wallItems(works, library);
+  if (works.length) cue('work-hung');   // 印完回來：師傅已經把作品掛上牆了
   const workWall = page.querySelector('.work-wall');
   const pending = [];
   const copies = new Map();   // 圖庫作品 → 重複出現的畫布，畫好後直接複製
