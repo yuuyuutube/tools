@@ -5,6 +5,8 @@ import { PitchTimeline } from './timeline.js';
 import { bindLiveFocus } from './focus.js';
 import { bindPitchCapture } from './capture.js';
 import { bindMiniOtama } from './mini-otama.js';
+import { PitchPlayer } from './playback.js';
+import { showSoundGate } from '../sound-gate.js';
 
 const liveElement = id => document.getElementById(id);
 const timeline = new PitchTimeline(liveElement('timeline'), liveElement('timeline-empty'));
@@ -109,3 +111,15 @@ document.addEventListener('keydown', event => {
 });
 window.addEventListener('resize', () => timeline.draw());
 if (window.ResizeObserver) new ResizeObserver(() => timeline.draw()).observe(liveElement('timeline'));
+// Sound only matters for synthesized replay here; the microphone stays separate.
+const liveSound = liveElement('live-sound');
+function setLiveSound(on) {
+  PitchPlayer.setMuted(!on);
+  if (!liveSound) return;
+  const label = on ? '關閉重播聲音' : '開啟重播聲音';
+  liveSound.setAttribute('aria-pressed', String(on));
+  liveSound.setAttribute('aria-label', label); liveSound.title = label;
+  liveElement('live-sound-icon').setAttribute('href', on ? '#live-volume' : '#live-muted');
+}
+liveSound?.addEventListener('click', () => setLiveSound(PitchPlayer.muted));
+showSoundGate(setLiveSound);

@@ -67,3 +67,4 @@ html.live-focus{overflow:hidden;overscroll-behavior:none}.live-focus body{positi
   .mini-otama[data-limit=low] .mini-range span:first-child,.mini-otama[data-limit=high] .mini-range span:last-child{color:var(--coral)}
   .mini-otama[data-limit=low] .finger,.mini-otama[data-limit=high] .finger{background:var(--coral)}
 }
+.live-sound{width:44px;padding:10px}.live-sound[aria-pressed=false]{color:var(--muted)}

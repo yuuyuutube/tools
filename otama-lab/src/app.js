@@ -3,6 +3,7 @@ import { Synth } from './audio.js';
 import { bindInstrument } from './instrument.js';
 import { PitchPlot } from './visualization.js';
 import { bindFocusMode } from './focus.js';
+import { showSoundGate } from './sound-gate.js';
 const $ = id => document.getElementById(id);
 // An already cached pre-range HTML page can load the newest static bundle.
 // Supply only the new range hooks so that this older markup remains playable.
@@ -186,3 +187,9 @@ changeModel();
 if (new URLSearchParams(window.location.search).get('mode') === 'play') {
   focus.enter({ activateAudio: false });
 }
+// Entry choice: "on" starts audio inside the gate's click; "off" also keeps
+// focus mode from auto-enabling sound on the first neck press.
+showSoundGate(on => {
+  focusMutedByUser = !on;
+  if (on && !synth.enabled) { audioEnableTask = null; void setSoundEnabled(true); }
+});

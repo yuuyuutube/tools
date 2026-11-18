@@ -752,9 +752,21 @@ function pitchAtPlayback(segments, timeMs) {
 }
 
 class PitchPlayer {
+  // Page-wide sound switch (entry gate / header button). Muting keeps the replay
+  // cursor moving and only silences the output stage.
+  static muted = false;
+  static players = new Set();
+  static setMuted(muted) {
+    PitchPlayer.muted = muted;
+    for (const player of PitchPlayer.players) player.applyMute();
+  }
   constructor({ Context, onProgress = () => {}, onState = () => {} } = {}) {
     this.Context = Context; this.onProgress = onProgress; this.onState = onState;
     this.context = null; this.voice = null; this.generation = 0; this.active = false; this.tick = null;
+    PitchPlayer.players.add(this);
+  }
+  applyMute() {
+    if (this.voice?.out) this.voice.out.gain.setTargetAtTime(PitchPlayer.muted ? 0 : 1, this.context.currentTime, .01);
   }
   async play(recording, offsetMs = 0) {
     this.stop();
@@ -769,10 +781,11 @@ class PitchPlayer {
       await this.context.resume(); // Invoked from the play button's user gesture.
       if (request !== this.generation) return;
       if (this.context.state !== 'running') throw new Error('音訊未能啟動，請再按一次播放。');
-      const ctx = this.context, osc = ctx.createOscillator(), filter = ctx.createBiquadFilter(), gain = ctx.createGain();
+      const ctx = this.context, osc = ctx.createOscillator(), filter = ctx.createBiquadFilter(), gain = ctx.createGain(), out = ctx.createGain();
       const segments = pitchSegments(recording), offset = Math.max(0, Math.min(recording.durationMs, offsetMs)), origin = ctx.currentTime + .025;
       osc.type = 'sawtooth'; filter.type = 'lowpass'; filter.frequency.value = 1150; gain.gain.value = 0;
-      osc.connect(filter).connect(gain).connect(ctx.destination);
+      out.gain.value = PitchPlayer.muted ? 0 : 1;
+      osc.connect(filter).connect(gain).connect(out).connect(ctx.destination);
       const at = time => origin + (time - offset) / 1000;
       for (const segment of segments) {
         const start = Math.max(offset, segment.frames[0].timeMs), end = segment.endMs;
@@ -784,8 +797,8 @@ class PitchPlayer {
         gain.gain.setValueAtTime(.045, at(Math.max((start + end) / 2, end - 6)));
         gain.gain.linearRampToValueAtTime(0, at(end));
       }
-      this.voice = { osc, filter, gain }; osc.start(origin); osc.stop(at(recording.durationMs) + .02);
-      osc.onended = () => { osc.disconnect(); filter.disconnect(); gain.disconnect(); if (this.voice?.osc === osc) this.stop(); };
+      this.voice = { osc, filter, gain, out }; osc.start(origin); osc.stop(at(recording.durationMs) + .02);
+      osc.onended = () => { osc.disconnect(); filter.disconnect(); gain.disconnect(); out.disconnect(); if (this.voice?.osc === osc) this.stop(); };
       const update = () => {
         if (request !== this.generation) return;
         const time = Math.min(recording.durationMs, offset + Math.max(0, ctx.currentTime - origin) * 1000);
@@ -1046,6 +1059,60 @@ function bindMiniOtama({ button, panel, finger, face, onResize, media = window.m
   };
 }
 
+// src/sound-gate.js
+// Entry sound choice, shared by every page: two round speaker buttons (off / on),
+// the same gesture as stamp-tour's gate. The click is a real user gesture, so
+// onChoose may start Web Audio synchronously. Sound is the point of this lab,
+// so "on" is the recommended choice: marked, and focused first.
+const SOUND_GATE_ICONS = {
+  off: '<path d="M11 5 6 9H3v6h3l5 4V5Zm5 4 6 6m0-6-6 6"/>',
+  on: '<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/>',
+};
+function showSoundGate(onChoose) {
+  const gate = document.createElement('div');
+  gate.className = 'sound-gate';
+  gate.setAttribute('role', 'dialog');
+  gate.setAttribute('aria-modal', 'true');
+  gate.setAttribute('aria-labelledby', 'sound-gate-title');
+  gate.setAttribute('aria-describedby', 'sound-gate-note');
+  gate.innerHTML = `<div class="sound-gate-panel"><h2 id="sound-gate-title" class="sound-gate-title">請開啟聲音</h2><p id="sound-gate-note" class="sound-gate-note">滑音、音高與音色都要用耳朵聽，<br>開啟聲音才能完整體驗。</p><div class="sound-gate-choices">${['off', 'on'].map(value => {
+    const label = value === 'on' ? '開啟聲音（建議）' : '保持靜音';
+    return `<button type="button" data-sound="${value}" aria-label="${label}" title="${label}"><span class="sound-gate-disc"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${SOUND_GATE_ICONS[value]}</svg></span><span class="sound-gate-caption">${value === 'on' ? '開啟聲音' : '靜音'}</span></button>`;
+  }).join('')}</div></div>`;
+  const previousFocus = document.activeElement;
+  // Keep focus, taps and screen readers inside the gate until a choice is made.
+  const covered = [...document.body.children].map(element => [element, element.inert]);
+  for (const [element] of covered) element.inert = true;
+  document.body.append(gate);
+  void gate.offsetWidth; // Commit the hidden state so the entrance transitions.
+  gate.classList.add('in');
+  const buttons = [...gate.querySelectorAll('button')];
+  buttons[1].focus({ preventScroll: true });
+  let chosen = false;
+  function choose(button) {
+    if (chosen) return;
+    chosen = true;
+    const on = button.dataset.sound === 'on';
+    button.classList.add('picked');
+    for (const [element, inert] of covered) element.inert = inert;
+    gate.classList.add('out');
+    if (previousFocus?.isConnected && previousFocus !== document.body) previousFocus.focus({ preventScroll: true });
+    onChoose(on);
+    setTimeout(() => gate.remove(), 420);
+  }
+  gate.addEventListener('click', event => { const button = event.target.closest('button'); if (button) choose(button); });
+  // Page shortcuts (Esc stop, W mouth, Space play) must not fire behind the gate.
+  for (const type of ['keydown', 'keyup']) gate.addEventListener(type, event => {
+    event.stopPropagation();
+    if (type !== 'keydown' || chosen) return;
+    if (event.key === 'Escape') { event.preventDefault(); choose(buttons[0]); }
+    else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      buttons[event.key === 'ArrowLeft' ? 0 : 1].focus();
+    }
+  });
+}
+
 // src/live/app.js
 
 const liveElement = id => document.getElementById(id);
@@ -1083,7 +1150,7 @@ function resetReadout() {
   stability.reset();
 }
 const microphone = new MicrophoneInput({
-  workerURL: new URL('./pitch-worker.js?v=d9376a234289', document.baseURI),
+  workerURL: new URL('./pitch-worker.js?v=9a057c750089', document.baseURI),
   onState(state, message) {
     const active = state === 'listening', pending = state === 'requesting';
     for (const id of ['microphone', 'focus-microphone']) {
@@ -1151,5 +1218,17 @@ document.addEventListener('keydown', event => {
 });
 window.addEventListener('resize', () => timeline.draw());
 if (window.ResizeObserver) new ResizeObserver(() => timeline.draw()).observe(liveElement('timeline'));
+// Sound only matters for synthesized replay here; the microphone stays separate.
+const liveSound = liveElement('live-sound');
+function setLiveSound(on) {
+  PitchPlayer.setMuted(!on);
+  if (!liveSound) return;
+  const label = on ? '關閉重播聲音' : '開啟重播聲音';
+  liveSound.setAttribute('aria-pressed', String(on));
+  liveSound.setAttribute('aria-label', label); liveSound.title = label;
+  liveElement('live-sound-icon').setAttribute('href', on ? '#live-volume' : '#live-muted');
+}
+liveSound?.addEventListener('click', () => setLiveSound(PitchPlayer.muted));
+showSoundGate(setLiveSound);
 
 })();

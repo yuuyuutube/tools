@@ -25,9 +25,21 @@ export function pitchAtPlayback(segments, timeMs) {
 }
 
 export class PitchPlayer {
+  // Page-wide sound switch (entry gate / header button). Muting keeps the replay
+  // cursor moving and only silences the output stage.
+  static muted = false;
+  static players = new Set();
+  static setMuted(muted) {
+    PitchPlayer.muted = muted;
+    for (const player of PitchPlayer.players) player.applyMute();
+  }
   constructor({ Context, onProgress = () => {}, onState = () => {} } = {}) {
     this.Context = Context; this.onProgress = onProgress; this.onState = onState;
     this.context = null; this.voice = null; this.generation = 0; this.active = false; this.tick = null;
+    PitchPlayer.players.add(this);
+  }
+  applyMute() {
+    if (this.voice?.out) this.voice.out.gain.setTargetAtTime(PitchPlayer.muted ? 0 : 1, this.context.currentTime, .01);
   }
   async play(recording, offsetMs = 0) {
     this.stop();
@@ -42,10 +54,11 @@ export class PitchPlayer {
       await this.context.resume(); // Invoked from the play button's user gesture.
       if (request !== this.generation) return;
       if (this.context.state !== 'running') throw new Error('音訊未能啟動，請再按一次播放。');
-      const ctx = this.context, osc = ctx.createOscillator(), filter = ctx.createBiquadFilter(), gain = ctx.createGain();
+      const ctx = this.context, osc = ctx.createOscillator(), filter = ctx.createBiquadFilter(), gain = ctx.createGain(), out = ctx.createGain();
       const segments = pitchSegments(recording), offset = Math.max(0, Math.min(recording.durationMs, offsetMs)), origin = ctx.currentTime + .025;
       osc.type = 'sawtooth'; filter.type = 'lowpass'; filter.frequency.value = 1150; gain.gain.value = 0;
-      osc.connect(filter).connect(gain).connect(ctx.destination);
+      out.gain.value = PitchPlayer.muted ? 0 : 1;
+      osc.connect(filter).connect(gain).connect(out).connect(ctx.destination);
       const at = time => origin + (time - offset) / 1000;
       for (const segment of segments) {
         const start = Math.max(offset, segment.frames[0].timeMs), end = segment.endMs;
@@ -57,8 +70,8 @@ export class PitchPlayer {
         gain.gain.setValueAtTime(.045, at(Math.max((start + end) / 2, end - 6)));
         gain.gain.linearRampToValueAtTime(0, at(end));
       }
-      this.voice = { osc, filter, gain }; osc.start(origin); osc.stop(at(recording.durationMs) + .02);
-      osc.onended = () => { osc.disconnect(); filter.disconnect(); gain.disconnect(); if (this.voice?.osc === osc) this.stop(); };
+      this.voice = { osc, filter, gain, out }; osc.start(origin); osc.stop(at(recording.durationMs) + .02);
+      osc.onended = () => { osc.disconnect(); filter.disconnect(); gain.disconnect(); out.disconnect(); if (this.voice?.osc === osc) this.stop(); };
       const update = () => {
         if (request !== this.generation) return;
         const time = Math.min(recording.durationMs, offset + Math.max(0, ctx.currentTime - origin) * 1000);

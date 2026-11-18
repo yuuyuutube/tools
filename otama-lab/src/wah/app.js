@@ -4,6 +4,7 @@ import { bindWahInput } from './input.js';
 import { WahSpectrum } from './spectrum.js';
 import { bindWahMouthKey } from './keyboard.js';
 import { bindWahFocus } from './focus.js';
+import { showSoundGate } from '../sound-gate.js';
 
 const wahElement = id => document.getElementById(id);
 let wahPosition = positionAt(440, 'inverse'), mouthOpening = 0, neckHeld = false, sustained = false;
@@ -108,3 +109,12 @@ const wahResize = () => document.documentElement.style.setProperty('--wah-height
 window.addEventListener('resize', wahResize); window.visualViewport?.addEventListener('resize', wahResize);
 wahResize(); renderWahPosition(wahPosition); renderMouth(0); renderSustain(); soundControls();
 if (new URLSearchParams(window.location.search).get('mode') === 'play') wahFocus.enter();
+// Entry choice: "on" starts audio inside the gate's click; "off" keeps the neck
+// silent until the sound button (or sustain) is pressed.
+showSoundGate(on => {
+  manuallyMuted = !on;
+  if (on && !synth.enabled) {
+    const task = enableWahSound(); enabling = task;
+    void task.finally(() => { if (enabling === task) enabling = null; });
+  }
+});
