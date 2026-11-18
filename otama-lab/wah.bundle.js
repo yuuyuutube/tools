@@ -65,6 +65,45 @@ function sensitivityAt(x, model, range = DEFAULT_RANGE) {
 }
 const signed = value => `${value > 0 ? '+' : ''}${value}`;
 
+// src/note-labels.js
+
+// Hidden URL option for focus mode: ?mode=play&notes=abc writes C D E F G A B
+// beside the neck ticks, ?notes=123 writes numbered notation (C = 1). Octave
+// numbers are left out on purpose: C3 and C4 are both "C" (or "1").
+const NOTE_LABEL_SYSTEMS = Object.freeze({ abc: ['C', 'D', 'E', 'F', 'G', 'A', 'B'], 123: ['1', '2', '3', '4', '5', '6', '7'] });
+const NOTE_LABEL_STEPS = [0, 2, 4, 5, 7, 9, 11];
+function noteLabelSystem(search = window.location.search) {
+  const value = new URLSearchParams(search).get('notes')?.toLowerCase();
+  return value && Object.hasOwn(NOTE_LABEL_SYSTEMS, value) ? value : null;
+}
+const midiFrequency = midi => 440 * 2 ** ((midi - 69) / 12);
+// One small tick per semitone; octaves of the range's low note are long and lime.
+function appendNoteTicks(container, range, model) {
+  for (let semitone = 0; semitone <= range.semitones; semitone++) {
+    const mark = document.createElement('i');
+    mark.className = 'note-mark';
+    const frequency = semitone === range.semitones ? range.top : range.base * 2 ** (semitone / 12);
+    mark.style.bottom = `${(1 - positionAt(frequency, model, range)) * 100}%`;
+    if (semitone % 12 === 0 || semitone === range.semitones) { mark.style.width = '15px'; mark.style.background = '#c8f16e'; }
+    container.append(mark);
+  }
+}
+// Natural notes only. Neighbouring labels alternate sides of the neck, so the
+// half steps E–F and B–C stay readable where the high end of the neck crowds.
+function appendNoteLabels(container, { system, range, model }) {
+  const names = NOTE_LABEL_SYSTEMS[system];
+  if (!names) return;
+  for (let midi = range.lowMidi; midi <= range.highMidi; midi++) {
+    const step = NOTE_LABEL_STEPS.indexOf(midi % 12);
+    if (step < 0) continue;
+    const label = document.createElement('span');
+    label.className = `note-label ${(Math.floor(midi / 12) * 7 + step) % 2 ? 'right' : 'left'}${step === 0 ? ' tonic' : ''}`;
+    label.textContent = names[step];
+    label.style.bottom = `${(1 - positionAt(midiFrequency(midi), model, range)) * 100}%`;
+    container.append(label);
+  }
+}
+
 // src/wah/audio.js
 
 // A playful two-resonance approximation, not a physical DX acoustic model.
@@ -488,6 +527,15 @@ window.addEventListener('blur', stopWah); window.addEventListener('pagehide', st
 document.addEventListener('visibilitychange', () => { if (document.hidden) stopWah(); });
 const wahResize = () => document.documentElement.style.setProperty('--wah-height', `${window.visualViewport?.height || window.innerHeight}px`);
 window.addEventListener('resize', wahResize); window.visualViewport?.addEventListener('resize', wahResize);
+// Hidden ?notes=abc|123 option: ticks and note names beside the neck in focus mode.
+const wahNoteSystem = noteLabelSystem();
+if (wahNoteSystem) {
+  const marks = document.createElement('div');
+  marks.className = 'note-marks'; marks.setAttribute('aria-hidden', 'true');
+  appendNoteTicks(marks, DEFAULT_RANGE, 'inverse');
+  appendNoteLabels(marks, { system: wahNoteSystem, range: DEFAULT_RANGE, model: 'inverse' });
+  wahElement('wah-track').prepend(marks);
+}
 wahResize(); renderWahPosition(wahPosition); renderMouth(0); renderSustain(); soundControls();
 if (new URLSearchParams(window.location.search).get('mode') === 'play') wahFocus.enter();
 // Entry choice: "on" starts audio inside the gate's click; "off" keeps the neck

@@ -65,6 +65,45 @@ function sensitivityAt(x, model, range = DEFAULT_RANGE) {
 }
 const signed = value => `${value > 0 ? '+' : ''}${value}`;
 
+// src/note-labels.js
+
+// Hidden URL option for focus mode: ?mode=play&notes=abc writes C D E F G A B
+// beside the neck ticks, ?notes=123 writes numbered notation (C = 1). Octave
+// numbers are left out on purpose: C3 and C4 are both "C" (or "1").
+const NOTE_LABEL_SYSTEMS = Object.freeze({ abc: ['C', 'D', 'E', 'F', 'G', 'A', 'B'], 123: ['1', '2', '3', '4', '5', '6', '7'] });
+const NOTE_LABEL_STEPS = [0, 2, 4, 5, 7, 9, 11];
+function noteLabelSystem(search = window.location.search) {
+  const value = new URLSearchParams(search).get('notes')?.toLowerCase();
+  return value && Object.hasOwn(NOTE_LABEL_SYSTEMS, value) ? value : null;
+}
+const midiFrequency = midi => 440 * 2 ** ((midi - 69) / 12);
+// One small tick per semitone; octaves of the range's low note are long and lime.
+function appendNoteTicks(container, range, model) {
+  for (let semitone = 0; semitone <= range.semitones; semitone++) {
+    const mark = document.createElement('i');
+    mark.className = 'note-mark';
+    const frequency = semitone === range.semitones ? range.top : range.base * 2 ** (semitone / 12);
+    mark.style.bottom = `${(1 - positionAt(frequency, model, range)) * 100}%`;
+    if (semitone % 12 === 0 || semitone === range.semitones) { mark.style.width = '15px'; mark.style.background = '#c8f16e'; }
+    container.append(mark);
+  }
+}
+// Natural notes only. Neighbouring labels alternate sides of the neck, so the
+// half steps E–F and B–C stay readable where the high end of the neck crowds.
+function appendNoteLabels(container, { system, range, model }) {
+  const names = NOTE_LABEL_SYSTEMS[system];
+  if (!names) return;
+  for (let midi = range.lowMidi; midi <= range.highMidi; midi++) {
+    const step = NOTE_LABEL_STEPS.indexOf(midi % 12);
+    if (step < 0) continue;
+    const label = document.createElement('span');
+    label.className = `note-label ${(Math.floor(midi / 12) * 7 + step) % 2 ? 'right' : 'left'}${step === 0 ? ' tonic' : ''}`;
+    label.textContent = names[step];
+    label.style.bottom = `${(1 - positionAt(midiFrequency(midi), model, range)) * 100}%`;
+    container.append(label);
+  }
+}
+
 // src/audio.js
 // Audio output is independent of input and pitch mapping. A future Wah processor
 // can be inserted between filter and gain without changing the instrument.
@@ -431,6 +470,7 @@ if (!$('simulation-description')) document.querySelector('.simulation-info p').i
 let range = rangeFor(new URLSearchParams(window.location.search).get('range'));
 let position = .35, model = 'inverse', reference = range.base, sounding = false;
 let soundRequest = 0, pendingEnable = false;
+const noteSystem = noteLabelSystem();
 let focused = false, instrumentHeld = false, audioEnableTask = null, focusMutedByUser = false;
 const plots = [new PitchPlot($('frequency-plot'), 'frequency', range), new PitchPlot($('pitch-plot'), 'pitch', range)];
 function soundButton(label, enabled, { pending = false, error = false } = {}) {
@@ -502,14 +542,8 @@ function changeModel() {
   $('model-hint').textContent = MODELS[model].hint;
   for (const plot of plots) plot.setModel(model, range);
   $('note-marks').replaceChildren();
-  for (let semitone = 0; semitone <= range.semitones; semitone++) {
-    const mark = document.createElement('i');
-    mark.className = 'note-mark';
-    const frequency = semitone === range.semitones ? range.top : range.base * 2 ** (semitone / 12);
-    mark.style.bottom = `${(1 - positionAt(frequency, model, range)) * 100}%`;
-    if (semitone % 12 === 0 || semitone === range.semitones) { mark.style.width = '15px'; mark.style.background = '#c8f16e'; }
-    $('note-marks').append(mark);
-  }
+  appendNoteTicks($('note-marks'), range, model);
+  appendNoteLabels($('note-marks'), { system: noteSystem, range, model }); // Shown in focus mode only.
   $('octave-legend').textContent = rangeMarkers(range).map(marker => marker.note).join(' / ');
   $('simulation-description').textContent = `音域 ${range.label}（${range.base.toFixed(2)}–${range.top.toFixed(2)} Hz），${range.semitones} 半音。十二平均律，A4 = 440 Hz。x 是由上至下、靠近頭部的位置比例；f₀ = ${range.lowNote}，f₁ = ${range.highNote}。反比模型僅供數學比較，不代表 Otamatone DX 真正的電路控制方式，也不是實測資料。合成音不是 Otamatone 原音色。`;
   render();

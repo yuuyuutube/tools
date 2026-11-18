@@ -4,6 +4,7 @@ import { bindInstrument } from './instrument.js';
 import { PitchPlot } from './visualization.js';
 import { bindFocusMode } from './focus.js';
 import { showSoundGate } from './sound-gate.js';
+import { noteLabelSystem, appendNoteTicks, appendNoteLabels } from './note-labels.js';
 const $ = id => document.getElementById(id);
 // An already cached pre-range HTML page can load the newest static bundle.
 // Supply only the new range hooks so that this older markup remains playable.
@@ -29,6 +30,7 @@ if (!$('simulation-description')) document.querySelector('.simulation-info p').i
 let range = rangeFor(new URLSearchParams(window.location.search).get('range'));
 let position = .35, model = 'inverse', reference = range.base, sounding = false;
 let soundRequest = 0, pendingEnable = false;
+const noteSystem = noteLabelSystem();
 let focused = false, instrumentHeld = false, audioEnableTask = null, focusMutedByUser = false;
 const plots = [new PitchPlot($('frequency-plot'), 'frequency', range), new PitchPlot($('pitch-plot'), 'pitch', range)];
 function soundButton(label, enabled, { pending = false, error = false } = {}) {
@@ -100,14 +102,8 @@ function changeModel() {
   $('model-hint').textContent = MODELS[model].hint;
   for (const plot of plots) plot.setModel(model, range);
   $('note-marks').replaceChildren();
-  for (let semitone = 0; semitone <= range.semitones; semitone++) {
-    const mark = document.createElement('i');
-    mark.className = 'note-mark';
-    const frequency = semitone === range.semitones ? range.top : range.base * 2 ** (semitone / 12);
-    mark.style.bottom = `${(1 - positionAt(frequency, model, range)) * 100}%`;
-    if (semitone % 12 === 0 || semitone === range.semitones) { mark.style.width = '15px'; mark.style.background = '#c8f16e'; }
-    $('note-marks').append(mark);
-  }
+  appendNoteTicks($('note-marks'), range, model);
+  appendNoteLabels($('note-marks'), { system: noteSystem, range, model }); // Shown in focus mode only.
   $('octave-legend').textContent = rangeMarkers(range).map(marker => marker.note).join(' / ');
   $('simulation-description').textContent = `音域 ${range.label}（${range.base.toFixed(2)}–${range.top.toFixed(2)} Hz），${range.semitones} 半音。十二平均律，A4 = 440 Hz。x 是由上至下、靠近頭部的位置比例；f₀ = ${range.lowNote}，f₁ = ${range.highNote}。反比模型僅供數學比較，不代表 Otamatone DX 真正的電路控制方式，也不是實測資料。合成音不是 Otamatone 原音色。`;
   render();

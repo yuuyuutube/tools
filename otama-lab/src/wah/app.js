@@ -1,10 +1,11 @@
-import { clamp, frequencyAt, positionAt, pitchOf, signed } from '../pitch.js';
+import { DEFAULT_RANGE, clamp, frequencyAt, positionAt, pitchOf, signed } from '../pitch.js';
 import { WahSynth } from './audio.js';
 import { bindWahInput } from './input.js';
 import { WahSpectrum } from './spectrum.js';
 import { bindWahMouthKey } from './keyboard.js';
 import { bindWahFocus } from './focus.js';
 import { showSoundGate } from '../sound-gate.js';
+import { noteLabelSystem, appendNoteTicks, appendNoteLabels } from '../note-labels.js';
 
 const wahElement = id => document.getElementById(id);
 let wahPosition = positionAt(440, 'inverse'), mouthOpening = 0, neckHeld = false, sustained = false;
@@ -107,6 +108,15 @@ window.addEventListener('blur', stopWah); window.addEventListener('pagehide', st
 document.addEventListener('visibilitychange', () => { if (document.hidden) stopWah(); });
 const wahResize = () => document.documentElement.style.setProperty('--wah-height', `${window.visualViewport?.height || window.innerHeight}px`);
 window.addEventListener('resize', wahResize); window.visualViewport?.addEventListener('resize', wahResize);
+// Hidden ?notes=abc|123 option: ticks and note names beside the neck in focus mode.
+const wahNoteSystem = noteLabelSystem();
+if (wahNoteSystem) {
+  const marks = document.createElement('div');
+  marks.className = 'note-marks'; marks.setAttribute('aria-hidden', 'true');
+  appendNoteTicks(marks, DEFAULT_RANGE, 'inverse');
+  appendNoteLabels(marks, { system: wahNoteSystem, range: DEFAULT_RANGE, model: 'inverse' });
+  wahElement('wah-track').prepend(marks);
+}
 wahResize(); renderWahPosition(wahPosition); renderMouth(0); renderSustain(); soundControls();
 if (new URLSearchParams(window.location.search).get('mode') === 'play') wahFocus.enter();
 // Entry choice: "on" starts audio inside the gate's click; "off" keeps the neck
