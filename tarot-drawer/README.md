@@ -142,3 +142,8 @@ src/audio/             紙張與微風星光音效
 ### 愚者：墨稿到彩色的翻牌試作
 
 [fool-reveal-demo.html](fool-reveal-demo.html) 展示使用原始 Y／O／B／N 印版的套印翻牌。圖窗外框從墨稿階段就可見，展框、拉線、牌名與三色套印並行，整段約 1.6 秒；提供慢速、時間軸與墨稿／完成卡面切換。獨立試作頁尚未接入正式抽牌，其他牌待使用者完成上色後再製作。詳見 [試作紀錄](docs/tarot-sunburst/fool-reveal-demo.md)。
+
+
+### 牌背日期印章設計預覽
+
+[stamp-preview.html](stamp-preview.html) 提供九款與牌背呼應的單色日期章、各自的裝飾章框，以及單張／三張分享圖蓋章試看。可切換日期、牌面、缺墨程度，下載分享 PNG 或印章 SVG。新章目前只在預覽明確指定時使用。可編輯來源為 `src/poster/stamps.js`，完整設計樣張在 [stamps](docs/tarot-sunburst/stamps/README.md)。

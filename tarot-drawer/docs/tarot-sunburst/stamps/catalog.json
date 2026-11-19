@@ -1,0 +1,79 @@
+{
+  "date": "2026-11-20",
+  "designs": [
+    {
+      "id": "celestial-eye",
+      "name": "星芒之眼",
+      "asset": "card-back",
+      "color": "#b64c35",
+      "frame": "星冠八角框",
+      "description": "星芒與杏眼，像祕密學會的藏印。"
+    },
+    {
+      "id": "moth-garden",
+      "name": "夜蛾花園",
+      "asset": "card-back-moth",
+      "color": "#785064",
+      "frame": "花葉橢圓框",
+      "description": "展翅夜蛾與月點，藏在藤蔓花冠裡。"
+    },
+    {
+      "id": "tide-gate",
+      "name": "潮汐之門",
+      "asset": "card-back-tide",
+      "color": "#2d7477",
+      "frame": "貝形波浪框",
+      "description": "扇貝、珍珠與潮線，像沿海寄來的郵戳。"
+    },
+    {
+      "id": "pomegranate-garden",
+      "name": "石榴秘園",
+      "asset": "card-back-pomegranate",
+      "color": "#984554",
+      "frame": "莊園卷葉框",
+      "description": "剖面石榴與果籽，留一點莊園藏書章的氣息。"
+    },
+    {
+      "id": "serpent-ring",
+      "name": "黑金蛇環",
+      "asset": "card-back-serpent",
+      "color": "#896f3c",
+      "frame": "扇紋切角框",
+      "description": "盤蛇纏著晶石，像一枚煉金術印記。"
+    },
+    {
+      "id": "snow-fox",
+      "name": "雪境雙狐",
+      "asset": "card-back-fox",
+      "color": "#5c708f",
+      "frame": "冰晶尖拱框",
+      "description": "兩隻回望的狐狸，守著細細的雪晶。"
+    },
+    {
+      "id": "vermilion-cranes",
+      "name": "朱砂雙鶴",
+      "asset": "card-back-crane",
+      "color": "#b04f3c",
+      "frame": "如意雲紋框",
+      "description": "相向雙鶴與流雲，像一枚朱砂吉印。"
+    },
+    {
+      "id": "moon-flower",
+      "name": "月白花窗",
+      "asset": "card-back-flower",
+      "color": "#78638b",
+      "frame": "花瓣曲線框",
+      "description": "放射花冠與小葉，像壓在採集簿上的花章。"
+    },
+    {
+      "id": "jade-maze",
+      "name": "翠玉迷宮",
+      "asset": "card-back-geometry",
+      "color": "#356b53",
+      "frame": "回紋八角框",
+      "description": "八角星與折線迴廊，像古老的測繪印記。"
+    }
+  ],
+  "defaultWear": 0.35,
+  "previewOnly": true
+}

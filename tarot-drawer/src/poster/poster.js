@@ -6,6 +6,7 @@ import { keywordsOf } from '../data/cards.js';
 import { faceSVG, loadFaces, FONT } from '../art/frame.js';
 import { P, N, O, Y, B, K, burst } from '../art/kit.js';
 import { seeded } from '../engine/random.js';
+import {dateStampSVG} from './stamps.js';
 
 export const POSTER_W = 1080, POSTER_H = 1620;
 const PAPER = '#f4eedf';
@@ -67,6 +68,7 @@ export function posterSVG(res) {
   const rnd = seeded(res.seed ^ 0x9e3779b9);
   const rot = (rnd() - .5) * 18, sx = rnd() < .5 ? -1 : 1, sy = 1;
   const W = POSTER_W, H = POSTER_H, date = dateText(res.date);
+  const seal=(x,y)=>res.stampId?dateStampSVG(res.stampId,{cx:x,cy:y,date,rotation:rot,wear:res.stampWear??.35,id:'poster_seal'}):stamp(x,y,date,rot);
   let s = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">` +
     `<defs><pattern id="shadowDots" width="5.2" height="5.2" patternUnits="userSpaceOnUse" patternTransform="rotate(32)"><circle cx="2.6" cy="2.6" r="1.1" fill="${B}"/></pattern></defs>` +
     `<rect width="${W}" height="${H}" fill="${PAPER}"/>` +
@@ -85,7 +87,7 @@ export function posterSVG(res) {
       T(540, 1296, 23, it.card.nameEn.toUpperCase(), { ls: 9, opacity: .75 }) +
       orientationTag(540, 1334, it.orientation) +
       T(540, 1452, kwSize, kwText, { ls: 4 }) +
-      stamp(864, 1124, date, rot);
+      seal(864, 1124);
   } else {
     const w = 300, h = 500, gap = 30, x0 = (W - w * 3 - gap * 2) / 2, y = 318;
     const cx = i => x0 + i * (w + gap) + w / 2;
@@ -105,7 +107,7 @@ export function posterSVG(res) {
         kw.map((k, j) => T(cx(i), 1108 + j * 42, 25, k, { ls: 2 })).join('');
     });
     s += '</g>';
-    s += stamp(864, 1452, date, rot);
+    s += seal(864, 1452);
   }
   return s + '</svg>';
 }
