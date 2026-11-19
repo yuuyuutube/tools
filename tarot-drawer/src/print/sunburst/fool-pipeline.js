@@ -4,14 +4,14 @@ import {printCard,plateSVG,INKS} from '../press.js';
 import {WINDOW,sunburstFrame as printFrame,shiftMap,shiftAreas} from './layout.js';
 import {cardById} from '../../data/cards.js';
 const PALETTE={...INKS,Y:{...INKS.Y,rgb:[232,183,77]},O:{...INKS.O,rgb:[222,83,43]},B:{...INKS.B,rgb:[62,112,150]}};
-const ROOT='/docs/tarot-sunburst/';
+const ROOT=new URL('../../../docs/tarot-sunburst/',import.meta.url).href;
 const make=(w,h)=>Object.assign(document.createElement('canvas'),{width:w,height:h});
 const load=src=>new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=src;});
 const rgbInk=(base,density,rgb)=>base.map((v,i)=>v*(1-density+density*rgb[i]/255));
 const WIN=new Path2D(WINDOW),MAP=shiftMap(FOOL_MAP,0);
 export const INK_PATH=ROOT+'fool-pipeline/ink-generated.png';
 export const SETTINGS={seed:20261117,scale:3,tune:{jitter:.28,jitterFine:.1,bleed:.12,speckle:.94,misregister:.55,period:1.55}};
-export async function buildFool({jitter=true,grain=true,inkSpread=.5,captureIllustration=true}={}){
+export async function buildFool({jitter=true,grain=true,inkSpread=.5,captureIllustration=true,captureInkLayers=false}={}){
  const img=await load(INK_PATH),w=MAP.width,h=MAP.height,n=w*h,source=make(w,h),ctx=source.getContext('2d',{willReadFrequently:true});
  ctx.drawImage(img,0,0,w,h);const pixels=ctx.getImageData(0,0,w,h).data;
  const labelCanvas=make(w,h),lc=labelCanvas.getContext('2d',{willReadFrequently:true});
@@ -80,8 +80,8 @@ export async function buildFool({jitter=true,grain=true,inkSpread=.5,captureIllu
  plates.FO=plateSVG({frame:fr.O,window:WINDOW});plates.FN=plateSVG({frame:fr.N,window:WINDOW});
  const inks={...PALETTE,FO:INKS.O,FN:{...INKS.N,fixedRegistration:true}};
  const quietAreas=[{x:147,y:155,rx:17,ry:23},{x:104,y:204,rx:18,ry:18},{x:159,y:192,rx:19,ry:20},{x:104,y:176,rx:17,ry:17}];
- let illustration;
- const final=await printCard(plates,{onIllustration:captureIllustration?cv=>{illustration=illustrationAsset(cv);}:undefined,...SETTINGS,inks,quietAreas:shiftAreas(quietAreas,0),tune:{...SETTINGS.tune,...(!jitter?{jitter:0,jitterFine:0,bleed:0,misregister:0}:{}),...(!grain?{speckle:1}: {})}});
+ let illustration;const revealPlates={};
+ const final=await printCard(plates,{onInkPlate:captureInkLayers?(key,cv)=>{revealPlates[key]=illustrationAsset(cv);}:undefined,onIllustration:captureIllustration?cv=>{illustration=illustrationAsset(cv);}:undefined,...SETTINGS,inks,quietAreas:shiftAreas(quietAreas,0),tune:{...SETTINGS.tune,...(!jitter?{jitter:0,jitterFine:0,bleed:0,misregister:0}:{}),...(!grain?{speckle:1}: {})}});
  // Raster ink master and masks remain available without any print effect.
  const inkStage=place(source),maskStage=place(ids);
  const smoothImage=await load(ROOT+'line/0-smooth-aligned-rays.png'),smooth=make(1024,1536);smooth.getContext('2d').drawImage(smoothImage,0,0,1024,1536);
@@ -92,5 +92,5 @@ export async function buildFool({jitter=true,grain=true,inkSpread=.5,captureIllu
    const bitmap=await load('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg));const g=cv.getContext('2d');g.save();g.setTransform(1,0,0,1,0,0);g.drawImage(bitmap,0,0);g.restore();
   }}
  await addFrame(flat);await addFrame(inkStage);await addFrame(smoothStage);await addFrame(maskStage);
- return {smooth:smoothStage,ink:inkStage,masks:maskStage,flat,final,illustration,sourcePlates,inkAlpha,snapped,labels};
+ return {smooth:smoothStage,ink:inkStage,masks:maskStage,flat,final,illustration,sourcePlates,inkAlpha,snapped,labels,revealPlates};
 }

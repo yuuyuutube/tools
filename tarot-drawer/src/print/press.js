@@ -69,7 +69,7 @@ async function rasterPlate(svg, W, H) {
 
 // plates：{ Y: svg, O: svg, B: svg, N: svg }（缺的顏色就不印）
 // 回傳畫好的 canvas（寬 300 × scale）
-export async function printCard(plates, { seed = 1, scale = 2, quietAreas = [], inks = INKS, tune = {}, onIllustration } = {}) {
+export async function printCard(plates, { seed = 1, scale = 2, quietAreas = [], inks = INKS, tune = {}, onIllustration, onInkPlate } = {}) {
   const tuning = { ...TUNE, ...tune };
   const W = Math.round(CW * scale), H = Math.round(CH * scale), n = W * H;
   const rnd = seeded(seed);
@@ -85,10 +85,22 @@ export async function printCard(plates, { seed = 1, scale = 2, quietAreas = [], 
     R[i] = PAPER[0] * v; G[i] = PAPER[1] * v; Bc[i] = PAPER[2] * (v - .012 * pLow(x, y));
   }
 
+  // Optional animation separations capture the exact sampled ink coverage;
+  // they do not advance the RNG or modify the original print arrays.
+  const capture = (key, coverage) => {
+    const layer=document.createElement('canvas');layer.width=W;layer.height=H;
+    const g=layer.getContext('2d'),d=g.createImageData(W,H),rgb=inks[key]?.rgb;
+    for(let i=0,j=0;i<n;i++,j+=4){
+      d.data[j]=coverage?rgb[0]:R[i];d.data[j+1]=coverage?rgb[1]:G[i];d.data[j+2]=coverage?rgb[2]:Bc[i];d.data[j+3]=coverage?coverage[i]:255;
+    }
+    g.putImageData(d,0,0);onInkPlate(key,layer);
+  };
+  if(onInkPlate)capture('paper');
   // 額外色版（例如固定色的共用牌框）依傳入順序，接在插畫四色之後。
   const printOrder = [...PRINT_ORDER, ...Object.keys(plates).filter(key => !PRINT_ORDER.includes(key))];
   for (const key of printOrder) {
     if (!plates[key]) continue;
+    const coverage=onInkPlate&&PRINT_ORDER.includes(key)?new Uint8ClampedArray(n):null;
     // Capture before interface plates; no extra RNG calls or changes to the print.
     if(onIllustration && !illustrationSnapshot && !PRINT_ORDER.includes(key)){
       const snapshot=document.createElement('canvas');snapshot.width=W;snapshot.height=H;
@@ -148,10 +160,12 @@ export async function printCard(plates, { seed = 1, scale = 2, quietAreas = [], 
         const t = tooth[i];
         if (t > .9) a *= 1 - (t - .9) * 4.5 * (1 - .8 * quiet);
         a *= ink.strength * (.83 + .17 * nDen(x, y));
+        if(coverage)coverage[i]=a*255;
 
         R[i] *= 1 - a + a * cr; G[i] *= 1 - a + a * cg; Bc[i] *= 1 - a + a * cb;
       }
     }
+    if(coverage)capture(key,coverage);
   }
 
   const cv = document.createElement('canvas');

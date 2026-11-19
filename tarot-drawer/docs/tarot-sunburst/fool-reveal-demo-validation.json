@@ -1,0 +1,19 @@
+{
+  "size": [
+    654,
+    870
+  ],
+  "layers": [
+    "paper",
+    "Y",
+    "O",
+    "B",
+    "N"
+  ],
+  "compositeMeanChannelError": 0.38737389714928466,
+  "compositeMaxChannelError": 79,
+  "finalUsesExactIllustration": true,
+  "captureChangedChannels": 0,
+  "imageGeometryUnchanged": true,
+  "note": "Interim layers quantize alpha to 8 bits and do not contain final paper fibers; the full original illustration stays opaque underneath the separations, which fade away once printing is complete."
+}

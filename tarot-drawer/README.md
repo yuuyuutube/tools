@@ -137,3 +137,8 @@ src/audio/             紙張與微風星光音效
 `sound-preview.html` 可比較新版「微風與星光」與舊版「紙張與落點」。新版由 `src/audio/reveal.js` 合成：風聲慢慢升起，約 0.34 秒起接上緩起的低音量泛音，移除原本的低頻撞擊；尾韻約 1.5 秒。正式 `sfx.flip()` 與試聽頁共用同一份音效。洗牌、展牌、選牌及儲存音效維持原樣，試聽頁不更改正式網站的音效開關。
 
 瀏覽器已用 OfflineAudioContext 產出有效 WAV，確認沒有非有限數值或數位削波，試聽音檔可正常載入，控制台無錯誤。預覽檔為 `docs/tarot-sunburst/flip-breeze-preview.wav`；實際聽感由使用者試聽判斷。
+
+
+### 愚者：墨稿到彩色的翻牌試作
+
+[fool-reveal-demo.html](fool-reveal-demo.html) 展示使用原始 Y／O／B／N 印版的套印翻牌。圖窗外框從墨稿階段就可見，展框、拉線、牌名與三色套印並行，整段約 1.6 秒；提供慢速、時間軸與墨稿／完成卡面切換。獨立試作頁尚未接入正式抽牌，其他牌待使用者完成上色後再製作。詳見 [試作紀錄](docs/tarot-sunburst/fool-reveal-demo.md)。
