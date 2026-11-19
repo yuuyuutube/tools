@@ -1,12 +1,12 @@
 // 濕式倍率以舊版輕暈墨為 1；乾式三項強度為 0～1，零值停用。
 export const INK_SETTINGS_KEY = 'tarot-ink-bleed-v1';
-export const ORIGINAL_INK_BLEED = Object.freeze({line:1,text:1,fine:1,tooth:0,edge:0,dry:0});
-export const DEFAULT_INK_BLEED = Object.freeze({line:1.5,text:2,fine:1.8,tooth:0,edge:.7,dry:0});
-export const DRY_INK_PRESET = Object.freeze({line:0,text:0,fine:0,tooth:.55,edge:.5,dry:.18});
+export const ORIGINAL_INK_BLEED = Object.freeze({line:1,text:1,fine:1,tooth:0,edge:0,dry:0,stick:0});
+export const DEFAULT_INK_BLEED = Object.freeze({line:1.5,text:2,fine:1.8,tooth:0,edge:.7,dry:0,stick:0});
+export const DRY_INK_PRESET = Object.freeze({line:0,text:0,fine:0,tooth:.55,edge:.5,dry:.18,stick:0});
 export function normalizeInkBleed(value={}){
  return Object.fromEntries(Object.entries(DEFAULT_INK_BLEED).map(([key,fallback])=>{
   const n=value?.[key];
-  return [key,typeof n==='number'&&Number.isFinite(n)?Math.max(0,Math.min(['tooth','edge','dry'].includes(key)?1:6,n)):fallback];
+  return [key,typeof n==='number'&&Number.isFinite(n)?Math.max(0,Math.min(['tooth','edge','dry','stick'].includes(key)?1:6,n)):fallback];
  }));
 }
 export function readInkBleed(){

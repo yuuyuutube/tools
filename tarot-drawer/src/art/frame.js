@@ -41,6 +41,12 @@ function inkBleedFilter(id, kind, radius, blur, spread, opacity, strength, textu
  opacity=strength===0?0:Math.min(.85,opacity*(1+(strength-1)*.15));
  const weight=kind==='fine'?.45:kind==='text'?.75:1;
  let input='wetInk',dryMarkup='';
+ // 先膨脹再收回：只填住細小空隙，避免整層像暈墨一樣發糊。
+ if(texture.stick>0){
+  const joinRadius=texture.stick*1.6*weight;
+  dryMarkup+=`<feMorphology in="${input}" operator="dilate" radius="${joinRadius}" result="joinedInk"/><feMorphology in="joinedInk" operator="erode" radius="${joinRadius}" result="stuckInk"/>`;
+  input='stuckInk';
+ }
  if(texture.edge>0){
   dryMarkup+=`<feTurbulence type="fractalNoise" baseFrequency="1.15" numOctaves="2" seed="31" result="edgeNoise"/><feDisplacementMap in="${input}" in2="edgeNoise" scale="${texture.edge*1.8*weight}" xChannelSelector="R" yChannelSelector="G" result="roughInk"/>`;
   input='roughInk';

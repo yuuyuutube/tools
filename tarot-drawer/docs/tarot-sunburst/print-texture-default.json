@@ -1,12 +1,13 @@
 {
   "type": "tarot-ink-bleed",
-  "version": 2,
+  "version": 3,
   "settings": {
     "line": 1.5,
     "text": 2,
     "fine": 1.8,
     "tooth": 0,
     "edge": 0.7,
-    "dry": 0
+    "dry": 0,
+    "stick": 0
   }
 }
