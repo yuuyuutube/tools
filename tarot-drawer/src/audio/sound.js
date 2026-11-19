@@ -1,4 +1,5 @@
-// 很輕的紙張音效，全部用 Web Audio 即時合成，不載入任何音檔。預設靜音，開關狀態存在瀏覽器裡
+// 紙張與微風星光音效，全部用 Web Audio 即時合成。預設靜音，開關狀態存在瀏覽器裡
+import { revealSound } from './reveal.js';
 const KEY = 'tarot-sound';
 let on = false, ctx = null, noiseBuf = null;
 try { on = localStorage.getItem(KEY) === '1'; } catch { /* 私密模式 */ }
@@ -56,6 +57,6 @@ export const sfx = {
   }),
   spread: play(() => swish(0, .5, 1900, .045)),
   slide: play(() => swish(0, .22, 2400, .05)),
-  flip: play(() => { swish(0, .2, 1500, .05); thud(.34, 170, .06); }),
+  flip: play(() => { const c = audio(); if (c) revealSound(c, noiseBuf); }),
   stamp: play(() => { thud(0, 110, .12); swish(0, .06, 900, .04); }),
 };

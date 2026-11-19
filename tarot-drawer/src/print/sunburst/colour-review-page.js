@@ -1,3 +1,4 @@
+import {deliveryAssets} from './delivery-assets.js';
 import {buildBatch} from './batch-pipeline.js';
 import {BATCH} from './registry.js';
 import {cardById} from '../../data/cards.js';
@@ -17,9 +18,7 @@ for(const [index,n]of numbers.entries()){
  const exports=document.createElement('details');exports.innerHTML='<summary>下載色版與網站圖片</summary>';
  for(const key of ['flat','final'])download(exports,result[key],`${n}-${key}-3x5.png`);
  for(const [key,cv]of Object.entries(result.sourcePlates))download(exports,cv,`${n}-${key}-source.png`);
- const face=make(600,1000);face.getContext('2d').drawImage(result.final,0,0,600,1000);download(exports,face,`${n}-face.webp`,'image/webp',.88);
- const art=make(1024,1536),g=art.getContext('2d'),data=Object.fromEntries(Object.entries(result.sourcePlates).map(([k,cv])=>[k,cv.getContext('2d').getImageData(0,0,1024,1536).data])),out=g.createImageData(1024,1536),inks={Y:[232,183,77],O:[222,83,43],B:[62,112,150],N:[30,40,74]};
- for(let i=0;i<1024*1536;i++){const j=i*4;let c=[246,239,224];for(const k of ['Y','O','B','N']){const d=data[k][j+1]/255;c=c.map((v,ch)=>v*(1-d+d*inks[k][ch]/255));}const ink=data.N[j]/255;for(let ch=0;ch<3;ch++)out.data[j+ch]=Math.round(c[ch]*(1-ink)+inks.N[ch]*ink);out.data[j+3]=255;}g.putImageData(out,0,0);download(exports,art,`${n}-art-preview.webp`,'image/webp',.85);
+ const {face,art}=deliveryAssets(result);download(exports,face,`${n}-face.webp`,'image/webp',.88);download(exports,art,`${n}-art-preview.webp`,'image/webp',.85);download(exports,result.illustration,`${n}-illustration.png`);
  article.append(exports);document.getElementById('cards').append(article);
  const link=document.createElement('a');link.href='#'+card.id;link.textContent=card.nameZh;document.querySelector('nav').append(link);
 }

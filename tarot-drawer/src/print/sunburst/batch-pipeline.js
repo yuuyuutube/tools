@@ -1,3 +1,4 @@
+import {illustrationAsset} from './illustration-asset.js';
 import {BATCH} from './registry.js';
 import {printCard,plateSVG,INKS} from '../press.js';
 import {WINDOW,sunburstFrame as printFrame,shiftMap,shiftAreas} from './layout.js';
@@ -123,7 +124,8 @@ export async function buildBatch(number,{jitter=true,grain=true,inkSpread=.5}={}
  plates.FO=plateSVG({frame:fr.O,window:WINDOW});plates.FN=plateSVG({frame:fr.N,window:WINDOW});
  const inks={...PALETTE,...config.palette,FO:INKS.O,FN:{...INKS.N,fixedRegistration:true}};
  const quietAreas=[{x:147,y:155,rx:17,ry:23},{x:104,y:204,rx:18,ry:18},{x:159,y:192,rx:19,ry:20},{x:104,y:176,rx:17,ry:17}];
- const final=await printCard(plates,{...SETTINGS,seed:20261117+number,inks,quietAreas:shiftAreas(config.quiet||quietAreas,number),tune:{...SETTINGS.tune,...(!jitter?{jitter:0,jitterFine:0,bleed:0,misregister:0}:{}),...(!grain?{speckle:1}: {})}});
+ let illustration;
+ const final=await printCard(plates,{onIllustration:cv=>{illustration=illustrationAsset(cv);},...SETTINGS,seed:20261117+number,inks,quietAreas:shiftAreas(config.quiet||quietAreas,number),tune:{...SETTINGS.tune,...(!jitter?{jitter:0,jitterFine:0,bleed:0,misregister:0}:{}),...(!grain?{speckle:1}: {})}});
  // Raster ink master and masks remain available without any print effect.
  const inkStage=place(source),maskStage=place(ids);
  const smoothImage=await load(ROOT+`line/${number}.png`),smooth=make(1024,1536);smooth.getContext('2d').drawImage(smoothImage,0,0,1024,1536);
@@ -136,5 +138,5 @@ export async function buildBatch(number,{jitter=true,grain=true,inkSpread=.5}={}
  for(const mark of config.marks||[]){if(mark.type==='star-arc'){let bg=[246,239,224];['Y','O','B'].forEach((k,i)=>bg=rgbInk(bg,config.roles[0].ink[i],pal[k].rgb));for(const [cv,isInk]of [[flat,false],[inkStage,true]]){const g=cv.getContext('2d');g.save();g.translate(MAP.x,MAP.y);g.scale(MAP.scale,MAP.scale);g.fillStyle=isInk?'#fff':`rgb(${bg.join(',')})`;for(const [x,y]of mark.old){g.beginPath();g.arc(x,y,23,0,Math.PI*2);g.fill();}for(const path of arcStars(mark)){g.fillStyle=isInk?'#fff':'#e8b74d';g.fill(path);g.strokeStyle='#1e284a';g.lineWidth=4.5;g.stroke(path);}g.restore();}continue;}if(mark.type==='crown'){for(const [cv,isInk]of [[flat,false],[inkStage,true]]){const cg=cv.getContext('2d');cg.save();cg.translate(MAP.x,MAP.y);cg.scale(MAP.scale,MAP.scale);cg.fillStyle=isInk?'#fff':'#e7c992';cg.fillRect(...mark.rect);cg.fillStyle=isInk?'#fff':'#e8b74d';cg.fill(new Path2D(mark.path));cg.strokeStyle='#1e284a';cg.lineWidth=5;cg.stroke(new Path2D(mark.path));cg.stroke(new Path2D('M439 329Q506 309 575 329M443 339Q506 319 572 339'));cg.restore();}continue;}const g=flat.getContext('2d');g.save();g.translate(MAP.x,MAP.y);g.scale(MAP.scale,MAP.scale);g.font=`bold ${mark.size||30}px Georgia`;g.textAlign='center';g.fillStyle=mark.inverse?'#f6efe0':'#1e284a';if(mark.type==='star'){const p=new Path2D(Array.from({length:10},(_,i)=>{const a=-Math.PI/2+i*Math.PI/5,r=i%2?mark.r*.43:mark.r;return `${i?'L':'M'}${mark.x+Math.cos(a)*r} ${mark.y+Math.sin(a)*r}`;}).join('')+'Z');g.fillStyle='#e8b74d';g.fill(p);g.strokeStyle='#1e284a';g.lineWidth=4;g.stroke(p);}else g.fillText(mark.text,mark.x,mark.y);g.restore();}
  await addFrame(flat);await addFrame(inkStage);await addFrame(smoothStage);await addFrame(maskStage);
  const {proof}=await buildInk(number,config,{inkSpread,sourceMaster:source});
- return {smooth:smoothStage,ink:inkStage,inkMaster:source,proof,masks:maskStage,flat,final,sourcePlates,inkAlpha,snapped,labels};
+ return {smooth:smoothStage,ink:inkStage,inkMaster:source,proof,masks:maskStage,flat,final,illustration,sourcePlates,inkAlpha,snapped,labels};
 }

@@ -1,10 +1,49 @@
 {
+  "date": "2026-11-19",
+  "currentValidation": "ink-sync-validation.json",
   "cards": [
     {
       "number": 1,
-      "batch": "01",
-      "sourceHashMatches": true,
+      "id": "magician",
+      "name": "魔術師",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
       "outputs": {
+        "1-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "104b52c1cfc587d5130b64d64d70f51a9722aee04ea18e9d57c53369c7439ae6"
+        },
+        "1-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "f9db25a3004824abc92ae81f2e90d1d8c8f27edee7988b8f7b6e857c68ef8e1f"
+        },
+        "1-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "bfb8aa20dbda3fc3f3daffe5e7f0ea2f9c66c2191cbc1529ed438d5d7e18991c"
+        },
+        "1-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "118a920c94468be6cbab70ebfe0160f30b5fc75f27d7c573f32d473f8fccb9fd"
+        },
+        "1-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "ff53482aac40cdcbd134310667f5564c6e5c057c25ccff59126f4928321d6235"
+        },
         "1-ink.png": {
           "size": [
             1024,
@@ -12,29 +51,113 @@
           ],
           "sha256": "2ba1e08f881b7a2243d2fcb3eabbf83be6b67c4303692f40be81b1ac3f0911db"
         },
-        "1-ink-3x5.png": {
+        "1-Y-source.png": {
           "size": [
-            900,
-            1500
+            1024,
+            1536
           ],
-          "sha256": "c69fce1cd04d7dee0027ea92839adb0e66431cb325c85fe94a65c2d30d1e7565"
+          "sha256": "ab42e3b6206bffdfcf1820e878c26487e8fc85f58cf788e1a0e8cc8b6505af3a"
         },
-        "1-proof-3x5.png": {
+        "1-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "df78bd5458b1d0a04dc0d71e800bd1a9bd107af0f08574a90a5efbb7cf5ceb3f"
+        },
+        "1-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "8b55d563c7a3c1bea5f4b270244491fc6f5b5294610c0c03d873263a8980eedb"
+        },
+        "1-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "3cb0ce2c62a43f1f91411275c3ac2b9890583c1cc3709906eab70b41f5962ab4"
+        },
+        "1-ink-detail.png": {
+          "size": [
+            720,
+            720
+          ],
+          "sha256": "68f33777a927ef51dc1e0632a36b13e40420714d415c53e6bef24c642dd716b7"
+        },
+        "1-proof-detail.png": {
+          "size": [
+            720,
+            720
+          ],
+          "sha256": "1e01b9114941e47dd73ac4047e08b8028d838d5a5f45b52fb91b1cd034e50693"
+        },
+        "1-masks-source.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "4faa3e80a8f2bc1d73aa579c606c517723024a7a0adc2f0fbacb3d6bba567d85"
+          "sha256": "2129df7affe41480a49a37e865ea4530f1e49c852167b12f4c5eed43c04c2430"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "1ea60555a08d472599de8c6b77e758f3c22121db200058828fecbcb0e0188c5a"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "8f08589d2f4c0cbe97add03acbbac21b5c3ca477672d3ca3d352dd3598f3175e"
         }
-      },
-      "colourDeferred": false,
-      "storedMasterUsedForProof": true
+      }
     },
     {
       "number": 2,
-      "batch": "01",
-      "sourceHashMatches": true,
+      "id": "high-priestess",
+      "name": "女祭司",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
       "outputs": {
+        "2-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "940f2bd5a43ba7dc138b22f13446b8bccabe1c6e62f45e8a21482416d7cb0ed3"
+        },
+        "2-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "6299e52be48a5c3ba997a39d9c18c1f4f3a351d48d88bf6714c425fa07ea7e0c"
+        },
+        "2-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "ad381386024f3dba1fdbeca4800318c30527843f6cbce1a37bab94b069a4d4f5"
+        },
+        "2-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "6c95a97aef06a048eba6f182b8097b3f3a00f7940f75928ca9f56b7ce51c01dd"
+        },
+        "2-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "46bebde2039955fe38ba7a13214142268e91e7921bbc7abe23ea9f14cb485c4f"
+        },
         "2-ink.png": {
           "size": [
             1024,
@@ -42,29 +165,113 @@
           ],
           "sha256": "ea54a44993346f96ad7c899bea7c6e725c862e63ca0ddfac7b2b7bc9cfb6a67a"
         },
-        "2-ink-3x5.png": {
+        "2-Y-source.png": {
           "size": [
-            900,
-            1500
+            1024,
+            1536
           ],
-          "sha256": "5a0a915114c82b49995f4d184023a93a2ab7790a1483d490bfa7024d6a50aab1"
+          "sha256": "ebbd5504d8f4cba7064255f3a9b258a20c119854a97359e4ea6ba6eac8d8827d"
         },
-        "2-proof-3x5.png": {
+        "2-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "b54adffd85ef2ed7d7bba89f2f40734454e24fa231a8d91055ae72097197ab08"
+        },
+        "2-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "b376c833218311c70934dccad33883d9acc1af20e902a24f702fe3b71a0aa4d0"
+        },
+        "2-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "1a6a3f39074628299e84eabc282bc076f16021617ed7255bb75d4065e952f2a8"
+        },
+        "2-ink-detail.png": {
+          "size": [
+            720,
+            900
+          ],
+          "sha256": "f662683f4b6a74e94f2290106e389621166587ce61d4ce619085180dee37bc9a"
+        },
+        "2-proof-detail.png": {
+          "size": [
+            720,
+            900
+          ],
+          "sha256": "47f50907fdbdf19a99e9525ec5de309e9ca101e90f0c473f7c2043e584474e61"
+        },
+        "2-masks-source.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "eb85827947e0f7460c9a15be9f376e354371b2b91b9b58fca085d6d1fb3d6075"
+          "sha256": "0e5fb749b67b4fea29500a30677b950d4ce92210f23d02ffd437a501b611b77c"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "9cd7f73348ffb94aa4c3efb1fb6fd56123168e0ebbd4a43475de0217fbb50631"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "ccb0c837a82ea01e29c016b7e26b5745958ff694d964cfec59294bf38d07ee75"
         }
-      },
-      "colourDeferred": false,
-      "storedMasterUsedForProof": true
+      }
     },
     {
       "number": 3,
-      "batch": "01",
-      "sourceHashMatches": true,
+      "id": "empress",
+      "name": "皇后",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
       "outputs": {
+        "3-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "9ca8bd4cab8630fae9d1c222d37c1af1c0d135acc98356917aab4cb5140feecb"
+        },
+        "3-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "feaa29e163c39e4c50f119349017e49cc892860c7d11021eb433fa927c72a6fa"
+        },
+        "3-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "836d149e31f1c59d71b28902b61ef266e32a2d0481c7023d9491b48e4df3c7b4"
+        },
+        "3-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "dcccb5f258a2a0ece34d056b5bde511c0369223dc795d44435b7030cdbb7dfda"
+        },
+        "3-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "d7d72310e355313cd69e82fc774e9b8a6b1b9b4a1b2753b38c155f2f34b4932d"
+        },
         "3-ink.png": {
           "size": [
             1024,
@@ -72,29 +279,113 @@
           ],
           "sha256": "55d95415609ba2d1ffe56202b37f62bafa8c704b9b14d7ac9318fededab60003"
         },
-        "3-ink-3x5.png": {
+        "3-Y-source.png": {
           "size": [
-            900,
-            1500
+            1024,
+            1536
           ],
-          "sha256": "6678e3acb117a8c09a49ae92d2fceecafea0ad10d865bee190db78ca06d57600"
+          "sha256": "4a199be07e47a65834b80d6a24e7496877dae718b68c02410d38ce417a0a58cb"
         },
-        "3-proof-3x5.png": {
+        "3-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "3c81ee65e390cdb5495cc6018687be0851a188e0f301c75c1f469f4207cf7a3c"
+        },
+        "3-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "ce3dd94b1b466b39bd7e140d81bb10153bcf8caf795391d8346f89d4ef427a01"
+        },
+        "3-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "9991c65340eba2d82b5b2b1ee9d21dce419ed73050f858db12d8776f4b4c79de"
+        },
+        "3-ink-detail.png": {
+          "size": [
+            720,
+            900
+          ],
+          "sha256": "65eaa24917a915115d96127bf65902cf1456ab0290a987bb8ab901c2243fccee"
+        },
+        "3-proof-detail.png": {
+          "size": [
+            720,
+            900
+          ],
+          "sha256": "c27787522b730131fec2f550691052003e6b279de69ccc49a28acd76d241aa39"
+        },
+        "3-masks-source.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "d9f6469bc390d8755f8b4718a0681d102cf4bf6e7e3404396fb8f5b4fad35fff"
+          "sha256": "307e065ab902bdf0e15968b2fa448265045e3f0db4b128b2147897ff62142152"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "54677226e9ce4368da2829a44845a78620b9ac46485331b95bbac4de190e1475"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "942fb617e7341619898cdc3891789299e6d963008f13b7103040c5e930074b8c"
         }
-      },
-      "colourDeferred": false,
-      "storedMasterUsedForProof": true
+      }
     },
     {
       "number": 4,
-      "batch": "02",
-      "sourceHashMatches": true,
+      "id": "emperor",
+      "name": "皇帝",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
       "outputs": {
+        "4-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "e3daef357b32bfaa67d8818fd794248e2b3b96dfe800282750344baa29106ab4"
+        },
+        "4-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "39d7617c68722e6426e995a6381479ae4a5c4fbe9d70ece9ef33e6e0510e581a"
+        },
+        "4-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "6d8b309603418873ff9e5e38b441da572b26c851366ba60c30092283c626d1d6"
+        },
+        "4-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "c241f18c1e5cb267d9d19f689c7ee57783d1c74c4785bd56a211da33f5a1fae9"
+        },
+        "4-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "202db58d33c4339f99a161206ee0c10e7243c1b1e4193b5f19957d83c888428a"
+        },
         "4-ink.png": {
           "size": [
             1024,
@@ -102,29 +393,113 @@
           ],
           "sha256": "829327fe8d0056eeeb5f5260147f733d8db8c31187f44ab5540f7d0e50616461"
         },
-        "4-ink-3x5.png": {
+        "4-Y-source.png": {
           "size": [
-            900,
-            1500
+            1024,
+            1536
           ],
-          "sha256": "1270b31bd8e52d2704814e1f506c0292dc03abb3974c00d4ac476c49dd142dbf"
+          "sha256": "cd14d6fe42eb4d76538ec0c13777a084e1bf0901afc6a949222ec12f9ed1b2cf"
         },
-        "4-proof-3x5.png": {
+        "4-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "e247354f0d53596159a65a308cbe6b94c29440d03154198b99e9ab610ef34fdd"
+        },
+        "4-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "3d6f414f652fe54fb47c7ded9f48ef48215fdcd4c210475121d3015ebebdd144"
+        },
+        "4-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "e21a42fe39f460aa5042a48e22c27d099ebed74d9c21cbfe7c794dcfd34d57a0"
+        },
+        "4-ink-detail.png": {
+          "size": [
+            720,
+            840
+          ],
+          "sha256": "711a982568b84c20a7c7f90b84c858d96c922a1d981beff124c7def0ed1a6b07"
+        },
+        "4-proof-detail.png": {
+          "size": [
+            720,
+            840
+          ],
+          "sha256": "0833a5b15fe40f9704f5a11ac1c38e0ebb4bc6c934d36ff35d9fa8c9ef52dbcf"
+        },
+        "4-masks-source.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "4e88e7ea67dccfd75038ff6c4b6835bde89b1471969e31a763d1312026da7b13"
+          "sha256": "59af1c3ae0babaf94d75328f91385058e6442c0f8b529a62ca0860d79652a0ab"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "57796c1f9a557a36907c239c5fec9ce8a2bc6d4a5ad8c2dba3d0a718a582721d"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "66ad85ae34ecdb454f564cc6cfcc0072012e6128cf88b3fbb21c9908302390be"
         }
-      },
-      "colourDeferred": false,
-      "storedMasterUsedForProof": true
+      }
     },
     {
       "number": 5,
-      "batch": "02",
-      "sourceHashMatches": true,
+      "id": "hierophant",
+      "name": "教皇",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
       "outputs": {
+        "5-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "ad7cf6d0c8a7a0c87ac4e7814503ad8aa1c44a8757ac607b3faa703077c66da1"
+        },
+        "5-ink-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "114a293bd4212ed3dbe3dd4de5fe366d642096b67fbae703d8d43f337e3df29e"
+        },
+        "5-proof-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "0e6ea0869279705f0a83a497bf6dc37cbdde7ea5f2b49c5d0db328915514da6f"
+        },
+        "5-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "df06b5eff3febd96c3d268897b68d90a976c39236a4d7abfd40005b6edd5e5f4"
+        },
+        "5-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "747128ad82e37a72fd8d179987cdf597587577d475eee98ae76d96f5838376f3"
+        },
         "5-ink.png": {
           "size": [
             1024,
@@ -132,515 +507,1894 @@
           ],
           "sha256": "7e0b0fc0181582c9f26b10e6f40fa7cbf253e4f27e2b8eda5e834de299010052"
         },
-        "5-ink-3x5.png": {
-          "size": [
-            900,
-            1500
-          ],
-          "sha256": "c0b97cc78f9efb8ee29d1f23b54f0613fda5aa44be3bd5a2f6731331e4880870"
-        },
-        "5-proof-3x5.png": {
-          "size": [
-            900,
-            1500
-          ],
-          "sha256": "89e40faa4a881c6eb7f9ede87c05f464f582d28cd4ad67c120effdfb7cd665dd"
-        }
-      },
-      "colourDeferred": false,
-      "storedMasterUsedForProof": true
-    },
-    {
-      "number": 6,
-      "batch": "02",
-      "sourceHashMatches": true,
-      "outputs": {
-        "6-ink.png": {
+        "5-Y-source.png": {
           "size": [
             1024,
             1536
           ],
-          "sha256": "3cf31b9845d2e1d0221e7a4ef0ac36cf16d553702d7e13d803cd50e690921f04"
+          "sha256": "75a40eaa97c9741fc21ada22628e4013eb9839ab4661843c0e2146d62910964b"
+        },
+        "5-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "e16addc23d1da4128a30d591be2a0131dbf03fdced75e168408fd1675c914df3"
+        },
+        "5-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "59f019de4dc1191d54cc7231029302a97341aa867f0bec59e677a7f4315c8c70"
+        },
+        "5-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "09323176abf174317521787dfcf45bb4e145460a72084b143194b970f17312e7"
+        },
+        "5-ink-detail.png": {
+          "size": [
+            720,
+            964
+          ],
+          "sha256": "510d3b407f7c73453b6834b5dad41ea066dd0b31f2c33e45bef0f35138f5c8ab"
+        },
+        "5-proof-detail.png": {
+          "size": [
+            720,
+            964
+          ],
+          "sha256": "aa118e0b29a1d3c92044e1752e4cd0090b48d4eb24bea02d3beb810462d81e49"
+        },
+        "5-masks-source.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "e2dd7f302293bdc78735f11b9776a5dc146639b0eb5abe96dcd9a2bd68f36e7c"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "5f762482001362a79a2ec0dbd27388a8b6052183e0bba0a14f56e26940cdd2a1"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "040624d79bace395ccb9bd4cf64c2e9b31f773d6db459160276c302822eda919"
+        }
+      }
+    },
+    {
+      "number": 6,
+      "id": "lovers",
+      "name": "戀人",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
+      "outputs": {
+        "6-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "93f649330e6170c203b6899826c4fcb09f72936aef8c0a206d199606da8b86ee"
         },
         "6-ink-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "ebd2d0ee6edde042034ab9dee56748ed6d8d04b9e76c4860103c1d6436568506"
+          "sha256": "5652be5371a6c915b99aec918c2e3f0cd255d4588db9f0dacb6b515992dd0503"
         },
         "6-proof-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "1787611adf81a9e16b08b5aa34b6d9b194b58298d24e7aef282caf92b20fd32a"
-        }
-      },
-      "colourDeferred": false,
-      "storedMasterUsedForProof": true
-    },
-    {
-      "number": 7,
-      "batch": "03",
-      "sourceHashMatches": true,
-      "outputs": {
-        "7-ink.png": {
+          "sha256": "bef6e15eae26cabe720329230615e36fd64ed2b3fe08128055c708027e3d0b83"
+        },
+        "6-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "e8ce5d0c613cd7ffff662d90bdfc7830fbf883aababbfbba24772fa5694da920"
+        },
+        "6-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "658e120aefb2d845b4c84efe1af0d75b55c95797c0fabcae78496edfd79deeb5"
+        },
+        "6-ink-current.png": {
           "size": [
             1024,
             1536
           ],
-          "sha256": "24033519bd7cfbe8356ac47803aef2dd7cbab42d93b7ba907f9c2a909a9f5145"
+          "sha256": "9a7a1b734a18847ec10abb832a2c346d2d3517d6902ffd360ce3118f50b542ef"
+        },
+        "6-Y-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "be74bcd942bf33a6fcf6deb2cafbb791c0cc01abb24c0724f02efeae5f35bffc"
+        },
+        "6-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "2b027f79f35855c447c16ddb4ac8f7bd1d6389e98082df10452686c2e84823ab"
+        },
+        "6-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "f80e3ed1f9fc50027d3971446cb6ea3d771dfb638bc1657bf20d0e5b3456b48c"
+        },
+        "6-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "b7c582922403066d246d03117db4959e5633c3b7500d1c8fb4891244f93304c6"
+        },
+        "6-ink-detail.png": {
+          "size": [
+            720,
+            447
+          ],
+          "sha256": "fff3d812c30677b81a7592424ffbffc094b8b2c15c2c44259cc55dc127ed7938"
+        },
+        "6-proof-detail.png": {
+          "size": [
+            720,
+            447
+          ],
+          "sha256": "2f065aac68b69849bf8cd46fa30f5fb9da283aa65746f2713ea73b4b9762eff9"
+        },
+        "6-masks-source.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "bf6563602bb286c2833e18ef6cb6ee240bd47a1ed5fd58bdcfd5d7b515e71fad"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "33005f30e078a8fb39d8b0980db8128fbcc9bdf5c0355550cf79be7d787a474f"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "67fdc674211834753c376d818d0be5f62370313249398c877a57a0cf3c2a11c1"
+        }
+      }
+    },
+    {
+      "number": 7,
+      "id": "chariot",
+      "name": "戰車",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
+      "outputs": {
+        "7-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "2889c06e5df18fc32985a7135acb1ecd22b51e71eba1d67c39d37f53e03f8a35"
         },
         "7-ink-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "7be40d73f7aa087488f2f281e1e18d2053a12494113bbfdd0d75e8e6d883d3f9"
+          "sha256": "355b2e6671db26a48ea58615391cb6278693eafcba6d3fc89458e6619b8c4beb"
         },
         "7-proof-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "14d6488589df0d4aec944bd077cc845404db7bba0fc9bc71e26bae87739b3aba"
-        }
-      },
-      "colourDeferred": true,
-      "storedMasterUsedForProof": false
-    },
-    {
-      "number": 8,
-      "batch": "03",
-      "sourceHashMatches": true,
-      "outputs": {
-        "8-ink.png": {
+          "sha256": "efbcb910063dddd9b880b373278023beb36f337ff21367357df468f024be64f8"
+        },
+        "7-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "d7dae1f66cb7719ecdfb9e687fba7083b27eebbe7a2804ced8e4cea5a61bbf58"
+        },
+        "7-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "ae609774520ec67b04b263781a0732eca983aeb72bc85fbb9b55f9836b74bb73"
+        },
+        "7-ink.png": {
           "size": [
             1024,
             1536
           ],
-          "sha256": "add6b4cca799618ef11257047e4c064835a6e93f18d6143416370e87d9159ef8"
+          "sha256": "c224facb25e2a6b2541ecbd4bf2aa675e895107b04211d6283dd35bc40efc683"
+        },
+        "7-Y-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "fdfeb89a25abdc75921a0f2077731c94d05c7a9e73790b9419f81017ffe98338"
+        },
+        "7-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "32f07782243409e72627b3f2b3f34b1e88bdbae0edcea46c9e4006e22df3ba3f"
+        },
+        "7-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "c8350bc612e7da16a0b849aa55e50a293da9eb076366d1fe07971b025c707d8a"
+        },
+        "7-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "05c5028a4c28d1d73ea7e3b7f70596dc9a3f41d69f150c7a89e6d3d27fc8b6ce"
+        },
+        "7-ink-detail.png": {
+          "size": [
+            720,
+            839
+          ],
+          "sha256": "1e56923b59aebc3a8fbba907fd43554b9a3d8922856f50ddc5a0991c0b191d82"
+        },
+        "7-proof-detail.png": {
+          "size": [
+            720,
+            839
+          ],
+          "sha256": "9fb7f19e9763e3c57875a9b93f3b0e169a3e7ae871c92cf4dd1bfe3536872d99"
+        },
+        "7-masks-source.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "a99cbe038e46981e4c23c6c818585e91294d028b360f01e1a7223ac87ca0e588"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "bfeb941bfff0929eb4646ed2f8937e9290b1448943174976eff1b5f68a564e4e"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "e57b8bad46152244648b363e023bae079800811f85c22f2338ef0811f470dbaa"
+        }
+      }
+    },
+    {
+      "number": 8,
+      "id": "strength",
+      "name": "力量",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
+      "outputs": {
+        "8-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "9c755530b72da12213e3c7be558a2eb8165df480a726adf8c20973feef5aa204"
         },
         "8-ink-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "b6212f7b64ac9bf53077af84e9cc9505e814b3447d725d01ade8652f852b494f"
+          "sha256": "b1edefd95a90a3b7ed5dd164c97c79ef591a69f281253f08c3cdab7300f4bda8"
         },
         "8-proof-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "f5f37e961dc145ddf63397a4dc22a173ef970f11b77d3d2a77cb9bfdcb418727"
-        }
-      },
-      "colourDeferred": true,
-      "storedMasterUsedForProof": false
-    },
-    {
-      "number": 9,
-      "batch": "03",
-      "sourceHashMatches": true,
-      "outputs": {
-        "9-ink.png": {
+          "sha256": "080e947a91efc2ddcc93ee958db42c59b41349915119d4185b4fa4096ed92ba2"
+        },
+        "8-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "92d8599c45b3b891cabf1ea03c9e870dbd51264059a8dd8eb397a298c9dc5b41"
+        },
+        "8-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "7dcb35cc2c4c5a350627a17ce18e1fc01e082d57f636f5063231cc06ee32ede3"
+        },
+        "8-ink.png": {
           "size": [
             1024,
             1536
           ],
-          "sha256": "972161e02594fff74de692fbe79f3fa352a871d7c0859a8d1332709b3bf1d05f"
+          "sha256": "f5d5129201b6862506c3097687dbb88f5b9dc6371032fb1780df490c31271308"
+        },
+        "8-Y-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "715fe4aa93a328d8bb74e49bb589fc75d81cf8df22ac5fef6543b3867fec0599"
+        },
+        "8-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "eee56908e12c5ad49b0cf731c96c92f4d9d69b33b99ab7e0c0eb13c4306c15b9"
+        },
+        "8-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "d17954e17aeba2e18d8fb1358dd67fb94249912074e9b6c65067a79d377c2d59"
+        },
+        "8-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "02238b7cb1ce01b7540211716f8a1ff2683ece5abaf78c3e9b3d16aed2b0e84b"
+        },
+        "8-ink-detail.png": {
+          "size": [
+            720,
+            808
+          ],
+          "sha256": "594663d523a5d34b95a188a49c702085ab8c72c40a83e2a5e124ba8d6ed62490"
+        },
+        "8-proof-detail.png": {
+          "size": [
+            720,
+            808
+          ],
+          "sha256": "f5e0e56018500871ca6ec9133f2bfbe3d2bb4444bdb2668b08efe38f30204679"
+        },
+        "8-masks-source.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "3b3490c431b93fb5f51463f3660135dc1657d7bbcbd1857eeb90764fb76f9e02"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "e02415699b4bf02e72c2d84f2761fa2008c309ea256b4cb01ed53073c95738d4"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "d4b6af9ce2d19107704c7b109c51b8a8082bc761d5e16def6ba482f7c65a4da2"
+        }
+      }
+    },
+    {
+      "number": 9,
+      "id": "hermit",
+      "name": "隱者",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
+      "outputs": {
+        "9-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "b06b07f34e174126e4e7f08ca8309aa4834e4e1c60b846e76020809461b73615"
         },
         "9-ink-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "d1d72011b485a1825c4e151c3d676fc31b820af6f24ec6a11d9f7ba031695d00"
+          "sha256": "479e7f64e21ba821e2b835edf4ed1a3ff1ab2654711479741538a243d4a15898"
         },
         "9-proof-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "ab8c043f1b4b53b4bf97765bf99e556271a16369b1e2625f2451be780ca4cf70"
-        }
-      },
-      "colourDeferred": true,
-      "storedMasterUsedForProof": false
-    },
-    {
-      "number": 10,
-      "batch": "04",
-      "sourceHashMatches": true,
-      "outputs": {
-        "10-ink.png": {
+          "sha256": "3f1bcd5ab1f50143a8d114be6fae0a63b0045685e1897d902a3f1442260ad9df"
+        },
+        "9-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "24a10a5ff38be0276990dd4204a45a44c71d6f26ddda1387b4da573ce3584b50"
+        },
+        "9-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "2394e0aeffae16e6bd7863b630265f7047f65bdedd208ec5ab482a90d955cd0b"
+        },
+        "9-ink.png": {
           "size": [
             1024,
             1536
           ],
-          "sha256": "32144a0e5d2eca2f90ba22158335f541c4ae9215203379d0d3294ec4e41e1799"
+          "sha256": "3e85a3742ce20c82bd375d51eca4c01b4f9b258e17184582fde214595b5f1725"
+        },
+        "9-Y-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "533e95817f1bc5bd7db5f72f57ce29bfa90f85dee6b8ba53ad8089ee84be7cb4"
+        },
+        "9-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "8916c70403b3e22697d082a296be06d2fa4413293b95b8e3ed717c5caa9ab463"
+        },
+        "9-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "be917506e0a48db88dcd3ea720581350494a64897dd937e75cad62ddcd38d43a"
+        },
+        "9-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "e5f75832c3d0d3742d013d76d7726acc93ae3659c6c5fd386c27fb54065b4ee0"
+        },
+        "9-ink-detail.png": {
+          "size": [
+            720,
+            1284
+          ],
+          "sha256": "b128d3c2ba3ba65e9d405ece32a79234fff9996562934001e73035a42d90b71e"
+        },
+        "9-proof-detail.png": {
+          "size": [
+            720,
+            1284
+          ],
+          "sha256": "c50e5c25064ed171d56ade0992dd852ea760df4b7e29feb94dd7f8a2dc8040d3"
+        },
+        "9-masks-source.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "f38ec715119a576748c44b69c9eb9c01dba04974be473c9fd5141e1ace97e73b"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "88f5dc3e5175c03b8b062401b6c4fc748a9e91e75ef027902acba6aa9d3935a6"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "81d2715f62ac161a6e67fef87d0aca1a9d471bce3a0dae9996f1357a5a1f04d2"
+        }
+      }
+    },
+    {
+      "number": 10,
+      "id": "wheel-of-fortune",
+      "name": "命運之輪",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
+      "outputs": {
+        "10-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "635f54638fb791f3c87fb71292166685f2b273f332c66f32a12cd7024ab46413"
         },
         "10-ink-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "7d2b04b35c9fb69b52ab745c71958103c5cdff253f39066555bf352e107ffe41"
+          "sha256": "4d07c376047cc5533cd4af422d4136874c6ba385ad646afe3568a3a6201519f5"
         },
         "10-proof-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "1fea78eccd731a9913918c407b69711db8c4403e910f0f1dc25d69c5e977fec8"
-        }
-      },
-      "colourDeferred": true,
-      "storedMasterUsedForProof": false
-    },
-    {
-      "number": 11,
-      "batch": "04",
-      "sourceHashMatches": true,
-      "outputs": {
-        "11-ink.png": {
+          "sha256": "e16bbbff06814287741493f9d58873088d3f3edb1a07e702ff35945f335023f6"
+        },
+        "10-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "e3c13821951c8c57920d3728cab884189dd8ac55f9b81960d4dc6c3f54d6a702"
+        },
+        "10-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "310b3aa491803f86d8ddba14474ba7ed9f38193617a7ea27661a5317f69a5bfe"
+        },
+        "10-ink.png": {
           "size": [
             1024,
             1536
           ],
-          "sha256": "cd2dd5770a3ef391f8b7812a68b7ac0606d4d008d3aa218fa4c4889e6e1c77bd"
+          "sha256": "664c876eea30ed03a34051a6ee3691e7220657e59430d24a5f81dc06fcd3eb1d"
+        },
+        "10-Y-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "94f7c8b5cb433fcca8a70a543b5898c616f2f559abfcb442627d343b10491bde"
+        },
+        "10-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "dfebbd0049593e998fcb185d3ea363bacfd79c6ca85e4a3a598869516cb2e579"
+        },
+        "10-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "c6bd6ba6fde5a25b33e54e708dff0663946f2b1e84215c55a6c01400053c9414"
+        },
+        "10-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "3d858e102115d0500b0ef22f7c820005f572db420cb0a5516eea9749b5d1a153"
+        },
+        "10-ink-detail.png": {
+          "size": [
+            720,
+            738
+          ],
+          "sha256": "5b7befa186757c997af5e93aebe1deca879584f1e365904f214447b2cb22f9aa"
+        },
+        "10-proof-detail.png": {
+          "size": [
+            720,
+            738
+          ],
+          "sha256": "4d3db024b252dcc5274d3e89705f8c73505da86879f68cb2a5c2b63c51fb259d"
+        },
+        "10-masks-source.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "57f906f9be83f5eafa59a9dde08fb5cf9c2c87d3bbb1a4cccb257b12614736bc"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "0960f6dfa9ab4b990247bed362a159432ed5f9da5d6d715665c2b8d2ed4caf16"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "0a8b0c77e39c0525e2da809070c027102d928725484bb70887300f6e103f236b"
+        }
+      }
+    },
+    {
+      "number": 11,
+      "id": "justice",
+      "name": "正義",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
+      "outputs": {
+        "11-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "a22f71191e89d018dd9c74164d856cf32f114718e2707b5365e85287f52b6fd8"
         },
         "11-ink-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "9914a60146345ba1747af3351fdcb48319855844a9401611774f1a5a97eeaefe"
+          "sha256": "9758164c76184959da7b0bcdf7ca7f0a91bdc5b1abbd8cb605ee0acf1c1d35bd"
         },
         "11-proof-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "f1d6c819944afe553d481f291b20c0a42d47100b26bf18598f6582da9c12238c"
-        }
-      },
-      "colourDeferred": true,
-      "storedMasterUsedForProof": false
-    },
-    {
-      "number": 12,
-      "batch": "04",
-      "sourceHashMatches": true,
-      "outputs": {
-        "12-ink.png": {
+          "sha256": "ed4f77890b1fbef3956b5ac26aaa86dfdae6c0febb12c707762436e3b8276981"
+        },
+        "11-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "8e2adc6119c79139bdd38d0248d6ef3595c20727d70ec4ee7fce0d8c2a3cafab"
+        },
+        "11-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "1fe93973290b4a924c904abedf63b300e0b530247c2186ea7561f4d6f671e285"
+        },
+        "11-ink.png": {
           "size": [
             1024,
             1536
           ],
-          "sha256": "e130bcc51998972c1a057139e9a5b8d88b144e1767eb9d1ba73abb52aa4b57bb"
+          "sha256": "45557c9cf251dea975492dc232c650a58bfb0bb84609725231659cdc536426dc"
+        },
+        "11-Y-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "2221ea9b5eda180faa0418bc5955f4a3df0b2d2c0c8bfcc4984f714438bc5468"
+        },
+        "11-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "dfc725cac04f36d935750863a91491331e07b7718fd9a2f3f2b83b4b5d8773ef"
+        },
+        "11-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "f9dbaa1c9ec2ad64b7b73f6fc9fa245d8621e5104149aa0371008f7d66571d8f"
+        },
+        "11-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "61af747152f8c2034a24a31acac5dd25e0fbee7479091683eb41118501b73b84"
+        },
+        "11-ink-detail.png": {
+          "size": [
+            720,
+            1061
+          ],
+          "sha256": "3356d85f447281f1ce5914c622c44944365700523c19f2ebe280df5bdcfcda51"
+        },
+        "11-proof-detail.png": {
+          "size": [
+            720,
+            1061
+          ],
+          "sha256": "5109c22b85ec68658e20469a7d7f7b2ef71cdccc0fafd3cfe32bce2ebafd41d3"
+        },
+        "11-masks-source.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "3c589459e50447e54174c58cd6be34859da41843cf5daaf339adb09b488f8dad"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "f6b446c090304adca257a695e86cb698811e471f5c666d7ea96c552af78a336a"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "b52fa89292307d81a8dfba5ad8d1b8caf505d412e983d28eaf83152ff89ef324"
+        }
+      }
+    },
+    {
+      "number": 12,
+      "id": "hanged-man",
+      "name": "倒吊人",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
+      "outputs": {
+        "12-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "4199f5111c1df21a40a5f8c9de4686441b14d28d298c04cfa24a3801d1e3ba45"
         },
         "12-ink-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "db93f64109efe8fd6b602c28d2331e4dbcb0df4e44d2c49e94c20be95de80da1"
+          "sha256": "19686a17d81b8c11f342a460e4ae4ed0e4c5caced9935a68b75a348efec9bf3c"
         },
         "12-proof-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "15cdb964909dd7d5711747c0079fea0e75d002efc28f4b05e9f5e468e66fb312"
-        }
-      },
-      "colourDeferred": true,
-      "storedMasterUsedForProof": false
-    },
-    {
-      "number": 13,
-      "batch": "05",
-      "sourceHashMatches": true,
-      "outputs": {
-        "13-ink.png": {
+          "sha256": "ca9f32a0dcf8fdce5201060c71a687c26edbe39efb8b03f113795083ce4d51cd"
+        },
+        "12-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "03f6522e7bccffe5d43c4c9b73653c67f67be8670b71d37843c54ee4b62ec663"
+        },
+        "12-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "32a47ec0eb91e43102f51b1cf57810d5f898bacb5bbd816e7ff9548f2f5da3df"
+        },
+        "12-ink.png": {
           "size": [
             1024,
             1536
           ],
-          "sha256": "4dcef8499d3118e2a653a507740cbdf061954a579aae3a4a887dd876a890899c"
+          "sha256": "9acf2523cb8e4afddb78bca83bf74a0b9a607cf6c7f727cf4328f90b91fef84c"
+        },
+        "12-Y-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "df7a4cbe0af26c27f07bce07d7b4a17d2a5d4f45e8d7b1d02d30db82af61b402"
+        },
+        "12-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "31466fa743d08c622bc2c7c5336d179075cd9fb8d6026aee0791769e558c6b9f"
+        },
+        "12-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "1e9ea033e89815b331f55fcbb3b7d26ba27e5722cb78ecd5a4862195e7e456b0"
+        },
+        "12-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "af4f33cef7a9accce2209275b644e569bfd0d8decd605eda95119fe3a094307b"
+        },
+        "12-ink-detail.png": {
+          "size": [
+            720,
+            1191
+          ],
+          "sha256": "a84f09ad7a118c9715002679f8af0bec1a973dbed2edaf69f8408aedd0e71a5f"
+        },
+        "12-proof-detail.png": {
+          "size": [
+            720,
+            1191
+          ],
+          "sha256": "4599a2290cf7bf41f402f2357f61aee17dc5d5498820166093bac2b9bb4eb40d"
+        },
+        "12-masks-source.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "65f12c0f352a4424bfa3cc555a81d25db0c98bff5c061e22bf61d72882e4ce2a"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "8e029b38eb7027ef6749f6bf2dad3833c20501fc7a1569d5c02c6414639bf292"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "086df428f7bd0075043d024a5e90eee239f3358db0651a91adada5d38e3817af"
+        }
+      }
+    },
+    {
+      "number": 13,
+      "id": "death",
+      "name": "死神",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
+      "outputs": {
+        "13-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "3cf7aa6aef706bd55606382a00bf760f8caaeac4426a751aeb94685472328736"
         },
         "13-ink-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "36e376f095f9b44bd01c1f090b354534bfcdef7b247b7602e25e5356e8cfd5ba"
+          "sha256": "216f0d0604d04bac95775d27c2f3296795dc0f6450d4ef6734b09ae8bdd1a51d"
         },
         "13-proof-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "529a51f3610f7b0e5f89957fee8bd5532f4bf8469b0a8548463ec652c87c0360"
-        }
-      },
-      "colourDeferred": true,
-      "storedMasterUsedForProof": false
-    },
-    {
-      "number": 14,
-      "batch": "05",
-      "sourceHashMatches": true,
-      "outputs": {
-        "14-ink.png": {
+          "sha256": "fb41ef4ef9688931934019d9d7a3539ebf275b43da3b6b1031cb5faf56a0149d"
+        },
+        "13-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "6b08bba96392bb133a8b512309fadae9a16c384c2a48e41c42588305d25a54bf"
+        },
+        "13-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "a105ec54564283dc095641cc183813b9a59c6e27ba48dcbfa4fef7621b262863"
+        },
+        "13-ink.png": {
           "size": [
             1024,
             1536
           ],
-          "sha256": "ccee0c5982e7071d866679c245c1bbe3a96343fa8117f30dfbd832fac6d74ee4"
+          "sha256": "e08043f4aba494308987b02f865191b31ee4777f74eabd33d57c27909247ca12"
+        },
+        "13-Y-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "8693362e3c58d5a1382d00df94365caedb815d455f2f154b74bbba45d17de4d8"
+        },
+        "13-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "5ec88a8d4bf8d9eabbd2538271d653adfeac68c574197267cf0be62cb6ca71ea"
+        },
+        "13-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "f95299d017e5d4b88f614ef2b12d4247895d03478190bbdc9e844618299af590"
+        },
+        "13-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "1ae21ba54152a001c2fbf5359ebb113bf6fb74e32118116fded0a88faf8bcac2"
+        },
+        "13-ink-detail.png": {
+          "size": [
+            720,
+            840
+          ],
+          "sha256": "a358589d53c977f398a8b36ec76ad68cb5fadcb9ef82e01b3333eb9af400fcbf"
+        },
+        "13-proof-detail.png": {
+          "size": [
+            720,
+            840
+          ],
+          "sha256": "48a1f7ec6ada36299e6d4d7bcfeb8f512789596d0252fa79417ee088f5e461a9"
+        },
+        "13-masks-source.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "169e3b7a46d18743452a14e048a044812947f3314eb60f198a194fce7d605b26"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "2341d123bf7a9d538b5962045288ffcde9c097f156a452bac60611c239bd42e0"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "27436fcaa47e32d1fff97f86b71cf640382ffaef72db02f7f644a08ba9580aa8"
+        }
+      }
+    },
+    {
+      "number": 14,
+      "id": "temperance",
+      "name": "節制",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
+      "outputs": {
+        "14-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "9cca98f3e581f4d0e3a17103665569fb82bc6da9ca619b88a545a1eda66ba0e6"
         },
         "14-ink-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "507e55a80ace4f78e9dbb691a49dece80d34242475400b2de6d1fc08a5810494"
+          "sha256": "6ba64bac48ea97c8a58f20df4a590735370983838ab7b0720b14e363b1d62cde"
         },
         "14-proof-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "ca4fb117721a94bb46f1b15513a8d80e3eaf143950216087e55c14e7d098d91d"
-        }
-      },
-      "colourDeferred": true,
-      "storedMasterUsedForProof": false
-    },
-    {
-      "number": 15,
-      "batch": "05",
-      "sourceHashMatches": true,
-      "outputs": {
-        "15-ink.png": {
+          "sha256": "0033119f94b6d6d42294a79c070880200be04a7e72f21a9ff5fa6b8fae33b14f"
+        },
+        "14-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "d5abc04916c426dc918f0c55f6828cff8955e5870c151a1949a0d45853bd431a"
+        },
+        "14-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "1f1df515ea623093908e0ebb66e2a50a5409051b6934c446549db6f3c16ef5a4"
+        },
+        "14-ink.png": {
           "size": [
             1024,
             1536
           ],
-          "sha256": "6ad4f7492db854673bba52955bdb9f022dc20521f30073d80f54dad886ebd8aa"
+          "sha256": "deac703940dc7f2515e842975fcacab5d715909cc1da085993216ced87a22308"
+        },
+        "14-Y-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "f3f7415b9a8ae6259deab7d1a098eab793ce9315b5b3fdb5b45db21dacaa84a9"
+        },
+        "14-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "644b7c6c5760caaecf29be0939cb88130ddbf0ffb4f676fa4cfca870c3cb9bc2"
+        },
+        "14-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "419cc3fbd99c94a20bb2b4471fdef67298bf41e7f5208274ca38e3bd1dba81e4"
+        },
+        "14-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "b691e17f530f58c5989319894dd710da473c7e7f938bcfa7640df445bac61f5a"
+        },
+        "14-ink-detail.png": {
+          "size": [
+            720,
+            1147
+          ],
+          "sha256": "9c5751f5109a58742ce1649eb239bfd78621bcf24df25319e20ca6cf1a50940a"
+        },
+        "14-proof-detail.png": {
+          "size": [
+            720,
+            1147
+          ],
+          "sha256": "a1808440b6526899b590b78b7b1e61472d832cfc38155464584ec661d3271d41"
+        },
+        "14-masks-source.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "aad6369c822b4fc76b9d7ad8a53301107c02bfb250d28cb0f2f84a26899ed560"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "c5178ac3fc635eaf0efa9a23092771927a876a2f2314676e5ec79e4b31cf2d6d"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "fd163ea014908cf5ddd8c3be1ea2b0f443ec5b8bd967051bcb7f97cc035f1e51"
+        }
+      }
+    },
+    {
+      "number": 15,
+      "id": "devil",
+      "name": "惡魔",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
+      "outputs": {
+        "15-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "d78535267f677fbb2cb8e4692296a7aa874c6f0c4367b9b3d831924207022870"
         },
         "15-ink-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "61cee4855809f4025e73e927e93c695abb07ca1ae4f542149152864b8d5eb339"
+          "sha256": "148ba0bcdadd74fc4ce1dbbd2366c7bf1af2c9c45302410fcf409a1160501929"
         },
         "15-proof-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "09a480085e632a8d1c1cbed106b761ddf95127095347ab990f5342b7a33a1796"
-        }
-      },
-      "colourDeferred": true,
-      "storedMasterUsedForProof": false
-    },
-    {
-      "number": 16,
-      "batch": "06",
-      "sourceHashMatches": true,
-      "outputs": {
-        "16-ink.png": {
+          "sha256": "60afc346ba4f47e414c341c1f31e9d573f01add1a31e2afc3c17a0910e7f748e"
+        },
+        "15-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "426ca9f6708ad63bb1278e61afefee100c7149f4eaa6f5efba48e95e81b52b3f"
+        },
+        "15-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "54a9e0856bc140e66110da39a972a8aa667382b620f2e5325dde59d947a7d081"
+        },
+        "15-ink.png": {
           "size": [
             1024,
             1536
           ],
-          "sha256": "bca6531e0c2f569cc8aec79d5039bc02da3e19f3b881762a78e0771d1844520f"
+          "sha256": "1d81b414835aadf5ec4f490c0a7af15e5168a01d2c3e7b6e1b024617d3aa5d79"
+        },
+        "15-Y-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "bdeda3a2813dc2df5d05b280a861f1bde38dbc1453db168de2f3912828da4314"
+        },
+        "15-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "ab5fa2b34077a89d35a456dd82f1b2232ffd5d5daddffcd1283088404fe90ced"
+        },
+        "15-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "6fcd370c5f864b0b604e6ee3fd4fa979a3ac5be3c7bb5f7cb9d00197ad091c7d"
+        },
+        "15-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "7665d172912492d496f7823f4b01c02883674c52b6f6b50ae64041f2b4d6661d"
+        },
+        "15-ink-detail.png": {
+          "size": [
+            720,
+            950
+          ],
+          "sha256": "6c78bc91c16939c7b8a46a849702c0ec3ee5b8a543fc6efa967cb068414a0d3e"
+        },
+        "15-proof-detail.png": {
+          "size": [
+            720,
+            950
+          ],
+          "sha256": "31d13d86ec08d403bc5bc7e18d985cc920896bd3191865f58bee9cd5e6a6b4b2"
+        },
+        "15-masks-source.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "890c763f8d0f70be0e43bb9ded254a63d86061b387ff4b08124c341c0cefdb5f"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "fdc728e1ab2b5ee78c2346fa24166f749a3f9e0a945bf380e1f13df2b1ae93df"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "7c2ec940f19e041f1e863bf2567c67cfeb54b987b8139310506a76a6729a9c49"
+        }
+      }
+    },
+    {
+      "number": 16,
+      "id": "tower",
+      "name": "高塔",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
+      "outputs": {
+        "16-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "46dc7eb2636e7eae698b2e596c447b8a3e9fa5e595deeb3c1ed8183bdb6c6d0a"
         },
         "16-ink-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "23fdbb4661fb62bb9919f52fdcb948e6c7a9eb3786b016d00c90088b20bad156"
+          "sha256": "f000f28bc843b05b47c2b6f9302936ab56f64a5b55fcf2bd12606f4362f8f38c"
         },
         "16-proof-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "1f2f487e6c31d7db50eb5618fa229826edcdb83dce6fc7c010868cbcddb76e09"
-        }
-      },
-      "colourDeferred": true,
-      "storedMasterUsedForProof": false
-    },
-    {
-      "number": 17,
-      "batch": "06",
-      "sourceHashMatches": true,
-      "outputs": {
-        "17-ink.png": {
+          "sha256": "9d5f15acbe98880ca31c46a3ba36e8a9721d36172efdb94b5d24c589ada9fc99"
+        },
+        "16-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "d6f77994b2e0a8bebfde5a57510a79dc60679116f3af4efd9cc09f6af2f4857a"
+        },
+        "16-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "07f3977c44b5da0620ae8df8f47f230b1e35b0b5fc6dbcb17a50c04cea62d626"
+        },
+        "16-ink.png": {
           "size": [
             1024,
             1536
           ],
-          "sha256": "b5d6e5afa4a7174a7d57bcbcde4b2e668c43afb11735feefb8ebb792282539c6"
+          "sha256": "2ba38f4288ff5535b40a7a55e08ecf38a3a9ace5415e2cebdd3f7f66f12b4813"
+        },
+        "16-Y-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "147750cd7975bc22f9c5db2547165ff922888b1c0139c62f3fd77c0f578b74d6"
+        },
+        "16-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "682b1903a552d0bd72e531e15555a64d710c0c297aee0726097af491af7df07c"
+        },
+        "16-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "14d125f913f5fcd80c020dde43b91baf2174bc2e2bf77d8053fcaa8b279f4dd3"
+        },
+        "16-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "9fc5679334f01fc14faffe3b44676998ce2e42f04f7e402470703e7078629fd7"
+        },
+        "16-ink-detail.png": {
+          "size": [
+            720,
+            1371
+          ],
+          "sha256": "d2a0e7dab576a97e1492cbe5025d3e4a73c69afbd56f513d142d36f796b862f4"
+        },
+        "16-proof-detail.png": {
+          "size": [
+            720,
+            1371
+          ],
+          "sha256": "6a1889aeba0776b7975f172ab54a731b7aba434dfaaa7bf88edf392020c788cd"
+        },
+        "16-masks-source.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "16c497c264e21aab11fdfc65b98acaf24958bc12e588481fb68a8c5cf3979831"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "30bc31fb65276c7a6428d4ff8e17c19ab89ba3e04e2bb051bcc7c1b55c5ea10a"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "fe1b2619b0c37df54ea7ccc33f6974781139ae2e7e575adcc5a15e75865464f7"
+        }
+      }
+    },
+    {
+      "number": 17,
+      "id": "star",
+      "name": "星星",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
+      "outputs": {
+        "17-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "7086f332ed34f0dbbdf3d7339c5b2e3888788bfb91cca875b253eff73204f1fa"
         },
         "17-ink-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "3cd63a882b108b9438076a97b74608a10ecc91f67eea35e2aa2f5589c60fe567"
+          "sha256": "695768f270ff9571d75f033d51a7fb5553f725881310d7a3335ffe15ddec62bf"
         },
         "17-proof-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "2e5b33a610ff4124632eca440029bd904b00b35f962004258a15772c1a4e94c1"
-        }
-      },
-      "colourDeferred": true,
-      "storedMasterUsedForProof": false
-    },
-    {
-      "number": 18,
-      "batch": "06",
-      "sourceHashMatches": true,
-      "outputs": {
-        "18-ink.png": {
+          "sha256": "c7520faa38bce884af51593bde2fe01010d644adc90ee3180abbbfeca53b09ce"
+        },
+        "17-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "8da9f2419090aef8ef793dac9a8684a87224ae641b4d507a062c28661e0ac1dc"
+        },
+        "17-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "18997b4a277908c8ea70441f5b2cc60f4d168e26f0e5c6638899d5b1dda6df76"
+        },
+        "17-ink.png": {
           "size": [
             1024,
             1536
           ],
-          "sha256": "68d91cef9634d8488619f2c18807e34e382fb14ac18f04f62393d632032c72f9"
+          "sha256": "c7cd698365bd8d4b9e5ed95cba94afba24e39d773929554811d24d8cd9000a51"
+        },
+        "17-Y-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "a62f2bc43295d5d3b999cbeb8bdc0aa6a95935995a1dfe5827786d6cb7f19b5f"
+        },
+        "17-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "4dbc625e2b657127325747d8e78c7fcb375a2d1bf1c3dba8825930cb636242c9"
+        },
+        "17-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "737825cfb6eb6af7ffeddc6c11e01d5efd28da49d30d159aa835e34d30ea6ca8"
+        },
+        "17-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "727c89bf89370cab394640fa8ec7bd918ff218c9caa11d264dc8063ca2ec0792"
+        },
+        "17-ink-detail.png": {
+          "size": [
+            720,
+            1344
+          ],
+          "sha256": "06099c70d36115d70af132e00d826f730ca05e92bb9487130670bf542e67d963"
+        },
+        "17-proof-detail.png": {
+          "size": [
+            720,
+            1344
+          ],
+          "sha256": "70cd3ecc76ef7de02d739241fc3b5522da24ab9112c7af36452fe828c6e0c7de"
+        },
+        "17-masks-source.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "6891a1c7ce5ea0a712f2eaa48a6cb4ce0d8c177564d619e04bf1f8b5fd1fd1a5"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "b2ac24268dfb9f58b56642ae77d8f5be61ad4c300506ad4dddcf21bc17804c86"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "9879de1308b200b18be5b6f4e5c5cc22e812086fc62740de70878e27afdf2ca8"
+        }
+      }
+    },
+    {
+      "number": 18,
+      "id": "moon",
+      "name": "月亮",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
+      "outputs": {
+        "18-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "c01ab8007bb4464dec3a82155fcb8576a76b0512c538652604dfbcc4343638ed"
         },
         "18-ink-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "d17d2246a2ae807b9dd7e920f9010106cada610e95dc5b323765cd51f17aad85"
+          "sha256": "c68245b35e23772e0c94aaf99c94fef9625e273236d0cedc3ba563cf0c0ee9f2"
         },
         "18-proof-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "0d6ac04fe36f609fc0012518f56418bae6edf31b7cd2e4113f95bf10fd1445cb"
-        }
-      },
-      "colourDeferred": true,
-      "storedMasterUsedForProof": false
-    },
-    {
-      "number": 19,
-      "batch": "07",
-      "sourceHashMatches": true,
-      "outputs": {
-        "19-ink.png": {
+          "sha256": "f5485b00e2425c01c0fc0ea0e9ff7308774f5812db1b180e8354fcfb9b6d1082"
+        },
+        "18-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "dad8c3bfb8cd3b72bd8bd8ef5a7fd8802ba8fdba161d15fcf42163cba92aa0f4"
+        },
+        "18-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "bda6e38000191f7cb63d0818c25f10c287fc10d3fec3beddeac71d868b14d557"
+        },
+        "18-ink.png": {
           "size": [
             1024,
             1536
           ],
-          "sha256": "496b14d4b32af6df3aba772f60d06c8f83cb6436ce0711faea881ccc060cd668"
+          "sha256": "daaedce50d81a267ae3e48b3cb66086ef9e509ecc5eed95e76933e4ba04c108a"
+        },
+        "18-Y-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "ef0e9c2f25ad8f0aba6eb5333e00b3617cc6a5395fb2399c8f7343eee70acbce"
+        },
+        "18-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "0b7978fce63f9e8d222deaf4614c3a9cb5a989ad29d6a1c12da907856bd9b629"
+        },
+        "18-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "c924e4abc999a9ea9299e83c4bf35b50026d17c989f769fa0dbb5b3e1c565f5f"
+        },
+        "18-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "25eec00873b3bd7b4047ae586e37e9988e222a623f4ea07f760653e9b4d427df"
+        },
+        "18-ink-detail.png": {
+          "size": [
+            720,
+            532
+          ],
+          "sha256": "d2100a1fe117fca8c0466e08140237b5484598ec3576f874b433fef7ff30b5f4"
+        },
+        "18-proof-detail.png": {
+          "size": [
+            720,
+            532
+          ],
+          "sha256": "2ba9bef277991ee478db64f84b9e4543fb7acd5d21ab1e31c072a66b41280fad"
+        },
+        "18-masks-source.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "230c769732db60e89ae6218613f5377365472c31bf1d2d5a2d42052444bacfb1"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "53424a2e0998e29658e54563cb4dc1cc308e8d4e0ad94afa208b1264428b0b22"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "d1416f79130967978ef02ab97e7101b766b4d4448d837acfcf66e481ab383c27"
+        }
+      }
+    },
+    {
+      "number": 19,
+      "id": "sun",
+      "name": "太陽",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
+      "outputs": {
+        "19-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "e2af0350a51952c427ee6a741a91b685b8f2ebda1d433f2f96695997514aa9d9"
         },
         "19-ink-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "1964772dd1172f8084c1f85d305e476c63024ff5b43834461f579a85c581dc37"
+          "sha256": "c3cf85113802be854ad274bff9e2f945bac4bb04e8f788b79294f89a10626c58"
         },
         "19-proof-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "3ca1a65f1f93d5a34c5352d612b5f3a8e21803a93e8cf30b2ee70b21cb0d1343"
-        }
-      },
-      "colourDeferred": true,
-      "storedMasterUsedForProof": false
-    },
-    {
-      "number": 20,
-      "batch": "07",
-      "sourceHashMatches": true,
-      "outputs": {
-        "20-ink.png": {
+          "sha256": "d335ab1902d43c71c9a991c539f98f2c6815bba22395d976f8d05a8697e0b54f"
+        },
+        "19-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "a254601dff384a9802153bd630b26f14472ee44ba70149a2d29bd8f801cd3468"
+        },
+        "19-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "a08d6e37bcd8c8935fa6ecb73d0675cdaab919dfcdf0283bb0e949c27f37c621"
+        },
+        "19-ink.png": {
           "size": [
             1024,
             1536
           ],
-          "sha256": "736670ab040ca2f33b77a78df0ffbf440eda6dad673e79722b10b2ac0e4af48c"
+          "sha256": "ba882e85177c99f8799ddcc2c3bca3593d161b19ca0e71d5842323db98973c5e"
+        },
+        "19-Y-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "4dbc83547c22818a67c6856c22a735c629bf4fe3cb836a891b6b13f45fb72b0d"
+        },
+        "19-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "89487d23e5f978902c342c8e60ac98a3abed7aa572f9d1696f8c2179e1f06b26"
+        },
+        "19-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "9f7c59f1b7cac6debdf8464ebf96d2e898422a9e64b770a8d21d0aea17e10486"
+        },
+        "19-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "f871c1aef1ad3787849c65b24579c8ee69a3332018d418bf6cafe029aba736c2"
+        },
+        "19-ink-detail.png": {
+          "size": [
+            720,
+            764
+          ],
+          "sha256": "af95fae6dc989a5edfd8049ee5428f8fc86c5550dbc4548f861f5274e5cb1d97"
+        },
+        "19-proof-detail.png": {
+          "size": [
+            720,
+            764
+          ],
+          "sha256": "5b8e41b9f96fec206ec551d3fd3550fa302754abb233255f605fa2290f507c4f"
+        },
+        "19-masks-source.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "d65d9484bde8f6c2fc9c6bc528b706c225f18aebcf1d834f5c20e7db4a19b7c7"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "c7f4829138729387393a2f63785f9a8153b092f310accec2f34ac9d41fef5b60"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "48550f3a2269752da4a8c679b8e8c92ce2f52f5cd6152977cda1563ad2f3811c"
+        }
+      }
+    },
+    {
+      "number": 20,
+      "id": "judgement",
+      "name": "審判",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
+      "outputs": {
+        "20-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "f4cc66d70ab4288166a202b2c74e98c79cf854b2344eb4f5e14ad8027c982328"
         },
         "20-ink-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "037de9b3194ae58dd3194453a7f00788ec8276f1ab3bd38bb801f98c4f1e0b0a"
+          "sha256": "6ee507d230e6a2f1e06ac1982161aabf86072fb9a30abcaef47ed251bdeea0d8"
         },
         "20-proof-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "10fff4a1bce53537b43f9763fd28b7f190fadf7e11de62f3904d62af0aad64b4"
-        }
-      },
-      "colourDeferred": true,
-      "storedMasterUsedForProof": false
-    },
-    {
-      "number": 21,
-      "batch": "07",
-      "sourceHashMatches": true,
-      "outputs": {
-        "21-ink.png": {
+          "sha256": "7782c9865dd53fe1da5e3a5b690b5ac5eaba663cd5c45ae228552a11bed5737b"
+        },
+        "20-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "bf86c1fc5fb1d1d89b8c5362c93d2304d5023e21fdb8069a03b935d67dae953e"
+        },
+        "20-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "0b6c124186ae59944378ae4dc6a0fb78eec2fe3f26dcd6ae979a33e6c66f18f9"
+        },
+        "20-ink.png": {
           "size": [
             1024,
             1536
           ],
-          "sha256": "bae568961942cbd71c7cdb33eed59107c645668d7787be1e4c612543be159527"
+          "sha256": "d9bc4e0fc0e865a43737fa54839c20d92356e349bf956baad1cfd0cde12b3594"
+        },
+        "20-Y-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "fd7f9224303d6b95bc01d81eac3d465e4a0715f0fdbadb76193070c7915328ba"
+        },
+        "20-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "258674972562432bcafce76b19da893033f8921712d629bc598a0317c1f4fdea"
+        },
+        "20-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "32ef4c047e8b613366c97b7ff3e14eb5a489b037972f3a984111dfe533a3b9a6"
+        },
+        "20-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "798fed915813fce75a940d113f702b612d12bdde3ad3ab34e2888441bd7b9345"
+        },
+        "20-ink-detail.png": {
+          "size": [
+            720,
+            563
+          ],
+          "sha256": "bff04b5cdd0b3bced9daf5e499d42e5c1db6b0690ccedbb39b1eb6557769177e"
+        },
+        "20-proof-detail.png": {
+          "size": [
+            720,
+            563
+          ],
+          "sha256": "19a1b6534d5e84ca318fb204943dc1498a15bfb881dc19370a0642cd90e1a1c6"
+        },
+        "20-masks-source.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "40e989042d46fd57b8c9b6778407bb51b7208483af63d8974957c9734ee3b974"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "0e48199985ecd1959e905bb138355219c743f630102b148fa410f260e9686844"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "cb08a21b320c53d0b635e7be5137ec3bebab3183347c68c02da72b490e4343d7"
+        }
+      }
+    },
+    {
+      "number": 21,
+      "id": "world",
+      "name": "世界",
+      "originalLineUnchanged": true,
+      "websiteFinalMatchesBatch": true,
+      "outputs": {
+        "21-smooth-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "6e3a2bb0fe81ce02e50f2376288abcffc818df9a096980018e4e3efe3c1e4fa0"
         },
         "21-ink-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "6e86cc3904c81c95f20ad282ede0312adf6277626fa57048c61ac063c0888ca7"
+          "sha256": "5bf527fe2fecb058ed21b79f2018687b7370259fd133c00b71a200cf3bfd865f"
         },
         "21-proof-3x5.png": {
           "size": [
             900,
             1500
           ],
-          "sha256": "12d99b4d1d03d18f0ace687e5922bbd6dd78c5b5d533d6939834f4604e919c04"
+          "sha256": "68517309252ac3b8adc81dde60fa72d6878c968c1f91293d9d0bf3e26eab2942"
+        },
+        "21-flat-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "7cbe53ae26aeebb0aa522a87e91d9645f4cb5eb2054a231bb2c2b70ea1b6cba8"
+        },
+        "21-final-3x5.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "ad6782994e7e4b15b54c79781aaacb559cd5b0ccd91322e4397efb7533567998"
+        },
+        "21-ink.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "e9c4f1affa9886d2b019a82c71533cc7c2411f44919402238ac757ab44aec719"
+        },
+        "21-Y-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "b84fc57367c70bb88784d8315bd2ccbcf469f13c816b98415c1dd01661bf1d6a"
+        },
+        "21-O-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "eace6b8e68a12b83a5f6d07a6373621a641843acf9397884fccbcf2fc9aa5b31"
+        },
+        "21-B-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "f4bdbd53bef3fdfe4811d84abfd5d11b4206da1460bca6fd90dadc5b1b0c7d85"
+        },
+        "21-N-source.png": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "910d7d56d11156215acff6f518f1cba4a53ebd385f74f976e593934f68d3b86a"
+        },
+        "21-ink-detail.png": {
+          "size": [
+            720,
+            1536
+          ],
+          "sha256": "76e50ea1da252be742f2e45ea3c5069a6ad2d1540f93f0d9a9000bce1745f5c7"
+        },
+        "21-proof-detail.png": {
+          "size": [
+            720,
+            1536
+          ],
+          "sha256": "f03ed61ddb446b496f66c0fd2ef570b81da8d9095ee87d647bab9ed9b57ed562"
+        },
+        "21-masks-source.png": {
+          "size": [
+            900,
+            1500
+          ],
+          "sha256": "ec9c312f6c35788fee2991b82ac1805a762367338b6f4e34e4d9a9f7a3742faa"
+        },
+        "face.webp": {
+          "size": [
+            654,
+            870
+          ],
+          "sha256": "81c0607509e4b1abe235e4741824c44f60a113bc49bd30cf5ea4372f5716f70a"
+        },
+        "art-preview.webp": {
+          "size": [
+            1024,
+            1536
+          ],
+          "sha256": "af0790ab0ea463be9fe157266d35225fb220fa5bc908f8bd99b8c201ce33d99e"
         }
-      },
-      "colourDeferred": true,
-      "storedMasterUsedForProof": false
+      }
     }
-  ],
-  "defaultInkSpread": 0.5,
-  "existingMasters1To6UnchangedFrom": "53d12c1",
-  "foolMasterSHA256": "abe7cec50ac4c7b2f251bc4fb149b0a0e0fdadb78d89972823ae1063006b2fb4",
-  "pngFilesWithValidCRCAndIEND": 198,
-  "existingTestsPassed": 28,
-  "testsScope": "Existing app and SVG tests; these do not validate PNG symbols or art quality.",
-  "uiChecks": [
-    "batch 03\u201307 ink and monochrome proof views",
-    "all 21 proof images load",
-    "all 21 master images load",
-    "overview mode toggle works"
   ]
 }

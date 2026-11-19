@@ -1,23 +1,23 @@
 {
-  "cards" : [
+  "cards": [
     {
-      "colour" : "00-fool-colour.png",
-      "id" : "fool",
-      "ink" : "00-fool-ink-transparent.png",
-      "name" : "愚者",
-      "number" : 0,
-      "partialInkPixels" : 1271271,
-      "preview" : "00-fool-preview.png",
-      "project" : "00-fool.light-paint.json",
-      "projectSHA256" : "7fe56744366906db9792f39621bec6718d14da9c8fba6fa7987ad3e512b9fc7c",
-      "solidInkPixels" : 26374,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/fool-pipeline\/fool-B-source.png" : "9127ce60421810a6f8ad0f4132f057da476a2374a6d6d25c6bb9725e1d4e53a4",
-        "docs\/tarot-sunburst\/fool-pipeline\/fool-N-source.png" : "08d63ebb30e91204733b384efeef099af717040379bec0142c164935b388fbee",
-        "docs\/tarot-sunburst\/fool-pipeline\/fool-O-source.png" : "28ab635debd9b5e579e019c10074281410b03e563e7b82d1b2d5e1dc498b4779",
-        "docs\/tarot-sunburst\/fool-pipeline\/fool-Y-source.png" : "2ad2df12791888b8b9b6dd9d190d09757259c110e0e705c3889b9ece71ea135e"
+      "colour": "00-fool-colour.png",
+      "id": "fool",
+      "ink": "00-fool-ink-transparent.png",
+      "name": "愚者",
+      "number": 0,
+      "partialInkPixels": 1271271,
+      "preview": "00-fool-preview.png",
+      "project": "00-fool.light-paint.json",
+      "projectSHA256": "7fe56744366906db9792f39621bec6718d14da9c8fba6fa7987ad3e512b9fc7c",
+      "solidInkPixels": 26374,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/fool-pipeline/fool-B-source.png": "9127ce60421810a6f8ad0f4132f057da476a2374a6d6d25c6bb9725e1d4e53a4",
+        "docs/tarot-sunburst/fool-pipeline/fool-N-source.png": "08d63ebb30e91204733b384efeef099af717040379bec0142c164935b388fbee",
+        "docs/tarot-sunburst/fool-pipeline/fool-O-source.png": "28ab635debd9b5e579e019c10074281410b03e563e7b82d1b2d5e1dc498b4779",
+        "docs/tarot-sunburst/fool-pipeline/fool-Y-source.png": "2ad2df12791888b8b9b6dd9d190d09757259c110e0e705c3889b9ece71ea135e"
       },
-      "swatches" : [
+      "swatches": [
         "#77939e",
         "#cabca1",
         "#bab087",
@@ -47,26 +47,26 @@
         "#d0552c",
         "#1e284a"
       ],
-      "transparentInkPixels" : 275219
+      "transparentInkPixels": 275219
     },
     {
-      "colour" : "01-magician-colour.png",
-      "id" : "magician",
-      "ink" : "01-magician-ink-transparent.png",
-      "name" : "魔術師",
-      "number" : 1,
-      "partialInkPixels" : 1480125,
-      "preview" : "01-magician-preview.png",
-      "project" : "01-magician.light-paint.json",
-      "projectSHA256" : "824508c1f92b59aba7ef7b500a3baae549c2de90f9c88e17e6f07c4d2d1830a6",
-      "solidInkPixels" : 14970,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-01\/1-B-source.png" : "8b55d563c7a3c1bea5f4b270244491fc6f5b5294610c0c03d873263a8980eedb",
-        "docs\/tarot-sunburst\/batch-01\/1-N-source.png" : "3cb0ce2c62a43f1f91411275c3ac2b9890583c1cc3709906eab70b41f5962ab4",
-        "docs\/tarot-sunburst\/batch-01\/1-O-source.png" : "df78bd5458b1d0a04dc0d71e800bd1a9bd107af0f08574a90a5efbb7cf5ceb3f",
-        "docs\/tarot-sunburst\/batch-01\/1-Y-source.png" : "ab42e3b6206bffdfcf1820e878c26487e8fc85f58cf788e1a0e8cc8b6505af3a"
+      "colour": "01-magician-colour.png",
+      "id": "magician",
+      "ink": "01-magician-ink-transparent.png",
+      "name": "魔術師",
+      "number": 1,
+      "partialInkPixels": 1480125,
+      "preview": "01-magician-preview.png",
+      "project": "01-magician.light-paint.json",
+      "projectSHA256": "824508c1f92b59aba7ef7b500a3baae549c2de90f9c88e17e6f07c4d2d1830a6",
+      "solidInkPixels": 14970,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-01/1-B-source.png": "8b55d563c7a3c1bea5f4b270244491fc6f5b5294610c0c03d873263a8980eedb",
+        "docs/tarot-sunburst/batch-01/1-N-source.png": "3cb0ce2c62a43f1f91411275c3ac2b9890583c1cc3709906eab70b41f5962ab4",
+        "docs/tarot-sunburst/batch-01/1-O-source.png": "df78bd5458b1d0a04dc0d71e800bd1a9bd107af0f08574a90a5efbb7cf5ceb3f",
+        "docs/tarot-sunburst/batch-01/1-Y-source.png": "ab42e3b6206bffdfcf1820e878c26487e8fc85f58cf788e1a0e8cc8b6505af3a"
       },
-      "swatches" : [
+      "swatches": [
         "#e6be74",
         "#999876",
         "#f2ebd9",
@@ -80,26 +80,26 @@
         "#cd9967",
         "#1e284a"
       ],
-      "transparentInkPixels" : 77769
+      "transparentInkPixels": 77769
     },
     {
-      "colour" : "02-high-priestess-colour.png",
-      "id" : "high-priestess",
-      "ink" : "02-high-priestess-ink-transparent.png",
-      "name" : "女祭司",
-      "number" : 2,
-      "partialInkPixels" : 1485980,
-      "preview" : "02-high-priestess-preview.png",
-      "project" : "02-high-priestess.light-paint.json",
-      "projectSHA256" : "85fbf1633d6e4959e9a02aef5aa6850edf851781a57f3488d4049540c8d796f0",
-      "solidInkPixels" : 28987,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-01\/2-B-source.png" : "ebf93fc2599121d2011a735231efc793b9ebe2a1c5646e64d5ba02bc63de059d",
-        "docs\/tarot-sunburst\/batch-01\/2-N-source.png" : "51173ea8728c94909fbce1ff3e7deecd960321a05e5d89b6e18fc97e1cd1c27a",
-        "docs\/tarot-sunburst\/batch-01\/2-O-source.png" : "a76b0df25537c5eb506252c703cc7a3d7289ac647aa155abfd663f963d63db9a",
-        "docs\/tarot-sunburst\/batch-01\/2-Y-source.png" : "0b8652df93f3b810dd597f196c8073a941da57e4ef5d88651289e7ae6cb46f51"
+      "colour": "02-high-priestess-colour.png",
+      "id": "high-priestess",
+      "ink": "02-high-priestess-ink-transparent.png",
+      "name": "女祭司",
+      "number": 2,
+      "partialInkPixels": 1485717,
+      "preview": "02-high-priestess-preview.png",
+      "project": "02-high-priestess.light-paint.json",
+      "projectSHA256": "e8d4d9678246e21c876988e79921d03f5af1e5db92059957f1a15099d8db21fb",
+      "solidInkPixels": 29172,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-01/2-B-source.png": "b376c833218311c70934dccad33883d9acc1af20e902a24f702fe3b71a0aa4d0",
+        "docs/tarot-sunburst/batch-01/2-N-source.png": "1a6a3f39074628299e84eabc282bc076f16021617ed7255bb75d4065e952f2a8",
+        "docs/tarot-sunburst/batch-01/2-O-source.png": "b54adffd85ef2ed7d7bba89f2f40734454e24fa231a8d91055ae72097197ab08",
+        "docs/tarot-sunburst/batch-01/2-Y-source.png": "ebbd5504d8f4cba7064255f3a9b258a20c119854a97359e4ea6ba6eac8d8827d"
       },
-      "swatches" : [
+      "swatches": [
         "#cfcfc2",
         "#d3ccb8",
         "#899da1",
@@ -115,38 +115,33 @@
         "#f2e3c6",
         "#918a74",
         "#f6efe0",
-        "#f4eedf",
-        "#f5eee0",
-        "#394758",
-        "#2f3d4f",
+        "#2d3c4d",
         "#313f51",
-        "#324152",
-        "#3e4c5c",
-        "#2e3d4f",
+        "#f4edde",
         "#334152",
-        "#42505f",
+        "#3e4c5c",
         "#1e284a"
       ],
-      "transparentInkPixels" : 57897
+      "transparentInkPixels": 57975
     },
     {
-      "colour" : "03-empress-colour.png",
-      "id" : "empress",
-      "ink" : "03-empress-ink-transparent.png",
-      "name" : "皇后",
-      "number" : 3,
-      "partialInkPixels" : 1475882,
-      "preview" : "03-empress-preview.png",
-      "project" : "03-empress.light-paint.json",
-      "projectSHA256" : "df6d8fe0ca786ebeb454f8905a1872b4e9c9d3049447f27721417f10b6b48e59",
-      "solidInkPixels" : 16110,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-01\/3-B-source.png" : "ce3dd94b1b466b39bd7e140d81bb10153bcf8caf795391d8346f89d4ef427a01",
-        "docs\/tarot-sunburst\/batch-01\/3-N-source.png" : "9991c65340eba2d82b5b2b1ee9d21dce419ed73050f858db12d8776f4b4c79de",
-        "docs\/tarot-sunburst\/batch-01\/3-O-source.png" : "3c81ee65e390cdb5495cc6018687be0851a188e0f301c75c1f469f4207cf7a3c",
-        "docs\/tarot-sunburst\/batch-01\/3-Y-source.png" : "4a199be07e47a65834b80d6a24e7496877dae718b68c02410d38ce417a0a58cb"
+      "colour": "03-empress-colour.png",
+      "id": "empress",
+      "ink": "03-empress-ink-transparent.png",
+      "name": "皇后",
+      "number": 3,
+      "partialInkPixels": 1475882,
+      "preview": "03-empress-preview.png",
+      "project": "03-empress.light-paint.json",
+      "projectSHA256": "df6d8fe0ca786ebeb454f8905a1872b4e9c9d3049447f27721417f10b6b48e59",
+      "solidInkPixels": 16110,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-01/3-B-source.png": "ce3dd94b1b466b39bd7e140d81bb10153bcf8caf795391d8346f89d4ef427a01",
+        "docs/tarot-sunburst/batch-01/3-N-source.png": "9991c65340eba2d82b5b2b1ee9d21dce419ed73050f858db12d8776f4b4c79de",
+        "docs/tarot-sunburst/batch-01/3-O-source.png": "3c81ee65e390cdb5495cc6018687be0851a188e0f301c75c1f469f4207cf7a3c",
+        "docs/tarot-sunburst/batch-01/3-Y-source.png": "4a199be07e47a65834b80d6a24e7496877dae718b68c02410d38ce417a0a58cb"
       },
-      "swatches" : [
+      "swatches": [
         "#e4c17c",
         "#b6ad86",
         "#f4e7d2",
@@ -161,26 +156,26 @@
         "#cf985d",
         "#1e284a"
       ],
-      "transparentInkPixels" : 80872
+      "transparentInkPixels": 80872
     },
     {
-      "colour" : "04-emperor-colour.png",
-      "id" : "emperor",
-      "ink" : "04-emperor-ink-transparent.png",
-      "name" : "皇帝",
-      "number" : 4,
-      "partialInkPixels" : 1454339,
-      "preview" : "04-emperor-preview.png",
-      "project" : "04-emperor.light-paint.json",
-      "projectSHA256" : "62bd25eaf6ebc5a7ca2bfe90346c1c10048c8bf9b1cef9518501be8bf5db354e",
-      "solidInkPixels" : 22131,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-02\/4-B-source.png" : "3d6f414f652fe54fb47c7ded9f48ef48215fdcd4c210475121d3015ebebdd144",
-        "docs\/tarot-sunburst\/batch-02\/4-N-source.png" : "e21a42fe39f460aa5042a48e22c27d099ebed74d9c21cbfe7c794dcfd34d57a0",
-        "docs\/tarot-sunburst\/batch-02\/4-O-source.png" : "e247354f0d53596159a65a308cbe6b94c29440d03154198b99e9ab610ef34fdd",
-        "docs\/tarot-sunburst\/batch-02\/4-Y-source.png" : "cd14d6fe42eb4d76538ec0c13777a084e1bf0901afc6a949222ec12f9ed1b2cf"
+      "colour": "04-emperor-colour.png",
+      "id": "emperor",
+      "ink": "04-emperor-ink-transparent.png",
+      "name": "皇帝",
+      "number": 4,
+      "partialInkPixels": 1454339,
+      "preview": "04-emperor-preview.png",
+      "project": "04-emperor.light-paint.json",
+      "projectSHA256": "62bd25eaf6ebc5a7ca2bfe90346c1c10048c8bf9b1cef9518501be8bf5db354e",
+      "solidInkPixels": 22131,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-02/4-B-source.png": "3d6f414f652fe54fb47c7ded9f48ef48215fdcd4c210475121d3015ebebdd144",
+        "docs/tarot-sunburst/batch-02/4-N-source.png": "e21a42fe39f460aa5042a48e22c27d099ebed74d9c21cbfe7c794dcfd34d57a0",
+        "docs/tarot-sunburst/batch-02/4-O-source.png": "e247354f0d53596159a65a308cbe6b94c29440d03154198b99e9ab610ef34fdd",
+        "docs/tarot-sunburst/batch-02/4-Y-source.png": "cd14d6fe42eb4d76538ec0c13777a084e1bf0901afc6a949222ec12f9ed1b2cf"
       },
-      "swatches" : [
+      "swatches": [
         "#e6be74",
         "#d7c9b0",
         "#d65c34",
@@ -191,26 +186,26 @@
         "#f0d8b8",
         "#1e284a"
       ],
-      "transparentInkPixels" : 96394
+      "transparentInkPixels": 96394
     },
     {
-      "colour" : "05-hierophant-colour.png",
-      "id" : "hierophant",
-      "ink" : "05-hierophant-ink-transparent.png",
-      "name" : "教皇",
-      "number" : 5,
-      "partialInkPixels" : 1471581,
-      "preview" : "05-hierophant-preview.png",
-      "project" : "05-hierophant.light-paint.json",
-      "projectSHA256" : "25d90120a2deed16901dd8ef6f3f0e0880bde4f38ff720cd4d46403b8446bf8d",
-      "solidInkPixels" : 23923,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-02\/5-B-source.png" : "59f019de4dc1191d54cc7231029302a97341aa867f0bec59e677a7f4315c8c70",
-        "docs\/tarot-sunburst\/batch-02\/5-N-source.png" : "09323176abf174317521787dfcf45bb4e145460a72084b143194b970f17312e7",
-        "docs\/tarot-sunburst\/batch-02\/5-O-source.png" : "e16addc23d1da4128a30d591be2a0131dbf03fdced75e168408fd1675c914df3",
-        "docs\/tarot-sunburst\/batch-02\/5-Y-source.png" : "75a40eaa97c9741fc21ada22628e4013eb9839ab4661843c0e2146d62910964b"
+      "colour": "05-hierophant-colour.png",
+      "id": "hierophant",
+      "ink": "05-hierophant-ink-transparent.png",
+      "name": "教皇",
+      "number": 5,
+      "partialInkPixels": 1471581,
+      "preview": "05-hierophant-preview.png",
+      "project": "05-hierophant.light-paint.json",
+      "projectSHA256": "25d90120a2deed16901dd8ef6f3f0e0880bde4f38ff720cd4d46403b8446bf8d",
+      "solidInkPixels": 23923,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-02/5-B-source.png": "59f019de4dc1191d54cc7231029302a97341aa867f0bec59e677a7f4315c8c70",
+        "docs/tarot-sunburst/batch-02/5-N-source.png": "09323176abf174317521787dfcf45bb4e145460a72084b143194b970f17312e7",
+        "docs/tarot-sunburst/batch-02/5-O-source.png": "e16addc23d1da4128a30d591be2a0131dbf03fdced75e168408fd1675c914df3",
+        "docs/tarot-sunburst/batch-02/5-Y-source.png": "75a40eaa97c9741fc21ada22628e4013eb9839ab4661843c0e2146d62910964b"
       },
-      "swatches" : [
+      "swatches": [
         "#e6be74",
         "#d7c9b0",
         "#f2ebd9",
@@ -222,26 +217,26 @@
         "#c9ab84",
         "#1e284a"
       ],
-      "transparentInkPixels" : 77360
+      "transparentInkPixels": 77360
     },
     {
-      "colour" : "06-lovers-colour.png",
-      "id" : "lovers",
-      "ink" : "06-lovers-ink-transparent.png",
-      "name" : "戀人",
-      "number" : 6,
-      "partialInkPixels" : 1483363,
-      "preview" : "06-lovers-preview.png",
-      "project" : "06-lovers.light-paint.json",
-      "projectSHA256" : "4df99a57ddff4bf1722ff3be6d223d6f0a7f4b56f9b6890149758119e6710223",
-      "solidInkPixels" : 11921,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-02\/6-B-source.png" : "f4bbc7c6a5bfe4b925b72474e5a646dfa3cc77abf06dc0f4e0dc3f23a40b42b8",
-        "docs\/tarot-sunburst\/batch-02\/6-N-source.png" : "5c24e1435b473763db25c831dd496d9fa5cc4f016f95be478b0da3c11b0189c4",
-        "docs\/tarot-sunburst\/batch-02\/6-O-source.png" : "a494c96e7009b001207d33a4a77ede41453c598162b1a2cb7dab37c5e6d25230",
-        "docs\/tarot-sunburst\/batch-02\/6-Y-source.png" : "ddea18ebfc94e07c2903d856f90acd985e588014cfde83b575d462711682a342"
+      "colour": "06-lovers-colour.png",
+      "id": "lovers",
+      "ink": "06-lovers-ink-transparent.png",
+      "name": "戀人",
+      "number": 6,
+      "partialInkPixels": 1483281,
+      "preview": "06-lovers-preview.png",
+      "project": "06-lovers.light-paint.json",
+      "projectSHA256": "74670bafebe7d14f047ffa140dee59914c447b27f3c47b7f44fa3651f65ed177",
+      "solidInkPixels": 11894,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-02/6-B-source.png": "f80e3ed1f9fc50027d3971446cb6ea3d771dfb638bc1657bf20d0e5b3456b48c",
+        "docs/tarot-sunburst/batch-02/6-N-source.png": "b7c582922403066d246d03117db4959e5633c3b7500d1c8fb4891244f93304c6",
+        "docs/tarot-sunburst/batch-02/6-O-source.png": "2b027f79f35855c447c16ddb4ac8f7bd1d6389e98082df10452686c2e84823ab",
+        "docs/tarot-sunburst/batch-02/6-Y-source.png": "be74bcd942bf33a6fcf6deb2cafbb791c0cc01abb24c0724f02efeae5f35bffc"
       },
-      "swatches" : [
+      "swatches": [
         "#999876",
         "#e8c583",
         "#f0d8b8",
@@ -257,26 +252,26 @@
         "#d19d6b",
         "#1e284a"
       ],
-      "transparentInkPixels" : 77580
+      "transparentInkPixels": 77689
     },
     {
-      "colour" : "07-chariot-colour.png",
-      "id" : "chariot",
-      "ink" : "07-chariot-ink-transparent.png",
-      "name" : "戰車",
-      "number" : 7,
-      "partialInkPixels" : 1545152,
-      "preview" : "07-chariot-preview.png",
-      "project" : "07-chariot.light-paint.json",
-      "projectSHA256" : "5db515eeed561d0ead5a9e94e11466eb4376e3863c4aba45d2c4f766e6442fd9",
-      "solidInkPixels" : 14206,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-03\/7-B-source.png" : "459a911d566c020220665e50ede4a169388c51f437a372711676f85c90294430",
-        "docs\/tarot-sunburst\/batch-03\/7-N-source.png" : "5ad03d032cedbd876b45fad895038103737df15218bb0f46f45c71364c18bf30",
-        "docs\/tarot-sunburst\/batch-03\/7-O-source.png" : "24bccb3281d90f610fed63a4f7269c9ae6d65fdcbddef5bfbaf766de69bcaa3b",
-        "docs\/tarot-sunburst\/batch-03\/7-Y-source.png" : "b2a9278dd746165699747793519789fd133efddfb02368f12adb99b239ba5262"
+      "colour": "07-chariot-colour.png",
+      "id": "chariot",
+      "ink": "07-chariot-ink-transparent.png",
+      "name": "戰車",
+      "number": 7,
+      "partialInkPixels": 1546367,
+      "preview": "07-chariot-preview.png",
+      "project": "07-chariot.light-paint.json",
+      "projectSHA256": "ec6f35e16c0cc06d02b32e838132950b795db7cbc9d284fb4ce726fb062e46d5",
+      "solidInkPixels": 12986,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-03/7-B-source.png": "c8350bc612e7da16a0b849aa55e50a293da9eb076366d1fe07971b025c707d8a",
+        "docs/tarot-sunburst/batch-03/7-N-source.png": "05c5028a4c28d1d73ea7e3b7f70596dc9a3f41d69f150c7a89e6d3d27fc8b6ce",
+        "docs/tarot-sunburst/batch-03/7-O-source.png": "32f07782243409e72627b3f2b3f34b1e88bdbae0edcea46c9e4006e22df3ba3f",
+        "docs/tarot-sunburst/batch-03/7-Y-source.png": "fdfeb89a25abdc75921a0f2077731c94d05c7a9e73790b9419f81017ffe98338"
       },
-      "swatches" : [
+      "swatches": [
         "#e6be74",
         "#b6ad86",
         "#b8b297",
@@ -298,26 +293,26 @@
         "#cd9967",
         "#1e284a"
       ],
-      "transparentInkPixels" : 13506
+      "transparentInkPixels": 13511
     },
     {
-      "colour" : "08-strength-colour.png",
-      "id" : "strength",
-      "ink" : "08-strength-ink-transparent.png",
-      "name" : "力量",
-      "number" : 8,
-      "partialInkPixels" : 1439263,
-      "preview" : "08-strength-preview.png",
-      "project" : "08-strength.light-paint.json",
-      "projectSHA256" : "30a9db37676fd88e86baa467fd7a4bfd1bd4dc4bb1d1ebbe7c4ec3351f070aff",
-      "solidInkPixels" : 12160,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-03\/8-B-source.png" : "4d1704dc195b40dd0bb0671773c2d24d9cfae2ab08ffbe5d3f673e56dae1d8bd",
-        "docs\/tarot-sunburst\/batch-03\/8-N-source.png" : "3dc64f1145070abbc53c7e5be9beff8abfcdc7129c869d58519aef090d2072c9",
-        "docs\/tarot-sunburst\/batch-03\/8-O-source.png" : "ad7c7fc21a479bdc5360ad33f1656cf3240794952e744b2d56c9eb603c59ae08",
-        "docs\/tarot-sunburst\/batch-03\/8-Y-source.png" : "1cfb4b53a1800bb9a30dbc6e0fc1d64d8b4cbb8e3e8c19df5cc481ada8472b0f"
+      "colour": "08-strength-colour.png",
+      "id": "strength",
+      "ink": "08-strength-ink-transparent.png",
+      "name": "力量",
+      "number": 8,
+      "partialInkPixels": 1442156,
+      "preview": "08-strength-preview.png",
+      "project": "08-strength.light-paint.json",
+      "projectSHA256": "73e52c65fa7d6945df05b8e3caf7eaabc289cefc60490696883ff9164ee58599",
+      "solidInkPixels": 9378,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-03/8-B-source.png": "d17954e17aeba2e18d8fb1358dd67fb94249912074e9b6c65067a79d377c2d59",
+        "docs/tarot-sunburst/batch-03/8-N-source.png": "02238b7cb1ce01b7540211716f8a1ff2683ece5abaf78c3e9b3d16aed2b0e84b",
+        "docs/tarot-sunburst/batch-03/8-O-source.png": "eee56908e12c5ad49b0cf731c96c92f4d9d69b33b99ab7e0c0eb13c4306c15b9",
+        "docs/tarot-sunburst/batch-03/8-Y-source.png": "715fe4aa93a328d8bb74e49bb589fc75d81cf8df22ac5fef6543b3867fec0599"
       },
-      "swatches" : [
+      "swatches": [
         "#e6be74",
         "#999876",
         "#f0d8b8",
@@ -333,29 +328,30 @@
         "#1b2437",
         "#7c8181",
         "#d87c45",
+        "#cd9967",
         "#e1c49b",
         "#1e284a"
       ],
-      "transparentInkPixels" : 121441
+      "transparentInkPixels": 121330
     },
     {
-      "colour" : "09-hermit-colour.png",
-      "id" : "hermit",
-      "ink" : "09-hermit-ink-transparent.png",
-      "name" : "隱者",
-      "number" : 9,
-      "partialInkPixels" : 1439283,
-      "preview" : "09-hermit-preview.png",
-      "project" : "09-hermit.light-paint.json",
-      "projectSHA256" : "0cba849a731b30c805e3acbce9cbae3d3d3610470acc98d649041edbb673c590",
-      "solidInkPixels" : 19227,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-03\/9-B-source.png" : "addc40dff570c38acaf01348fadf55bda1fbf3379ad3434fe131034712566236",
-        "docs\/tarot-sunburst\/batch-03\/9-N-source.png" : "457e9d3ddd8ea2da389add4f058123b50d025c8bd08707002868ef1d6b6a86bd",
-        "docs\/tarot-sunburst\/batch-03\/9-O-source.png" : "aff26086fe72ed53c81ef0513189dcd1ab8fb4047c55090d274c928b4d1c323e",
-        "docs\/tarot-sunburst\/batch-03\/9-Y-source.png" : "daee8c9cf69c7d6c0ab285a28bee91074bbbe93df0ac9e29ee6d24acab6284f5"
+      "colour": "09-hermit-colour.png",
+      "id": "hermit",
+      "ink": "09-hermit-ink-transparent.png",
+      "name": "隱者",
+      "number": 9,
+      "partialInkPixels": 1447267,
+      "preview": "09-hermit-preview.png",
+      "project": "09-hermit.light-paint.json",
+      "projectSHA256": "b93b3d424a9dd41ae1fb8dbf34ba0c6dcd8d5ae5c4de0f34b7dee212577f4345",
+      "solidInkPixels": 13334,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-03/9-B-source.png": "be917506e0a48db88dcd3ea720581350494a64897dd937e75cad62ddcd38d43a",
+        "docs/tarot-sunburst/batch-03/9-N-source.png": "e5f75832c3d0d3742d013d76d7726acc93ae3659c6c5fd386c27fb54065b4ee0",
+        "docs/tarot-sunburst/batch-03/9-O-source.png": "8916c70403b3e22697d082a296be06d2fa4413293b95b8e3ed717c5caa9ab463",
+        "docs/tarot-sunburst/batch-03/9-Y-source.png": "533e95817f1bc5bd7db5f72f57ce29bfa90f85dee6b8ba53ad8089ee84be7cb4"
       },
-      "swatches" : [
+      "swatches": [
         "#2c3b4d",
         "#a4b0ad",
         "#f0d8b8",
@@ -365,37 +361,36 @@
         "#edd19f",
         "#56626c",
         "#1b2437",
-        "#d7c9b0",
         "#e6be74",
         "#a08a7f",
-        "#b5b2a7",
         "#886c51",
         "#999876",
+        "#d7c9b0",
+        "#b5b2a7",
         "#f4e7d2",
         "#b8b297",
-        "#cfcfc2",
         "#1e284a"
       ],
-      "transparentInkPixels" : 114354
+      "transparentInkPixels": 112263
     },
     {
-      "colour" : "10-wheel-of-fortune-colour.png",
-      "id" : "wheel-of-fortune",
-      "ink" : "10-wheel-of-fortune-ink-transparent.png",
-      "name" : "命運之輪",
-      "number" : 10,
-      "partialInkPixels" : 1470954,
-      "preview" : "10-wheel-of-fortune-preview.png",
-      "project" : "10-wheel-of-fortune.light-paint.json",
-      "projectSHA256" : "a956c4b872031d21a6c275a34aa68114e35b19a8f39ecbb8c1c5de7cf95201c8",
-      "solidInkPixels" : 10918,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-04\/10-B-source.png" : "0323e37e9381cba2126531cf5c77f497ae2e89266d09536b1cf631b3cd2be14a",
-        "docs\/tarot-sunburst\/batch-04\/10-N-source.png" : "e11982037cc5681de973f9728b8e6317de795147e59e8a812cfbf9902df9e13a",
-        "docs\/tarot-sunburst\/batch-04\/10-O-source.png" : "dfcc967e4c786d918787b8b46a3a4fe52671ae1598f13a73cf911b331ea2e17e",
-        "docs\/tarot-sunburst\/batch-04\/10-Y-source.png" : "8559b2c40fbb66e0b82cb2a97dee9cb836edf357c4074c872baf5b62501c94c1"
+      "colour": "10-wheel-of-fortune-colour.png",
+      "id": "wheel-of-fortune",
+      "ink": "10-wheel-of-fortune-ink-transparent.png",
+      "name": "命運之輪",
+      "number": 10,
+      "partialInkPixels": 1471753,
+      "preview": "10-wheel-of-fortune-preview.png",
+      "project": "10-wheel-of-fortune.light-paint.json",
+      "projectSHA256": "154026fe091be47b033de4205acca78861239f8dd8e5e4ac3dc05823596ce8ca",
+      "solidInkPixels": 9748,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-04/10-B-source.png": "c6bd6ba6fde5a25b33e54e708dff0663946f2b1e84215c55a6c01400053c9414",
+        "docs/tarot-sunburst/batch-04/10-N-source.png": "3d858e102115d0500b0ef22f7c820005f572db420cb0a5516eea9749b5d1a153",
+        "docs/tarot-sunburst/batch-04/10-O-source.png": "dfebbd0049593e998fcb185d3ea363bacfd79c6ca85e4a3a598869516cb2e579",
+        "docs/tarot-sunburst/batch-04/10-Y-source.png": "94f7c8b5cb433fcca8a70a543b5898c616f2f559abfcb442627d343b10491bde"
       },
-      "swatches" : [
+      "swatches": [
         "#56626c",
         "#f0d8b8",
         "#e0a950",
@@ -406,8 +401,8 @@
         "#cfcfc2",
         "#a4b0ad",
         "#886c51",
-        "#cd9967",
         "#b5b2a7",
+        "#cd9967",
         "#c99a6c",
         "#7c8181",
         "#999876",
@@ -418,26 +413,26 @@
         "#a08a7f",
         "#1e284a"
       ],
-      "transparentInkPixels" : 90992
+      "transparentInkPixels": 91363
     },
     {
-      "colour" : "11-justice-colour.png",
-      "id" : "justice",
-      "ink" : "11-justice-ink-transparent.png",
-      "name" : "正義",
-      "number" : 11,
-      "partialInkPixels" : 1474854,
-      "preview" : "11-justice-preview.png",
-      "project" : "11-justice.light-paint.json",
-      "projectSHA256" : "5fcd34077707eab9c293295c0f780ae004bbee5cb964172b0a54a5e27b86f90f",
-      "solidInkPixels" : 22736,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-04\/11-B-source.png" : "9460434d35e0962b4b650c9d850b56c5eb1577b3d46f1d1b2068fcbd22679c84",
-        "docs\/tarot-sunburst\/batch-04\/11-N-source.png" : "bc2a7bd90adc33d195fa0ab5a2057bb7db7b5671d68fb10deb16d0fe7f1dc277",
-        "docs\/tarot-sunburst\/batch-04\/11-O-source.png" : "fb83c6b50b15eda6a2bc6bd6521b9b2277c552b4dea399208845e20a95fa279e",
-        "docs\/tarot-sunburst\/batch-04\/11-Y-source.png" : "1dc9769a0693573ac3e4b5328e215a3090f4ce9a065581d636feae3fee44f721"
+      "colour": "11-justice-colour.png",
+      "id": "justice",
+      "ink": "11-justice-ink-transparent.png",
+      "name": "正義",
+      "number": 11,
+      "partialInkPixels": 1480501,
+      "preview": "11-justice-preview.png",
+      "project": "11-justice.light-paint.json",
+      "projectSHA256": "50c84a88d15cc75248f3a04be7d35136335a599855779faa8baa170cb3c2b677",
+      "solidInkPixels": 18314,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-04/11-B-source.png": "f9dbaa1c9ec2ad64b7b73f6fc9fa245d8621e5104149aa0371008f7d66571d8f",
+        "docs/tarot-sunburst/batch-04/11-N-source.png": "61af747152f8c2034a24a31acac5dd25e0fbee7479091683eb41118501b73b84",
+        "docs/tarot-sunburst/batch-04/11-O-source.png": "dfc725cac04f36d935750863a91491331e07b7718fd9a2f3f2b83b4b5d8773ef",
+        "docs/tarot-sunburst/batch-04/11-Y-source.png": "2221ea9b5eda180faa0418bc5955f4a3df0b2d2c0c8bfcc4984f714438bc5468"
       },
-      "swatches" : [
+      "swatches": [
         "#899da1",
         "#999876",
         "#d65c34",
@@ -455,26 +450,26 @@
         "#b8b297",
         "#1e284a"
       ],
-      "transparentInkPixels" : 75274
+      "transparentInkPixels": 74049
     },
     {
-      "colour" : "12-hanged-man-colour.png",
-      "id" : "hanged-man",
-      "ink" : "12-hanged-man-ink-transparent.png",
-      "name" : "倒吊人",
-      "number" : 12,
-      "partialInkPixels" : 1258388,
-      "preview" : "12-hanged-man-preview.png",
-      "project" : "12-hanged-man.light-paint.json",
-      "projectSHA256" : "e2f58fe209b3b81177ce75ec7e02d5dad3145c811732eea2ab221d76c7862d64",
-      "solidInkPixels" : 15908,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-04\/12-B-source.png" : "385775af8db5e5634fc03343cecd057fb98be12313e03657edbd02cedac39b97",
-        "docs\/tarot-sunburst\/batch-04\/12-N-source.png" : "5fbe3ce9cc7b2ce2c83ebebba10c207a2848fd1e62bf145943c055de7619d345",
-        "docs\/tarot-sunburst\/batch-04\/12-O-source.png" : "19465c9611f691927203af8a80e8cb57f5e71bd2546bac394e6aece2d845dba9",
-        "docs\/tarot-sunburst\/batch-04\/12-Y-source.png" : "fd037a4fdd77c1550ac301ec1d29d2b3906f3c4df703c1080152113ee1eb4b02"
+      "colour": "12-hanged-man-colour.png",
+      "id": "hanged-man",
+      "ink": "12-hanged-man-ink-transparent.png",
+      "name": "倒吊人",
+      "number": 12,
+      "partialInkPixels": 1259997,
+      "preview": "12-hanged-man-preview.png",
+      "project": "12-hanged-man.light-paint.json",
+      "projectSHA256": "a4ad1a092d8e62fd386793324a4f757bfc4a7c5139b1007e323cb9cdb6c11d19",
+      "solidInkPixels": 13623,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-04/12-B-source.png": "1e9ea033e89815b331f55fcbb3b7d26ba27e5722cb78ecd5a4862195e7e456b0",
+        "docs/tarot-sunburst/batch-04/12-N-source.png": "af4f33cef7a9accce2209275b644e569bfd0d8decd605eda95119fe3a094307b",
+        "docs/tarot-sunburst/batch-04/12-O-source.png": "31466fa743d08c622bc2c7c5336d179075cd9fb8d6026aee0791769e558c6b9f",
+        "docs/tarot-sunburst/batch-04/12-Y-source.png": "df7a4cbe0af26c27f07bce07d7b4a17d2a5d4f45e8d7b1d02d30db82af61b402"
       },
-      "swatches" : [
+      "swatches": [
         "#899da1",
         "#b6ad86",
         "#c99a6c",
@@ -494,26 +489,26 @@
         "#1b2437",
         "#1e284a"
       ],
-      "transparentInkPixels" : 298568
+      "transparentInkPixels": 299244
     },
     {
-      "colour" : "13-death-colour.png",
-      "id" : "death",
-      "ink" : "13-death-ink-transparent.png",
-      "name" : "死神",
-      "number" : 13,
-      "partialInkPixels" : 1481731,
-      "preview" : "13-death-preview.png",
-      "project" : "13-death.light-paint.json",
-      "projectSHA256" : "9185d44f1368243c57b1f4ae67d4f210b5205d8d8d13dee7d99870f6b89e32af",
-      "solidInkPixels" : 12899,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-05\/13-B-source.png" : "f95299d017e5d4b88f614ef2b12d4247895d03478190bbdc9e844618299af590",
-        "docs\/tarot-sunburst\/batch-05\/13-N-source.png" : "1f88887f0c3123bfa7136b9b14a2f57544b2e6b62026059c1fd5a47d11d636bf",
-        "docs\/tarot-sunburst\/batch-05\/13-O-source.png" : "5ec88a8d4bf8d9eabbd2538271d653adfeac68c574197267cf0be62cb6ca71ea",
-        "docs\/tarot-sunburst\/batch-05\/13-Y-source.png" : "8693362e3c58d5a1382d00df94365caedb815d455f2f154b74bbba45d17de4d8"
+      "colour": "13-death-colour.png",
+      "id": "death",
+      "ink": "13-death-ink-transparent.png",
+      "name": "死神",
+      "number": 13,
+      "partialInkPixels": 1483161,
+      "preview": "13-death-preview.png",
+      "project": "13-death.light-paint.json",
+      "projectSHA256": "f5c552f40eda3830462cc288e7e63ce8795a5bdc9f6d21658c1a7a6b838b7bac",
+      "solidInkPixels": 11500,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-05/13-B-source.png": "f95299d017e5d4b88f614ef2b12d4247895d03478190bbdc9e844618299af590",
+        "docs/tarot-sunburst/batch-05/13-N-source.png": "1ae21ba54152a001c2fbf5359ebb113bf6fb74e32118116fded0a88faf8bcac2",
+        "docs/tarot-sunburst/batch-05/13-O-source.png": "5ec88a8d4bf8d9eabbd2538271d653adfeac68c574197267cf0be62cb6ca71ea",
+        "docs/tarot-sunburst/batch-05/13-Y-source.png": "8693362e3c58d5a1382d00df94365caedb815d455f2f154b74bbba45d17de4d8"
       },
-      "swatches" : [
+      "swatches": [
         "#b6ad86",
         "#56626c",
         "#899da1",
@@ -537,26 +532,26 @@
         "#cfcfc2",
         "#1e284a"
       ],
-      "transparentInkPixels" : 78234
+      "transparentInkPixels": 78203
     },
     {
-      "colour" : "14-temperance-colour.png",
-      "id" : "temperance",
-      "ink" : "14-temperance-ink-transparent.png",
-      "name" : "節制",
-      "number" : 14,
-      "partialInkPixels" : 1481732,
-      "preview" : "14-temperance-preview.png",
-      "project" : "14-temperance.light-paint.json",
-      "projectSHA256" : "357735e42311fd2dc493a96f9487634baed1e817389f9a223906c32dcdf9f6e6",
-      "solidInkPixels" : 15389,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-05\/14-B-source.png" : "c00e008bad902d9f7e1d2da47878f0456f23203fe0532dad85f83277b2157a41",
-        "docs\/tarot-sunburst\/batch-05\/14-N-source.png" : "287bc96303cab7e697b216955ca71ac473fa3e5aaf4b66af5e72640d43978356",
-        "docs\/tarot-sunburst\/batch-05\/14-O-source.png" : "17b6945fc4c93224277ec7151c48f9ae310111565c5979a68fd384571f7f346f",
-        "docs\/tarot-sunburst\/batch-05\/14-Y-source.png" : "3f2cc699a7d355eedef292be56b04f9078c3ff1b6a1a7260d57600c6716d5669"
+      "colour": "14-temperance-colour.png",
+      "id": "temperance",
+      "ink": "14-temperance-ink-transparent.png",
+      "name": "節制",
+      "number": 14,
+      "partialInkPixels": 1488895,
+      "preview": "14-temperance-preview.png",
+      "project": "14-temperance.light-paint.json",
+      "projectSHA256": "2e8672560ba468aa245022b813ff2ddd26e6516a594de3da8137bc9075cc0bec",
+      "solidInkPixels": 7100,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-05/14-B-source.png": "419cc3fbd99c94a20bb2b4471fdef67298bf41e7f5208274ca38e3bd1dba81e4",
+        "docs/tarot-sunburst/batch-05/14-N-source.png": "b691e17f530f58c5989319894dd710da473c7e7f938bcfa7640df445bac61f5a",
+        "docs/tarot-sunburst/batch-05/14-O-source.png": "644b7c6c5760caaecf29be0939cb88130ddbf0ffb4f676fa4cfca870c3cb9bc2",
+        "docs/tarot-sunburst/batch-05/14-Y-source.png": "f3f7415b9a8ae6259deab7d1a098eab793ce9315b5b3fdb5b45db21dacaa84a9"
       },
-      "swatches" : [
+      "swatches": [
         "#e6be74",
         "#899da1",
         "#f0d8b8",
@@ -576,26 +571,26 @@
         "#afbbba",
         "#1e284a"
       ],
-      "transparentInkPixels" : 75743
+      "transparentInkPixels": 76869
     },
     {
-      "colour" : "15-devil-colour.png",
-      "id" : "devil",
-      "ink" : "15-devil-ink-transparent.png",
-      "name" : "惡魔",
-      "number" : 15,
-      "partialInkPixels" : 1497225,
-      "preview" : "15-devil-preview.png",
-      "project" : "15-devil.light-paint.json",
-      "projectSHA256" : "1bc362375bf65d8f449aeb6989159e06e56fc43b04c1c3d23f3526268c99cc3e",
-      "solidInkPixels" : 7702,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-05\/15-B-source.png" : "ec70ab90fb6992f88406a57f4f6486f2ab0aca473190c71f2bc527b10115f8d0",
-        "docs\/tarot-sunburst\/batch-05\/15-N-source.png" : "0c9aae9622bfee41b793ebaa62b59ec9fe84b23b0f98b641cd8ced578b8c3642",
-        "docs\/tarot-sunburst\/batch-05\/15-O-source.png" : "c1b015f45cb886418013a8d2b78b33a99d2e5ffdca0ad0b0abc332f3213f3722",
-        "docs\/tarot-sunburst\/batch-05\/15-Y-source.png" : "632b789b3825d1fcba3be15c2b2ed7ca37e79aed5d8c0c1d5bfdded44947374c"
+      "colour": "15-devil-colour.png",
+      "id": "devil",
+      "ink": "15-devil-ink-transparent.png",
+      "name": "惡魔",
+      "number": 15,
+      "partialInkPixels": 1500004,
+      "preview": "15-devil-preview.png",
+      "project": "15-devil.light-paint.json",
+      "projectSHA256": "3ccd7a9b287eaff17454407a0ff131a5de8914a29238396186cb8b5440b0665b",
+      "solidInkPixels": 3782,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-05/15-B-source.png": "6fcd370c5f864b0b604e6ee3fd4fa979a3ac5be3c7bb5f7cb9d00197ad091c7d",
+        "docs/tarot-sunburst/batch-05/15-N-source.png": "7665d172912492d496f7823f4b01c02883674c52b6f6b50ae64041f2b4d6661d",
+        "docs/tarot-sunburst/batch-05/15-O-source.png": "ab5fa2b34077a89d35a456dd82f1b2232ffd5d5daddffcd1283088404fe90ced",
+        "docs/tarot-sunburst/batch-05/15-Y-source.png": "bdeda3a2813dc2df5d05b280a861f1bde38dbc1453db168de2f3912828da4314"
       },
-      "swatches" : [
+      "swatches": [
         "#886c51",
         "#2c3b4d",
         "#899da1",
@@ -613,26 +608,26 @@
         "#a4b0ad",
         "#1e284a"
       ],
-      "transparentInkPixels" : 67937
+      "transparentInkPixels": 69078
     },
     {
-      "colour" : "16-tower-colour.png",
-      "id" : "tower",
-      "ink" : "16-tower-ink-transparent.png",
-      "name" : "高塔",
-      "number" : 16,
-      "partialInkPixels" : 1241603,
-      "preview" : "16-tower-preview.png",
-      "project" : "16-tower.light-paint.json",
-      "projectSHA256" : "96b3a8199c1b239c1f4268fe803cc480ffd37986c65b3e0f7d6d2f3a4bfe4331",
-      "solidInkPixels" : 10478,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-06\/16-B-source.png" : "8561e5b790cbac947d56db0472824d5e6a526ef88c84a42a685355417e36c183",
-        "docs\/tarot-sunburst\/batch-06\/16-N-source.png" : "0a08e2d1220a658c143009a5b9085416522cfa4f185d54fcafdac5d59a35d703",
-        "docs\/tarot-sunburst\/batch-06\/16-O-source.png" : "290295c3d5c9192088a12d73c40bf63447ae2fcfa9df14c666a3333e9811f44d",
-        "docs\/tarot-sunburst\/batch-06\/16-Y-source.png" : "3e8bde6bd2987fdec5275e7a8efe9179a3d63f2f139d6f019fca0f1c0c42b42d"
+      "colour": "16-tower-colour.png",
+      "id": "tower",
+      "ink": "16-tower-ink-transparent.png",
+      "name": "高塔",
+      "number": 16,
+      "partialInkPixels": 1250599,
+      "preview": "16-tower-preview.png",
+      "project": "16-tower.light-paint.json",
+      "projectSHA256": "ee3f4f6c10075b4b1ccb51efa035bcb9801d6b9454dfdfb0db7320c6b62b2602",
+      "solidInkPixels": 5254,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-06/16-B-source.png": "14d125f913f5fcd80c020dde43b91baf2174bc2e2bf77d8053fcaa8b279f4dd3",
+        "docs/tarot-sunburst/batch-06/16-N-source.png": "9fc5679334f01fc14faffe3b44676998ce2e42f04f7e402470703e7078629fd7",
+        "docs/tarot-sunburst/batch-06/16-O-source.png": "682b1903a552d0bd72e531e15555a64d710c0c297aee0726097af491af7df07c",
+        "docs/tarot-sunburst/batch-06/16-Y-source.png": "147750cd7975bc22f9c5db2547165ff922888b1c0139c62f3fd77c0f578b74d6"
       },
-      "swatches" : [
+      "swatches": [
         "#a4b0ad",
         "#2c3b4d",
         "#e1c49b",
@@ -653,26 +648,26 @@
         "#cfcfc2",
         "#1e284a"
       ],
-      "transparentInkPixels" : 320783
+      "transparentInkPixels": 317011
     },
     {
-      "colour" : "17-star-colour.png",
-      "id" : "star",
-      "ink" : "17-star-ink-transparent.png",
-      "name" : "星星",
-      "number" : 17,
-      "partialInkPixels" : 1501484,
-      "preview" : "17-star-preview.png",
-      "project" : "17-star.light-paint.json",
-      "projectSHA256" : "c84fbbcc01eb6f13de27c6d19a29a654a09defb6c5b213b1aaf98509d6b506b2",
-      "solidInkPixels" : 5095,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-06\/17-B-source.png" : "ae0f6662f2b4ec82cd38d92beb4d3b71c8c6d797c5c37c12ffa5a1a7b9957522",
-        "docs\/tarot-sunburst\/batch-06\/17-N-source.png" : "675d16fa59e7e1b1183c8c03b7fc961349fbb703a99c2bb71bf4556138b1f2fb",
-        "docs\/tarot-sunburst\/batch-06\/17-O-source.png" : "be4fd25e0827e45e1c16805baef86724a77b4c90aece8fb364ffd884afc09d18",
-        "docs\/tarot-sunburst\/batch-06\/17-Y-source.png" : "0f90fa8801e3c6e8378fd4024edd3f420c47c70a7f8e4c45c062f7c6cc8b6d81"
+      "colour": "17-star-colour.png",
+      "id": "star",
+      "ink": "17-star-ink-transparent.png",
+      "name": "星星",
+      "number": 17,
+      "partialInkPixels": 1502022,
+      "preview": "17-star-preview.png",
+      "project": "17-star.light-paint.json",
+      "projectSHA256": "28c1997d9ba36ec3715d42133ce5d1f31fbd454aa3b6c55f2325905b5a3933f6",
+      "solidInkPixels": 3242,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-06/17-B-source.png": "737825cfb6eb6af7ffeddc6c11e01d5efd28da49d30d159aa835e34d30ea6ca8",
+        "docs/tarot-sunburst/batch-06/17-N-source.png": "727c89bf89370cab394640fa8ec7bd918ff218c9caa11d264dc8063ca2ec0792",
+        "docs/tarot-sunburst/batch-06/17-O-source.png": "4dbc625e2b657127325747d8e78c7fcb375a2d1bf1c3dba8825930cb636242c9",
+        "docs/tarot-sunburst/batch-06/17-Y-source.png": "a62f2bc43295d5d3b999cbeb8bdc0aa6a95935995a1dfe5827786d6cb7f19b5f"
       },
-      "swatches" : [
+      "swatches": [
         "#2c3b4d",
         "#899da1",
         "#999876",
@@ -692,26 +687,26 @@
         "#b5b2a7",
         "#1e284a"
       ],
-      "transparentInkPixels" : 66285
+      "transparentInkPixels": 67600
     },
     {
-      "colour" : "18-moon-colour.png",
-      "id" : "moon",
-      "ink" : "18-moon-ink-transparent.png",
-      "name" : "月亮",
-      "number" : 18,
-      "partialInkPixels" : 1503962,
-      "preview" : "18-moon-preview.png",
-      "project" : "18-moon.light-paint.json",
-      "projectSHA256" : "9232f63fffedae920f4ab65d06d84879b72fd0be956976e95db61dafc7f2360c",
-      "solidInkPixels" : 6138,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-06\/18-B-source.png" : "c924e4abc999a9ea9299e83c4bf35b50026d17c989f769fa0dbb5b3e1c565f5f",
-        "docs\/tarot-sunburst\/batch-06\/18-N-source.png" : "6cdb00a13e94ae5a06373eb68018fa7e58f00f2227a15cafa24cf113bc153fff",
-        "docs\/tarot-sunburst\/batch-06\/18-O-source.png" : "0b7978fce63f9e8d222deaf4614c3a9cb5a989ad29d6a1c12da907856bd9b629",
-        "docs\/tarot-sunburst\/batch-06\/18-Y-source.png" : "ef0e9c2f25ad8f0aba6eb5333e00b3617cc6a5395fb2399c8f7343eee70acbce"
+      "colour": "18-moon-colour.png",
+      "id": "moon",
+      "ink": "18-moon-ink-transparent.png",
+      "name": "月亮",
+      "number": 18,
+      "partialInkPixels": 1505744,
+      "preview": "18-moon-preview.png",
+      "project": "18-moon.light-paint.json",
+      "projectSHA256": "169fd7b2151c56ddfea0343f5a6eba3c84b11ff7375a6ed1657bff5b1bc0253b",
+      "solidInkPixels": 4123,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-06/18-B-source.png": "c924e4abc999a9ea9299e83c4bf35b50026d17c989f769fa0dbb5b3e1c565f5f",
+        "docs/tarot-sunburst/batch-06/18-N-source.png": "25eec00873b3bd7b4047ae586e37e9988e222a623f4ea07f760653e9b4d427df",
+        "docs/tarot-sunburst/batch-06/18-O-source.png": "0b7978fce63f9e8d222deaf4614c3a9cb5a989ad29d6a1c12da907856bd9b629",
+        "docs/tarot-sunburst/batch-06/18-Y-source.png": "ef0e9c2f25ad8f0aba6eb5333e00b3617cc6a5395fb2399c8f7343eee70acbce"
       },
-      "swatches" : [
+      "swatches": [
         "#2c3b4d",
         "#886c51",
         "#999876",
@@ -730,26 +725,26 @@
         "#a08a7f",
         "#1e284a"
       ],
-      "transparentInkPixels" : 62764
+      "transparentInkPixels": 62997
     },
     {
-      "colour" : "19-sun-colour.png",
-      "id" : "sun",
-      "ink" : "19-sun-ink-transparent.png",
-      "name" : "太陽",
-      "number" : 19,
-      "partialInkPixels" : 1493481,
-      "preview" : "19-sun-preview.png",
-      "project" : "19-sun.light-paint.json",
-      "projectSHA256" : "dff56b3a655ebaf2c0f4d0c82c28e5d276da4f2c62be697d75baa40c6c9b80fe",
-      "solidInkPixels" : 6500,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-07\/19-B-source.png" : "f2803bb5cc87524260cd69b83fdbbaa8aa96eaaf02493780b31f6edacbb7e139",
-        "docs\/tarot-sunburst\/batch-07\/19-N-source.png" : "89544ba781aa777b19d69c18eff0119292acd269c5134bf7f5c2539f8b02dbbf",
-        "docs\/tarot-sunburst\/batch-07\/19-O-source.png" : "93ffc4af109d788f4bdd4f00026bc8e0ec78775788d44628937cbe74173dab80",
-        "docs\/tarot-sunburst\/batch-07\/19-Y-source.png" : "19b73fe599fe98462c3b8c83e8882ab315c5ca620179ac7fedd690375962675d"
+      "colour": "19-sun-colour.png",
+      "id": "sun",
+      "ink": "19-sun-ink-transparent.png",
+      "name": "太陽",
+      "number": 19,
+      "partialInkPixels": 1493704,
+      "preview": "19-sun-preview.png",
+      "project": "19-sun.light-paint.json",
+      "projectSHA256": "9fa27c704578e61c15250e03d2da9f56eb0cc3ae25d88748910116d0f8fa3c37",
+      "solidInkPixels": 4405,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-07/19-B-source.png": "9f7c59f1b7cac6debdf8464ebf96d2e898422a9e64b770a8d21d0aea17e10486",
+        "docs/tarot-sunburst/batch-07/19-N-source.png": "f871c1aef1ad3787849c65b24579c8ee69a3332018d418bf6cafe029aba736c2",
+        "docs/tarot-sunburst/batch-07/19-O-source.png": "89487d23e5f978902c342c8e60ac98a3abed7aa572f9d1696f8c2179e1f06b26",
+        "docs/tarot-sunburst/batch-07/19-Y-source.png": "4dbc83547c22818a67c6856c22a735c629bf4fe3cb836a891b6b13f45fb72b0d"
       },
-      "swatches" : [
+      "swatches": [
         "#899da1",
         "#999876",
         "#e0a950",
@@ -761,33 +756,34 @@
         "#7c8181",
         "#2c3b4d",
         "#b8b297",
-        "#1b2437",
         "#b5b2a7",
+        "#1b2437",
         "#a4b0ad",
         "#d7c9b0",
         "#d87c45",
+        "#a08a7f",
         "#1e284a"
       ],
-      "transparentInkPixels" : 72883
+      "transparentInkPixels": 74755
     },
     {
-      "colour" : "20-judgement-colour.png",
-      "id" : "judgement",
-      "ink" : "20-judgement-ink-transparent.png",
-      "name" : "審判",
-      "number" : 20,
-      "partialInkPixels" : 1487334,
-      "preview" : "20-judgement-preview.png",
-      "project" : "20-judgement.light-paint.json",
-      "projectSHA256" : "41a28c5d6190e8f7239d30450e4ed83715d0236e38fcdeeb9ad33770a142f461",
-      "solidInkPixels" : 8623,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-07\/20-B-source.png" : "ca85838eb10654df1c994d858ba2ab0caaf658789fafb7af3593e8ccb2befe07",
-        "docs\/tarot-sunburst\/batch-07\/20-N-source.png" : "a96f084460c46bdff778e7bd6f6888dd0426eb8c846ba6bfb3911238752ba29f",
-        "docs\/tarot-sunburst\/batch-07\/20-O-source.png" : "730b2b4758e622a66d47c18d7db18e97c9c5b3a24098f4d16dd2572723a23be4",
-        "docs\/tarot-sunburst\/batch-07\/20-Y-source.png" : "71ee329f8aab0765a62318f5ef6d68c95a3e450a8a8b6c6a936d8d5d42c18ad3"
+      "colour": "20-judgement-colour.png",
+      "id": "judgement",
+      "ink": "20-judgement-ink-transparent.png",
+      "name": "審判",
+      "number": 20,
+      "partialInkPixels": 1489357,
+      "preview": "20-judgement-preview.png",
+      "project": "20-judgement.light-paint.json",
+      "projectSHA256": "5ec3348c2a42190cefceb2d1a66022410cdaa5cfda10b4ee6bba262436446bca",
+      "solidInkPixels": 4943,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-07/20-B-source.png": "32ef4c047e8b613366c97b7ff3e14eb5a489b037972f3a984111dfe533a3b9a6",
+        "docs/tarot-sunburst/batch-07/20-N-source.png": "798fed915813fce75a940d113f702b612d12bdde3ad3ab34e2888441bd7b9345",
+        "docs/tarot-sunburst/batch-07/20-O-source.png": "258674972562432bcafce76b19da893033f8921712d629bc598a0317c1f4fdea",
+        "docs/tarot-sunburst/batch-07/20-Y-source.png": "fd7f9224303d6b95bc01d81eac3d465e4a0715f0fdbadb76193070c7915328ba"
       },
-      "swatches" : [
+      "swatches": [
         "#a4b0ad",
         "#c99a6c",
         "#f0d8b8",
@@ -810,26 +806,26 @@
         "#b5b2a7",
         "#1e284a"
       ],
-      "transparentInkPixels" : 76907
+      "transparentInkPixels": 78564
     },
     {
-      "colour" : "21-world-colour.png",
-      "id" : "world",
-      "ink" : "21-world-ink-transparent.png",
-      "name" : "世界",
-      "number" : 21,
-      "partialInkPixels" : 1502066,
-      "preview" : "21-world-preview.png",
-      "project" : "21-world.light-paint.json",
-      "projectSHA256" : "d50479696397cfc35d3904997394b590b14c33c5b4bd70906a40fbabc4e4dbbe",
-      "solidInkPixels" : 5787,
-      "sourceFilesSHA256" : {
-        "docs\/tarot-sunburst\/batch-07\/21-B-source.png" : "de65242431564635f013347151aea44fd5b6d6c15312cb0381c5f9d9e9f83ae7",
-        "docs\/tarot-sunburst\/batch-07\/21-N-source.png" : "0eada044cf867d9dc40dca29efcdb5ab9a9ea36f01ab09af7bf906c5deb02f7d",
-        "docs\/tarot-sunburst\/batch-07\/21-O-source.png" : "bffaa486d8463083404a9c636663a7e0ca1cfbdac83d74defc94c55230838b1b",
-        "docs\/tarot-sunburst\/batch-07\/21-Y-source.png" : "87a5ddccd65751ea43503d99c1ea450d456fd3792324290abaa32cb1ce8c9eec"
+      "colour": "21-world-colour.png",
+      "id": "world",
+      "ink": "21-world-ink-transparent.png",
+      "name": "世界",
+      "number": 21,
+      "partialInkPixels": 1501959,
+      "preview": "21-world-preview.png",
+      "project": "21-world.light-paint.json",
+      "projectSHA256": "244c1463ea43b73414a46c6c2b5958f42c74ff1c06a49acd6d74779634d08ac8",
+      "solidInkPixels": 3301,
+      "sourceFilesSHA256": {
+        "docs/tarot-sunburst/batch-07/21-B-source.png": "f4bdbd53bef3fdfe4811d84abfd5d11b4206da1460bca6fd90dadc5b1b0c7d85",
+        "docs/tarot-sunburst/batch-07/21-N-source.png": "910d7d56d11156215acff6f518f1cba4a53ebd385f74f976e593934f68d3b86a",
+        "docs/tarot-sunburst/batch-07/21-O-source.png": "eace6b8e68a12b83a5f6d07a6373621a641843acf9397884fccbcf2fc9aa5b31",
+        "docs/tarot-sunburst/batch-07/21-Y-source.png": "b84fc57367c70bb88784d8315bd2ccbcf469f13c816b98415c1dd01661bf1d6a"
       },
-      "swatches" : [
+      "swatches": [
         "#899da1",
         "#f4e7d2",
         "#f0d8b8",
@@ -849,11 +845,58 @@
         "#1b2437",
         "#1e284a"
       ],
-      "transparentInkPixels" : 65011
+      "transparentInkPixels": 67604
     }
   ],
-  "format" : "tarot-light-paint-export",
-  "height" : 1536,
-  "version" : 1,
-  "width" : 1024
+  "format": "tarot-light-paint-export",
+  "height": 1536,
+  "inkDelivery": {
+    "checks": {
+      "colourRepairRules": "unchanged",
+      "existingTestsPassed": 28,
+      "inkMastersAndNPlates": "passed; approved priestess plate text overlays excluded",
+      "layout": "unchanged",
+      "lightPaintProjects": 22,
+      "semanticColourChecksPassed": 16,
+      "sourceLines": "unchanged"
+    },
+    "date": "2026-11-19",
+    "effectiveMasterOverrides": {
+      "6": "batch-02/6-ink-current.png"
+    },
+    "lightPaintProjects": "light-paint/",
+    "mergedCommit": "d79c669",
+    "preservedCards": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "redrawnCards": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "review": "ink-sync-2026-11-19.md",
+    "sourceCommit": "ff36530",
+    "status": "updated_awaiting_user_review",
+    "validation": "ink-sync-validation.json"
+  },
+  "version": 1,
+  "width": 1024
 }

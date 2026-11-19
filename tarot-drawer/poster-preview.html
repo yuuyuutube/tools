@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-Hant"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>分享圖預覽｜小小塔羅印刷所</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:32px 20px 48px;background:#e8e5de;color:#1d2a4d;font:15px/1.6 system-ui,sans-serif}main{max-width:1100px;margin:auto}h1{font-size:24px;margin:0 0 6px}p{margin:0 0 24px;color:#68645d}.previews{display:grid;grid-template-columns:1fr 1fr;gap:32px}figure{margin:0}img{display:block;width:100%;height:auto;box-shadow:0 3px 14px #29261718}figcaption{display:flex;justify-content:space-between;align-items:center;margin:12px 0}a{color:inherit;text-underline-offset:4px}#status{font-size:13px}@media(max-width:700px){.previews{grid-template-columns:1fr}}
+</style>
+<main><h1>分享圖預覽</h1><p>橫式八角日期章、星芒之眼與更細緻的藍色網點陰影。</p><p><a href="ink-editor.html">調整卡框與文字的暈墨</a></p><div class="previews"><figure><img id="single" alt="單張牌分享圖"><figcaption>單張牌<a id="single-download">下載 PNG</a></figcaption></figure><figure><img id="three" alt="三張牌分享圖"><figcaption>三張牌<a id="three-download">下載 PNG</a></figcaption></figure></div><p id="status">正在準備分享圖…</p></main>
+<script type="module">
+import {posterBlob} from './src/poster/poster.js';
+import {CARDS} from './src/data/cards.js';
+import {DEFAULT_OFFSETS} from './src/art/frame.js';
+import {SPREADS} from './src/config.js';
+const date=new Date();
+const item=(number,orientation='upright',label=null)=>({card:CARDS.find(c=>c.number===number),orientation,label});
+const examples={single:[item(0)],three:[item(3,'upright',SPREADS.time[0]),item(9,'reversed',SPREADS.time[1]),item(17,'upright',SPREADS.time[2])]};
+try{
+ await Promise.all(Object.entries(examples).map(async([key,cards])=>{
+  const result={seed:147926,date,offsets:DEFAULT_OFFSETS,cards};
+  const url=URL.createObjectURL(await posterBlob(result));
+  const img=document.getElementById(key);img.src=url;await img.decode();
+  const link=document.getElementById(key+'-download');link.href=url;link.download=`tarot-share-${key}.png`;
+ }));
+ document.getElementById('status').textContent='兩種分享圖已完成。';
+}catch(e){document.getElementById('status').textContent=e.message;}
+</script></html>

@@ -1,0 +1,191 @@
+[
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-01\/1-ink.png",
+    "masterSHA256" : "2ba1e08f881b7a2243d2fcb3eabbf83be6b67c4303692f40be81b1ac3f0911db",
+    "maximumDifference" : 0,
+    "number" : 1,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "3cb0ce2c62a43f1f91411275c3ac2b9890583c1cc3709906eab70b41f5962ab4"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 28884,
+    "master" : "docs\/tarot-sunburst\/batch-01\/2-ink.png",
+    "masterSHA256" : "ea54a44993346f96ad7c899bea7c6e725c862e63ca0ddfac7b2b7bc9cfb6a67a",
+    "maximumDifference" : 0,
+    "number" : 2,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "1a6a3f39074628299e84eabc282bc076f16021617ed7255bb75d4065e952f2a8"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-01\/3-ink.png",
+    "masterSHA256" : "55d95415609ba2d1ffe56202b37f62bafa8c704b9b14d7ac9318fededab60003",
+    "maximumDifference" : 0,
+    "number" : 3,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "9991c65340eba2d82b5b2b1ee9d21dce419ed73050f858db12d8776f4b4c79de"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-02\/4-ink.png",
+    "masterSHA256" : "829327fe8d0056eeeb5f5260147f733d8db8c31187f44ab5540f7d0e50616461",
+    "maximumDifference" : 0,
+    "number" : 4,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "e21a42fe39f460aa5042a48e22c27d099ebed74d9c21cbfe7c794dcfd34d57a0"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-02\/5-ink.png",
+    "masterSHA256" : "7e0b0fc0181582c9f26b10e6f40fa7cbf253e4f27e2b8eda5e834de299010052",
+    "maximumDifference" : 0,
+    "number" : 5,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "09323176abf174317521787dfcf45bb4e145460a72084b143194b970f17312e7"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-02\/6-ink-current.png",
+    "masterSHA256" : "9a7a1b734a18847ec10abb832a2c346d2d3517d6902ffd360ce3118f50b542ef",
+    "maximumDifference" : 0,
+    "number" : 6,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "b7c582922403066d246d03117db4959e5633c3b7500d1c8fb4891244f93304c6"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-03\/7-ink.png",
+    "masterSHA256" : "c224facb25e2a6b2541ecbd4bf2aa675e895107b04211d6283dd35bc40efc683",
+    "maximumDifference" : 0,
+    "number" : 7,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "05c5028a4c28d1d73ea7e3b7f70596dc9a3f41d69f150c7a89e6d3d27fc8b6ce"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-03\/8-ink.png",
+    "masterSHA256" : "f5d5129201b6862506c3097687dbb88f5b9dc6371032fb1780df490c31271308",
+    "maximumDifference" : 0,
+    "number" : 8,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "02238b7cb1ce01b7540211716f8a1ff2683ece5abaf78c3e9b3d16aed2b0e84b"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-03\/9-ink.png",
+    "masterSHA256" : "3e85a3742ce20c82bd375d51eca4c01b4f9b258e17184582fde214595b5f1725",
+    "maximumDifference" : 0,
+    "number" : 9,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "e5f75832c3d0d3742d013d76d7726acc93ae3659c6c5fd386c27fb54065b4ee0"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-04\/10-ink.png",
+    "masterSHA256" : "664c876eea30ed03a34051a6ee3691e7220657e59430d24a5f81dc06fcd3eb1d",
+    "maximumDifference" : 0,
+    "number" : 10,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "3d858e102115d0500b0ef22f7c820005f572db420cb0a5516eea9749b5d1a153"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-04\/11-ink.png",
+    "masterSHA256" : "45557c9cf251dea975492dc232c650a58bfb0bb84609725231659cdc536426dc",
+    "maximumDifference" : 0,
+    "number" : 11,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "61af747152f8c2034a24a31acac5dd25e0fbee7479091683eb41118501b73b84"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-04\/12-ink.png",
+    "masterSHA256" : "9acf2523cb8e4afddb78bca83bf74a0b9a607cf6c7f727cf4328f90b91fef84c",
+    "maximumDifference" : 0,
+    "number" : 12,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "af4f33cef7a9accce2209275b644e569bfd0d8decd605eda95119fe3a094307b"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-05\/13-ink.png",
+    "masterSHA256" : "e08043f4aba494308987b02f865191b31ee4777f74eabd33d57c27909247ca12",
+    "maximumDifference" : 0,
+    "number" : 13,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "1ae21ba54152a001c2fbf5359ebb113bf6fb74e32118116fded0a88faf8bcac2"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-05\/14-ink.png",
+    "masterSHA256" : "deac703940dc7f2515e842975fcacab5d715909cc1da085993216ced87a22308",
+    "maximumDifference" : 0,
+    "number" : 14,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "b691e17f530f58c5989319894dd710da473c7e7f938bcfa7640df445bac61f5a"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-05\/15-ink.png",
+    "masterSHA256" : "1d81b414835aadf5ec4f490c0a7af15e5168a01d2c3e7b6e1b024617d3aa5d79",
+    "maximumDifference" : 0,
+    "number" : 15,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "7665d172912492d496f7823f4b01c02883674c52b6f6b50ae64041f2b4d6661d"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-06\/16-ink.png",
+    "masterSHA256" : "2ba38f4288ff5535b40a7a55e08ecf38a3a9ace5415e2cebdd3f7f66f12b4813",
+    "maximumDifference" : 0,
+    "number" : 16,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "9fc5679334f01fc14faffe3b44676998ce2e42f04f7e402470703e7078629fd7"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-06\/17-ink.png",
+    "masterSHA256" : "c7cd698365bd8d4b9e5ed95cba94afba24e39d773929554811d24d8cd9000a51",
+    "maximumDifference" : 0,
+    "number" : 17,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "727c89bf89370cab394640fa8ec7bd918ff218c9caa11d264dc8063ca2ec0792"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-06\/18-ink.png",
+    "masterSHA256" : "daaedce50d81a267ae3e48b3cb66086ef9e509ecc5eed95e76933e4ba04c108a",
+    "maximumDifference" : 0,
+    "number" : 18,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "25eec00873b3bd7b4047ae586e37e9988e222a623f4ea07f760653e9b4d427df"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-07\/19-ink.png",
+    "masterSHA256" : "ba882e85177c99f8799ddcc2c3bca3593d161b19ca0e71d5842323db98973c5e",
+    "maximumDifference" : 0,
+    "number" : 19,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "f871c1aef1ad3787849c65b24579c8ee69a3332018d418bf6cafe029aba736c2"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-07\/20-ink.png",
+    "masterSHA256" : "d9bc4e0fc0e865a43737fa54839c20d92356e349bf956baad1cfd0cde12b3594",
+    "maximumDifference" : 0,
+    "number" : 20,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "798fed915813fce75a940d113f702b612d12bdde3ad3ab34e2888441bd7b9345"
+  },
+  {
+    "approvedTextOverlayPixelsExcluded" : 0,
+    "master" : "docs\/tarot-sunburst\/batch-07\/21-ink.png",
+    "masterSHA256" : "e9c4f1affa9886d2b019a82c71533cc7c2411f44919402238ac757ab44aec719",
+    "maximumDifference" : 0,
+    "number" : 21,
+    "pixelsDifferingMoreThanOne" : 0,
+    "plateSHA256" : "910d7d56d11156215acff6f518f1cba4a53ebd385f74f976e593934f68d3b86a"
+  }
+]

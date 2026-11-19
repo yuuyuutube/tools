@@ -6,6 +6,8 @@ import { createSession } from '../engine/draw.js';
 import { faceSVG, BACKS, offsetsFromSeed, svgDataURL } from '../art/frame.js';
 import { posterBlob, savePoster } from '../poster/poster.js';
 import { sfx, soundOn, setSound } from '../audio/sound.js';
+import { SWIPE, swipeCardDelta, fanFocusPosition, wheelCardDelta } from './fan-input.js';
+import { revealWindow } from './window-reveal.js';
 
 const $ = s => document.querySelector(s);
 const app = $('#app'), stage = $('#stage'), pile = $('#pile'), board = $('#board'), cols = $('#cols'), detail = $('#detail');
@@ -114,6 +116,9 @@ function resetCard(cd) {
   }
   cd.anim?.cancel(); cd.anim = null;
   el.classList.remove('drawn', 'flipped', 'printing', 'gone', 'tap');
+  cd.cancelWindowReveal?.(); cd.cancelWindowReveal = null;
+  el.style.removeProperty('--face-reveal-start');
+  cd.faceReady = null;
   el.tabIndex = -1;
   el.setAttribute('aria-hidden', 'true');
   el.removeAttribute('aria-label');
@@ -233,10 +238,10 @@ function layoutFan(o) {
 function labelFan() {
   fan.forEach((cd, j) => cd.el.setAttribute('aria-label', `牌背，第 ${j + 1} 張，共 ${fan.length} 張`));
 }
-function setFocus(i, viaKeyboard) {
+function setFocus(i, viaKeyboard, recenter = true) {
   if (i === focus && !viaKeyboard) return;
   focus = i;
-  if (G.scroll && i >= 0) pos = i;
+  pos = fanFocusPosition(pos, i, G.scroll, recenter);
   layoutFan({ dur: MOTION.hover });
   if (viaKeyboard && fan[i]) fan[i].el.focus({ preventScroll: true });
 }
@@ -246,8 +251,7 @@ function announcePick() {
 }
 
 // 拖曳與慣性（只有放不下的牌扇才會捲）
-// 手機牌扇：手指移動 3.2 個牌距才換一張；放手後的慣性打七折、摩擦較大、也有上限，比較好停在想要的那張
-const SWIPE = { perCard: 3.2, fling: .7, friction: .99, maxV: .0075 };
+// 手指恢復 1.6 個牌距換一張；滑鼠按住拖曳較慢，放開即停。
 let drag = null, raf = 0, suppressClick = false;
 function fling(v) {
   cancelAnimationFrame(raf);
@@ -270,14 +274,15 @@ stage.addEventListener('pointerdown', e => {
   if (state !== 'selecting' || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
   cancelAnimationFrame(raf); raf = 0;
   suppressClick = false;
-  drag = { id: e.pointerId, x: e.clientX, pos0: pos, moved: false, lx: e.clientX, lt: e.timeStamp, v: 0 };
+  drag = { id: e.pointerId, pointerType: e.pointerType, x: e.clientX, pos0: pos, moved: false, lx: e.clientX, lt: e.timeStamp, v: 0 };
 });
 stage.addEventListener('pointermove', e => {
   if (state !== 'selecting') return;
   if (!drag) {
     if (e.pointerType === 'mouse') {                     // 滑鼠滑過：那張牌抬起來
       const cd = cardOf(e.target.closest?.('.card'));
-      setFocus(cd && !cd.drawn ? fan.indexOf(cd) : (G.scroll ? focus : -1));
+      // Hover may lift a card, but must not recenter the mobile carousel.
+      setFocus(cd && !cd.drawn ? fan.indexOf(cd) : (G.scroll ? focus : -1), false, false);
     }
     return;
   }
@@ -289,9 +294,9 @@ stage.addEventListener('pointermove', e => {
   }
   if (drag.moved && G.scroll) {
     const dt = Math.max(1, e.timeStamp - drag.lt);
-    drag.v = drag.v * .6 + (-(e.clientX - drag.lx) / (G.s * SWIPE.perCard) / dt) * .4;
+    drag.v = drag.v * .6 + (swipeCardDelta(e.clientX - drag.lx, G.s, drag.pointerType) / dt) * .4;
     drag.lx = e.clientX; drag.lt = e.timeStamp;
-    pos = clamp(drag.pos0 - dx / (G.s * SWIPE.perCard), 0, fan.length - 1);
+    pos = clamp(drag.pos0 + swipeCardDelta(dx, G.s, drag.pointerType), 0, fan.length - 1);
     focus = Math.round(pos);
     layoutFan();
   }
@@ -301,7 +306,7 @@ function endDrag(e) {
   const d = drag; drag = null;
   if (d.moved && G?.scroll && state === 'selecting') {
     suppressClick = true;
-    if (e.type === 'pointerup' && e.timeStamp - d.lt < 80) fling(d.v);
+    if (e.type === 'pointerup' && d.pointerType !== 'mouse' && e.timeStamp - d.lt < 80) fling(d.v);
   }
 }
 stage.addEventListener('pointerup', endDrag);
@@ -309,6 +314,18 @@ stage.addEventListener('pointercancel', endDrag);
 stage.addEventListener('pointerleave', e => {
   if (state === 'selecting' && !drag && e.pointerType === 'mouse' && !G.scroll) setFocus(-1);
 });
+
+stage.addEventListener('wheel', e => {
+  if (state !== 'selecting' || !G?.scroll || drag) return;
+  const delta = wheelCardDelta(e, G.s, M.W);
+  if (!delta) return;
+  e.preventDefault();
+  cancelAnimationFrame(raf); raf = 0;
+  kbd = false;
+  pos = clamp(pos + delta, 0, fan.length - 1);
+  focus = Math.round(pos);
+  layoutFan();
+}, { passive: false });
 
 stage.addEventListener('click', e => {
   const cd = cardOf(e.target.closest('.card'));
@@ -356,6 +373,11 @@ function pick(cd) {
   cd.el.tabIndex = -1;
   cd.el.setAttribute('aria-label', `第 ${d.position + 1} 張牌，尚未翻開`);
   cd.face.innerHTML = faceSVG(cardById(d.cardId), { offsets: session.offsets, printed: true });
+  // Decode while the back is still showing, so the front never starts as a fade
+  // from an unloaded illustration. The SVG and preload share the cached URL.
+  const artImage = cd.face.querySelector('[data-card-layer="illustration"] image');
+  const readyImage = new Image(); readyImage.src = artImage.getAttribute('href');
+  cd.faceReady = readyImage.decode().catch(() => {});
   cd.face.classList.toggle('rev', d.orientation === 'reversed');
   sfx.slide();
 
@@ -421,23 +443,30 @@ async function reveal() {
     place(cd, { x: cd.pose.x * 1.1, y: cd.pose.y + M.H * .45, r: cd.pose.r * 1.6, s: 1 }, { dur: 460, ease: EASE.in, delay: Math.abs(j - mid) * 9, fade: true });
   });
   picked.forEach(cd => fly(cd, MOTION.toResult, EASE.soft));
-  await wait(MOTION.toResult + 40);
+  await Promise.all([wait(MOTION.toResult + 40), ...picked.map(cd => cd.faceReady)]);
   if (my !== run) return;
   picked.forEach(settle);
 
+  const faceStart = Math.round(MOTION.flip * MOTION.faceRevealAt);
+  const metaStart = Math.max(MOTION.flip, faceStart + MOTION.faceRevealDuration) + MOTION.metaRevealGap;
   for (let i = 0; i < picked.length; i++) {
     const cd = picked[i], it = result.cards[i];
+    cd.el.style.setProperty('--face-reveal-start', `${faceStart}ms`);
+    cd.cancelWindowReveal?.();
+    cd.cancelWindowReveal = revealWindow(cd.face.querySelector('svg'), { delay: ms(faceStart), duration: ms(MOTION.windowRevealDuration), startRatio: MOTION.windowRevealStartRatio });
     cd.el.classList.add('printing', 'flipped');
     if (!reduced.matches) cd.anim = cd.el.firstElementChild.animate(FLIP, { duration: MOTION.flip, easing: EASE.flip });
     cd.el.setAttribute('aria-label', describe(it));
     sfx.flip();
-    setTimeout(() => { if (my === run) cols.children[i].classList.add('shown'); }, ms(MOTION.flip * .7));
+    setTimeout(() => { if (my === run) cols.children[i].classList.add('shown'); }, ms(metaStart));
     if (i < picked.length - 1) { await wait(MOTION.flipGap); if (my !== run) return; }
   }
-  await wait(MOTION.flip);
+  await wait(metaStart);
   if (my !== run) return;
 
   detail.classList.add('shown');
+  await wait(MOTION.metaRevealDuration);
+  if (my !== run) return;
   setState('result');
   if (result.cards.length > 1) picked.forEach(cd => { cd.el.classList.add('tap'); cd.el.tabIndex = 0; });
   say(result.cards.map(describe).join(' '));

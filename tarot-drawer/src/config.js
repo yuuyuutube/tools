@@ -32,6 +32,12 @@ export const MOTION = {
   toResult: 620,
   flip: 780,
   flipGap: 380,
+  faceRevealAt: .6,    // 正面露出時，先讓圖窗外框展開
+  faceRevealDuration: 640,
+  windowRevealDuration: 420,
+  windowRevealStartRatio: .94,
+  metaRevealGap: 40,   // 卡內牌名完成後，才顯示牌外資訊
+  metaRevealDuration: 450,
   gather: 420,
 };
 

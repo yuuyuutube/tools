@@ -57,10 +57,25 @@ img, svg { -webkit-user-drag: none; }
 .face.rev svg { transform: rotate(180deg); }
 .card:focus-visible .flip { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: var(--card-radius); }
 
-/* 揭曉時，顏色先印上去，墨線隨後 */
-.card.printing .kf { animation: ink .5s .36s both; }
-.card.printing .kl { animation: ink .42s .74s both; }
-@keyframes ink { from { opacity: 0; } }
+/* 圖窗外框由底部中央展開：window-reveal.js 直接改 path d，線寬固定。
+   插畫位置及尺寸不動；只讓裁切區域隨框線揭露，逆位沿用外層旋轉。 */
+.card.printing [data-card-layer="rule"] {
+  transform-box: view-box;
+  transform-origin: 150px 382px;
+  animation: face-rule-open 220ms cubic-bezier(.2,.75,.3,1) calc(var(--face-reveal-start, 468ms) + 180ms) both;
+}
+.card.printing [data-card-layer="title"],
+.card.printing [data-card-layer="subtitle"] {
+  animation: face-name-appear 280ms ease-out calc(var(--face-reveal-start, 468ms) + 360ms) both;
+}
+@keyframes face-rule-open {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes face-name-appear {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 /* 牌堆本身也是洗牌按鈕 */
 #pile {
@@ -213,6 +228,6 @@ img, svg { -webkit-user-drag: none; }
 @media (max-width: 359px) { .seg.words button { padding: 0 10px; font-size: 12px; letter-spacing: .04em; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .sheet, #veil, .card.printing .kf, .card.printing .kl { animation: none !important; }
+  .sheet, #veil, .card.printing [data-card-layer] { animation: none !important; }
   .flip, .meta, .actions, #setup, #spread { transition-duration: .01s !important; }
 }

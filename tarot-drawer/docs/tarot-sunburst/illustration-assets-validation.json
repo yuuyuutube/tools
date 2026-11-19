@@ -1,0 +1,373 @@
+{
+  "date": "2026-11-19",
+  "mode": "illustration-only-webp-plus-web-svg",
+  "cards": [
+    {
+      "number": 0,
+      "id": "fool",
+      "illustrationPNG": "docs/tarot-sunburst/fool-pipeline/fool-illustration.png",
+      "illustrationSHA256": "c614e2d58213107a232bf81e5c47f73e9f1a6c2faae0696270f20c8a3325d318",
+      "webpSHA256": "b8adc2ac114607b3c6f1e80ccf12c48711c9c6d3365d2e8230f36b1a9a771fb3",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 1,
+      "id": "magician",
+      "illustrationPNG": "docs/tarot-sunburst/batch-01/1-illustration.png",
+      "illustrationSHA256": "ad8f20e69aac16d1a3e791e0a13980ac26428726ec169b7133f4766404180b34",
+      "webpSHA256": "1ea60555a08d472599de8c6b77e758f3c22121db200058828fecbcb0e0188c5a",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 2,
+      "id": "high-priestess",
+      "illustrationPNG": "docs/tarot-sunburst/batch-01/2-illustration.png",
+      "illustrationSHA256": "b88a6b036b1f58e70f8f0e29dc5dd5fccbcd0a14829d52cbb3b2d8d3ae848acf",
+      "webpSHA256": "9cd7f73348ffb94aa4c3efb1fb6fd56123168e0ebbd4a43475de0217fbb50631",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 3,
+      "id": "empress",
+      "illustrationPNG": "docs/tarot-sunburst/batch-01/3-illustration.png",
+      "illustrationSHA256": "d22dba9e32dbeb3444b354017d51b589bd4e203dea06e3723f1dca2f3b311624",
+      "webpSHA256": "54677226e9ce4368da2829a44845a78620b9ac46485331b95bbac4de190e1475",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 4,
+      "id": "emperor",
+      "illustrationPNG": "docs/tarot-sunburst/batch-02/4-illustration.png",
+      "illustrationSHA256": "129bb3123401baa147813e46c09edd4b836676cd11c4f181bda1031264786e4c",
+      "webpSHA256": "57796c1f9a557a36907c239c5fec9ce8a2bc6d4a5ad8c2dba3d0a718a582721d",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 5,
+      "id": "hierophant",
+      "illustrationPNG": "docs/tarot-sunburst/batch-02/5-illustration.png",
+      "illustrationSHA256": "954578eecf9e3c948c936982b2dff73f45e9c7e8414f3514587cb4e4b421801b",
+      "webpSHA256": "5f762482001362a79a2ec0dbd27388a8b6052183e0bba0a14f56e26940cdd2a1",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 6,
+      "id": "lovers",
+      "illustrationPNG": "docs/tarot-sunburst/batch-02/6-illustration.png",
+      "illustrationSHA256": "336220e7b0426bc6b55bffe4578d59d893ed65e5976bd06705bef316aff5d766",
+      "webpSHA256": "33005f30e078a8fb39d8b0980db8128fbcc9bdf5c0355550cf79be7d787a474f",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 7,
+      "id": "chariot",
+      "illustrationPNG": "docs/tarot-sunburst/batch-03/7-illustration.png",
+      "illustrationSHA256": "6059f5683556a83aed63f1fb120310487e08c91829bdbfcf29cc6779d664bea4",
+      "webpSHA256": "bfeb941bfff0929eb4646ed2f8937e9290b1448943174976eff1b5f68a564e4e",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 8,
+      "id": "strength",
+      "illustrationPNG": "docs/tarot-sunburst/batch-03/8-illustration.png",
+      "illustrationSHA256": "613c9d3ff8b84bff0ee9298b20e45eb55c21b1709957b8881e2df1a50dd4268e",
+      "webpSHA256": "e02415699b4bf02e72c2d84f2761fa2008c309ea256b4cb01ed53073c95738d4",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 9,
+      "id": "hermit",
+      "illustrationPNG": "docs/tarot-sunburst/batch-03/9-illustration.png",
+      "illustrationSHA256": "35c2d770ea03267d6de65534d6f61b46d1fd45e89bf25063f4acad89201ae831",
+      "webpSHA256": "88f5dc3e5175c03b8b062401b6c4fc748a9e91e75ef027902acba6aa9d3935a6",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 10,
+      "id": "wheel-of-fortune",
+      "illustrationPNG": "docs/tarot-sunburst/batch-04/10-illustration.png",
+      "illustrationSHA256": "446d33cd2fb28a58f27a1d964dc51e8607cd85d70f7cb9e686cf95e381a6c7e4",
+      "webpSHA256": "0960f6dfa9ab4b990247bed362a159432ed5f9da5d6d715665c2b8d2ed4caf16",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 11,
+      "id": "justice",
+      "illustrationPNG": "docs/tarot-sunburst/batch-04/11-illustration.png",
+      "illustrationSHA256": "1e736ce04f1c454f2d394c23bc17271a839c8b0126169031ce52140257834dc9",
+      "webpSHA256": "f6b446c090304adca257a695e86cb698811e471f5c666d7ea96c552af78a336a",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 12,
+      "id": "hanged-man",
+      "illustrationPNG": "docs/tarot-sunburst/batch-04/12-illustration.png",
+      "illustrationSHA256": "a68222fc0530bcabbeb14dda0b517bfe6d53ff6d2b05c850efd9f6d2283a67bd",
+      "webpSHA256": "8e029b38eb7027ef6749f6bf2dad3833c20501fc7a1569d5c02c6414639bf292",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 13,
+      "id": "death",
+      "illustrationPNG": "docs/tarot-sunburst/batch-05/13-illustration.png",
+      "illustrationSHA256": "87c421bd035346d95e18ced58558c3cea33386cb8636c89ab2c5c11a1d29307f",
+      "webpSHA256": "2341d123bf7a9d538b5962045288ffcde9c097f156a452bac60611c239bd42e0",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 14,
+      "id": "temperance",
+      "illustrationPNG": "docs/tarot-sunburst/batch-05/14-illustration.png",
+      "illustrationSHA256": "4528ae782d15e1c708f191b94679e53236c035f26c84e0e42af517e71e5058b2",
+      "webpSHA256": "c5178ac3fc635eaf0efa9a23092771927a876a2f2314676e5ec79e4b31cf2d6d",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 15,
+      "id": "devil",
+      "illustrationPNG": "docs/tarot-sunburst/batch-05/15-illustration.png",
+      "illustrationSHA256": "cea04dfdb91dd56bf4a1f99363c3ca78e1016c8cc6a97f05fbe006bbaf4a439f",
+      "webpSHA256": "fdc728e1ab2b5ee78c2346fa24166f749a3f9e0a945bf380e1f13df2b1ae93df",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 16,
+      "id": "tower",
+      "illustrationPNG": "docs/tarot-sunburst/batch-06/16-illustration.png",
+      "illustrationSHA256": "8ea6cd3f8a2a86d9a98c8b95a7135c1237322027d71368b167e3dbdd2079752b",
+      "webpSHA256": "30bc31fb65276c7a6428d4ff8e17c19ab89ba3e04e2bb051bcc7c1b55c5ea10a",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 17,
+      "id": "star",
+      "illustrationPNG": "docs/tarot-sunburst/batch-06/17-illustration.png",
+      "illustrationSHA256": "e8e9dc64f770604962fda7ac23793cdd445becc4d9fa9de507044211b68a4a43",
+      "webpSHA256": "b2ac24268dfb9f58b56642ae77d8f5be61ad4c300506ad4dddcf21bc17804c86",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 18,
+      "id": "moon",
+      "illustrationPNG": "docs/tarot-sunburst/batch-06/18-illustration.png",
+      "illustrationSHA256": "1ca851c7638af0ef8cae79cb51b158454fca0cbb634067509d7612250929f042",
+      "webpSHA256": "53424a2e0998e29658e54563cb4dc1cc308e8d4e0ad94afa208b1264428b0b22",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 19,
+      "id": "sun",
+      "illustrationPNG": "docs/tarot-sunburst/batch-07/19-illustration.png",
+      "illustrationSHA256": "96fe19e11222a4fd0721c350ce0359dde0384d3479bd807a79449031c2fa30bd",
+      "webpSHA256": "c7f4829138729387393a2f63785f9a8153b092f310accec2f34ac9d41fef5b60",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 20,
+      "id": "judgement",
+      "illustrationPNG": "docs/tarot-sunburst/batch-07/20-illustration.png",
+      "illustrationSHA256": "d6118957393bf7ee7f66eb2d8cad126ae2ae183fbb300b6a935316614d319dc3",
+      "webpSHA256": "0e48199985ecd1959e905bb138355219c743f630102b148fa410f260e9686844",
+      "size": [
+        654,
+        870
+      ]
+    },
+    {
+      "number": 21,
+      "id": "world",
+      "illustrationPNG": "docs/tarot-sunburst/batch-07/21-illustration.png",
+      "illustrationSHA256": "28a765411d97f8de8dee9482fbb8ec086c1d66a51af267452a3959819365a74b",
+      "webpSHA256": "81c0607509e4b1abe235e4741824c44f60a113bc49bd30cf5ea4372f5716f70a",
+      "size": [
+        654,
+        870
+      ]
+    }
+  ],
+  "regression": [
+    {
+      "number": 0,
+      "storedReferenceChangedChannels": 88034,
+      "storedReferenceMaximumDifference": 204,
+      "captureCallbackChangedChannels": 0
+    },
+    {
+      "number": 1,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 2,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 3,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 4,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 5,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 6,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 7,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 8,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 9,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 10,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 11,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 12,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 13,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 14,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 15,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 16,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 17,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 18,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 19,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 20,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    },
+    {
+      "number": 21,
+      "storedReferenceChangedChannels": 0,
+      "storedReferenceMaximumDifference": 0
+    }
+  ],
+  "webGeneratedLayers": [
+    "paper",
+    "border",
+    "accent-border",
+    "window",
+    "number",
+    "rule",
+    "title",
+    "subtitle",
+    "ornaments"
+  ],
+  "note": "Stored Fool PNG differs from its current live pipeline; the capture-on/capture-off comparison of the same live pipeline is identical. Cards 1–21 match the stored print references pixel for pixel."
+}

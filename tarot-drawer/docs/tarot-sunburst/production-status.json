@@ -205,6 +205,138 @@
       13,
       15,
       16
+    ],
+    "scope": "Historical colour-only repair phase; current renders additionally include the authorized inkDelivery revision."
+  },
+  "inkDelivery": {
+    "sourceCommit": "ff36530",
+    "mergedCommit": "d79c669",
+    "date": "2026-11-19",
+    "status": "updated_awaiting_user_review",
+    "redrawnCards": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "preservedCards": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "effectiveMasterOverrides": {
+      "6": "batch-02/6-ink-current.png"
+    },
+    "review": "ink-sync-2026-11-19.md",
+    "validation": "ink-sync-validation.json",
+    "lightPaintProjects": "light-paint/",
+    "checks": {
+      "sourceLines": "unchanged",
+      "layout": "unchanged",
+      "colourRepairRules": "unchanged",
+      "inkMastersAndNPlates": "passed; approved priestess plate text overlays excluded",
+      "lightPaintProjects": 22,
+      "semanticColourChecksPassed": 16,
+      "existingTestsPassed": 28
+    }
+  },
+  "faceComposition": {
+    "mode": "illustration-only-webp-plus-web-svg",
+    "illustrationPixels": [
+      654,
+      870
+    ],
+    "illustrationWindow": {
+      "x": 41,
+      "y": 76,
+      "width": 218,
+      "height": 290
+    },
+    "webLayers": [
+      "paper",
+      "border",
+      "accent-border",
+      "window",
+      "number",
+      "rule",
+      "title",
+      "subtitle",
+      "ornaments"
+    ],
+    "renderer": "src/art/frame.js",
+    "exporter": "illustration-assets.html",
+    "posterUsesSameRenderer": true,
+    "validation": "illustration-assets-validation.json",
+    "testsPassed": 38,
+    "browserChecks": [
+      "single-card reveal",
+      "live SVG interface text and independent layers",
+      "poster PNG export at 1080x1620"
+    ],
+    "revealMotion": {
+      "ruleDelayMs": 180,
+      "ruleDurationMs": 220,
+      "nameDelayMs": 360,
+      "nameDurationMs": 280,
+      "nameTranslateY": 2,
+      "revealStartFlipFraction": 0.9,
+      "reducedMotion": "show complete face without layer animations",
+      "poster": "static",
+      "browserVerified": [
+        "single card",
+        "three cards",
+        "reversed card",
+        "return to setup and redraw"
+      ],
+      "windowStartRatio": 0.94,
+      "windowDurationMs": 420,
+      "windowOrigin": [
+        0.5,
+        1
+      ],
+      "windowFixedPoint": [
+        150,
+        366
+      ],
+      "windowStrokeWidth": 2.8,
+      "windowAnimation": "path-d-geometry",
+      "artworkTransform": "none",
+      "clipFollowsFrame": true,
+      "geometryBrowserChecks": {
+        "smallFramePathObserved": true,
+        "fullFramePathObserved": true,
+        "constantStrokeWidth": 2.8,
+        "imageCoordinatesAndSizeUnchanged": true,
+        "imageTransform": null
+      }
+    }
+  },
+  "fanInput": {
+    "touchPerCard": 1.6,
+    "mousePerCard": 3.2,
+    "mouseHoverRecenters": false,
+    "mouseFling": false,
+    "keyboardRecenters": true,
+    "checks": [
+      "touch/mouse sensitivity unit tests",
+      "hover focus position unit test",
+      "390px mouse drag without accidental pick",
+      "mouse stops immediately after release"
     ]
   }
 }

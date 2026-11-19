@@ -38,26 +38,23 @@ function orientationTag(cx, y, orientation, s = 1) {
     T(x + 54 * s, y + h / 2 + 8 * s, 22 * s, rev ? '逆位 REVERSED' : '正位 UPRIGHT', { anchor: 'start', ls: 3 * s, fill: fg, weight: 600 });
 }
 
-// 日期印章：單色、微微歪一點
+// 橫式八角日期章：直排眼睛徽記與日期，字距及留白不依弧形文字估算。
 function stamp(cx, cy, date, rot) {
-  const id = 'stampArc';
-  return `<g transform="rotate(${rot.toFixed(1)} ${cx} ${cy})" style="mix-blend-mode:multiply" opacity=".92">` +
-    `<defs><path id="${id}" d="M${cx - 70} ${cy}A70 70 0 0 1 ${cx + 70} ${cy}"/></defs>` +
-    `<circle cx="${cx}" cy="${cy}" r="92" fill="none" stroke="${O}" stroke-width="5"/>` +
-    `<circle cx="${cx}" cy="${cy}" r="56" fill="none" stroke="${O}" stroke-width="2"/>` +
-    `<text font-family="${FONT}" font-size="14.5" font-weight="700" letter-spacing="3.6" fill="${O}" text-anchor="middle"><textPath xlink:href="#${id}" href="#${id}" startOffset="50%">${esc(SITE.nameEn)}</textPath></text>` +
-    T(cx, cy + 9, 25, date, { fill: O, weight: 800, ls: 1 }) +
-    T(cx, cy + 82, 13, SITE.nameZh, { fill: O, weight: 700, ls: 3 }) +
-    `${burst(cx - 82, cy, 5, 2, 4)} fill="${O}"/>${burst(cx + 82, cy, 5, 2, 4)} fill="${O}"/>` +
-    `${burst(cx, cy + 34, 7, 2.6, 4)} fill="${O}"/>` +
-    `</g>`;
+  const octagon = (w, h, cut) => `M${-w/2+cut} ${-h/2}H${w/2-cut}L${w/2} ${-h/2+cut}V${h/2-cut}L${w/2-cut} ${h/2}H${-w/2+cut}L${-w/2} ${h/2-cut}V${-h/2+cut}Z`;
+  return `<g data-poster-layer="date-stamp" transform="translate(${cx} ${cy}) rotate(${rot.toFixed(1)})" style="mix-blend-mode:multiply" opacity=".92">` +
+    `<g fill="none" stroke="${O}" stroke-linejoin="round"><path data-stamp-frame="outer" d="${octagon(280,110,20)}" stroke-width="4"/><path data-stamp-frame="inner" d="${octagon(264,94,16)}" stroke-width="1.5"/></g>` +
+    `<g data-stamp-eye="true" transform="translate(0 -20)">`+
+    `${burst(0,0,21,15,16)} fill="${O}"/><circle r="13" fill="${PAPER}"/>`+
+    `<path d="M-11 0Q0 -10 11 0Q0 10 -11 0Z" fill="none" stroke="${O}" stroke-width="1.7"/><circle r="3.8" fill="${O}"/><circle r="1.4" fill="${PAPER}"/></g>`+
+    `<path d="M-100 -20h50M50 -20h50" fill="none" stroke="${O}" stroke-width="1.5"/>`+
+    T(0, 29, 24, date, { fill: O, weight: 700, ls: 1.8 }) + `</g>`;
 }
 
 const colorBar = (x, y) => [O, Y, B, K, N].map((c, i) => `<rect x="${x + i * 26}" y="${y}" width="20" height="20" fill="${c}"/>`).join('');
 
 // 牌後面一塊錯位的網點色塊，像沒對準的底色版
 const cardShadow = (x, y, w, h, d, ox, oy) =>
-  `<rect x="${x + d * ox}" y="${y + d * oy}" width="${w}" height="${h}" rx="${w * .054}" fill="url(#bigdots)" style="mix-blend-mode:multiply"/>`;
+  `<rect data-poster-layer="card-shadow" x="${x + d * ox}" y="${y + d * oy}" width="${w}" height="${h}" rx="${w * .054}" fill="url(#shadowDots)" opacity=".5" style="mix-blend-mode:multiply"/>`;
 
 function placeCard(item, x, y, w, i, offsets) {
   const h = w * 5 / 3;
@@ -71,7 +68,7 @@ export function posterSVG(res) {
   const rot = (rnd() - .5) * 18, sx = rnd() < .5 ? -1 : 1, sy = 1;
   const W = POSTER_W, H = POSTER_H, date = dateText(res.date);
   let s = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">` +
-    `<defs><pattern id="bigdots" width="13" height="13" patternUnits="userSpaceOnUse" patternTransform="rotate(32)"><circle cx="6.5" cy="6.5" r="3.4" fill="${B}"/></pattern></defs>` +
+    `<defs><pattern id="shadowDots" width="5.2" height="5.2" patternUnits="userSpaceOnUse" patternTransform="rotate(32)"><circle cx="2.6" cy="2.6" r="1.1" fill="${B}"/></pattern></defs>` +
     `<rect width="${W}" height="${H}" fill="${PAPER}"/>` +
     mark(64, 64) + mark(W - 64, 64) + mark(64, H - 64) + mark(W - 64, H - 64) +
     T(118, 73, 22, SITE.nameZh, { anchor: 'start', ls: 7, weight: 700 }) +
@@ -88,7 +85,7 @@ export function posterSVG(res) {
       T(540, 1296, 23, it.card.nameEn.toUpperCase(), { ls: 9, opacity: .75 }) +
       orientationTag(540, 1334, it.orientation) +
       T(540, 1452, kwSize, kwText, { ls: 4 }) +
-      stamp(884, 1098, date, rot);
+      stamp(864, 1124, date, rot);
   } else {
     const w = 300, h = 500, gap = 30, x0 = (W - w * 3 - gap * 2) / 2, y = 318;
     const cx = i => x0 + i * (w + gap) + w / 2;
@@ -108,7 +105,7 @@ export function posterSVG(res) {
         kw.map((k, j) => T(cx(i), 1108 + j * 42, 25, k, { ls: 2 })).join('');
     });
     s += '</g>';
-    s += stamp(884, 1452, date, rot);
+    s += stamp(864, 1452, date, rot);
   }
   return s + '</svg>';
 }

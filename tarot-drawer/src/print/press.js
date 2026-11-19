@@ -69,10 +69,11 @@ async function rasterPlate(svg, W, H) {
 
 // plates：{ Y: svg, O: svg, B: svg, N: svg }（缺的顏色就不印）
 // 回傳畫好的 canvas（寬 300 × scale）
-export async function printCard(plates, { seed = 1, scale = 2, quietAreas = [], inks = INKS, tune = {} } = {}) {
+export async function printCard(plates, { seed = 1, scale = 2, quietAreas = [], inks = INKS, tune = {}, onIllustration } = {}) {
   const tuning = { ...TUNE, ...tune };
   const W = Math.round(CW * scale), H = Math.round(CH * scale), n = W * H;
   const rnd = seeded(seed);
+  let illustrationSnapshot=null;
   const R = new Float32Array(n), G = new Float32Array(n), Bc = new Float32Array(n);
 
   // 紙：大片的色差、細顆粒，以及會讓墨吃不進去的凹凸（tooth）
@@ -88,6 +89,13 @@ export async function printCard(plates, { seed = 1, scale = 2, quietAreas = [], 
   const printOrder = [...PRINT_ORDER, ...Object.keys(plates).filter(key => !PRINT_ORDER.includes(key))];
   for (const key of printOrder) {
     if (!plates[key]) continue;
+    // Capture before interface plates; no extra RNG calls or changes to the print.
+    if(onIllustration && !illustrationSnapshot && !PRINT_ORDER.includes(key)){
+      const snapshot=document.createElement('canvas');snapshot.width=W;snapshot.height=H;
+      const sg=snapshot.getContext('2d'),sd=sg.createImageData(W,H);
+      for(let i=0,j=0;i<n;i++,j+=4){sd.data[j]=R[i];sd.data[j+1]=G[i];sd.data[j+2]=Bc[i];sd.data[j+3]=255;}
+      sg.putImageData(sd,0,0);illustrationSnapshot=snapshot;
+    }
     const ink = inks[key], data = await rasterPlate(plates[key], W, H);
     const cr = ink.rgb[0] / 255, cg = ink.rgb[1] / 255, cb = ink.rgb[2] / 255;
     // 套色誤差：主版（墨線）不動，其他色版各偏一點
@@ -156,12 +164,16 @@ export async function printCard(plates, { seed = 1, scale = 2, quietAreas = [], 
   g.lineCap = 'round';
   for (let i = 0; i < 520; i++) {
     const x = rnd() * W, y = rnd() * H, a = rnd() * Math.PI * 2, len = (3 + rnd() * 9) * scale, bend = (rnd() - .5) * len * .6;
-    g.strokeStyle = rnd() < .55 ? `rgba(255,251,240,${.1 + rnd() * .16})` : `rgba(96,74,44,${.04 + rnd() * .07})`;
-    g.lineWidth = (.25 + rnd() * .35) * scale;
-    g.beginPath(); g.moveTo(x, y);
-    g.quadraticCurveTo(x + Math.cos(a) * len / 2 - Math.sin(a) * bend, y + Math.sin(a) * len / 2 + Math.cos(a) * bend, x + Math.cos(a) * len, y + Math.sin(a) * len);
-    g.stroke();
+    const strokeStyle=rnd() < .55 ? `rgba(255,251,240,${.1 + rnd() * .16})` : `rgba(96,74,44,${.04 + rnd() * .07})`;
+    const width=(.25 + rnd() * .35) * scale;
+    for(const target of [g,...(illustrationSnapshot?[illustrationSnapshot.getContext('2d')]:[])]){
+      target.lineCap='round';target.strokeStyle=strokeStyle;target.lineWidth=width;
+      target.beginPath();target.moveTo(x,y);
+      target.quadraticCurveTo(x + Math.cos(a) * len / 2 - Math.sin(a) * bend, y + Math.sin(a) * len / 2 + Math.cos(a) * bend, x + Math.cos(a) * len, y + Math.sin(a) * len);
+      target.stroke();
+    }
   }
+  if(illustrationSnapshot)onIllustration(illustrationSnapshot);
   return cv;
 }
 

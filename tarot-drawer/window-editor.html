@@ -74,10 +74,10 @@ const cards=Array.from({length:22},(_,n)=>{
  const final=n===0?'docs/tarot-sunburst/fool-pipeline/fool-final-3x5.png':`docs/tarot-sunburst/batch-${cfg.batch}/${n}-final-3x5.png`;
  // Art top in card units at offset 0, and its height; the art must keep covering the window.
  const top=cfg.map.y+ART_SHIFT.y,height=1536*cfg.map.scale;
- return {n,label:`${card.romanNumeral} · ${card.nameZh}`,map:cfg.map,top,height,final,art:`docs/tarot-sunburst/art-preview/${n}.webp`,img:null,artImg:null,paper:'#f3ecdc'};
+ return {n,label:`${card.romanNumeral} · ${card.nameZh}`,map:cfg.map,top,height,final,art:`docs/tarot-sunburst/art-preview/${n}.webp?v=ink-20261119`,img:null,artImg:null,paper:'#f3ecdc'};
 });
 const bounds=c=>{const w=win();return [Math.ceil((w.y1-(c.top+c.height))*2)/2,Math.floor((w.y0-c.top)*2)/2];};
-const load=src=>new Promise((ok,fail)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=fail;i.src=src+'?'+Date.now();});
+const load=src=>new Promise((ok,fail)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=fail;i.src=src+(src.includes('?')?'&':'?')+'t='+Date.now();});
 // Paper colour: the strip between the window and the rule line under it.
 function samplePaper(img){const c=document.createElement('canvas');c.width=720;c.height=12;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(img,90,3*(W0.y1+5),720,12,0,0,720,12);const d=g.getImageData(0,0,720,12).data;let r=0,gr=0,b=0,k=0;for(let i=0;i<d.length;i+=4){if(d[i]+d[i+1]+d[i+2]<540)continue;r+=d[i];gr+=d[i+1];b+=d[i+2];k++;}return k?`rgb(${r/k|0},${gr/k|0},${b/k|0})`:'#f3ecdc';}
 

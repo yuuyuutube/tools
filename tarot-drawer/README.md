@@ -3,18 +3,18 @@
 純前端塔羅抽牌工具：22 張大阿爾克那、單張／三張牌陣、逆位選項、洗牌翻牌動畫與 PNG 分享海報。
 HTML、CSS、原生 ES modules；不需要建置或安裝執行套件。
 
-## 現階段狀態（2026-11-16）
+## 現階段狀態（2026-11-19）
 
 | 範圍 | 狀態 |
 |---|---|
-| 正式抽牌與海報 | 仍使用原版 22 張 SVG 正面 |
-| 隱者新版 | 已確認的歐洲寓言木刻樣張；寬袖、側身遮擋修訂保留 |
-| 月亮新版 | 試畫；已修狼、弦月側臉、木刻陰影、十五露滴及固定框色 |
-| 新版牌背 | 九款，含可編輯色版與 PNG；正式牌堆預設使用新版星芒之眼 |
-| 牌背收藏頁 | 可看九款與最初舊版 Before／After；正式抽牌的多牌背選擇器尚未加入 |
-| A 批正面 | 愚者、魔術師、倒吊人為試畫；力量兩輪結構修訂已確認 |
-| B 批正面 | 女祭司、皇后、皇帝、教皇、正義五張新版修訂已確認，含可編輯色版與 PNG |
-| 其餘正面 | [重畫計劃](docs/redraw-plan.md)中的 C／D／E 共十一張尚未繪製 |
+| 正式抽牌與海報 | 使用 22 張純插畫 WebP，搭配網頁 SVG 生成紙底、圖窗、框線、牌號、牌名及裝飾 |
+| 原線稿加工 | 0–21 已有墨線、木刻陰影、平塗與套印輸出；6–21 採 ff36530 的最新修訂 |
+| 預覽與圖鑑 | 分批階段圖、局部放大、全套總覽及圖鑑 AFTER 已同步；BEFORE 保留原 SVG 畫風 |
+| Light Paint | 22 張 1024×1536 分層 JSON、純色版、透明墨線、色票與 ZIP 已重建 |
+| 配色與版面 | 保留既有補色規則與圖窗；使用者尚未開始自行繪色版 |
+| 驗收 | 檔案同步不等於美術核准；新陰影及原線稿象徵差異仍待使用者審閱 |
+
+[整批同步紀錄](docs/tarot-sunburst/ink-sync-2026-11-19.md) · [墨線查核索引](docs/tarot-sunburst/ink-review-index.md) · [Light Paint 專案下載](docs/tarot-sunburst/light-paint/)
 
 最新美術方向為「歐洲寓言、神秘、有一點擬真、木刻排線、四色套印」。角色要有可信的解剖與重量；不沿用早期圓頭點眼／細棍手腳的造型。`docs/prompt.md` 是歷史需求，遇到衝突以使用者最新指示與重畫計劃為準。
 
@@ -28,15 +28,19 @@ npm test
 
 需要 Python 3 靜態伺服器與 Node.js 20 以上；ES modules 不能以 `file://` 直接開啟。
 
-目前 `npm test` 的 28 項測試通過，包括抽牌順序、不重複、正逆位、亂數、原版 SVG 可生成性、新版指定符號、遮罩參照與固定框色。測試不驗證解剖、完整牌義敘事或瀏覽器海報，不能用測試通過代替美術驗收。
+目前 `npm test` 的 38 項測試通過，包括抽牌順序、不重複、正逆位、亂數、原版 SVG 可生成性、新版指定符號、遮罩參照與固定框色。測試不驗證解剖、完整牌義敘事或瀏覽器海報，不能用測試通過代替美術驗收。
 
 ## 預覽頁
 
 | 頁面 | 內容 |
 |---|---|
 | `index.html` | 正式抽牌工具 |
-| `gallery.html` | 22 張原版與 11 張新版逐張 Before／After，含新版篩選、下載與牌背收藏入口；支援 `?only=moon,sun`、`?w=360` |
-| `sample.html` | 新版隱者；完整圖、印刷局部與縮圖 |
+| `gallery.html` | 22 張原版 SVG 與最新 Sunburst 成圖逐張 Before／After，含新版篩選、下載與牌背收藏入口；支援 `?only=moon,sun`、`?w=360` |
+| `sunburst-batch.html?view=all` | 全套成圖／墨線／黏墨切換總覽；點牌進入分批各階段與局部放大 |
+| `colour-repair-review.html` | 補色前的歷史快照與最新平塗／套印對照 |
+| `docs/tarot-sunburst/light-paint/` | 22 張分層修色專案與完整 ZIP |
+| `window-editor.html` | 以最新完整圖面預覽圖窗與擺位 |
+| `sample.html` | 歷史 SVG 樣張： 新版隱者；完整圖、印刷局部與縮圖 |
 | `batch-b-sample.html` | 女祭司、皇后、皇帝、教皇、正義的整批總覽、舊新對照、120px、局部及下載；支援 `?only=empress` |
 | `print-sample.html?card=strength` | 已登記新版正面與隱者並排；`card` 可換成其他新版 id |
 | `strength-review.html` | 力量第二輪修訂前後、手部及四肢局部 |
@@ -95,11 +99,11 @@ npm test
 src/config.js          站名、牌陣、動畫設定
 src/data/cards.js      22 張牌義與正逆位關鍵字
 src/engine/            Web Crypto／Fisher–Yates／抽牌 session
-src/art/               正式抽牌仍使用的原版正面 SVG、牌框及牌背資產入口
+src/art/               原版 SVG 備份、牌框及牌背；正式正面取 assets/faces 的 Sunburst 輸出
 src/print/             新版可編輯印刷色版與引擎
 src/ui/                抽牌流程、動畫、鍵盤／觸控、樣式
 src/poster/            分享海報與 PNG 輸出
-src/audio/             紙張音效
+src/audio/             紙張與微風星光音效
 ```
 
 洗牌時一次決定牌堆與每張正逆位；後續動畫不重新擲亂數。點選位置直接對應牌堆位置，三張模式依抽取順序放入牌陣，不重複。重抽／返回廢棄舊 session。設定僅 idle 可改，舊動畫由 run 編號失效以避免連點競態。
@@ -108,10 +112,28 @@ src/audio/             紙張音效
 
 ## 後續工作與驗收範圍
 
-- 依 [逐牌重畫計劃](docs/redraw-plan.md)確認 A／B 批樣張，繼續 C／D／E 共十一張；圖像符號與解剖須人工驗收。
-- 新版隱者／月亮仍需統一整合到抽牌、圖鑑與海報來源；不能只改樣張就聲稱正式完成。
+- 原 [逐牌重畫計劃](docs/redraw-plan.md)屬早期 SVG 階段；目前 Sunburst 22 張已輸出，圖像符號、解剖與新版陰影仍須人工驗收。
+- 抽牌、海報、圖鑑及分層專案已統一採用 Sunburst 輸出；後續修訂仍須同步各衍生圖，檢查方法見整批同步紀錄。
 - 正式 UI 的九款牌背選擇、OG 分享縮圖與 PNG favicon 尚未完成。
 - 原 README 記錄 Claude 曾測試桌面／手機／平板、單三張、連點／返回、鍵盤與海報；這是先前版本紀錄，並非本次全部重新執行。
 - 實機 iOS／Android 分享面板、桌面 Safari／Firefox、實際 Reduce Motion 與音效聽感仍需驗證。
 
-2026-11-16 符號修訂：隱者六芒星與抬燈，月亮右亮面、16＋16 光芒、十五露滴及犬狼仰望。修訂前保存在 `hermit-before-symbols.js`／`moon-before-symbols.js`；本輪尚待使用者確認。
+歷史紀錄・2026-11-16 符號修訂：隱者六芒星與抬燈，月亮右亮面、16＋16 光芒、十五露滴及犬狼仰望。修訂前保存在 `hermit-before-symbols.js`／`moon-before-symbols.js`；本輪尚待使用者確認。
+
+
+## 正式牌面拆層（2026-11-19）
+
+`assets/faces/*.webp` 只含插畫，654×870 對應牌面內的 218×290 圖窗，不含卡片外框、圖窗描邊、牌號、中文／英文牌名或框外裝飾。插畫中的圖像象徵文字（如女祭司卷軸）仍是插畫的一部分。
+
+`src/art/frame.js` 使用 `sunburstFrameLayers()` 與共用圖窗幾何產生 SVG 介面；紙底與紙紋也由 SVG 生成。各部分有獨立 `data-card-layer`，可以分別加入微動態。翻牌後依序播放圖窗外框由底部中央展開（線寬固定、插畫不動）、橫線由中央伸展、中英文牌名浮現；支援減少動態設定。手機手指拖曳係數為 1.6，窄版面滑鼠 hover 不自動捲牌，按住拖曳採較慢速度。
+
+抽牌與分享海報都透過同一個 `faceSVG(..., {printed:true})` 組版；海報會先將純插畫嵌入 data URL，再輸出合成 PNG。
+
+匯出入口為 [純插畫資產](illustration-assets.html?batch=01)，批次 `00` 代表愚者、`01`～`07` 對應各批。PNG 母檔為 `batch-XX/N-illustration.png`（愚者為 `fool-pipeline/fool-illustration.png`）。`scripts/export-faces.py` 只讀這些純插畫母檔，不再從完整卡片縮圖產生 WebP。
+
+
+### 翻牌音效試聽
+
+`sound-preview.html` 可比較新版「微風與星光」與舊版「紙張與落點」。新版由 `src/audio/reveal.js` 合成：風聲慢慢升起，約 0.34 秒起接上緩起的低音量泛音，移除原本的低頻撞擊；尾韻約 1.5 秒。正式 `sfx.flip()` 與試聽頁共用同一份音效。洗牌、展牌、選牌及儲存音效維持原樣，試聽頁不更改正式網站的音效開關。
+
+瀏覽器已用 OfflineAudioContext 產出有效 WAV，確認沒有非有限數值或數位削波，試聽音檔可正常載入，控制台無錯誤。預覽檔為 `docs/tarot-sunburst/flip-breeze-preview.wav`；實際聽感由使用者試聽判斷。
