@@ -11,6 +11,11 @@ export function finishLine(image,{outlines=[],hatching=[],bands=[],protectedArea
  g.save();g.scale(w/819,h/1229);
  for(const mark of corrections){
   if(mark.type==='text'){g.fillStyle='black';g.font=`bold ${mark.size}px Georgia`;g.textAlign='center';g.fillText(mark.text,mark.x,mark.y);}
+  // Authorised redraw of a mis-shaped symbol: blank the old area, then stroke the new shape.
+  if(mark.type==='redraw'){
+   g.fillStyle='white';for(const p of mark.erase||[])g.fill(new Path2D(p));
+   g.strokeStyle='black';g.lineWidth=mark.weight||4.5;g.lineCap='round';g.lineJoin='round';for(const p of mark.strokes||[])g.stroke(new Path2D(p));
+  }
   if(mark.type==='star-arc'){
    g.fillStyle='white';for(const [x,y]of mark.old){g.beginPath();g.arc(x,y,mark.eraseRadius,0,Math.PI*2);g.fill();}
    for(let i=0;i<mark.count;i++){const angle=(mark.start+(mark.end-mark.start)*i/(mark.count-1))*Math.PI/180,x=mark.cx+mark.rx*Math.cos(angle),y=mark.cy+mark.ry*Math.sin(angle);
@@ -48,7 +53,30 @@ export function finishLine(image,{outlines=[],hatching=[],bands=[],protectedArea
  }
  g.putImageData(out,0,0);
  const hatchLayer=make(w,h),hg=hatchLayer.getContext('2d',{willReadFrequently:true}),openMask=make(w,h),og=openMask.getContext('2d',{willReadFrequently:true});hg.save();hg.scale(w/819,h/1229);og.scale(w/819,h/1229);og.fillStyle='white';
+ // Seeded faces: hatch exactly the closed area of the drawing around one point
+ // (a mountain face, a rock), grown 2 px so cuts meet the outline.
+ for(const zone of hatching){if(!zone.seed)continue;
+  const reg=new Uint8Array(w*h),q=new Int32Array(w*h),lim=zone.threshold||.45;let qh=0,qt=0;
+  // An optional clip closes areas the drawing leaves open (card edge, open ground).
+  let inside=null;if(zone.clip){const cc=make(w,h),cg=cc.getContext('2d',{willReadFrequently:true});cg.scale(w/819,h/1229);cg.fill(new Path2D(zone.clip));inside=cg.getImageData(0,0,w,h).data;}
+  const push=i=>{if(!reg[i]&&ink[i]<lim&&(!inside||inside[i*4+3]>127)){reg[i]=1;q[qt++]=i;}};
+  push(Math.round(zone.seed[1]*h/1229)*w+Math.round(zone.seed[0]*w/819));
+  while(qh<qt){const i=q[qh++],x=i%w,y=(i/w)|0;if(x)push(i-1);if(x<w-1)push(i+1);if(y)push(i-w);if(y<h-1)push(i+w);}
+  if(!qt||qt>w*h*.2){console.warn('seeded face skipped',zone.seed,qt);continue;}
+  for(let pass=0;pass<2;pass++){const add=[];for(let i=w;i<w*h-w;i++)if(!reg[i]&&(reg[i-1]||reg[i+1]||reg[i-w]||reg[i+w]))add.push(i);for(const i of add)reg[i]=1;}
+  const tc=make(w,h),tg=tc.getContext('2d',{willReadFrequently:true});tg.scale(w/819,h/1229);
+  if(zone.clip)tg.clip(new Path2D(zone.clip));
+  tg.translate(...zone.seed);tg.rotate((zone.angle??22)*Math.PI/180);
+  const spacing=(zone.spacing||3)*.72;
+  for(let row=-420;row<=420;row+=spacing){const phase=row*.079;
+   tg.beginPath();tg.moveTo(-420,row+Math.sin(phase)*1.2);tg.quadraticCurveTo(0,row+Math.sin(phase+1)*.7,420,row+Math.cos(phase)*.8);
+   tg.strokeStyle='#000';tg.lineWidth=(zone.weight||1.75)*(1+.15*Math.sin(phase*1.7));tg.lineCap='round';tg.stroke();}
+  const td=tg.getImageData(0,0,w,h).data,hd=hg.getImageData(0,0,w,h),od=og.getImageData(0,0,w,h);
+  for(let i=0;i<w*h;i++)if(reg[i]){od.data[i*4+3]=255;if(td[i*4+3]>hd.data[i*4+3]){hd.data[i*4]=hd.data[i*4+1]=hd.data[i*4+2]=0;hd.data[i*4+3]=td[i*4+3];}}
+  hg.putImageData(hd,0,0);og.putImageData(od,0,0);
+ }
  for(const [zoneIndex,zone]of hatching.entries()){
+  if(zone.seed)continue;
   if(zone.allowOpen)og.fill(new Path2D(zone.path));
   hg.save();hg.clip(new Path2D(zone.path));hg.translate(...zone.origin);hg.rotate((zone.angle||0)*Math.PI/180);
   const spacing=(zone.spacing||7.5)*.72,length=zone.length||110;
@@ -64,7 +92,7 @@ export function finishLine(image,{outlines=[],hatching=[],bands=[],protectedArea
  const bez=(p,t)=>{const u=1-t;return [0,1].map(k=>u*u*u*p[0][k]+3*u*u*t*p[1][k]+3*u*t*t*p[2][k]+t*t*t*p[3][k]);};
  for(const [bi,band]of bands.entries()){
   const light=band.b.map((p,i)=>p.map((v,k)=>band.a[i][k]+(v-band.a[i][k])*(band.spread||1)));
-  if(band.allowOpen){og.beginPath();og.moveTo(...band.a[0]);og.bezierCurveTo(...band.a[1],...band.a[2],...band.a[3]);og.bezierCurveTo(...light[2],...light[1],...light[0]);og.closePath();og.fill();}
+  if(band.allowOpen){og.beginPath();og.moveTo(...band.a[0]);og.bezierCurveTo(...band.a[1],...band.a[2],...band.a[3]);og.lineTo(...light[3]);og.bezierCurveTo(...light[2],...light[1],...light[0]);og.closePath();og.fill();}
   if(band.mode==='flow'){
    const strands=band.strands||6;hg.fillStyle='#000';
    for(let j=1;j<=strands;j++){

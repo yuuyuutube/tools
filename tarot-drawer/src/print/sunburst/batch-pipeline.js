@@ -15,11 +15,23 @@ const arcStars=m=>Array.from({length:m.count},(_,i)=>{const a=(m.start+(m.end-m.
 const WIN=new Path2D(WINDOW);
 
 export const SETTINGS={seed:20261117,scale:3,tune:{jitter:.28,jitterFine:.1,bleed:.12,speckle:.94,misregister:.55,period:1.55}};
+// Local edits to a frozen (reviewed) ink master: the erased areas fall back to
+// the same line finished without shading, then new bands from the same
+// finishing code are added. The stored master file itself is never rewritten.
+export async function editMaster(ctx,number,config){
+ const e=config.masterEdits,line=await load(ROOT+`line/${number}.png`),w=1024,h=1536;
+ const plain=finishLine(line,{...config.finishing,bands:[],hatching:[]}).getContext('2d').getImageData(0,0,w,h).data;
+ const added=finishLine(line,{...config.finishing,bands:e.bands||[],hatching:[]}).getContext('2d').getImageData(0,0,w,h).data;
+ const mg=make(w,h).getContext('2d',{willReadFrequently:true});mg.scale(w/819,h/1229);for(const p of e.erase||[])mg.fill(new Path2D(p));
+ const mask=mg.getImageData(0,0,w,h).data,img=ctx.getImageData(0,0,w,h),d=img.data;
+ for(let i=0;i<d.length;i+=4){const v=Math.min(mask[i+3]>127?plain[i]:d[i],added[i]);d[i]=d[i+1]=d[i+2]=v;}
+ ctx.putImageData(img,0,0);
+}
 export async function buildBatch(number,{jitter=true,grain=true,inkSpread=.5}={}){
  if(BATCH[number].inkOnly)return buildInk(number,BATCH[number],{inkSpread});
  const config=BATCH[number],applyFinishing=config.finishing&&!config.frozenInkMaster,ROLES=config.roles,MAP=shiftMap({width:1024,height:1536,...config.map},number),INK_PATH=ROOT+(applyFinishing?`line/${number}.png`:`batch-${config.batch}/${number}-ink.png`);
  const img=await load(INK_PATH),w=MAP.width,h=MAP.height,n=w*h,source=make(w,h),ctx=source.getContext('2d',{willReadFrequently:true});
- ctx.drawImage(applyFinishing?finishLine(img,config.finishing):img,0,0,w,h);const pixels=ctx.getImageData(0,0,w,h).data;
+ ctx.drawImage(applyFinishing?finishLine(img,config.finishing):img,0,0,w,h);if(!applyFinishing&&config.masterEdits)await editMaster(ctx,number,config);const pixels=ctx.getImageData(0,0,w,h).data;
  const labelCanvas=make(w,h),lc=labelCanvas.getContext('2d',{willReadFrequently:true});
  // G carries a check value so antialiased path edges (a blend of two ids) can be detected.
  const tag=id=>`rgb(${id},${(id*67+13)&255},0)`;
