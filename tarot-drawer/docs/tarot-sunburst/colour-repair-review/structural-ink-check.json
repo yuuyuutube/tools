@@ -1,0 +1,53 @@
+{
+  "note": "N structural channel differs only by at most 1/255 quantization on antialiased pixels when re-encoded. No pixels differ by more than one level. Original ink masters are byte-for-byte unchanged.",
+  "cards": [
+    {
+      "changedStructuralInkPixels": 3289,
+      "maximumDifference": 1,
+      "number": 12,
+      "pixelsDifferingMoreThanOne": 0
+    },
+    {
+      "changedStructuralInkPixels": 4482,
+      "maximumDifference": 1,
+      "number": 20,
+      "pixelsDifferingMoreThanOne": 0
+    },
+    {
+      "changedStructuralInkPixels": 2190,
+      "maximumDifference": 1,
+      "number": 17,
+      "pixelsDifferingMoreThanOne": 0
+    },
+    {
+      "changedStructuralInkPixels": 5088,
+      "maximumDifference": 1,
+      "number": 21,
+      "pixelsDifferingMoreThanOne": 0
+    },
+    {
+      "changedStructuralInkPixels": 6080,
+      "maximumDifference": 1,
+      "number": 10,
+      "pixelsDifferingMoreThanOne": 0
+    },
+    {
+      "changedStructuralInkPixels": 3841,
+      "maximumDifference": 1,
+      "number": 16,
+      "pixelsDifferingMoreThanOne": 0
+    },
+    {
+      "changedStructuralInkPixels": 3067,
+      "maximumDifference": 1,
+      "number": 19,
+      "pixelsDifferingMoreThanOne": 0
+    },
+    {
+      "changedStructuralInkPixels": 4754,
+      "maximumDifference": 1,
+      "number": 14,
+      "pixelsDifferingMoreThanOne": 0
+    }
+  ]
+}

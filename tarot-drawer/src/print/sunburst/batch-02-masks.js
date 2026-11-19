@@ -1,4 +1,5 @@
 import {SHADOWS,BANDS} from './batch-02-shadows.js';
+import {fold} from './ink-guides.js';
 // Batch 02 uses the user's original raster line drawings as immutable geometry.
 // Every path below is a selection / colour / hatching guide in 819 × 1229 units.
 const r=(id,ink,path,componentOnly=true)=>({id,ink,path,componentOnly});
@@ -49,6 +50,18 @@ export const BATCH={
    r('key-white',[.03,0,.25],'M439 823H486V859L382 930L378 950L330 950L323 928L440 855Z'),
   ]},
  6:{...common,id:'lovers',
+  // Edits on the approved ink master (design units). Erase: the woman's arm cut
+  // where her torso covers it, and the cuts across her waist and drape. Bands:
+  // new shading that follows the drape's folds (swag edge, the fold below it,
+  // the left fold and the lower hanging fold), dark seam first.
+  masterEdits:{
+   erase:['M538 586L600 586L600 656L556 656L555 641L538 641Z','M546 688L640 688L640 765L546 765Z'],
+   bands:[
+    fold([[563,721],[575,727],[594,724],[608,713]],[575,735],[594,732],3,.95),
+    fold([[579,742],[591,739],[604,732],[614,721]],[591,748],[604,741],3,.95),
+    fold([[553,727],[558,737],[566,743],[575,747]],[565,730],[571,736],3,.9),
+    fold([[582,763],[576,769],[567,778],[560,785]],[585,773],[576,782],3,.9),
+   ]},
   seeds:[{role:'flames',x:715,y:316},{role:'flames',x:734,y:458},{role:'flames',x:676,y:505},
    {role:'trunk',x:109,y:484},{role:'trunk',x:107,y:536},{role:'trunk',x:102,y:645},{role:'trunk',x:104,y:711},{role:'trunk',x:104,y:809},{role:'trunk',x:718,y:700},{role:'trunk',x:718,y:800},
    {role:'serpent',x:149,y:532},{role:'serpent',x:73,y:590},{role:'serpent',x:117,y:630},{role:'serpent',x:77,y:700},{role:'serpent',x:124,y:755},
