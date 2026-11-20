@@ -4,6 +4,9 @@
 // 開發用：從 Photoshop 平塗稿重新分色、重印 1–21，存成 assets/reveal/{n}-{key}.webp 與 assets/faces/{id}.webp。
 // 需搭配可接受 PUT /__bake/ 的本機伺服器；網站本身只讀取產出的靜態檔。
 import {buildRevealPlates,REVEAL_KEYS} from './src/print/sunburst/reveal-plates.js';
+import {buildFool} from './src/print/sunburst/fool-pipeline.js';
+// 0 號愚者沿用較早完成的愚者印刷流程，牌面不重寫。
+const buildZero=async()=>{const f=await buildFool({captureInkLayers:true});return {id:'fool',layers:f.revealPlates,illustration:f.illustration,colours:'—',keepFace:true};};
 const log=t=>{document.getElementById('log').textContent+=t+'\n';};
 const load=src=>new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=src;});
 const pixels=(src,w,h)=>{const cv=Object.assign(document.createElement('canvas'),{width:w,height:h}),g=cv.getContext('2d');g.drawImage(src,0,0,w,h);return g.getImageData(0,0,w,h).data;};
@@ -12,12 +15,12 @@ const only=new URLSearchParams(location.search).get('n');
 const numbers=only?only.split(',').map(Number):Array.from({length:21},(_,i)=>i+1);
 window.bakeResult=[];
 for(const n of numbers){
- const t=performance.now(),r=await buildRevealPlates(n);
+ const t=performance.now(),r=n===0?await buildZero():await buildRevealPlates(n);
  // 與舊牌面比對（只供參考：平塗稿修正過的地方本來就會不同）
  const face=await load(`assets/faces/${r.id}.webp`),a=pixels(face,654,870),b=pixels(r.illustration,654,870);
  let diff=0;for(let i=0;i<a.length;i+=4)diff+=Math.abs(a[i]-b[i])+Math.abs(a[i+1]-b[i+1])+Math.abs(a[i+2]-b[i+2]);diff/=a.length/4*3;
  for(const k of REVEAL_KEYS){const res=await fetch(`/__bake/${n}-${k}.webp`,{method:'PUT',body:await blob(r.layers[k])});if(!res.ok)throw Error(`upload ${n}-${k} ${res.status}`);}
- {const res=await fetch(`/__face/${r.id}.webp`,{method:'PUT',body:await new Promise(ok=>r.illustration.toBlob(ok,'image/webp',.9))});if(!res.ok)throw Error(`face ${r.id} ${res.status}`);}
+ if(!r.keepFace){const res=await fetch(`/__face/${r.id}.webp`,{method:'PUT',body:await new Promise(ok=>r.illustration.toBlob(ok,'image/webp',.9))});if(!res.ok)throw Error(`face ${r.id} ${res.status}`);}
  window.bakeResult.push({n,id:r.id,diff:+diff.toFixed(2)});
  log(`${n} ${r.id} 與舊牌面平均差 ${diff.toFixed(2)} · ${r.colours} 色 · ${Math.round(performance.now()-t)}ms`);
 }

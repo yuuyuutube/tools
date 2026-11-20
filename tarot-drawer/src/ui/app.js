@@ -400,10 +400,10 @@ function pick(cd) {
   const artImage = cd.face.querySelector('[data-card-layer="illustration"] image');
   const readyImage = new Image(); readyImage.src = artImage.getAttribute('href');
   const ordinaryFaceReady = readyImage.decode().catch(() => {});
-  // 1–21: pre-baked separations (assets/reveal) printed from the same source
+  // 0–21: pre-baked separations (assets/reveal) printed from the same source
   // plates as the face, so the reveal ends exactly on the approved colours.
   const number = cardById(d.cardId).number;
-  if (number > 0 && number <= 21) {
+  if (number >= 0 && number <= 21) {
     const overlay = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     overlay.dataset.revealPlates = 'true'; overlay.style.isolation = 'isolate';
     const plateReady = [];
