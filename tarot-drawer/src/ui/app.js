@@ -102,7 +102,7 @@ function nextBack(animate = true) {
     await new Promise(requestAnimationFrame);
     if (change !== backChange) return;
     stage.classList.add('back-changing');
-    await wait(760);
+    await wait(1100);
     if (change !== backChange) return;
     stage.style.setProperty('--back', `url("${url}")`);
     stage.classList.remove('back-changing');
