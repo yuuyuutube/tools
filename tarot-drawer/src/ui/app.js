@@ -14,6 +14,8 @@ import { revealWindow } from './window-reveal.js';
 const $ = s => document.querySelector(s);
 const app = $('#app'), stage = $('#stage'), pile = $('#pile'), board = $('#board'), cols = $('#cols'), detail = $('#detail');
 const live = $('#live'), toastEl = $('#toast');
+// 操作列與可捲動結果分開，所有牌陣都保持可見。
+app.append(board.querySelector('.actions'));
 const N = CARDS.length;
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
@@ -119,6 +121,7 @@ function markTop() {
 
 function resetCard(cd) {
   const el = cd.el;
+  if (el.parentElement !== stage) stage.append(el);
   if (cd.w !== M.cw) {          // 放大過的牌：先換回原本的尺寸（用 scale 補上，畫面不會跳）
     const s = cd.w / M.cw;
     el.style.removeProperty('--cw');
@@ -208,6 +211,7 @@ function buildBoard() {
   const today = session.spread === 'moon' && session.count === 4 ? moonPhaseIndex(new Date()) : -1;
   cols.innerHTML = labels.map((l, i) =>
     `<div class="col${i === 0 ? ' next' : ''}${i === today ? ' today' : ''}">${l ? `<div class="pos"><b>${i + 1}</b>${l.zh}${l.hint ? `<i>${l.hint}</i>` : ''}</div>` : ''}<div class="slot"></div><div class="meta"></div></div>`).join('');
+  board.scrollTop = 0;
   detail.innerHTML = ''; detail.classList.remove('shown');
   board.dataset.count = session.count;
   board.toggleAttribute('data-multi', session.count > 1);
@@ -545,12 +549,26 @@ async function reveal() {
   detail.classList.add('shown');
   await wait(MOTION.metaRevealDuration);
   if (my !== run) return;
+  // 翻牌後把牌放回對應空位，捲動時插畫與解讀文字會一起移動。
+  picked.forEach(cd => cols.children[cd.slot].querySelector('.slot').append(cd.el));
   setState('result');
   if (result.cards.length > 1) picked.forEach(cd => { cd.el.classList.add('tap'); cd.el.tabIndex = 0; });
   $('#rel').hidden = !(result.pro && result.cards.length > 1);
   say(result.cards.map(describe).join(' '));
   posterBlob(result).catch(() => {});      // 先把海報算好，按下儲存時就能馬上交給系統
 }
+
+// 結果牌已在 board 裡，點擊與鍵盤選牌也由結果區接手。
+board.addEventListener('click', e => {
+  const cd = cardOf(e.target.closest('.card'));
+  if (state === 'result' && cd?.drawn) setActive(cd.slot);
+});
+board.addEventListener('keydown', e => {
+  const cd = cardOf(e.target.closest('.card'));
+  if (state === 'result' && cd?.drawn && (e.key === 'Enter' || e.key === ' ')) {
+    e.preventDefault(); setActive(cd.slot);
+  }
+});
 
 // ---------------- 結果操作 ----------------
 let toastTimer = 0;
@@ -768,7 +786,7 @@ function relayout() {
     if (G.scroll && focus < 0) focus = Math.round(pos);
     layoutFan();
     cards.filter(c => c.drawn).forEach(settle);
-  } else if (state === 'result') cards.filter(c => c.drawn).forEach(settle);
+  } // 結果牌已放進 slot，由 CSS 隨內容區一起排版。
 }
 new ResizeObserver(relayout).observe(stage);
 
