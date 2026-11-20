@@ -146,4 +146,4 @@ src/audio/             紙張與微風星光音效
 
 ### 牌背日期印章設計預覽
 
-[stamp-preview.html](stamp-preview.html) 提供九款與牌背呼應的單色日期章、各自的裝飾章框，以及單張／三張分享圖蓋章試看。可切換日期、牌面、缺墨程度，下載分享 PNG 或印章 SVG。新章目前只在預覽明確指定時使用。可編輯來源為 `src/poster/stamps.js`，完整設計樣張在 [stamps](docs/tarot-sunburst/stamps/README.md)。
+[stamp-preview.html](stamp-preview.html) 提供九款與牌背呼應的單色日期章、各自的裝飾章框，以及單張／三張分享圖蓋章試看。可切換日期、牌面、缺墨程度，下載分享 PNG 或印章 SVG。正式抽牌的分享圖依這次使用的牌背蓋對應的章（`stampForBack()`）。日期數字是 `stamps.js` 內的線條字形，不依賴系統字型。可編輯來源為 `src/poster/stamps.js`，完整設計樣張在 [stamps](docs/tarot-sunburst/stamps/README.md)。

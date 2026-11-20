@@ -3,7 +3,8 @@
 import { SPREADS, DEFAULTS, MOTION, EASE } from '../config.js';
 import { CARDS, CARD_IDS, cardById, keywordsOf } from '../data/cards.js';
 import { createSession } from '../engine/draw.js';
-import { faceSVG, BACKS, offsetsFromSeed, svgDataURL } from '../art/frame.js';
+import { faceSVG, BACKS, BACK_NAMES, offsetsFromSeed, svgDataURL } from '../art/frame.js';
+import { stampForBack } from '../poster/stamps.js';
 import { posterBlob, savePoster } from '../poster/poster.js';
 import { sfx, soundOn, setSound } from '../audio/sound.js';
 import { SWIPE, swipeCardDelta, fanFocusPosition, wheelCardDelta } from './fan-input.js';
@@ -429,6 +430,7 @@ async function reveal() {
   const picked = cards.filter(c => c.drawn).sort((a, b) => a.slot - b.slot);
   result = {
     seed: session.seed, offsets: session.offsets, date: new Date(), spread: session.spread,
+    stampId: stampForBack(BACK_NAMES[backIndex]),   // 分享圖的日期章跟著這次的牌背
     cards: session.drawn.map((d, i) => ({ card: cardById(d.cardId), orientation: d.orientation, label: session.count === 3 ? SPREADS[session.spread][i] : null })),
   };
   // 先把結果的版面排好（文字還看不見），才量得到每張牌最後要去的位置

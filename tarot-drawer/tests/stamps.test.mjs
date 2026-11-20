@@ -35,3 +35,10 @@ test('分享圖只在指定印章時採用新版；單張與三張均可組版',
   }
  }
 });
+test('正式牌背輪替的每一款都對應到自己的日期章',async()=>{
+ const {stampForBack}=await import('../src/poster/stamps.js');
+ const names=['card-back','card-back-moth','card-back-tide','card-back-pomegranate','card-back-serpent','card-back-flower','card-back-geometry'];
+ const ids=names.map(stampForBack);
+ assert.equal(new Set(ids).size,names.length);
+ for(const [i,n] of names.entries())assert.equal(STAMP_DESIGNS.find(d=>d.id===ids[i]).asset,n);
+});
