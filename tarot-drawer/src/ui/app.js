@@ -591,7 +591,12 @@ async function reveal() {
   await wait(MOTION.metaRevealDuration);
   if (my !== run) return;
   // 翻牌後把牌放回對應空位，捲動時插畫與解讀文字會一起移動。
-  picked.forEach(cd => cols.children[cd.slot].querySelector('.slot').append(cd.el));
+  picked.forEach(cd => {
+    // 移到結果區前結束 CSS 動畫，避免重新掛載時拉線與牌名再播一次。
+    // 動畫終點與靜態樣式相同，移除後維持完整橫線與可見牌名。
+    cd.el.classList.remove('printing');
+    cols.children[cd.slot].querySelector('.slot').append(cd.el);
+  });
   setState('result');
   if (result.cards.length > 1) picked.forEach(cd => { cd.el.classList.add('tap'); cd.el.tabIndex = 0; });
   $('#rel').hidden = !(result.pro && result.cards.length > 1);
