@@ -5,6 +5,7 @@ import { actOf, elementOf, ELEMENTS, elementIcon, relationsOf, moonPhaseIndex, C
 import { CARDS, CARD_IDS, cardById, keywordsOf } from '../data/cards.js';
 import { createSession } from '../engine/draw.js';
 import { faceSVG, BACKS, BACK_NAMES, offsetsFromSeed, svgDataURL } from '../art/frame.js';
+import { buildLightPaintReveal } from '../print/sunburst/light-paint-reveal.js';
 import { stampForBack } from '../poster/stamps.js';
 import { posterBlob, savePoster } from '../poster/poster.js';
 import { sfx, soundOn, setSound } from '../audio/sound.js';
@@ -129,6 +130,8 @@ function resetCard(cd) {
   cd.anim?.cancel(); cd.anim = null;
   el.classList.remove('drawn', 'flipped', 'printing', 'gone', 'tap');
   cd.cancelWindowReveal?.(); cd.cancelWindowReveal = null;
+  cd.cancelPlateReveal?.(); cd.cancelPlateReveal = null;
+  cd.plateOverlay = null; cd.illustrationSrc = null; cd.printError = null;
   el.style.removeProperty('--face-reveal-start');
   cd.faceReady = null;
   el.tabIndex = -1;
@@ -397,7 +400,38 @@ function pick(cd) {
   // from an unloaded illustration. The SVG and preload share the cached URL.
   const artImage = cd.face.querySelector('[data-card-layer="illustration"] image');
   const readyImage = new Image(); readyImage.src = artImage.getAttribute('href');
-  cd.faceReady = readyImage.decode().catch(() => {});
+  const ordinaryFaceReady = readyImage.decode().catch(() => {});
+  if (cardById(d.cardId).number > 0 && cardById(d.cardId).number <= 21) {
+    cd.faceReady = Promise.all([ordinaryFaceReady, buildLightPaintReveal(cardById(d.cardId).number)]).then(async ([, printed]) => {
+      if (cd.drawn !== d) return;
+      const illustrationSrc = printed.illustration.toDataURL('image/png');
+      const urls = { illustrationSrc, ...Object.fromEntries(Object.entries(printed.revealPlates).map(([key, canvas]) => [key, canvas.toDataURL('image/png')])) };
+      await Promise.all(Object.values(urls).map(src => {
+        const image = new Image(); image.src = src;
+        return image.decode ? image.decode() : new Promise((resolve, reject) => { image.onload = resolve; image.onerror = reject; });
+      }));
+      if (cd.drawn !== d) return;
+      artImage.setAttribute('href', illustrationSrc);
+      cd.illustrationSrc = illustrationSrc;
+      const overlay = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      overlay.dataset.revealPlates = 'true'; overlay.style.isolation = 'isolate';
+      for (const key of ['paper', 'Y', 'O', 'B', 'N']) {
+        const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+        image.dataset.plate = key; image.setAttribute('href', urls[key]);
+        image.setAttribute('x', '41'); image.setAttribute('y', '76');
+        image.setAttribute('width', '218'); image.setAttribute('height', '290');
+        image.setAttribute('preserveAspectRatio', 'none');
+        if (key !== 'paper') image.style.mixBlendMode = 'multiply';
+        image.style.opacity = key === 'Y' || key === 'O' || key === 'B' ? '0' : '1';
+        overlay.append(image);
+      }
+      cd.face.querySelector('[data-card-layer="illustration"]').append(overlay);
+      cd.plateOverlay = overlay;
+    }).catch(error => {
+      if (cd.drawn === d) cd.printError = error;
+      console.error('牌面套色準備失敗', error);
+    });
+  } else cd.faceReady = ordinaryFaceReady;
   cd.face.classList.toggle('rev', d.orientation === 'reversed');
   sfx.slide();
 
@@ -426,6 +460,28 @@ const FLIP = [
   { transform: 'translateY(-2.5%) rotateY(187deg) scale(1.03)', offset: .8 },
   { transform: 'translateY(0) rotateY(180deg) scale(1)' },
 ];
+
+const revealProgress = (t, start, duration) => Math.max(0, Math.min(1, (t - start) / duration));
+function animatePlateReveal(cd) {
+  const overlay = cd.plateOverlay;
+  if (!overlay) return;
+  cd.cancelPlateReveal?.();
+  const plates = Object.fromEntries([...overlay.querySelectorAll('[data-plate]')].map(image => [image.dataset.plate, image]));
+  if (reduced.matches) { overlay.remove(); cd.plateOverlay = null; return; }
+  const start = performance.now(); let frame = 0;
+  const stop = () => { cancelAnimationFrame(frame); overlay.remove(); if (cd.plateOverlay === overlay) cd.plateOverlay = null; cd.cancelPlateReveal = null; };
+  cd.cancelPlateReveal = stop;
+  const tick = now => {
+    const t = now - start;
+    plates.Y.style.opacity = String(revealProgress(t, 700, 230));
+    plates.O.style.opacity = String(revealProgress(t, 850, 230));
+    plates.B.style.opacity = String(revealProgress(t, 1000, 260));
+    overlay.style.opacity = String(1 - revealProgress(t, 1260, 160));
+    if (t < 1420) frame = requestAnimationFrame(tick);
+    else stop();
+  };
+  frame = requestAnimationFrame(tick);
+}
 
 const metaHTML = it => {
   const rev = it.orientation === 'reversed';
@@ -463,6 +519,8 @@ async function reveal() {
   result.cards.forEach((it, i) => { cols.children[i].querySelector('.meta').innerHTML = metaHTML(it); });
   board.dataset.phase = 'result';
   setActive(0);
+  const printingCards = picked.filter(cd => cd.drawn && cardById(cd.drawn.cardId).number > 0 && cardById(cd.drawn.cardId).number <= 21);
+  if (printingCards.some(cd => !cd.faceReady || !cd.plateOverlay)) toast('正在準備牌面套色，完成後會自動翻開', 30000);
 
   const mid = (fan.length - 1) / 2;
   fan.forEach((cd, j) => {
@@ -473,6 +531,9 @@ async function reveal() {
   picked.forEach(cd => fly(cd, MOTION.toResult, EASE.soft));
   await Promise.all([wait(MOTION.toResult + 40), ...picked.map(cd => cd.faceReady)]);
   if (my !== run) return;
+  picked.forEach(cd => { if (cd.illustrationSrc && result.cards[cd.slot]) result.cards[cd.slot].illustrationSrc = cd.illustrationSrc; });
+  if (toastEl.textContent === '正在準備牌面套色，完成後會自動翻開') { clearTimeout(toastTimer); toastEl.classList.remove('on'); }
+  if (printingCards.some(cd => cd.printError)) toast('有牌的套色素材未能載入，已保留原牌面', 5000);
   picked.forEach(settle);
 
   const faceStart = Math.round(MOTION.flip * MOTION.faceRevealAt);
@@ -483,6 +544,7 @@ async function reveal() {
     cd.cancelWindowReveal?.();
     cd.cancelWindowReveal = revealWindow(cd.face.querySelector('svg'), { delay: ms(faceStart), duration: ms(MOTION.windowRevealDuration), startRatio: MOTION.windowRevealStartRatio });
     cd.el.classList.add('printing', 'flipped');
+    animatePlateReveal(cd);
     if (!reduced.matches) cd.anim = cd.el.firstElementChild.animate(FLIP, { duration: MOTION.flip, easing: EASE.flip });
     cd.el.setAttribute('aria-label', describe(it));
     sfx.flip();
@@ -504,11 +566,11 @@ async function reveal() {
 
 // ---------------- 結果操作 ----------------
 let toastTimer = 0;
-function toast(text) {
+function toast(text, duration = 2600) {
   toastEl.textContent = text;
   toastEl.classList.add('on');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toastEl.classList.remove('on'), 2600);
+  toastTimer = setTimeout(() => toastEl.classList.remove('on'), duration);
 }
 
 $('#save').addEventListener('click', async () => {

@@ -213,6 +213,26 @@ img, svg { -webkit-user-drag: none; }
 #board[data-count="4"] .meta h2, #board[data-count="5"] .meta h2 { font-size: clamp(15px, 1.9vw, 24px); letter-spacing: .06em; margin-right: -.06em; }
 #board[data-count="5"] .meta .kw { font-size: 12px; letter-spacing: .02em; }
 
+/* 月相四張在短筆電視窗：縮小牌面，結果可捲動，操作列固定留在視窗底部。 */
+@media (min-width: 700px) and (max-height: 820px) {
+  #board[data-spread="moon"][data-count="4"][data-phase="result"] {
+    --sw: min(calc((100vw - 2 * var(--gutter) - 3 * var(--gap)) / 4), max(120px, calc((100dvh - 500px) * .6)), 190px);
+    overflow-y: auto; overscroll-behavior: contain;
+    gap: clamp(8px, 1.5dvh, 13px);
+    padding-bottom: calc(var(--bottom) + 76px);
+  }
+  #board[data-spread="moon"][data-count="4"][data-phase="result"] .col { gap: 6px; }
+  #board[data-spread="moon"][data-count="4"][data-phase="result"] .meta .no,
+  #board[data-spread="moon"][data-count="4"][data-phase="result"] .meta .en { font-size: 9px; }
+  #board[data-spread="moon"][data-count="4"][data-phase="result"] .meta .ori { margin-top: 3px; }
+  #board[data-spread="moon"][data-count="4"][data-phase="result"] .meta .kw { margin-top: 4px; font-size: 11px; line-height: 1.45; }
+  #board[data-spread="moon"][data-count="4"][data-phase="result"] .actions {
+    position: fixed; z-index: 4; left: 0; right: 0; bottom: var(--bottom);
+    justify-content: center; margin-top: 0; padding: 12px 16px 4px;
+    background: linear-gradient(to bottom, transparent, var(--bg) 24%);
+  }
+}
+
 /* 幕次與元素的小標 */
 .tags { margin-top: 10px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; font-size: 11px; letter-spacing: .08em; color: var(--mute); }
 .tags span { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 9px; border-radius: 11px; border: 1px solid var(--line); white-space: nowrap; }
