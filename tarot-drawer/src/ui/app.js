@@ -65,15 +65,48 @@ const say = text => { live.textContent = ''; requestAnimationFrame(() => { live.
 let backIndex = -1;
 try { backIndex = parseInt(localStorage.getItem('tarot-back'), 10); } catch { /* 沒有紀錄 */ }
 if (!(backIndex >= 0 && backIndex < BACKS.length)) backIndex = Math.floor(Math.random() * BACKS.length) - 1;
-let backReady = false;
-function nextBack() {
+let backReady = false, backChange = 0;
+let backTransition = Promise.resolve();
+const backLoads = new Map();
+function preloadBack(url) {
+  if (!backLoads.has(url)) {
+    const image = new Image();
+    image.src = url;
+    const ready = image.decode ? image.decode() : new Promise((resolve, reject) => {
+      image.onload = resolve; image.onerror = reject;
+    });
+    backLoads.set(url, ready.catch(error => { backLoads.delete(url); throw error; }));
+  }
+  return backLoads.get(url);
+}
+function nextBack(animate = true) {
+  const change = ++backChange;
   backIndex = (backIndex + 1) % BACKS.length;
   try { localStorage.setItem('tarot-back', backIndex); } catch { /* 存不了就只換這一次 */ }
-  const url = BACKS[backIndex], set = () => { if (url === BACKS[backIndex]) stage.style.setProperty('--back', `url("${url}")`); };
-  if (!backReady) { backReady = true; set(); return; }       // 第一次直接用，牌背底色會先墊著
-  const img = new Image();                                   // 之後先載好再換，收牌時不會閃一下空白
-  img.onload = img.onerror = set;
-  img.src = url;
+  const url = BACKS[backIndex];
+  stage.classList.remove('back-changing');
+  const loaded = preloadBack(url);
+  // 顯示這一款時就預載下一款，讓下一次重抽不必臨時抓圖。
+  preloadBack(BACKS[(backIndex + 1) % BACKS.length]).catch(() => {});
+  if (!backReady) {
+    backReady = true;
+    stage.style.setProperty('--back', `url("${url}")`);
+    backTransition = loaded.catch(() => {});
+    return;
+  }
+  backTransition = (async () => {
+    // 先以舊牌背收攏，再在完整牌堆上淡入已解碼的新牌背。
+    await Promise.all([loaded, wait(animate ? MOTION.gather + N * 6 + 40 : 0)]);
+    if (change !== backChange) return;
+    stage.style.setProperty('--back-next', `url("${url}")`);
+    await new Promise(requestAnimationFrame);
+    if (change !== backChange) return;
+    stage.classList.add('back-changing');
+    await wait(320);
+    if (change !== backChange) return;
+    stage.style.setProperty('--back', `url("${url}")`);
+    stage.classList.remove('back-changing');
+  })().catch(() => {}); // 載入失敗時保留原本已載好的牌背。
 }
 const cards = Array.from({ length: N }, () => {
   const el = document.createElement('div');
@@ -145,7 +178,7 @@ function resetCard(cd) {
 // ---------------- IDLE ----------------
 function toIdle(animate = true) {
   run++;
-  nextBack();
+  nextBack(animate);
   cancelAnimationFrame(raf); raf = 0; drag = null;
   session = null; result = null; fan = []; focus = -1; saving = false;
   $('#save').classList.remove('busy');
@@ -165,6 +198,8 @@ async function start() {
   if (state !== 'idle') return;
   const my = ++run;
   setState('shuffling');
+  await backTransition;
+  if (my !== run) return;
   // 洗牌在資料層完成：此刻整副牌的順序與每張牌的正逆位就已經決定，接下來的動畫只是演出
   session = createSession(CARD_IDS, settings);
   session.pro = settings.pro;
