@@ -7,6 +7,7 @@ import { faceSVG, loadFaces, FONT } from '../art/frame.js';
 import { P, N, O, Y, B, K, burst } from '../art/kit.js';
 import { seeded } from '../engine/random.js';
 import {dateStampSVG} from './stamps.js';
+import { actOf, elementOf, ELEMENTS, relationsOf, CLOSING } from '../data/pro.js';
 
 export const POSTER_W = 1080, POSTER_H = 1620;
 const PAPER = '#f4eedf';
@@ -64,6 +65,61 @@ function placeCard(item, x, y, w, i, offsets) {
   return item.orientation === 'reversed' ? `<g transform="rotate(180 ${x + w / 2} ${y + h / 2})">${svg}</g>` : svg;
 }
 
+
+// ---------------- 專業模式的版面 ----------------
+// 元素的鍊金術三角，畫成路徑（不靠字型）
+function elementMark(x, y, size, el, color = N) {
+  const up = el === 'fire' || el === 'air', h = size * .86, l = x - size / 2, t = y - h / 2;
+  const tri = up ? `M${x} ${t}L${l + size} ${t + h}H${l}Z` : `M${l} ${t}H${l + size}L${x} ${t + h}Z`;
+  const by = el === 'air' ? t + h * .62 : el === 'earth' ? t + h * .38 : null;
+  const bar = by === null ? '' : `M${l + size * .2} ${by}H${l + size * .8}`;
+  return `<path d="${tri}${bar}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`;
+}
+// 「第二幕・內在修正　▽ 水」：置中排在 cx
+function proTagLine(cx, y, card, size) {
+  const act = actOf(card.number), el = elementOf(card.number);
+  const a = `${act.zh}・${act.name}`, e = ELEMENTS[el].zh;
+  const aw = a.length * size * 1.08, gap = size * 1.1, iw = size * .9, ew = size * 1.1;
+  const x0 = cx - (aw + gap + iw + size * .35 + ew) / 2;
+  return T(x0, y, size, a, { anchor: 'start', ls: size * .08, opacity: .75 }) +
+    elementMark(x0 + aw + gap + iw / 2, y - size * .36, iw, el) +
+    T(x0 + aw + gap + iw + size * .35, y, size, e, { anchor: 'start', opacity: .75 });
+}
+
+function proMulti(res, sx, sy, seal) {
+  const n = res.cards.length, W = POSTER_W;
+  const w = n === 3 ? 300 : n === 4 ? 226 : 178, gap = n === 3 ? 30 : n === 4 ? 24 : 20, h = w * 5 / 3;
+  const x0 = (W - w * n - gap * (n - 1)) / 2, cx = i => x0 + i * (w + gap) + w / 2, y = 330, b = y + h;
+  const k = w / 300, os = n === 3 ? .8 : n === 4 ? .64 : .52;
+  let s = `<path d="${res.cards.slice(1).map((_, i) => `M${cx(i) + 30} 200H${cx(i + 1) - 30}`).join('')}" stroke="${N}" stroke-width="2" stroke-dasharray="2 9" stroke-linecap="round"/>`;
+  res.cards.forEach((it, i) => {
+    const x = x0 + i * (w + gap), kw = keywordsOf(it.card, it.orientation), zh = it.card.nameZh;
+    const lz = it.label.zh + (it.label.hint ? `・${it.label.hint}` : ''), lzs = Math.min(34, Math.floor((w + gap - 12) / (lz.length * 1.35)));
+    const zs = Math.min(52 * k + 6, Math.floor((w - 10) / (zh.length * 1.12)));
+    const oy = b + 160, ty = oy + 50 * os + 40, ks = n === 3 ? 25 : n === 4 ? 22 : 19;
+    s += `<circle cx="${cx(i)}" cy="200" r="22" fill="${PAPER}" stroke="${N}" stroke-width="2.5"/>` + T(cx(i), 208, 22, i + 1, { weight: 700 }) +
+      T(cx(i), 264, lzs, lz, { weight: 800, ls: lzs * .25 }) +
+      T(cx(i), 292, 13, it.label.en, { ls: 3, opacity: .7 }) +
+      (i === res.moonPhase ? `<rect x="${cx(i) - 52}" y="302" width="104" height="22" rx="11" fill="${N}"/>` + T(cx(i), 318, 13, '今日月相', { ls: 3, fill: PAPER, weight: 600 }) : '') +
+      cardShadow(x, y, w, h, 9 * k + 2, sx, sy) + placeCard(it, x, y, w, i, res.offsets) +
+      T(cx(i), b + 52, 21, it.card.romanNumeral, { ls: 6 }) +
+      riso(cx(i), b + 112, zs, zh, zh.length > 3 ? 4 : 8, 2) +
+      T(cx(i), b + 142, 12, it.card.nameEn.toUpperCase(), { ls: 3, opacity: .75 }) +
+      orientationTag(cx(i), oy, it.orientation, os) +
+      proTagLine(cx(i), ty, it.card, n === 3 ? 18 : n === 4 ? 15 : 13) +
+      kw.map((t, j) => T(cx(i), ty + 46 + j * (ks + 13), ks, t, { ls: 2 })).join('');
+  });
+  // 牌間關係：只列出關係，不寫解讀
+  const r = relationsOf(res.cards.map(it => it.card.number));
+  const lines = [...r.steps.map(st => `${st.from + 1} → ${st.to + 1}　${st.journey}　${st.element}`),
+    ...r.notes.map(nt => `${nt.a + 1} ＋ ${nt.b + 1}　${nt.text}`)];
+  const top = n === 3 ? 1286 : n === 4 ? 1196 : 1100, lh = 34;
+  s += T(118, top, 15, '牌間關係 RELATIONS', { anchor: 'start', ls: 4, opacity: .6, weight: 700 }) +
+    lines.map((t, j) => T(118, top + 40 + j * lh, 20, t, { anchor: 'start', ls: 1.5 })).join('') +
+    T(118, top + 40 + lines.length * lh + 12, 16, CLOSING, { anchor: 'start', ls: 1.5, opacity: .6 });
+  return s + seal(864, 1452);
+}
+
 export function posterSVG(res) {
   const rnd = seeded(res.seed ^ 0x9e3779b9);
   const rot = (rnd() - .5) * 18, sx = rnd() < .5 ? -1 : 1, sy = 1;
@@ -87,7 +143,10 @@ export function posterSVG(res) {
       T(540, 1296, 23, it.card.nameEn.toUpperCase(), { ls: 9, opacity: .75 }) +
       orientationTag(540, 1334, it.orientation) +
       T(540, 1452, kwSize, kwText, { ls: 4 }) +
+      (res.pro ? proTagLine(540, 1512, it.card, 20) : '') +
       seal(864, 1124);
+  } else if (res.pro) {
+    s += proMulti(res, sx, sy, seal);
   } else {
     const w = 300, h = 500, gap = 30, x0 = (W - w * 3 - gap * 2) / 2, y = 318;
     const cx = i => x0 + i * (w + gap) + w / 2;

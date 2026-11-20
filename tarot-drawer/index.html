@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#e8e4dc">
-<title>小小塔羅印刷所｜THE LITTLE TAROT PRESS</title>
-<meta name="description" content="洗牌、選牌、翻牌，得到一張剛印好的塔羅牌。">
+<title>抽牌所｜TAROT DRAW</title>
+<meta name="description" content="洗牌、選牌、翻牌，抽一張塔羅牌。">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="zh_TW">
-<meta property="og:title" content="小小塔羅印刷所｜THE LITTLE TAROT PRESS">
-<meta property="og:description" content="洗牌、選牌、翻牌，得到一張剛印好的塔羅牌。">
+<meta property="og:title" content="抽牌所｜TAROT DRAW">
+<meta property="og:description" content="洗牌、選牌、翻牌，抽一張塔羅牌。">
 <link rel="stylesheet" href="src/ui/tokens.css">
 <link rel="stylesheet" href="src/ui/style.css">
 <script type="module" src="src/ui/app.js"></script>
@@ -31,6 +31,9 @@
   <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5m0 0-5 5m5-5 5 5"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14m0 0-5-5m5 5 5-5"/></symbol>
   <symbol id="i-dice" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.6 8.6v.1M15.4 8.6v.1M12 12v.1M8.6 15.4v.1M15.4 15.4v.1"/></symbol>
+  <symbol id="i-pro" viewBox="0 0 24 24"><path d="M12 3.5c.6 4.4 2.1 5.9 6.5 6.5-4.4.6-5.9 2.1-6.5 6.5-.6-4.4-2.1-5.9-6.5-6.5 4.4-.6 5.9-2.1 6.5-6.5Z"/><path d="M18.5 15.5c.3 1.6.9 2.2 2.5 2.5-1.6.3-2.2.9-2.5 2.5-.3-1.6-.9-2.2-2.5-2.5 1.6-.3 2.2-.9 2.5-2.5Z"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+  <symbol id="i-rel" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="2.5"/><circle cx="18.5" cy="6.5" r="2.5"/><circle cx="18.5" cy="17.5" r="2.5"/><path d="m7.8 11 8.4-3.6M7.8 13l8.4 3.6"/></symbol>
   <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 6.5C10 5 7 4.6 4 5v13c3-.4 6 0 8 1.5 2-1.500 5-1.900 8-1.500V5c-3-.4-6 0-8 1.500Zm0 0V19.500"/></symbol>
 </svg>
 
@@ -38,6 +41,7 @@
   <div class="top">
     <button id="back" class="dot" aria-label="回到牌堆" hidden><svg class="ic"><use href="#i-back"/></svg></button>
     <div class="tools">
+      <button id="pro" class="dot" aria-pressed="false" aria-label="專業模式"><svg class="ic"><use href="#i-pro"/></svg></button>
       <button id="sound" class="dot" aria-label="音效" aria-pressed="false"><svg class="ic"><use href="#i-mute"/></svg></button>
       <button id="info" class="dot" aria-haspopup="dialog" aria-label="說明"><svg class="ic"><use href="#i-info"/></svg></button>
     </div>
@@ -47,6 +51,7 @@
     <div id="cols"></div>
     <div id="detail" class="meta"></div>
     <div class="actions">
+      <button id="rel" class="dot big" aria-haspopup="dialog" aria-label="牌間關係" hidden><svg class="ic"><use href="#i-rel"/></svg></button>
       <button id="again" class="dot big" aria-label="再抽一次"><svg class="ic"><use href="#i-again"/></svg></button>
       <button id="save" class="dot big ink" aria-label="儲存圖片"><svg class="ic"><use href="#i-save"/></svg></button>
     </div>
@@ -62,6 +67,7 @@
       <button role="radio" data-spread="time">過去・現在・未來</button>
       <button role="radio" data-spread="advice">現況・阻礙・建議</button>
     </div>
+    <button id="pick-spread" class="opts" aria-haspopup="dialog" hidden><span class="ps-tag">專業</span><span class="ps-name"></span><svg class="ic"><use href="#i-chev"/></svg></button>
     <div class="opts">
       <div id="count" class="seg" role="radiogroup" aria-label="抽牌張數">
         <button role="radio" data-count="1" aria-label="抽一張"><svg class="ic"><use href="#i-one"/></svg></button>
@@ -85,7 +91,29 @@
     <dt><svg class="ic"><use href="#i-book"/></svg></dt><dd>本工具提供塔羅抽牌與基礎牌義參考，不包含完整占卜解讀。</dd>
     <dt><svg class="ic"><use href="#i-dice"/></svg></dt><dd>每次洗牌都以瀏覽器的密碼學亂數重新排列 22 張大阿爾克那，你點的那張牌背就是你抽到的牌。</dd>
     <dt><svg class="ic"><use href="#i-rev"/></svg></dt><dd>開啟逆位後，每張牌各自有一半的機會是逆位。</dd>
+    <dt><svg class="ic"><use href="#i-pro"/></svg></dt><dd>專業模式：多了月相四張、菱形五張等牌陣；每張牌標出它在愚者之旅的第幾幕與元素，多張牌時可查看牌與牌之間的關係。元素依 Golden Dawn 系統；牌間關係整理自 tarot-skill（MIT）。</dd>
   </dl>
+</section>
+
+<section id="welcome" class="sheet welcome" role="dialog" aria-modal="true" aria-labelledby="welcome-title" hidden>
+  <header><h2 id="welcome-title">嗨，新來的旅人</h2><button class="dot flat" data-close aria-label="關閉"><svg class="ic"><use href="#i-close"/></svg></button></header>
+  <div class="wl-body">
+    <p class="wl-lead">這裡是抽牌所。洗牌、選一張、翻開，看看你抽到的牌。</p>
+    <p class="wl-ask">先選一種看牌的方式：</p>
+    <div class="wl-choices">
+      <button data-mode="simple"><svg class="ic"><use href="#i-one"/></svg><b>簡易</b><small>抽牌、翻牌，<br>看牌義關鍵字</small></button>
+      <button data-mode="pro"><svg class="ic"><use href="#i-pro"/></svg><b>專業</b><small>更多牌陣、幕次與元素，<br>還有牌間關係</small></button>
+    </div>
+    <p class="wl-foot">可以隨時按右上角的 <svg class="ic" aria-label="星芒"><use href="#i-pro"/></svg> 切換。</p>
+  </div>
+</section>
+<section id="spreads" class="sheet" role="dialog" aria-modal="true" aria-label="選擇牌陣" hidden>
+  <header><h2>選擇牌陣</h2><button class="dot flat" data-close aria-label="關閉"><svg class="ic"><use href="#i-close"/></svg></button></header>
+  <div class="spread-list" role="radiogroup" aria-label="牌陣"></div>
+</section>
+<section id="relations" class="sheet" role="dialog" aria-modal="true" aria-label="牌間關係" hidden>
+  <header><h2>牌間關係</h2><button class="dot flat" data-close aria-label="關閉"><svg class="ic"><use href="#i-close"/></svg></button></header>
+  <div class="rel-body"></div>
 </section>
 
 <noscript>請啟用 JavaScript。</noscript>

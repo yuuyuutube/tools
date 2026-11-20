@@ -2,7 +2,7 @@
   "name": "tarot-drawer",
   "private": true,
   "type": "module",
-  "description": "小小塔羅印刷所 — 絹印風格的塔羅抽牌工具",
+  "description": "抽牌所 — 絹印風格的塔羅抽牌工具",
   "engines": { "node": ">=20" },
   "scripts": {
     "serve": "python3 scripts/dev-server.py 8000",

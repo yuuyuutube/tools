@@ -1,6 +1,7 @@
 // 畫面與流程：IDLE → SHUFFLING → SPREADING → SELECTING → REVEALING → RESULT
 // 抽牌結果全部來自 engine/draw.js 的 session；這裡只負責把它演出來，動畫不會再擲任何一次骰子。
-import { SPREADS, DEFAULTS, MOTION, EASE } from '../config.js';
+import { SPREADS, SPREAD_INFO, DEFAULTS, MOTION, EASE } from '../config.js';
+import { actOf, elementOf, ELEMENTS, elementIcon, relationsOf, moonPhaseIndex, CLOSING } from '../data/pro.js';
 import { CARDS, CARD_IDS, cardById, keywordsOf } from '../data/cards.js';
 import { createSession } from '../engine/draw.js';
 import { faceSVG, BACKS, BACK_NAMES, offsetsFromSeed, svgDataURL } from '../art/frame.js';
@@ -34,10 +35,20 @@ let saving = false;
 let M = null, G = null; // 版面尺寸、牌扇幾何
 
 const settings = { ...DEFAULTS };
+let returning = false;   // 以前來過（有存過設定）的人，歡迎詞改成「歡迎回來」
+try { returning = localStorage.getItem('tarot-settings') !== null; } catch { /* 沒有紀錄 */ }
 try { Object.assign(settings, JSON.parse(localStorage.getItem('tarot-settings') || '{}')); } catch { /* 用預設值 */ }
-if (settings.count !== 1 && settings.count !== 3) settings.count = DEFAULTS.count;
-if (!SPREADS[settings.spread]) settings.spread = DEFAULTS.spread;
 settings.reversals = !!settings.reversals;
+settings.pro = !!settings.pro;
+// 張數與牌陣要對得上；一般模式只有單張與兩種三張牌陣
+function normalizeSettings() {
+  if (!SPREADS[settings.spread]) settings.spread = DEFAULTS.spread;
+  if (!settings.pro && SPREAD_INFO[settings.spread].pro) settings.spread = DEFAULTS.spread;
+  if (settings.count !== 1) settings.count = SPREADS[settings.spread].length;
+}
+normalizeSettings();
+const labelsOf = s => s.count > 1 ? SPREADS[s.spread] : [null];
+const spreadName = () => settings.count === 1 ? SPREAD_INFO.single.name : SPREAD_INFO[settings.spread].name;
 
 function setState(s) {
   state = s;
@@ -151,6 +162,7 @@ async function start() {
   setState('shuffling');
   // 洗牌在資料層完成：此刻整副牌的順序與每張牌的正逆位就已經決定，接下來的動畫只是演出
   session = createSession(CARD_IDS, settings);
+  session.pro = settings.pro;
   session.offsets = offsetsFromSeed(session.seed);
   for (const cd of cards) { cd.face.innerHTML = ''; cd.face.classList.remove('rev'); cd.el.classList.remove('top1', 'top3'); }
   sfx.shuffle(MOTION.shuffleRounds);
@@ -189,11 +201,17 @@ async function start() {
 
 // ---------------- 牌陣（上方的空位與結果文字） ----------------
 function buildBoard() {
-  const labels = session.count === 3 ? SPREADS[session.spread] : [null];
+  const labels = labelsOf(session);
+  // 月相牌陣：標出今天最接近的月相位置
+  const today = session.spread === 'moon' && session.count === 4 ? moonPhaseIndex(new Date()) : -1;
   cols.innerHTML = labels.map((l, i) =>
-    `<div class="col${i === 0 ? ' next' : ''}">${l ? `<div class="pos"><b>${i + 1}</b>${l.zh}</div>` : ''}<div class="slot"></div><div class="meta"></div></div>`).join('');
+    `<div class="col${i === 0 ? ' next' : ''}${i === today ? ' today' : ''}">${l ? `<div class="pos"><b>${i + 1}</b>${l.zh}${l.hint ? `<i>${l.hint}</i>` : ''}</div>` : ''}<div class="slot"></div><div class="meta"></div></div>`).join('');
   detail.innerHTML = ''; detail.classList.remove('shown');
   board.dataset.count = session.count;
+  board.toggleAttribute('data-multi', session.count > 1);
+  board.toggleAttribute('data-pro', !!session.pro);
+  board.style.setProperty('--n', session.count);
+  $('#rel').hidden = true;
   board.dataset.phase = 'picking';
   board.hidden = false;
 }
@@ -222,7 +240,7 @@ function fanGeom() {
   const s = scroll ? Math.max(40, cw * .46) : Math.min(fit, cw * .4);
   const R = scroll ? Math.max(480, W * 1.5) : Math.max(900, W * 1.15);
   let top = M.topPad;
-  if (session.count === 3) top = cols.getBoundingClientRect().bottom - stage.getBoundingClientRect().top + 8;
+  if (session.count > 1) top = cols.getBoundingClientRect().bottom - stage.getBoundingClientRect().top + 8;
   const fy = Math.min((top + H) / 2 - H / 2 + ch * .04, H / 2 - ch / 2 - 44);
   G = { s, R, fy, scroll, lift: ch * .13 };
 }
@@ -248,7 +266,7 @@ function setFocus(i, viaKeyboard, recenter = true) {
 }
 function announcePick() {
   const k = session.drawn.length;
-  say(session.count === 3 ? `選第 ${k + 1} 張牌：${SPREADS[session.spread][k].zh}` : '選一張牌');
+  say(session.count > 1 ? `選第 ${k + 1} 張牌：${labelsOf(session)[k].zh}` : '選一張牌');
 }
 
 // 拖曳與慣性（只有放不下的牌扇才會捲）
@@ -412,7 +430,13 @@ const metaHTML = it => {
   const rev = it.orientation === 'reversed';
   return `<div class="no">${it.card.romanNumeral}</div><h2>${it.card.nameZh}</h2><div class="en">${it.card.nameEn.toUpperCase()}</div>` +
     `<div class="ori${rev ? ' rev' : ''}"><svg class="ic" aria-hidden="true"><use href="#${rev ? 'i-down' : 'i-up'}"/></svg>${rev ? '逆位' : '正位'}</div>` +
-    `<p class="kw">${keywordsOf(it.card, it.orientation).map(k => `<span>${k}</span>`).join('')}</p>`;
+    `<p class="kw">${keywordsOf(it.card, it.orientation).map(k => `<span>${k}</span>`).join('')}</p>` +
+    (it.pro ? proTags(it.card) : '');
+};
+// 專業模式：愚者之旅第幾幕、元素
+const proTags = card => {
+  const act = actOf(card.number), el = elementOf(card.number);
+  return `<p class="tags"><span>${act.zh}・${act.name}</span><span>${elementIcon(el, 13)}${ELEMENTS[el].zh}</span></p>`;
 };
 const describe = it => `${it.label ? it.label.zh + '：' : ''}${it.card.nameZh}，${it.orientation === 'reversed' ? '逆位' : '正位'}。${keywordsOf(it.card, it.orientation).join('、')}`;
 
@@ -431,7 +455,8 @@ async function reveal() {
   result = {
     seed: session.seed, offsets: session.offsets, date: new Date(), spread: session.spread,
     stampId: stampForBack(BACK_NAMES[backIndex]),   // 分享圖的日期章跟著這次的牌背
-    cards: session.drawn.map((d, i) => ({ card: cardById(d.cardId), orientation: d.orientation, label: session.count === 3 ? SPREADS[session.spread][i] : null })),
+    pro: !!session.pro, moonPhase: session.spread === 'moon' && session.count === 4 ? moonPhaseIndex(new Date()) : -1,
+    cards: session.drawn.map((d, i) => ({ card: cardById(d.cardId), orientation: d.orientation, label: labelsOf(session)[i], pro: !!session.pro })),
   };
   // 先把結果的版面排好（文字還看不見），才量得到每張牌最後要去的位置
   result.cards.forEach((it, i) => { cols.children[i].querySelector('.meta').innerHTML = metaHTML(it); });
@@ -471,6 +496,7 @@ async function reveal() {
   if (my !== run) return;
   setState('result');
   if (result.cards.length > 1) picked.forEach(cd => { cd.el.classList.add('tap'); cd.el.tabIndex = 0; });
+  $('#rel').hidden = !(result.pro && result.cards.length > 1);
   say(result.cards.map(describe).join(' '));
   posterBlob(result).catch(() => {});      // 先把海報算好，按下儲存時就能馬上交給系統
 }
@@ -516,6 +542,11 @@ function renderSettings() {
   $('#rev').setAttribute('aria-checked', String(settings.reversals));
   $('#spread').classList.toggle('off', settings.count !== 3);
   for (const b of $('#spread').children) b.tabIndex = settings.count === 3 ? 0 : -1;
+  // 專業模式：張數與牌陣合成一個「選擇牌陣」按鈕
+  $('#pro').setAttribute('aria-pressed', String(settings.pro));
+  app.classList.toggle('pro', settings.pro);
+  $('#pick-spread').hidden = !settings.pro;
+  $('#pick-spread .ps-name').textContent = spreadName();
   try { localStorage.setItem('tarot-settings', JSON.stringify(settings)); } catch { /* 存不了就只用這一次 */ }
 }
 $('#count').addEventListener('click', e => {
@@ -552,17 +583,126 @@ function renderSound() {
 }
 $('#sound').addEventListener('click', () => { setSound(!soundOn()); renderSound(); if (soundOn()) sfx.slide(); });
 
+// 浮層：說明、選擇牌陣、牌間關係共用同一套開關
 const veil = $('#veil'), about = $('#about');
-function openAbout() { veil.hidden = false; about.hidden = false; about.querySelector('[data-close]').focus(); }
-function closeAbout() { if (about.hidden) return; veil.hidden = true; about.hidden = true; $('#info').focus(); }
-$('#info').addEventListener('click', openAbout);
-veil.addEventListener('click', closeAbout);
-about.querySelector('[data-close]').addEventListener('click', closeAbout);
-about.addEventListener('keydown', e => { if (e.key === 'Tab') { e.preventDefault(); about.querySelector('[data-close]').focus(); } });
+let sheet = null, opener = null;
+function openSheet(el, from) {
+  if (sheet) closeSheet(false);
+  sheet = el; opener = from; veil.hidden = false; el.hidden = false;
+  (el.querySelector('[aria-checked="true"]') || el.querySelector('[data-close]')).focus();
+}
+function closeSheet(restore = true) {
+  if (!sheet) return;
+  const was = sheet;
+  veil.hidden = true; sheet.hidden = true; sheet = null;
+  if (restore) opener?.focus();
+  if (was === welcome) welcomeDone();
+}
+$('#info').addEventListener('click', () => openSheet(about, $('#info')));
+veil.addEventListener('click', () => closeSheet());
+for (const el of [about, $('#spreads'), $('#relations'), $('#welcome')]) {
+  el.querySelector('[data-close]').addEventListener('click', () => closeSheet());
+  el.addEventListener('keydown', e => {          // Tab 只在浮層裡繞
+    if (e.key !== 'Tab') return;
+    const f = [...el.querySelectorAll('button')].filter(b => b.offsetParent !== null);
+    const i = f.indexOf(document.activeElement);
+    e.preventDefault();
+    f[(i + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus();
+  });
+}
+
+// ---------------- 第一次來：選簡易或專業 ----------------
+// 只出現一次；選了什麼（或直接關掉＝簡易）就記在這台裝置上
+const welcome = $('#welcome');
+let welcomeSeen = true;
+try { welcomeSeen = localStorage.getItem('tarot-welcome') !== null; } catch { /* 存不了就不打擾 */ }
+function welcomeDone() {
+  try { localStorage.setItem('tarot-welcome', '1'); } catch { /* 存不了就只這一次 */ }
+  renderSettings();
+  $('#pro').classList.remove('hint'); void $('#pro').offsetWidth; $('#pro').classList.add('hint');
+  setTimeout(() => $('#pro').classList.remove('hint'), 2400);
+}
+function showWelcome() {
+  if (welcomeSeen || state !== 'idle') return;
+  if (returning) {
+    $('#welcome-title').textContent = '旅人，歡迎回來';
+    welcome.querySelector('.wl-lead').textContent = '抽牌所新添了專業模式：更多牌陣，還能看看牌與牌之間的關係。';
+  }
+  openSheet(welcome, $('#go'));
+  welcome.querySelector(`[data-mode="${settings.pro ? 'pro' : 'simple'}"]`).focus();
+}
+welcome.querySelector('.wl-choices').addEventListener('click', e => {
+  const b = e.target.closest('button[data-mode]');
+  if (!b) return;
+  settings.pro = b.dataset.mode === 'pro';
+  normalizeSettings();
+  closeSheet();
+  toast(settings.pro ? '已切換成專業模式' : '已選擇簡易模式');
+});
+
+// ---------------- 專業模式 ----------------
+$('#pro').addEventListener('click', () => {
+  settings.pro = !settings.pro;
+  normalizeSettings();
+  renderSettings();
+  const later = state === 'idle' ? '' : '，下一次抽牌生效';
+  toast(settings.pro ? `專業模式：開啟${later}` : `專業模式：關閉${later}`);
+});
+
+const spreadChoices = () => ['single', ...Object.keys(SPREADS)];
+function renderSpreadList() {
+  const cur = settings.count === 1 ? 'single' : settings.spread;
+  $('#spreads .spread-list').innerHTML = spreadChoices().map(id => {
+    const info = SPREAD_INFO[id], n = id === 'single' ? 1 : SPREADS[id].length;
+    const dots = Array.from({ length: n }, () => '<i></i>').join('');
+    return `<button role="radio" aria-checked="${id === cur}" data-id="${id}"><span class="sl-dots" data-n="${n}">${dots}</span><span class="sl-text"><b>${info.name}</b><small>${n} 張・${info.note}</small></span></button>`;
+  }).join('');
+}
+$('#pick-spread').addEventListener('click', () => {
+  if (state !== 'idle') return;
+  renderSpreadList();
+  openSheet($('#spreads'), $('#pick-spread'));
+});
+$('#spreads .spread-list').addEventListener('click', e => {
+  const b = e.target.closest('button[data-id]');
+  if (!b || state !== 'idle') return;
+  const id = b.dataset.id;
+  if (id === 'single') settings.count = 1;
+  else { settings.spread = id; settings.count = SPREADS[id].length; }
+  renderSettings();
+  closeSheet();
+});
+$('#spreads .spread-list').addEventListener('keydown', e => {
+  const dir = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+  if (!dir) return;
+  e.preventDefault();
+  const bs = [...e.currentTarget.children], i = bs.indexOf(document.activeElement);
+  bs[(i + dir + bs.length) % bs.length].focus();
+});
+
+// 牌間關係：只寫「有什麼關係」，不寫解讀
+function relationsHTML(res) {
+  const nums = res.cards.map(it => it.card.number), r = relationsOf(nums);
+  const name = i => `<b>${i + 1}</b>${res.cards[i].card.nameZh}`;
+  const steps = r.steps.map(st => `<li><div class="rl-pair">${name(st.from)}<span>→</span>${name(st.to)}</div><div class="rl-tags"><span>${st.journey}</span><span>${st.element}</span></div></li>`).join('');
+  const notes = r.notes.map(nt => `<li class="note"><div class="rl-pair">${name(nt.a)}<span>＋</span>${name(nt.b)}</div><div class="rl-tags"><span>${nt.text}</span></div></li>`).join('');
+  const els = Object.keys(ELEMENTS).map(k => `<span class="${r.count[k] ? '' : 'none'}">${elementIcon(k, 13)}${ELEMENTS[k].zh} ${r.count[k] || 0}</span>`).join('');
+  const lead = r.lead.length ? `${r.lead.map(k => ELEMENTS[k].zh).join('、')}元素主導` : '';
+  const miss = r.missing.length && nums.length >= 3 ? `缺少${r.missing.map(k => ELEMENTS[k].zh).join('、')}元素` : '';
+  return `<h3>相鄰兩張</h3><ol class="rl">${steps}</ol>` +
+    (notes ? `<h3>特別的組合</h3><ol class="rl">${notes}</ol>` : '') +
+    `<h3>元素分布</h3><p class="rl-els">${els}</p>${lead || miss ? `<p class="rl-sum">${[lead, miss].filter(Boolean).join('；')}</p>` : ''}` +
+    `<p class="rl-close">${CLOSING}</p>`;
+}
+$('#rel').addEventListener('click', () => {
+  if (state !== 'result' || !result?.pro) return;
+  $('#relations .rel-body').innerHTML = relationsHTML(result);
+  openSheet($('#relations'), $('#rel'));
+});
 
 addEventListener('keydown', e => {
   kbd = true;
-  if (e.key === 'Escape') { if (!about.hidden) closeAbout(); else if (state !== 'idle') $('#back').click(); }
+  if (e.key === 'Escape') { if (sheet) closeSheet(); else if (state !== 'idle') $('#back').click(); }
 });
 app.addEventListener('contextmenu', e => e.preventDefault());
 addEventListener('dragstart', e => e.preventDefault());
@@ -584,3 +724,4 @@ new ResizeObserver(relayout).observe(stage);
 renderSettings();
 renderSound();
 toIdle(false);
+setTimeout(showWelcome, ms(500));

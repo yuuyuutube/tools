@@ -1,4 +1,4 @@
-# 小小塔羅印刷所｜THE LITTLE TAROT PRESS
+# 抽牌所｜TAROT DRAW
 
 純前端塔羅抽牌工具：22 張大阿爾克那、單張／三張牌陣、逆位選項、洗牌翻牌動畫與 PNG 分享海報。
 HTML、CSS、原生 ES modules；不需要建置或安裝執行套件。

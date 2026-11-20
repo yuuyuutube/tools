@@ -13,7 +13,7 @@ export function buildDeck(cardIds, { reversals = false } = {}) {
 }
 
 export function createSession(cardIds, { count = 1, reversals = false, spread = 'time' } = {}) {
-  if (count !== 1 && count !== 3) throw new RangeError('count 只能是 1 或 3');
+  if (![1, 3, 4, 5].includes(count)) throw new RangeError('count 只能是 1、3、4 或 5');
   const deck = buildDeck(cardIds, { reversals });
   const taken = new Set();
   const drawn = [];
