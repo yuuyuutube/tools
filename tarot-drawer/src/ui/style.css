@@ -262,14 +262,21 @@ img, svg { -webkit-user-drag: none; }
 /* 所有結果共用可捲動的內容區，操作列獨立留在視窗底部。 */
 #board[data-phase="result"] {
   inset: calc(var(--top) + 52px) 0 calc(var(--bottom) + 84px);
-  padding: 0 var(--gutter) 16px;
-  overflow: hidden;
-  scrollbar-gutter: stable both-edges;
+  padding: 16px var(--gutter) 24px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
   justify-content: flex-start;
   overscroll-behavior: contain;
   touch-action: pan-y;
 }
-#app[data-state="result"] #board { overflow-y: auto; }
+#board[data-phase="result"]::-webkit-scrollbar { display: none; }
+/* 單張舊版的置中與底部預留會蓋過共用設定，造成上方溢出及多餘捲動。
+   留給 cols 的 auto margin 只在空間足夠時置中，內容過高則從頂部排列。 */
+#board[data-count="1"][data-phase="result"] {
+  justify-content: flex-start;
+  padding: 16px var(--gutter) 24px;
+}
 #board[data-phase="result"] > #cols,
 #board[data-phase="result"] > #detail { flex-shrink: 0; }
 #board[data-count="1"][data-phase="result"] > #cols { margin-block: auto; }
