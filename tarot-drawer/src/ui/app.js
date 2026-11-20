@@ -209,6 +209,7 @@ function buildBoard() {
   detail.innerHTML = ''; detail.classList.remove('shown');
   board.dataset.count = session.count;
   board.toggleAttribute('data-multi', session.count > 1);
+  board.dataset.spread = session.count > 1 ? session.spread : 'single';
   board.toggleAttribute('data-pro', !!session.pro);
   board.style.setProperty('--n', session.count);
   $('#rel').hidden = true;
