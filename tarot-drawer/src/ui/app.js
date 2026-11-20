@@ -95,14 +95,14 @@ function nextBack(animate = true) {
     return;
   }
   backTransition = (async () => {
-    // 先以舊牌背收攏，再在完整牌堆上淡入已解碼的新牌背。
+    // 返回與重抽共用：舊牌背先收攏，再由中心微光揭開新圖案。
     await Promise.all([loaded, wait(animate ? MOTION.gather + N * 6 + 40 : 0)]);
     if (change !== backChange) return;
     stage.style.setProperty('--back-next', `url("${url}")`);
     await new Promise(requestAnimationFrame);
     if (change !== backChange) return;
     stage.classList.add('back-changing');
-    await wait(320);
+    await wait(760);
     if (change !== backChange) return;
     stage.style.setProperty('--back', `url("${url}")`);
     stage.classList.remove('back-changing');
@@ -179,6 +179,11 @@ function resetCard(cd) {
 function toIdle(animate = true) {
   run++;
   nextBack(animate);
+  const returningRun = run;
+  app.classList.toggle('returning', animate);
+  backTransition.finally(() => {
+    if (returningRun === run) app.classList.remove('returning');
+  });
   cancelAnimationFrame(raf); raf = 0; drag = null;
   session = null; result = null; fan = []; focus = -1; saving = false;
   $('#save').classList.remove('busy');
@@ -200,6 +205,7 @@ async function start() {
   setState('shuffling');
   await backTransition;
   if (my !== run) return;
+  app.classList.remove('returning');
   // 洗牌在資料層完成：此刻整副牌的順序與每張牌的正逆位就已經決定，接下來的動畫只是演出
   session = createSession(CARD_IDS, settings);
   session.pro = settings.pro;
@@ -624,15 +630,15 @@ $('#save').addEventListener('click', async () => {
   finally { if (result === mine) { saving = false; btn.classList.remove('busy'); } }
 });
 
-$('#again').addEventListener('click', () => {
+$('#again').addEventListener('click', async () => {
   if (state !== 'result') return;
-  app.classList.add('again');                 // 收牌的這一小段時間，設定面板不用跑出來
+  app.classList.add('again');
   toIdle();
   const my = run;
-  setTimeout(() => {
-    if (my === run && state === 'idle') start();
-    app.classList.remove('again');
-  }, ms(MOTION.gather + N * 6) + 20);
+  await backTransition;
+  if (my !== run || state !== 'idle') return;
+  app.classList.remove('again');
+  start();
 });
 
 $('#back').addEventListener('click', () => { if (state !== 'idle') { toIdle(); if (kbd) $('#go').focus(); } });

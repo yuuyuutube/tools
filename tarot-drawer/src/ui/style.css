@@ -57,9 +57,30 @@ img, svg { -webkit-user-drag: none; }
   background: var(--back-next) center / 100% 100% no-repeat;
   opacity: 0; pointer-events: none;
 }
-#stage.back-changing .back::before { opacity: 1; transition: opacity 320ms ease-in-out; }
+#stage.back-changing .back::before {
+  animation: back-transfigure 760ms cubic-bezier(.22,.7,.3,1) both;
+}
+/* 光只落在最上層牌，避免整疊牌的光暈累加。 */
+.back::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at center, #fff5ceaa, #e4d4ff44 38%, transparent 72%);
+  opacity: 0; mix-blend-mode: screen;
+}
+#stage.back-changing .top1 .back::after { animation: back-enchantment 760ms ease-in-out both; }
+@keyframes back-transfigure {
+  0% { opacity: 0; clip-path: circle(0% at 50% 50%); filter: blur(5px) brightness(1.45); }
+  35% { opacity: .85; filter: blur(2px) brightness(1.18); }
+  82%, 100% { opacity: 1; clip-path: circle(110% at 50% 50%); filter: blur(0) brightness(1); }
+}
+@keyframes back-enchantment {
+  0%, 100% { opacity: 0; transform: scale(.65); }
+  38% { opacity: .65; transform: scale(1.12); }
+  80% { opacity: .12; transform: scale(1.2); }
+}
+#app.returning #pile { pointer-events: none; }
 @media (prefers-reduced-motion: reduce) {
-  #stage.back-changing .back::before { transition: none; }
+  #stage.back-changing .back::before { animation: none; opacity: 1; }
+  #stage.back-changing .top1 .back::after { animation: none; }
 }
 .face { background: #f6f0e2; transform: rotateY(180deg); }
 .face svg { display: block; width: 100%; height: 100%; isolation: isolate; }
@@ -106,7 +127,7 @@ img, svg { -webkit-user-drag: none; }
   transition: opacity .3s, transform .3s var(--ease-out);
 }
 #setup > * { pointer-events: auto; }
-#app:not([data-state="idle"]) #setup, #app.again #setup { opacity: 0; transform: translateY(10px); visibility: hidden; transition: opacity .2s, transform .2s, visibility 0s .2s; }
+#app:not([data-state="idle"]) #setup, #app.again #setup, #app.returning #setup { opacity: 0; transform: translateY(10px); visibility: hidden; transition: opacity .2s, transform .2s, visibility 0s .2s; }
 #go {
   width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center;
   background: var(--ink); color: var(--paper);
