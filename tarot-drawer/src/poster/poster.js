@@ -60,7 +60,7 @@ const cardShadow = (x, y, w, h, d, ox, oy) =>
 
 function placeCard(item, x, y, w, i, offsets) {
   const h = w * 5 / 3;
-  const svg = faceSVG(item.card, { offsets, id: `p${i}_`, attrs: `x="${x}" y="${y}" width="${w}" height="${h}"`, printed: true, illustrationSrc: item.illustrationSrc });
+  const svg = faceSVG(item.card, { offsets, id: `p${i}_`, attrs: `x="${x}" y="${y}" width="${w}" height="${h}"`, printed: true });
   // 逆位的牌在海報上也維持逆位
   return item.orientation === 'reversed' ? `<g transform="rotate(180 ${x + w / 2} ${y + h / 2})">${svg}</g>` : svg;
 }
@@ -196,7 +196,7 @@ function grain(g, seed) {
 }
 
 async function render(res) {
-  await loadFaces(res.cards.filter(it => !it.illustrationSrc).map(it => it.card.id));
+  await loadFaces(res.cards.map(it => it.card.id));
   const img = await loadImage('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(posterSVG(res)));
   const cv = document.createElement('canvas');
   cv.width = POSTER_W; cv.height = POSTER_H;

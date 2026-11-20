@@ -73,7 +73,7 @@ export async function loadFaces(ids) {
     faceData.set(id, await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(blob); }));
   }));
 }
-function printedFace(card, id, attrs, inkBleed, illustrationSrc) {
+function printedFace(card, id, attrs, inkBleed) {
  const b=WINDOW_BOUNDS,f=sunburstFrameLayers(card),ink={N:'#1e284a',O:'#ff542e'};
  const layer=(name,markup,color)=>{
   const kind=['number','subtitle'].includes(name)?'fine':name==='title'?'text':'line';
@@ -83,13 +83,13 @@ function printedFace(card, id, attrs, inkBleed, illustrationSrc) {
   `<defs><clipPath id="${id}art" data-card-clip="illustration"><path d="${SUNBURST_WINDOW}"/></clipPath><clipPath id="${id}card"><rect width="300" height="500" rx="16"/></clipPath><filter id="${id}paper" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".6" numOctaves="3" seed="${card.number+1}" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>`+
   inkBleedFilter(id,'line',.24,.2,.7,.5,inkBleed.line,inkBleed)+inkBleedFilter(id,'text',.14,.14,.45,.4,inkBleed.text,inkBleed)+inkBleedFilter(id,'fine',.08,.1,.25,.3,inkBleed.fine,inkBleed)+`</defs>`+
   `<g clip-path="url(#${id}card)"><g data-card-layer="paper"><rect width="300" height="500" fill="#f6efe0"/><rect width="300" height="500" filter="url(#${id}paper)" opacity=".045" style="mix-blend-mode:multiply"/></g>`+
-  `<g class="kf" data-card-layer="illustration" clip-path="url(#${id}art)"><image href="${illustrationSrc || faceData.get(card.id) || FACE_URL(card.id)}" x="${b.x}" y="${b.y}" width="${b.width}" height="${b.height}" preserveAspectRatio="none"/></g>`+
+  `<g class="kf" data-card-layer="illustration" clip-path="url(#${id}art)"><image href="${faceData.get(card.id) || FACE_URL(card.id)}" x="${b.x}" y="${b.y}" width="${b.width}" height="${b.height}" preserveAspectRatio="none"/></g>`+
   layer('border',f.borderN,'N')+layer('accent-border',f.borderO,'O')+layer('window',f.window,'N')+layer('number',f.number,'N')+layer('rule',f.rule,'N')+layer('title',f.title,'N')+layer('subtitle',f.subtitle,'N')+layer('ornaments',f.ornaments,'O')+`</g></svg>`;
 }
 
 // 牌的正面。attrs 會加在最外層 <svg> 上（放進海報時用來指定位置與大小）
-export function faceSVG(card, { offsets = DEFAULT_OFFSETS, id = `f${uid++}_`, attrs = '', printed = false, inkBleed, illustrationSrc } = {}) {
-  if (printed) return printedFace(card, id, attrs, inkBleed===undefined?readInkBleed():normalizeInkBleed(inkBleed), illustrationSrc);
+export function faceSVG(card, { offsets = DEFAULT_OFFSETS, id = `f${uid++}_`, attrs = '', printed = false, inkBleed } = {}) {
+  if (printed) return printedFace(card, id, attrs, inkBleed===undefined?readInkBleed():normalizeInkBleed(inkBleed));
   const art = ART[card.artwork];
   const a = plate();
   art.draw(a);

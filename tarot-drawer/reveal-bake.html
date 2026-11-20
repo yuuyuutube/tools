@@ -1,0 +1,24 @@
+<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><title>翻牌色版烘焙</title>
+<body style="font:14px/1.6 system-ui;background:#f6efe0;color:#1e284a;padding:20px"><pre id="log"></pre>
+<script type="module">
+// 開發用：從 batch 原始色版重印 1–21 的翻牌分色，存成 assets/reveal/{n}-{key}.webp。
+// 需搭配可接受 PUT /__bake/ 的本機伺服器；網站本身只讀取產出的靜態檔。
+import {buildRevealPlates,REVEAL_KEYS} from './src/print/sunburst/reveal-plates.js';
+const log=t=>{document.getElementById('log').textContent+=t+'\n';};
+const load=src=>new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=src;});
+const pixels=(src,w,h)=>{const cv=Object.assign(document.createElement('canvas'),{width:w,height:h}),g=cv.getContext('2d');g.drawImage(src,0,0,w,h);return g.getImageData(0,0,w,h).data;};
+const blob=cv=>new Promise(ok=>cv.toBlob(ok,'image/webp',.86));
+const only=new URLSearchParams(location.search).get('n');
+const numbers=only?only.split(',').map(Number):Array.from({length:21},(_,i)=>i+1);
+window.bakeResult=[];
+for(const n of numbers){
+ const t=performance.now(),r=await buildRevealPlates(n);
+ // 與現有定稿牌面比對，確認重印結果一致
+ const face=await load(`assets/faces/${r.id}.webp`),a=pixels(face,654,870),b=pixels(r.illustration,654,870);
+ let diff=0;for(let i=0;i<a.length;i+=4)diff+=Math.abs(a[i]-b[i])+Math.abs(a[i+1]-b[i+1])+Math.abs(a[i+2]-b[i+2]);diff/=a.length/4*3;
+ for(const k of REVEAL_KEYS){const res=await fetch(`/__bake/${n}-${k}.webp`,{method:'PUT',body:await blob(r.layers[k])});if(!res.ok)throw Error(`upload ${n}-${k} ${res.status}`);}
+ window.bakeResult.push({n,id:r.id,diff:+diff.toFixed(2)});
+ log(`${n} ${r.id} 與定稿平均差 ${diff.toFixed(2)} · ${Math.round(performance.now()-t)}ms`);
+}
+log('完成');window.bakeDone=true;
+</script></body></html>

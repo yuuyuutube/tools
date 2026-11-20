@@ -1,7 +1,6 @@
 import {faceSVG} from '../art/frame.js';
 import {cardById} from '../data/cards.js';
 import {windowFrameAt} from './window-reveal.js';
-import {buildLightPaintReveal} from '../print/sunburst/light-paint-reveal.js';
 const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
 const cards=JSON.parse(await (await fetch(new URL('../../docs/tarot-sunburst/light-paint/manifest.json',import.meta.url))).text()).cards.filter(c=>c.number>0);
 const clamp=v=>Math.max(0,Math.min(1,v)),progress=(t,s,d)=>clamp((t-s)/d),ease=p=>1-(1-p)**3;
@@ -16,13 +15,13 @@ function apply(t){time=Math.max(0,Math.min(1600,t));$('timeline').value=time;$('
 }
 function stop(){cancelAnimationFrame(raf);raf=0}
 function play(){stop();apply(0);last=performance.now();const tick=now=>{apply(time+now-last);last=now;if(time<1600)raf=requestAnimationFrame(tick)};raf=requestAnimationFrame(tick)}
-async function setCard(id){stop();time=0;const token=++serial,c=cards.find(v=>v.id===id)||cards[0];$('phase').textContent=`${c.number} · 正在製作印版…`;$('status').textContent='依這張牌的插圖位置計算網點、墨邊、黏墨與套印位移。初次載入約需數秒。';$('timeline').disabled=true;for(const b of ['play','ink','final'])$(b).disabled=true;
+async function setCard(id){stop();time=0;const token=++serial,c=cards.find(v=>v.id===id)||cards[0];$('phase').textContent=`${c.number} · 正在載入印版…`;$('status').textContent='正在載入預先印好的色版。';$('timeline').disabled=true;for(const b of ['play','ink','final'])$(b).disabled=true;
  $('face').innerHTML=faceSVG(cardById(c.id),{printed:true,id:`lp_${c.number}_`});svg=$('face').querySelector('svg');art=svg.querySelector('[data-card-layer="illustration"]');original=art.querySelector('image');overlay=document.createElementNS(NS,'g');overlay.dataset.revealPlates='true';overlay.style.isolation='isolate';art.append(overlay);
- try{const result=await buildLightPaintReveal(c.number);if(token!==serial)return;original.setAttribute('href',result.illustration.toDataURL());
-  for(const key of ['paper','Y','O','B','N']){const im=document.createElementNS(NS,'image');im.dataset.plate=key;im.setAttribute('href',result.revealPlates[key].toDataURL());for(const [k,v]of Object.entries({x:41,y:76,width:218,height:290,preserveAspectRatio:'none'}))im.setAttribute(k,v);if(key!=='paper')im.style.mixBlendMode='multiply';overlay.append(im);images[key]=im}
+ try{
+  for(const key of ['paper','N','Y','O','B']){const im=document.createElementNS(NS,'image');im.dataset.plate=key;im.setAttribute('href',`assets/reveal/${c.number}-${key}.webp`);for(const [k,v]of Object.entries({x:41,y:76,width:218,height:290,preserveAspectRatio:'none'}))im.setAttribute(k,v);if(key!=='paper')im.style.mixBlendMode='multiply';overlay.append(im);images[key]=im}
   windowPath=svg.querySelector('[data-card-layer="window"] path');clipPath=svg.querySelector('[data-card-clip="illustration"] path');rule=svg.querySelector('[data-card-layer="rule"]');title=svg.querySelector('[data-card-layer="title"]');subtitle=svg.querySelector('[data-card-layer="subtitle"]');
   await Promise.all([...art.querySelectorAll('image')].map(el=>new Promise((resolve,reject)=>{const img=new Image();img.onload=resolve;img.onerror=reject;img.src=el.getAttribute('href')})));if(token!==serial)return;
-  $('status').textContent=`已完成 ${c.number} 號牌印版；插圖縱向位移 ${Number(result.map.y).toFixed(1)}。可拖動時間軸檢查每個套印階段。`;$('timeline').disabled=false;for(const b of ['play','ink','final'])$(b).disabled=false;
+  $('status').textContent=`已載入 ${c.number} 號牌印版。可拖動時間軸檢查每個套印階段。`;$('timeline').disabled=false;for(const b of ['play','ink','final'])$(b).disabled=false;
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)apply(1600);else play();
  }catch(e){if(token!==serial)return;$('phase').textContent='印版暫時無法載入';$('status').textContent=e.message;console.error(e)}}
 $('pick').addEventListener('change',e=>setCard(e.target.value));$('timeline').addEventListener('input',e=>{stop();apply(+e.target.value)});$('play').addEventListener('click',play);$('ink').addEventListener('click',()=>{stop();apply(600)});$('final').addEventListener('click',()=>{stop();apply(1600)});document.addEventListener('visibilitychange',()=>{if(document.hidden)stop()});
