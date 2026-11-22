@@ -182,6 +182,7 @@ canvas { display: block; }
 
 .confirm-card { background: var(--paper); border-radius: 28px; padding: 28px 28px 22px; display: grid; justify-items: center; gap: 22px; box-shadow: var(--lift); animation: rise .25s var(--ease); }
 .confirm-icon .ic { width: 52px; height: 52px; stroke-width: 1.4; }
+.confirm-text { max-width: 280px; font-size: 15px; line-height: 1.65; text-align: center; color: #3a3733; text-wrap: pretty; }
 .confirm-row { display: flex; gap: 18px; }
 
 /* size picker */

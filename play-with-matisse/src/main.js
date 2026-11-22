@@ -49,7 +49,11 @@ async function changeSize() {
 
 async function askNew() {
   closePopover();
-  if (store.art?.pieces.length && !(await confirmIcon("file", "New artwork"))) return false;
+  if (
+    store.art?.pieces.length &&
+    !(await confirmIcon("file", "New artwork", "開始一張新作品？目前這張會被清空，而且無法復原。想留下來的話，請先下載。你畫的形狀會留在素材盤裡。"))
+  )
+    return false;
   return startNew(true);
 }
 

@@ -2,8 +2,8 @@
 import { icon } from "./icons.js";
 import { $, clamp, h } from "./util.js";
 
-/* ---------- confirm: a big icon plus cancel / ok ---------- */
-export function confirmIcon(name, label) {
+/* ---------- confirm: a big icon, an optional sentence on what will happen, cancel / ok ---------- */
+export function confirmIcon(name, label, message = "") {
   return new Promise((resolve) => {
     const prev = document.activeElement;
     const done = (v) => {
@@ -32,6 +32,7 @@ export function confirmIcon(name, label) {
         "div",
         { class: "confirm-card" },
         h("div", { class: "confirm-icon", html: icon(name) }),
+        message ? h("p", { class: "confirm-text" }, message) : null,
         h("div", { class: "confirm-row" }, h("button", { class: "dot big", "aria-label": "Cancel", html: icon("close"), onclick: () => done(false) }), ok),
       ),
     );
