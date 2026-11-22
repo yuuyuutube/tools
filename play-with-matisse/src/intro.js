@@ -26,6 +26,12 @@ const TITLE = ["PLAY WITH", "MATISSE"];
 // shows) and no deep greens (they sink into the leaves); the one teal comes from the Tropical Jungle set.
 const LETTER_COLORS = ["#EC6A4C", "#2552A3", "#F1C232", "#2A9D9A", "#D5312B", "#F08A3C"];
 
+// Layers overrides: colours merge key by key; a non-empty stacking replaces the one underneath.
+export const mergeLayout = (base, top) => ({
+  colors: { ...(base?.colors || {}), ...(top?.colors || {}) },
+  z: Object.keys(top?.z || {}).length ? top.z : base?.z || {},
+});
+
 export const ringsToD = (rings) => rings.map((r) => "M" + r.map((p) => p[0].toFixed(1) + " " + p[1].toFixed(1)).join("L") + "Z").join("");
 
 let items = [],

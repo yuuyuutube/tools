@@ -1,14 +1,19 @@
 # Dev static server: every response is no-store so edited ES modules are never served from cache.
-# It also accepts POST /__save/intro-layout from scripts/intro-editor.html and writes src/intro-layout.js.
-import http.server, json, os, re, sys
+# It also accepts the forest editors' saves: POST /__save/intro-layout writes src/intro-layout.js, and
+# POST /__save/og-layout writes src/og-layout.js and re-renders og.png.
+import http.server, json, os, re, subprocess, sys
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
-LAYOUT = os.path.join(ROOT, 'src', 'intro-layout.js')
+TARGETS = {
+    '/__save/intro-layout': ('intro-layout.js', '''// Hand-tuned overrides for the intro forest, written by scripts/intro-editor.html (via the dev server).
+// colors: piece key → fill. z: piece key → stacking rank (higher is in front); "title" is the cut-paper title.
+'''),
+    '/__save/og-layout': ('og-layout.js', '''// OG-image-only overrides, written by scripts/og-editor.html (via the dev server). They sit on top of
+// intro-layout.js: colors replace the intro's for those keys; a non-empty z replaces the intro's stacking.
+'''),
+}
 HEX = re.compile(r'^#[0-9A-Fa-f]{6}$')
 KEY = re.compile(r'^(title|L\d-\d{1,3}|B\d{1,2})$')
-HEADER = '''// Hand-tuned overrides for the intro forest, written by scripts/intro-editor.html (via the dev server).
-// colors: piece key → fill. z: piece key → stacking rank (higher is in front); "title" is the cut-paper title.
-'''
 
 def clean(data):
     if not isinstance(data, dict):
@@ -23,18 +28,23 @@ class NoCache(http.server.SimpleHTTPRequestHandler):
         super().end_headers()
 
     def do_POST(self):
-        if self.path != '/__save/intro-layout':
+        if self.path not in TARGETS:
             self.send_error(404)
             return
+        name, header = TARGETS[self.path]
         try:
             n = int(self.headers.get('Content-Length') or 0)
             if n > 100_000:
                 raise ValueError('too large')
             layout = clean(json.loads(self.rfile.read(n)))
-            body = HEADER + 'export default ' + json.dumps(layout, indent=2, sort_keys=True, ensure_ascii=False) + ';\n'
-            with open(LAYOUT, 'w', encoding='utf-8') as f:
+            body = header + 'export default ' + json.dumps(layout, indent=2, sort_keys=True, ensure_ascii=False) + ';\n'
+            with open(os.path.join(ROOT, 'src', name), 'w', encoding='utf-8') as f:
                 f.write(body)
             out, code = {'ok': True, 'colors': len(layout['colors']), 'z': len(layout['z'])}, 200
+            if name == 'og-layout.js':
+                env = dict(os.environ, BASE=f'http://localhost:{self.server.server_address[1]}')
+                subprocess.run([os.path.join(ROOT, 'scripts', 'render-og.sh'), 'og'], cwd=ROOT, env=env, check=True, capture_output=True, timeout=60)
+                out['rendered'] = True
         except Exception as e:
             out, code = {'ok': False, 'error': str(e)}, 400
         payload = json.dumps(out).encode()

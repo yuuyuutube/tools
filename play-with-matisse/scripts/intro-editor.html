@@ -28,6 +28,8 @@
   .ed-card.off .ed-sw button { pointer-events: none; opacity: .3; }
   .ed-dirty { width: 8px; height: 8px; border-radius: 50%; background: #FF48B0; position: absolute; top: 2px; right: 2px; }
   #saveBtn { position: relative; }
+  #saveBtn.busy { animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .55; } }
   @media (max-width: 899px) {
     .ed { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
     .ed-stage { padding: 12px; }
@@ -49,10 +51,8 @@
     </div>
   </div>
   <aside class="ed-panel">
-    <div class="ed-card">
-      <div class="seg" id="sizes" role="group" aria-label="Preview size">
-        <button data-v="phone" aria-label="Phone"></button><button data-v="tablet" aria-label="Tablet"></button><button data-v="desktop" aria-label="Desktop"></button>
-      </div>
+    <div class="ed-card" id="sizesCard">
+      <div class="seg" id="sizes" role="group" aria-label="Preview size"></div>
     </div>
     <div class="ed-card off" id="pieceCard">
       <div class="ed-row" id="order">

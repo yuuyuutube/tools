@@ -1,0 +1,76 @@
+<!doctype html>
+<!-- OG image editor: pick any leaf or blossom in the 1200 × 630 share image, change its stacking and colour,
+     save to src/og-layout.js; the dev server then re-renders og.png. Needs python3 scripts/dev-server.py 8767. -->
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OG editor · Play with Matisse</title>
+<link rel="icon" type="image/svg+xml" href="../assets/icon.svg">
+<link rel="stylesheet" href="../src/style.css">
+<style>
+  .ed { position: fixed; inset: 0; display: grid; grid-template-columns: minmax(0, 1fr) 300px; }
+  .ed-stage { position: relative; display: grid; place-items: center; overflow: hidden; padding: 24px; }
+  .ed-box { position: relative; overflow: hidden; box-shadow: 0 1px 2px rgba(40,30,10,.1), 0 30px 60px -30px rgba(40,30,10,.5); }
+  .ed-frame { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  .ed-frame svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .ed-frame .play { pointer-events: none; animation: none; }
+  .ed-frame [data-key] { cursor: pointer; }
+  .ed-frame [data-key].sel path { stroke: #FF48B0; stroke-width: 5; vector-effect: non-scaling-stroke; paint-order: stroke; }
+  .ed-panel { display: flex; flex-direction: column; gap: 18px; padding: 24px 24px 24px 0; overflow-y: auto; }
+  .ed-card { background: var(--paper); border-radius: 22px; box-shadow: var(--card); padding: 14px; display: flex; flex-direction: column; gap: 14px; }
+  .ed-row { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
+  .ed-sw { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .ed-sw button { aspect-ratio: 1; border-radius: 44% 56% 40% 60% / 56% 42% 58% 44%; background: var(--c); box-shadow: inset 0 0 0 1px rgba(36,34,31,.1); transition: transform .15s; }
+  .ed-sw button:active { transform: scale(.9); }
+  .ed-sw button[aria-pressed="true"] { box-shadow: 0 0 0 2.5px var(--paper), 0 0 0 4px var(--ink); }
+  .ed-sw button:disabled, .ed-card .dot:disabled { opacity: .3; }
+  .ed-card.off .ed-sw button { pointer-events: none; opacity: .3; }
+  .ed-dirty { width: 8px; height: 8px; border-radius: 50%; background: #FF48B0; position: absolute; top: 2px; right: 2px; }
+  #saveBtn { position: relative; }
+  #saveBtn.busy { animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .55; } }
+  @media (max-width: 899px) {
+    .ed { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
+    .ed-stage { padding: 12px; }
+    .ed-panel { padding: 0 12px calc(env(safe-area-inset-bottom) + 12px); gap: 10px; }
+    .ed-card { padding: 10px; gap: 10px; }
+    .ed-sw { grid-template-columns: repeat(12, 1fr); gap: 5px; }
+  }
+</style>
+<script type="module" src="og-editor.js"></script>
+</head>
+<body>
+<main class="ed">
+  <div class="ed-stage" id="stage">
+    <div class="ed-box" id="box">
+      <div class="ed-frame" id="frame">
+        <svg id="edForest" aria-label="OG image"></svg>
+        <div class="play" id="edPlay"></div>
+      </div>
+    </div>
+  </div>
+  <aside class="ed-panel">
+    <div class="ed-card" id="sizesCard">
+      <div class="seg" id="sizes" role="group" aria-label="Preview size"></div>
+    </div>
+    <div class="ed-card off" id="pieceCard">
+      <div class="ed-row" id="order">
+        <button class="dot" data-o="back" aria-label="Send to back"></button>
+        <button class="dot" data-o="down" aria-label="Send backward"></button>
+        <button class="dot" data-o="up" aria-label="Bring forward"></button>
+        <button class="dot" data-o="front" aria-label="Bring to front"></button>
+      </div>
+      <div class="ed-sw" id="swatches" role="group" aria-label="Colour"></div>
+    </div>
+    <div class="ed-card">
+      <div class="ed-row">
+        <button class="dot" id="resetPiece" aria-label="Reset piece"></button>
+        <button class="dot" id="resetAll" aria-label="Reset all"></button>
+        <button class="dot ink big" id="saveBtn" aria-label="Save layout"></button>
+      </div>
+    </div>
+  </aside>
+</main>
+</body>
+</html>

@@ -20,6 +20,12 @@ dev server writes `src/intro-layout.js`, which the real intro reads. Pieces are 
 (`L<layer>-<i>`, `B<i>`), so one layout applies to every screen size; switch the preview size to check each one.
 `[` / `]` move back / forward (with Shift: to the back / front), `⌘S` saves.
 
+## OG editor
+
+http://localhost:8767/scripts/og-editor.html works the same way for the 1200 × 630 share image. Its overrides go
+to `src/og-layout.js`, on top of the intro layout (anything you don't change follows the intro), and saving also
+re-renders `og.png`. Bump `?v=` in the `og:image` tags when publishing a new one.
+
 ## OG image and icons
 
 `og.png`, `assets/apple-touch-icon.png` and `assets/icon-32.png` are rendered from `scripts/og.html` (the intro
