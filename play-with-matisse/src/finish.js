@@ -1,7 +1,7 @@
 // The "ta-da" view: the artwork alone on a quiet wall, three output looks, download.
 // Postcard is a preview only (white border, tilt, shadow live in CSS); its download is the plain artwork.
 import { sizeById } from "./data.js";
-import { MAT, downloadArtwork, renderOutput } from "./export.js";
+import { MAT, buildArtworkFile, canShareFiles, renderOutput, saveFile, shareFile } from "./export.js";
 import { icon } from "./icons.js";
 import { store } from "./store.js";
 import { segmented } from "./ui.js";
@@ -11,6 +11,22 @@ let mode = "original",
   onBack = () => {},
   onAnother = () => {};
 const caption = { title: "", author: "" };
+
+// The PNG is encoded ahead of time, so tapping share opens the sheet straight away: browsers (Safari above all)
+// only allow the share sheet right after a tap, and a big render can take longer than that.
+let prepared = null;
+const outMode = () => (mode === "print" ? "print" : "original");
+const fileKey = () => outMode() + (outMode() === "print" ? "|" + caption.title + "|" + caption.author : "");
+function prepare() {
+  const key = fileKey();
+  if (prepared?.key === key) return prepared.promise;
+  const entry = { key, file: null };
+  entry.promise = new Promise((r) => setTimeout(r, 120)).then(() => buildArtworkFile(store.art, outMode(), caption));
+  entry.promise.then((f) => (entry.file = f), () => {});
+  prepared = entry;
+  return entry.promise;
+}
+const fileNow = () => (prepared?.key === fileKey() && prepared.file ? Promise.resolve(prepared.file) : prepare());
 
 function fitFrame() {
   const S = sizeById(store.art.size),
@@ -71,6 +87,7 @@ function pick(m) {
   segmented($("#finishModes"), mode, pick);
   $("#captionFields").hidden = mode !== "print";
   fitFrame();
+  prepare();
 }
 
 export function openFinish() {
@@ -78,7 +95,11 @@ export function openFinish() {
   mode = "original";
   $("#captionFields").hidden = true;
   renderModes();
-  requestAnimationFrame(fitFrame);
+  prepared = null;
+  requestAnimationFrame(() => {
+    fitFrame();
+    prepare();
+  });
 }
 
 export function closeFinish() {
@@ -95,30 +116,35 @@ export function initFinish(hooks) {
   $("#authorIc").innerHTML = icon("person");
   $("#backEdit").onclick = () => onBack();
   $("#makeAnother").onclick = () => onAnother();
-  let busy = false;
-  $("#downloadBtn").onclick = async () => {
-    if (busy) return;
-    busy = true;
-    const b = $("#downloadBtn");
-    b.disabled = true;
+  $("#shareBtn").innerHTML = icon("share");
+  $("#shareBtn").hidden = !canShareFiles();
+  const run = (btn, after) => async () => {
+    if (btn.disabled) return;
+    btn.disabled = true;
     try {
-      await new Promise((r) => setTimeout(r, 30));
-      await downloadArtwork(store.art, mode === "print" ? "print" : "original", caption);
-      b.innerHTML = icon("check");
-      setTimeout(() => (b.innerHTML = icon("download")), 1400);
+      const done = await after(await fileNow());
+      if (done !== "cancelled") {
+        const was = btn.innerHTML;
+        btn.innerHTML = icon("check");
+        setTimeout(() => (btn.innerHTML = was), 1400);
+      }
     } catch (e) {
       console.error(e);
     } finally {
-      busy = false;
-      b.disabled = false;
+      btn.disabled = false;
     }
   };
+  $("#downloadBtn").onclick = run($("#downloadBtn"), (f) => saveFile(f));
+  $("#shareBtn").onclick = run($("#shareBtn"), (f) => shareFile(f));
   let t = 0;
   const typed = () => {
     caption.title = $("#artTitle").value;
     caption.author = $("#artAuthor").value;
     clearTimeout(t);
-    t = setTimeout(fitFrame, 120);
+    t = setTimeout(() => {
+      fitFrame();
+      prepare();
+    }, 300);
   };
   $("#artTitle").addEventListener("input", typed);
   $("#artAuthor").addEventListener("input", typed);

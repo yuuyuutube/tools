@@ -87,7 +87,8 @@ export function withDpi(buf, dpi) {
   return new Blob(out, { type: "image/png" });
 }
 
-export async function downloadArtwork(art, mode, caption) {
+// Encode the output as a PNG File (print sizes carry 300 DPI). Shared by download and share.
+export async function buildArtworkFile(art, mode, caption) {
   const S = sizeById(art.size),
     c = renderOutput(art, mode, caption);
   const blob = await new Promise((r) => c.toBlob(r, "image/png"));
@@ -96,13 +97,38 @@ export async function downloadArtwork(art, mode, caption) {
   const d = new Date(),
     stamp = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}-${String(d.getHours()).padStart(2, "0")}${String(d.getMinutes()).padStart(2, "0")}`;
   const name = `play-with-matisse-${S.id}${mode === "print" ? "-print" : ""}-${stamp}.png`;
-  const url = URL.createObjectURL(out);
+  return new File([out], name, { type: "image/png" });
+}
+
+export function saveFile(file) {
+  const url = URL.createObjectURL(file);
   const a = document.createElement("a");
   a.href = url;
-  a.download = name;
+  a.download = file.name;
   document.body.append(a);
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 4000);
-  return { name, w: c.width, h: c.height, bytes: out.size };
+}
+
+// True when this browser can open the system share sheet with an image file.
+export function canShareFiles() {
+  try {
+    return !!navigator.canShare?.({ files: [new File([new Uint8Array(1)], "a.png", { type: "image/png" })] });
+  } catch {
+    return false;
+  }
+}
+
+// Opens the share sheet; falls back to a download when sharing isn't possible. Cancelling the sheet does nothing.
+export async function shareFile(file) {
+  try {
+    if (!navigator.canShare?.({ files: [file] })) throw new Error("no file share");
+    await navigator.share({ files: [file], title: "Play with Matisse" });
+    return "shared";
+  } catch (e) {
+    if (e?.name === "AbortError") return "cancelled";
+    saveFile(file);
+    return "downloaded";
+  }
 }

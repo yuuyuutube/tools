@@ -14,6 +14,7 @@ const I = {
   back: '<rect x="3.5" y="3.5" width="11" height="11" rx="1.5" fill="currentColor"/><rect x="9.5" y="9.5" width="11" height="11" rx="1.5" fill="var(--paper)"/>',
   recolor: '<path d="M5.2 11.3 11.5 5l7 7-6.3 6.3a1.6 1.6 0 0 1-2.3 0l-4.7-4.7a1.6 1.6 0 0 1 0-2.3z"/><path d="M5 12.5h13"/><path fill="currentColor" stroke="none" d="M20 14.6s1.8 2.3 1.8 3.4a1.8 1.8 0 0 1-3.6 0c0-1.1 1.8-3.4 1.8-3.4z"/>',
   swap: '<path d="M4 8.5h14l-3.5-3.5M20 15.5H6l3.5 3.5"/>',
+  share: '<path d="M12 14.5V3.8M8 7.6l4-3.8 4 3.8"/><path d="M8.5 10.5H6.2a1.2 1.2 0 0 0-1.2 1.2v7.6a1.2 1.2 0 0 0 1.2 1.2h11.6a1.2 1.2 0 0 0 1.2-1.2v-7.6a1.2 1.2 0 0 0-1.2-1.2h-2.3"/>',
   download: '<path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14"/>',
   pencil: '<path d="M4.5 19.5l1-4.5L16 4.5a2.1 2.1 0 0 1 3 3L8.5 18z"/><path d="M14 6.5l3 3"/>',
   info: '<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5"/><circle cx="12" cy="7.9" r="1.1" fill="currentColor" stroke="none"/>',
@@ -34,6 +35,11 @@ const I = {
   drop: '<path d="M12 3.8s6 6.4 6 10.4a6 6 0 0 1-12 0c0-4 6-10.4 6-10.4z"/>',
   title: '<path d="M5 6.5V5h14v1.5M12 5v14M9.5 19h5"/>',
   person: '<circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c.6-3.8 3.4-6 7-6s6.4 2.2 7 6"/>',
+  toFront: '<rect x="3.5" y="10.5" width="10" height="10" rx="1.5"/><rect x="7" y="7" width="10" height="10" rx="1.5" fill="var(--paper)"/><rect x="10.5" y="3.5" width="10" height="10" rx="1.5" fill="currentColor"/>',
+  toBack: '<rect x="3.5" y="10.5" width="10" height="10" rx="1.5" fill="currentColor"/><rect x="7" y="7" width="10" height="10" rx="1.5" fill="var(--paper)"/><rect x="10.5" y="3.5" width="10" height="10" rx="1.5" fill="var(--paper)"/>',
+  phone: '<rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/>',
+  tablet: '<rect x="4.5" y="3" width="15" height="18" rx="2"/><path d="M11 18h2"/>',
+  desktop: '<rect x="3" y="4.5" width="18" height="12" rx="1.5"/><path d="M9 20h6M12 16.5V20"/>',
   grid: '<rect x="4" y="4" width="6.5" height="6.5" rx="1.2"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.2"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.2"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.2"/>',
 };
 

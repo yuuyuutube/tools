@@ -1,0 +1,49 @@
+// Hand-tuned overrides for the intro forest, written by scripts/intro-editor.html (via the dev server).
+// colors: piece key → fill. z: piece key → stacking rank (higher is in front); "title" is the cut-paper title.
+export default {
+  "colors": {
+    "B2": "#EC6A4C",
+    "L0-10": "#E8DECB",
+    "L0-11": "#E4D9C4",
+    "L0-6": "#EBE2D1",
+    "L0-7": "#E4D9C4",
+    "L0-8": "#EBE2D1",
+    "L0-9": "#367C4C",
+    "L1-5": "#E4D9C4",
+    "L1-8": "#EBE2D1",
+    "L2-3": "#2E7048"
+  },
+  "z": {
+    "B0": 290.0,
+    "B2": 300.0,
+    "L0-0": 50.0,
+    "L0-1": 60.0,
+    "L0-10": 150.0,
+    "L0-11": 160.0,
+    "L0-2": 80.0,
+    "L0-3": 90.0,
+    "L0-4": 100.0,
+    "L0-5": 120.0,
+    "L0-6": 0.0,
+    "L0-7": 110.0,
+    "L0-8": 20.0,
+    "L0-9": 140.0,
+    "L1-0": 30.0,
+    "L1-1": 10.0,
+    "L1-2": 70.0,
+    "L1-3": 170.0,
+    "L1-4": 180.0,
+    "L1-5": 130.0,
+    "L1-6": 190.0,
+    "L1-7": 200.0,
+    "L1-8": 40.0,
+    "L2-0": 220.0,
+    "L2-1": 230.0,
+    "L2-2": 240.0,
+    "L2-3": 250.0,
+    "L2-4": 260.0,
+    "L2-5": 270.0,
+    "L2-6": 280.0,
+    "title": 210.0
+  }
+};

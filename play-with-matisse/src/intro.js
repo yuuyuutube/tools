@@ -3,6 +3,7 @@
 import { icon } from "./icons.js";
 import { glyphShape } from "./shapes.js";
 import { store } from "./store.js";
+import savedLayout from "./intro-layout.js";
 import { $, TAU, reduceMotion, rng } from "./util.js";
 
 const NS = "http://www.w3.org/2000/svg";
@@ -10,24 +11,34 @@ const NS = "http://www.w3.org/2000/svg";
 // weight without covering anything. Layers go from deep to light green so the forest reads as depth;
 // colour accents are kept to a few small blossoms in front.
 const BLOOMS = ["p:bloom", "p:daisy", "p:flower"];
+// Colours the intro editor offers: the leaf greens, the deep paper tones and the blossom accents.
+export const INTRO_PALETTE = ["#1E4D35", "#235A3D", "#2E7048", "#367C4C", "#5FA83F", "#2A9D9A", "#E8DECB", "#E4D9C4", "#EBE2D1", "#F1C232", "#EC6A4C", "#2552A3"];
+const BROAD = new Set(["p:monstera", "p:banana"]);
+const PAPER_TONES = ["#E8DECB", "#E4D9C4", "#EBE2D1"];
 const LAYERS = [
   { n: 12, size: [0.85, 1.3], colors: ["#1E4D35", "#235A3D"], blooms: 0, leaves: ["p:monstera", "p:palm", "p:fern", "p:banana", "p:palm", "p:monstera", "p:fern"] },
   { n: 9, size: [0.65, 1.05], colors: ["#2E7048", "#367C4C"], blooms: 0, leaves: ["p:palm", "p:fern", "p:palm", "p:fern", "p:banana"] },
   { n: 7, size: [0.5, 0.9], colors: ["#5FA83F", "#5FA83F", "#2A9D9A"], blooms: 3, leaves: ["p:palm", "p:fern"] },
 ];
 const TITLE = ["PLAY WITH", "MATISSE"];
-// Papers that read on both the cream ground and the green leaves: no greens (they sink into the leaves)
-// and no creams (they vanish where the ground shows).
-const LETTER_COLORS = ["#EC6A4C", "#2552A3", "#F1C232", "#E57FA0", "#D5312B", "#F08A3C"];
+// Papers that read on both the cream ground and the green leaves: no creams (they vanish where the ground
+// shows) and no deep greens (they sink into the leaves); the one teal comes from the Tropical Jungle set.
+const LETTER_COLORS = ["#EC6A4C", "#2552A3", "#F1C232", "#2A9D9A", "#D5312B", "#F08A3C"];
 
 export const ringsToD = (rings) => rings.map((r) => "M" + r.map((p) => p[0].toFixed(1) + " " + p[1].toFixed(1)).join("L") + "Z").join("");
 
 let items = [],
   letters = [];
 
+function build() {
+  const out = buildForest($("#forest"), innerWidth, innerHeight, $("#playBtn"));
+  items = out.pieces;
+  letters = out.letters;
+}
+
 // Cut-paper title, centred above the play button. It sits between the middle and front leaves, so the forest
 // tucks under and over it. Returns the title group plus the zones the leaf tips stop short of.
-function buildTitle(svg, vw, vh) {
+function buildTitle(svg, vw, vh, play) {
   const R = rng(7031);
   const lines = TITLE.map((t, li) => [...t].map((ch, i) => (ch === " " ? { space: true, adv: 34 } : { ch, ...glyphShape(ch, 100 + li * 40 + i) })));
   const track = 4,
@@ -38,7 +49,7 @@ function buildTitle(svg, vw, vh) {
     capB = 72 * sB,
     capA = 72 * sA,
     gap = capB * 0.24,
-    hasBtn = !$("#playBtn").hidden, // the OG render hides the button and centres the title alone
+    hasBtn = !play.hidden, // the OG render hides the button and centres the title alone
     btn = hasBtn ? 112 : 0,
     btnGap = hasBtn ? Math.max(26, capB * 0.32) : 0;
   const total = capA + gap + capB + btnGap + btn,
@@ -48,7 +59,7 @@ function buildTitle(svg, vw, vh) {
   svg.append(defs);
   const group = document.createElementNS(NS, "g");
   group.setAttribute("filter", "url(#paperLift)");
-  letters = [];
+  const letters = [];
   let ci = 0;
   [
     [lines[0], sA, top + capA],
@@ -78,12 +89,12 @@ function buildTitle(svg, vw, vh) {
       x += (g.adv + track) * s;
     }
   });
-  const play = $("#playBtn"),
-    btnY = top + capA + gap + capB + btnGap + btn / 2,
+  const btnY = top + capA + gap + capB + btnGap + btn / 2,
     m = Math.min(vw, vh);
   play.style.top = btnY + "px";
   return {
     group,
+    letters,
     // back and middle leaves only keep off the play button and may run under the title;
     // front leaves stay around the title, just touching its edges
     button: hasBtn
@@ -108,16 +119,16 @@ function roomTo(e, x, y, ang) {
   return t > 0 ? t : Infinity;
 }
 
-function build() {
-  const svg = $("#forest"),
-    vw = innerWidth,
-    vh = innerHeight,
-    m = Math.min(vw, vh),
+// Builds the whole forest into `svg` for a vw × vh screen. Every piece has a stable key (leaves "L<layer>-<i>",
+// blossoms "B<i>") so hand-tuned colours and stacking from intro-layout.js (made in scripts/intro-editor.html)
+// land on the same piece every time. Returns the pieces, the title letters and the stacking order.
+export function buildForest(svg, vw, vh, play, layout = savedLayout) {
+  const m = Math.min(vw, vh),
     cx = vw / 2,
     cy = vh / 2;
   svg.setAttribute("viewBox", `0 0 ${vw} ${vh}`);
   svg.replaceChildren();
-  items = [];
+  const pieces = [];
   const bg = document.createElementNS(NS, "rect");
   bg.setAttribute("width", vw);
   bg.setAttribute("height", vh);
@@ -128,7 +139,7 @@ function build() {
     perim = 2 * (vw + vh);
   const layersEl = document.createElementNS(NS, "g");
   svg.append(layersEl);
-  const title = buildTitle(svg, vw, vh);
+  const title = buildTitle(svg, vw, vh, play);
   const edgePoint = (u) => {
     u = ((u % 1) + 1) % 1;
     let d = u * perim;
@@ -140,10 +151,10 @@ function build() {
     d -= vw;
     return [0, vh - d, 3];
   };
+  const rightPalms = [],
+    order = []; // default stacking, back to front
   LAYERS.forEach((L, li) => {
-    if (li === 2) layersEl.append(title.group);
-    const layer = document.createElementNS(NS, "g");
-    layersEl.append(layer);
+    if (li === 2) order.push("title");
     const off = R();
     for (let i = 0; i < L.n; i++) {
       const [ex, ey, side] = edgePoint(off + (i + R() * 0.3) / L.n);
@@ -165,7 +176,16 @@ function build() {
         [nx, ny] = [[0, -1], [1, 0], [0, 1], [-1, 0]][side];
       const bx = ex - Math.cos(ang) * len * 0.06 + nx * out,
         by = ey - Math.sin(ang) * len * 0.06 + ny * out;
-      items.push(addLeaf(layer, a, bx, by, ang, s, L.colors[Math.floor(R() * L.colors.length)], li, R));
+      const green = L.colors[Math.floor(R() * L.colors.length)];
+      let color = green;
+      // Broad leaves, back-row leaves that reach into the title and middle-row leaves that run deep into it, are
+      // cut from paper just darker than the ground: they keep the forest full without fighting the letters.
+      const reaches = li < 2 && roomTo(title.core, bx, by, ang) < len * (li === 0 ? 0.95 : 0.72);
+      if (BROAD.has(id) || reaches) color = PAPER_TONES[Math.floor(R() * PAPER_TONES.length)];
+      const item = addLeaf(`L${li}-${i}`, a, bx, by, ang, s, color, li, R, cx);
+      pieces.push(item);
+      order.push(item.key);
+      if (reaches && !BROAD.has(id) && id === "p:palm" && bx > cx) rightPalms.push({ item, green, depth: len - roomTo(title.core, bx, by, ang) });
     }
     // a few blossoms tucked between the front leaves, spread around the edge
     for (let i = 0; i < L.blooms; i++) {
@@ -177,18 +197,39 @@ function build() {
       const z = title.core;
       if (!a || ((x - z.cx) / (z.ax * 1.4)) ** 2 + ((y - z.cy) / (z.ay * 1.6)) ** 2 < 1) continue;
       const s = (m * (0.07 + R() * 0.1)) / 100;
-      const col = ["#F1C232", "#EC6A4C", "#EE9DB3"][i % 3];
-      items.push(addLeaf(layer, a, x, y, R() * TAU, s, col, li, R, true));
+      const col = ["#F1C232", "#EC6A4C", "#2552A3"][i % 3];
+      const item = addLeaf(`B${i}`, a, x, y, R() * TAU, s, col, li, R, cx, true);
+      pieces.push(item);
+      order.push(item.key);
     }
   });
+  // Keep a green palm or two on the right, so that side doesn't fade out entirely. The ones that only just
+  // reach the letters go back to green; palms running deep behind the title stay paper.
+  rightPalms
+    .sort((p, q) => p.depth - q.depth)
+    .slice(0, 2)
+    .forEach((p) => (p.item.color = p.green));
+
+  // Hand-tuned colours, then stacking: every piece (and the title) gets a rank; saved ranks win.
+  for (const p of pieces) {
+    p.color = layout.colors?.[p.key] || p.color;
+    p.path.setAttribute("fill", p.color);
+  }
+  const nodes = { title: title.group };
+  for (const p of pieces) nodes[p.key] = p.el;
+  const rank = (k, i) => layout.z?.[k] ?? i * 10;
+  const stack = order.map((k, i) => ({ k, z: rank(k, i), i })).sort((a, b) => a.z - b.z || a.i - b.i).map((e) => e.k);
+  for (const k of stack) layersEl.append(nodes[k]);
+  return { pieces, letters: title.letters, stack, title: title.group };
 }
 
-function addLeaf(layer, a, bx, by, ang, s, color, depth, R, centred = false) {
+function addLeaf(key, a, bx, by, ang, s, color, depth, R, cx, centred = false) {
   const mover = document.createElementNS(NS, "g"),
     place = document.createElementNS(NS, "g"),
     sway = document.createElementNS(NS, "g"),
     path = document.createElementNS(NS, "path");
   mover.style.transformOrigin = `${bx}px ${by}px`;
+  mover.dataset.key = key;
   place.setAttribute("transform", `translate(${bx.toFixed(1)} ${by.toFixed(1)}) rotate(${(((ang * 180) / Math.PI) + 90).toFixed(1)})`);
   sway.setAttribute("class", "sway");
   sway.style.setProperty("--d", (4.5 + R() * 4).toFixed(2) + "s");
@@ -202,13 +243,12 @@ function addLeaf(layer, a, bx, by, ang, s, color, depth, R, centred = false) {
   sway.append(path);
   place.append(sway);
   mover.append(place);
-  layer.append(mover);
-  return { el: mover, bx, by, depth, side: Math.sign(bx - innerWidth / 2) || 1, R: R() };
+  return { key, el: mover, path, color, bx, by, depth, side: Math.sign(bx - cx) || 1, R: R() };
 }
 
 // The play button as cut paper: an uneven cream disc with a coral triangle on top. Its keyboard focus ring
 // is a third, darker cut disc behind it instead of a drawn outline.
-function cutPlayButton() {
+export function cutPlayButton() {
   const R = rng(4242),
     cutDisc = (n, r0, r1) => {
       const out = [];

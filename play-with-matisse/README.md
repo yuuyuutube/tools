@@ -12,6 +12,14 @@ python3 tools/play-with-matisse/scripts/dev-server.py 8767
 Then open http://localhost:8767. The dev server sends `no-store` so edited modules are never cached. It is also in
 `.claude/launch.json` as `play-with-matisse`. Any static server works for production.
 
+## Intro editor
+
+Open http://localhost:8767/scripts/intro-editor.html with the dev server running. Click a leaf or blossom to
+select it (click the same spot again to reach the one underneath), change its stacking or colour, and save: the
+dev server writes `src/intro-layout.js`, which the real intro reads. Pieces are matched by a stable key
+(`L<layer>-<i>`, `B<i>`), so one layout applies to every screen size; switch the preview size to check each one.
+`[` / `]` move back / forward (with Shift: to the back / front), `⌘S` saves.
+
 ## OG image and icons
 
 `og.png`, `assets/apple-touch-icon.png` and `assets/icon-32.png` are rendered from `scripts/og.html` (the intro

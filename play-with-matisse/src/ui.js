@@ -204,7 +204,7 @@ const TITLES = {
   "Use current paper colour": "換成目前色紙的顏色", "Switch to snip": "改成剪紙邊", "Switch to rip": "改成撕紙邊", "Swap shape": "換一個形狀", Delete: "刪除",
   "Draw a shape": "畫一個形狀", Shapes: "形狀素材", "Fill background with current paper": "用目前色紙當背景",
   "Edit drawing": "重新編輯這張畫", "Remove from tray": "從素材盤移除", "Edit colour": "自訂我的顏色",
-  "Back to edit": "回去編輯", "Make another": "再做一張", "Download PNG": "下載 PNG",
+  "Back to edit": "回去編輯", "Make another": "再做一張", "Download PNG": "下載 PNG", Share: "分享",
   "Original artwork": "原始作品", "Art print": "藝術海報", "Postcard preview": "明信片預覽",
   Close: "關閉", OK: "確定", Cancel: "取消", "Let’s Play!": "開始玩",
   "Undo stroke": "復原一筆", Clear: "清除重畫", "New variations": "換一批變化", "Add to collage": "加入拼貼",
@@ -217,11 +217,13 @@ const TITLES = {
   "Postcard 100 × 150 mm": "明信片・直式 100 × 150 mm", "Postcard 150 × 100 mm": "明信片・橫式 150 × 100 mm",
   "A4 210 × 297 mm": "A4・直式 210 × 297 mm", "A4 297 × 210 mm": "A4・橫式 297 × 210 mm",
   "My shape": "我的形狀（長按可編輯或移除）",
+  Phone: "手機尺寸", Tablet: "平板尺寸", Desktop: "桌機尺寸", "Send to back": "移到最後面", "Bring to front": "移到最前面",
+  "Reset piece": "還原這一片", "Reset all": "全部還原", "Save layout": "儲存到網站",
   monstera: "龜背芋", banana: "香蕉葉", palm: "棕櫚葉", fern: "羽狀葉", round: "圓葉", slim: "細長葉", sprout: "小枝芽",
   daisy: "雛菊", bloom: "盛開的花", lemon: "檸檬", fruit: "果實", sun: "太陽", moon: "月亮", star: "星芒", sparkle: "閃光",
   blob: "色塊", pebble: "卵石", wave: "波浪", swirl: "漩渦", drop: "水滴", dot: "圓點",
 };
-const zhTitle = (label) => (label.startsWith("Paper #") ? "色紙" : label.startsWith("Edit paper") ? "調這張色紙" : TITLES[label] || "");
+const zhTitle = (label) => (label.startsWith("Colour #") ? "換成這個顏色" : label.startsWith("Paper #") ? "色紙" : label.startsWith("Edit paper") ? "調這張色紙" : TITLES[label] || "");
 
 function applyTitle(el) {
   const t = zhTitle(el.getAttribute("aria-label") || "");
