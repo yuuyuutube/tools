@@ -1,5 +1,5 @@
 // Distinguish deliberate dragging from hover, even on a narrow desktop window.
-export const SWIPE={touchPerCard:1.6,mousePerCard:3.2,fling:.7,friction:.99,maxV:.0075};
+export const SWIPE={touchPerCard:1,mousePerCard:3.2,fling:.7,friction:.99,maxV:.0075};
 export function swipeCardDelta(pixels,spacing,pointerType){
  const perCard=pointerType==='mouse'?SWIPE.mousePerCard:SWIPE.touchPerCard;
  return -pixels/(spacing*perCard);

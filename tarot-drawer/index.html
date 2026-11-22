@@ -11,9 +11,40 @@
 <meta property="og:locale" content="zh_TW">
 <meta property="og:title" content="抽牌所｜TAROT DRAW">
 <meta property="og:description" content="洗牌、選牌、翻牌，抽一張塔羅牌。">
+<meta property="og:url" content="https://yuuyuutube.github.io/tools/tarot-drawer/">
+<meta property="og:site_name" content="抽牌所">
+<meta property="og:image" content="https://yuuyuutube.github.io/tools/tarot-drawer/og.png?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="暖灰紙底上展開成扇形的七款絹印塔羅牌背。">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="抽牌所｜TAROT DRAW">
+<meta name="twitter:description" content="洗牌、選牌、翻牌，抽一張塔羅牌。">
+<meta name="twitter:image" content="https://yuuyuutube.github.io/tools/tarot-drawer/og.png?v=1">
 <link rel="stylesheet" href="src/ui/tokens.css">
 <link rel="stylesheet" href="src/ui/style.css">
 <script type="module" src="src/ui/app.js"></script>
+<link rel="modulepreload" href="src/config.js">
+<link rel="modulepreload" href="src/data/pro.js">
+<link rel="modulepreload" href="src/data/cards.js">
+<link rel="modulepreload" href="src/engine/draw.js">
+<link rel="modulepreload" href="src/engine/random.js">
+<link rel="modulepreload" href="src/art/frame.js">
+<link rel="modulepreload" href="src/print/sunburst/layout.js">
+<link rel="modulepreload" href="src/print/press.js">
+<link rel="modulepreload" href="src/art/kit.js">
+<link rel="modulepreload" href="src/art/index.js">
+<link rel="modulepreload" href="src/art/cards-a.js">
+<link rel="modulepreload" href="src/art/cards-b.js">
+<link rel="modulepreload" href="src/art/cards-c.js">
+<link rel="modulepreload" href="src/art/ink-settings.js">
+<link rel="modulepreload" href="src/poster/stamps.js">
+<link rel="modulepreload" href="src/poster/poster.js">
+<link rel="modulepreload" href="src/audio/sound.js">
+<link rel="modulepreload" href="src/audio/reveal.js">
+<link rel="modulepreload" href="src/ui/fan-input.js">
+<link rel="modulepreload" href="src/ui/window-reveal.js">
 </head>
 <body>
 <svg class="defs" aria-hidden="true">
@@ -34,15 +65,19 @@
   <symbol id="i-pro" viewBox="0 0 24 24"><path d="M12 3.5c.6 4.4 2.1 5.9 6.5 6.5-4.4.6-5.9 2.1-6.5 6.5-.6-4.4-2.1-5.9-6.5-6.5 4.4-.6 5.9-2.1 6.5-6.5Z"/><path d="M18.5 15.5c.3 1.6.9 2.2 2.5 2.5-1.6.3-2.2.9-2.5 2.5-.3-1.6-.9-2.2-2.5-2.5 1.6-.3 2.2-.9 2.5-2.5Z"/></symbol>
   <symbol id="i-chev" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
   <symbol id="i-rel" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="2.5"/><circle cx="18.5" cy="6.5" r="2.5"/><circle cx="18.5" cy="17.5" r="2.5"/><path d="m7.8 11 8.4-3.6M7.8 13l8.4 3.6"/></symbol>
+  <symbol id="i-tune" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></symbol>
+  <symbol id="i-calm" viewBox="0 0 24 24"><path d="M3.5 9c2.8-2.6 5.7-2.6 8.5 0s5.7 2.6 8.5 0M3.5 15.5h17"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9"/></symbol>
   <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 6.5C10 5 7 4.6 4 5v13c3-.4 6 0 8 1.5 2-1.500 5-1.900 8-1.500V5c-3-.4-6 0-8 1.500Zm0 0V19.500"/></symbol>
 </svg>
 
+<div id="loader" aria-hidden="true"><i></i><i></i><i></i></div>
 <main id="app" data-state="idle">
   <div class="top">
     <button id="back" class="dot" aria-label="回到牌堆" hidden><svg class="ic"><use href="#i-back"/></svg></button>
     <div class="tools">
       <button id="pro" class="dot" aria-pressed="false" aria-label="專業模式"><svg class="ic"><use href="#i-pro"/></svg></button>
-      <button id="sound" class="dot" aria-label="音效" aria-pressed="false"><svg class="ic"><use href="#i-mute"/></svg></button>
+      <button id="prefs-btn" class="dot" aria-haspopup="dialog" aria-label="設定"><svg class="ic"><use href="#i-tune"/></svg></button>
       <button id="info" class="dot" aria-haspopup="dialog" aria-label="說明"><svg class="ic"><use href="#i-info"/></svg></button>
     </div>
   </div>
@@ -93,6 +128,15 @@
     <dt><svg class="ic"><use href="#i-rev"/></svg></dt><dd>開啟逆位後，每張牌各自有一半的機會是逆位。</dd>
     <dt><svg class="ic"><use href="#i-pro"/></svg></dt><dd>專業模式：多了月相四張、菱形五張等牌陣；每張牌標出它在愚者之旅的第幾幕與元素，多張牌時可查看牌與牌之間的關係。元素依 Golden Dawn 系統；牌間關係整理自 tarot-skill（MIT）。</dd>
   </dl>
+</section>
+
+<section id="prefs" class="sheet" role="dialog" aria-modal="true" aria-label="設定" hidden>
+  <header><h2>設定</h2><button class="dot flat" data-close aria-label="關閉"><svg class="ic"><use href="#i-close"/></svg></button></header>
+  <div class="prefs-body">
+    <button id="sound" class="pref-row" role="switch" aria-checked="false"><svg class="ic"><use href="#i-mute"/></svg><span>音效</span><i class="switch"></i></button>
+    <div class="pref-backs" role="radiogroup" aria-label="牌背"></div>
+    <button id="calm" class="pref-row" role="switch" aria-checked="false"><svg class="ic"><use href="#i-calm"/></svg><span>減輕動態</span><i class="switch"></i></button>
+  </div>
 </section>
 
 <section id="welcome" class="sheet welcome" role="dialog" aria-modal="true" aria-labelledby="welcome-title" hidden>

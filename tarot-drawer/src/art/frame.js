@@ -117,6 +117,8 @@ export const BACK_URL = new URL('../../assets/card-back.png', import.meta.url).h
 // 抽牌畫面輪流使用的牌背（scripts/export-backs.py 輸出的 WebP，清單要一致）
 export const BACK_NAMES = ['card-back', 'card-back-moth', 'card-back-tide', 'card-back-pomegranate', 'card-back-serpent', 'card-back-flower', 'card-back-geometry'];
 export const BACKS = BACK_NAMES.map(name => new URL(`../../assets/backs/${name}.webp`, import.meta.url).href);
+// 設定裡的小圖（240 × 400 JPEG），打開設定才載入
+export const BACK_THUMBS = BACK_NAMES.map(name => new URL(`../../assets/backs/thumb/${name}.jpg`, import.meta.url).href);
 export function backSVG() {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${CARD_W} ${CARD_H}">` +
     `<image href="${BACK_URL}" width="${CARD_W}" height="${CARD_H}"/></svg>`;

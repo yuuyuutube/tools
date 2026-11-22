@@ -52,55 +52,12 @@ img, svg { -webkit-user-drag: none; }
   -webkit-backface-visibility: hidden; backface-visibility: hidden; box-shadow: var(--card-shadow);
 }
 .back { background: #f6f0e2 var(--back) center / 100% 100% no-repeat; }
-.back::before {
-  content: ''; position: absolute; inset: 0; border-radius: inherit;
-  background: var(--back-next) center / 100% 100% no-repeat;
-  opacity: 0; pointer-events: none;
-}
-#stage.back-changing .back::before {
-  animation: back-transfigure 1100ms cubic-bezier(.22,.7,.3,1) both;
-}
-/* 牌外的光暈放在 card 上，避開牌背的 overflow:hidden 裁切。 */
-.card.top1::before {
-  content: ''; position: absolute; inset: -12%; z-index: -1; pointer-events: none;
-  border-radius: 45%; opacity: 0; filter: blur(12px);
-  background: radial-gradient(ellipse, #fff8e044 10%, #ecd4a33d 32%, #bcace82e 48%, transparent 72%);
-}
-#stage.back-changing .card.top1::before { animation: back-aura 1100ms ease-in-out both; }
-@keyframes back-aura {
-  0% { opacity: 0; transform: scale(.5); }
-  24% { opacity: .4; transform: scale(.95); }
-  45% { opacity: .6; transform: scale(1.08); }
-  72% { opacity: .25; transform: scale(1.16); }
-  100% { opacity: 0; transform: scale(1.4); }
-}
-/* 光只落在最上層牌，避免整疊牌的光暈累加。 */
-.back::after {
-  content: ''; position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(ellipse at center, #fffbed88 0%, #fff1d34d 24%, #e4d4ff22 46%, transparent 74%);
-  opacity: 0; mix-blend-mode: screen; filter: blur(5px);
-}
-#stage.back-changing .top1 .back::after { animation: back-enchantment 1100ms ease-in-out both; }
-@keyframes back-transfigure {
-  0% { opacity: 0; clip-path: circle(0% at 50% 50%); filter: blur(2px) brightness(1.08); }
-  35% { opacity: .85; filter: blur(1px) brightness(1.04); }
-  82%, 100% { opacity: 1; clip-path: circle(110% at 50% 50%); filter: blur(0) brightness(1); }
-}
-@keyframes back-enchantment {
-  0%, 100% { opacity: 0; transform: scale(.65); }
-  25% { opacity: .4; transform: scale(.9); }
-  43% { opacity: .55; transform: scale(1.16); }
-  72% { opacity: .15; transform: scale(1.45); }
-}
-#app.returning #pile { pointer-events: none; }
-@media (prefers-reduced-motion: reduce) {
-  #stage.back-changing .back::before { animation: none; opacity: 1; }
-  #stage.back-changing .top1 .back::after,
-  #stage.back-changing .card.top1::before { animation: none; }
-}
 .face { background: #f6f0e2; transform: rotateY(180deg); }
 .face svg { display: block; width: 100%; height: 100%; isolation: isolate; }
-.face.rev svg { transform: rotate(180deg); }
+.face img { display: block; width: 100%; height: 100%; }
+.face.rev svg, .face.rev img { transform: rotate(180deg); }
+/* 牌堆、洗牌與牌扇的牌各自一層，移動交給合成器 */
+#stage > .card { will-change: transform; }
 .card:focus-visible .flip { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: var(--card-radius); }
 
 /* 圖窗外框由底部中央展開：window-reveal.js 直接改 path d，線寬固定。
@@ -143,7 +100,7 @@ img, svg { -webkit-user-drag: none; }
   transition: opacity .3s, transform .3s var(--ease-out);
 }
 #setup > * { pointer-events: auto; }
-#app:not([data-state="idle"]) #setup, #app.again #setup, #app.returning #setup { opacity: 0; transform: translateY(10px); visibility: hidden; transition: opacity .2s, transform .2s, visibility 0s .2s; }
+#app:not([data-state="idle"]) #setup, #app.again #setup { opacity: 0; transform: translateY(10px); visibility: hidden; transition: opacity .2s, transform .2s, visibility 0s .2s; }
 #go {
   width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center;
   background: var(--ink); color: var(--paper);
@@ -193,7 +150,7 @@ img, svg { -webkit-user-drag: none; }
 .kw span { white-space: nowrap; }
 .kw span + span::before { content: '·'; margin: 0 .5em; color: var(--mute); }
 
-.actions { margin-top: auto; display: flex; gap: 12px; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity .35s, transform .35s var(--ease-out); }
+.actions { flex-shrink: 0; display: flex; gap: 12px; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity .35s, transform .35s var(--ease-out); }
 #app[data-state="result"] .actions { opacity: 1; pointer-events: auto; transform: none; }
 #detail { display: none; }
 
@@ -203,21 +160,21 @@ img, svg { -webkit-user-drag: none; }
 #board[data-count="1"][data-phase="picking"] #cols { visibility: hidden; }
 
 /* 單張結果：直式上下排，寬螢幕左右排 */
-#board[data-count="1"][data-phase="result"] { justify-content: center; --sw: min(64vw, calc((100dvh - 372px) * .6), 380px); }
+#board[data-phase="picking"] .actions { display: none; }
+/* 牌的大小：寬度上限寫在這裡，高度由 app.js 的 fitResult() 量過後用 --fit 縮到一屏放得下 */
+#board[data-count="1"][data-phase="result"] { --sw: min(64vw, 380px, var(--fit, 9999px)); }
 #board[data-count="1"] .pos { display: none; }
 #board[data-count="1"][data-phase="result"] .col { gap: 18px; }
-#board[data-count="1"][data-phase="result"] .actions { margin-top: 6px; }
 @media (min-width: 760px) and (min-aspect-ratio: 11/10) {
-  #board[data-count="1"][data-phase="result"] { --sw: min(calc((100dvh - 232px) * .6), 34vw, 360px); padding-bottom: calc(var(--bottom) + 68px); }
+  #board[data-count="1"][data-phase="result"] { --sw: min(34vw, 360px, var(--fit, 9999px)); }
   #board[data-count="1"][data-phase="result"] .col { flex-direction: row; gap: clamp(36px, 5vw, 72px); align-items: center; }
   #board[data-count="1"][data-phase="result"] .meta { text-align: left; min-width: 230px; max-width: 320px; }
   #board[data-count="1"][data-phase="result"] .meta h2 { font-size: clamp(36px, 4.4vw, 56px); }
   #board[data-count="1"][data-phase="result"] .kw { font-size: 16px; }
-  #board[data-count="1"][data-phase="result"] .actions { position: absolute; bottom: var(--bottom); left: 0; right: 0; justify-content: center; }
 }
 
 /* 三張結果 */
-#board[data-multi][data-phase="result"] { --sw: min(calc((100vw - 2 * var(--gutter) - (var(--n) - 1) * var(--gap)) / var(--n)), calc((100dvh - 400px) * .6), 230px); }
+#board[data-multi][data-phase="result"] { --sw: min(calc((100vw - 2 * var(--gutter) - (var(--n) - 1) * var(--gap)) / var(--n)), 230px, var(--fit, 9999px)); }
 #board[data-multi] .col { width: var(--sw); }
 #board[data-multi] .meta h2 { font-size: clamp(17px, 2.3vw, 28px); letter-spacing: .1em; margin-right: -.1em; }
 #board[data-multi] .meta .kw { font-size: 13px; letter-spacing: .06em; }
@@ -228,7 +185,7 @@ img, svg { -webkit-user-drag: none; }
 
 /* 手機的三張結果：上面三張總覽，點一張，下面顯示那張的牌義 */
 @media (max-width: 699px) {
-  #board[data-multi][data-phase="result"] { --sw: min(calc((100vw - 2 * var(--gutter) - (var(--n) - 1) * var(--gap)) / var(--n)), calc((100dvh - 430px) * .6)); }
+  #board[data-multi][data-phase="result"] { --sw: min(calc((100vw - 2 * var(--gutter) - (var(--n) - 1) * var(--gap)) / var(--n)), var(--fit, 9999px)); }
   #board[data-multi] .col .meta .no, #board[data-multi] .col .meta .en, #board[data-multi] .col .meta .ori, #board[data-multi] .col .meta .kw, #board[data-multi] .col .meta .tags { display: none; }
   #board[data-multi] .col .meta h2 { margin-top: 0; font-size: 15px; text-shadow: none; color: var(--mute); transition: color .25s; }
   #board[data-multi] .col.active .meta h2 { color: var(--ink); }
@@ -259,34 +216,19 @@ img, svg { -webkit-user-drag: none; }
 #board[data-count="4"] .meta h2, #board[data-count="5"] .meta h2 { font-size: clamp(15px, 1.9vw, 24px); letter-spacing: .06em; margin-right: -.06em; }
 #board[data-count="5"] .meta .kw { font-size: 12px; letter-spacing: .02em; }
 
-/* 所有結果共用可捲動的內容區，操作列獨立留在視窗底部。 */
+/* 結果：整頁是一個捲動區。放得下時內容與操作列一起置中；
+   牌已縮到最小仍放不下，就整頁往下捲，操作列跟在內容最後面。 */
 #board[data-phase="result"] {
-  inset: calc(var(--top) + 52px) 0 calc(var(--bottom) + 84px);
-  padding: 16px var(--gutter) 24px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-width: none;
-  justify-content: flex-start;
-  overscroll-behavior: contain;
-  touch-action: pan-y;
+  inset: 0; justify-content: flex-start;
+  padding: calc(var(--top) + 52px) var(--gutter) calc(var(--bottom) + 4px);
+  overflow-x: hidden; overflow-y: auto; scrollbar-width: none;
+  overscroll-behavior: contain; touch-action: pan-y;
 }
 #board[data-phase="result"]::-webkit-scrollbar { display: none; }
-/* 單張舊版的置中與底部預留會蓋過共用設定，造成上方溢出及多餘捲動。
-   留給 cols 的 auto margin 只在空間足夠時置中，內容過高則從頂部排列。 */
-#board[data-count="1"][data-phase="result"] {
-  justify-content: flex-start;
-  padding: 16px var(--gutter) 24px;
-}
-#board[data-phase="result"] > #cols,
-#board[data-phase="result"] > #detail { flex-shrink: 0; }
-#board[data-count="1"][data-phase="result"] > #cols { margin-block: auto; }
-#app > .actions {
-  position: absolute; z-index: 4; left: 0; right: 0; bottom: var(--bottom);
-  justify-content: center; margin: 0; padding: 12px 16px 4px;
-  background: linear-gradient(to bottom, transparent, var(--bg) 24%);
-  visibility: hidden;
-}
-#app[data-state="result"] > .actions { visibility: visible; }
+#app[data-state="revealing"] #board { overflow-y: hidden; }   /* 牌還在飛，先不捲 */
+#board[data-phase="result"] > * { flex-shrink: 0; }
+#board[data-phase="result"] > #cols { margin-top: auto; }
+#board[data-phase="result"] > .actions { margin: 6px 0 auto; }
 .slot { position: relative; flex-shrink: 0; }
 .slot > .card {
   left: 0; top: 0; width: 100%; height: 100%; margin: 0;
@@ -348,6 +290,36 @@ img, svg { -webkit-user-drag: none; }
 #pro.hint { animation: pro-hint 1.1s var(--ease-out) 2; }
 @keyframes pro-hint { 0% { box-shadow: var(--card), 0 0 0 0 rgba(36,34,31,.45); } 70% { box-shadow: var(--card), 0 0 0 12px rgba(36,34,31,0); } 100% { box-shadow: var(--card), 0 0 0 0 rgba(36,34,31,0); } }
 
+/* ---------------- 設定 ---------------- */
+.prefs-body { display: flex; flex-direction: column; gap: 6px; padding: 2px 2px 0; overflow-y: auto; touch-action: pan-y; }
+.pref-row { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 12px; border-radius: 12px; text-align: left; font-size: 14px; letter-spacing: .1em; transition: background .2s; }
+.pref-row span { flex: 1; }
+@media (hover: hover) { .pref-row:hover { background: rgba(36,34,31,.05); } }
+.pref-row:focus-visible { outline: 2px solid var(--ink); outline-offset: 0; }
+.switch { position: relative; width: 44px; height: 26px; flex: none; border-radius: 13px; background: var(--faint); transition: background .2s; }
+.switch::after { content: ''; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--paper); box-shadow: 0 1px 3px rgba(20,18,14,.25); transition: transform .22s var(--ease-back); }
+[aria-checked="true"] > .switch { background: var(--ink); }
+[aria-checked="true"] > .switch::after { transform: translateX(18px); }
+.pref-backs { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; padding: 6px 12px 10px; }
+.pref-backs button { position: relative; aspect-ratio: 3 / 5; border-radius: var(--card-radius); box-shadow: var(--card-shadow); background: #f6f0e2; transition: transform .18s var(--ease-back); }
+.pref-backs img { display: block; width: 100%; height: 100%; border-radius: inherit; object-fit: cover; pointer-events: none; }
+.pref-backs button::after { content: ''; position: absolute; inset: -4px; border-radius: 9% / 6%; border: 2px solid transparent; transition: border-color .2s; pointer-events: none; }
+.pref-backs button[aria-checked="true"]::after { border-color: var(--ink); }
+.pref-backs .ic { position: absolute; right: -6px; top: -6px; width: 18px; height: 18px; padding: 2px; border-radius: 50%; background: var(--ink); color: var(--paper); stroke-width: 2.6; opacity: 0; transform: scale(.6); transition: opacity .2s, transform .22s var(--ease-back); }
+.pref-backs button[aria-checked="true"] .ic { opacity: 1; transform: none; }
+.pref-backs button:active { transform: scale(.95); }
+.pref-backs button:focus-visible { outline: 0; }
+.pref-backs button:focus-visible::after { border-color: var(--ink); border-style: dashed; }
+@media (max-width: 420px) { .pref-backs { grid-template-columns: repeat(4, 1fr); gap: 12px 14px; padding-inline: 16px; } }
+
+/* ---------------- 進站 loading ---------------- */
+#loader { position: fixed; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--bg); transition: opacity .4s, visibility 0s .4s; }
+#loader.done { opacity: 0; visibility: hidden; }
+#loader i { width: 22px; height: 36px; border-radius: 3px; background: var(--paper); box-shadow: var(--card-shadow); animation: loader-bob 1.1s var(--ease-out) infinite; }
+#loader i:nth-child(2) { animation-delay: .14s; }
+#loader i:nth-child(3) { animation-delay: .28s; }
+@keyframes loader-bob { 0%, 60%, 100% { transform: translateY(0) rotate(0); } 30% { transform: translateY(-10px) rotate(-4deg); } }
+
 /* ---------------- 提示與浮層 ---------------- */
 #toast {
   position: absolute; z-index: 7; left: 50%; top: calc(var(--top) + 52px); max-width: calc(100% - 40px);
@@ -380,6 +352,6 @@ img, svg { -webkit-user-drag: none; }
 @media (max-width: 359px) { .seg.words button { padding: 0 10px; font-size: 12px; letter-spacing: .04em; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .sheet, #veil, .card.printing [data-card-layer], #pro.hint { animation: none !important; }
+  .sheet, #veil, .card.printing [data-card-layer], #pro.hint, #loader i { animation: none !important; }
   .flip, .meta, .actions, #setup, #spread { transition-duration: .01s !important; }
 }
