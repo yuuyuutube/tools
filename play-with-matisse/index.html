@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Play with Matisse</title>
+<meta name="description" content="A Cut-Paper Playground：選一張色紙、畫幾筆、剪或撕，把紙片拼成一張自己的作品。">
+<meta name="theme-color" content="#E8E4DC">
+<link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+<link rel="stylesheet" href="src/style.css">
+<script type="module" src="src/main.js"></script>
+</head>
+<body>
+
+<main id="desk" class="desk" hidden>
+  <header class="top">
+    <div class="tools">
+      <button class="dot" id="aboutBtn" aria-label="About"></button>
+      <button class="dot" id="newBtn" aria-label="New artwork"></button>
+      <button class="dot" id="sizeBtn" aria-label="Canvas size"></button>
+    </div>
+    <div class="tools">
+      <button class="dot" id="undoBtn" aria-label="Undo"></button>
+      <button class="dot" id="redoBtn" aria-label="Redo"></button>
+      <button class="dot ink" id="doneBtn" aria-label="Finish"></button>
+    </div>
+  </header>
+
+  <aside class="papers" id="papers">
+    <button class="set-btn" id="setBtn" aria-label="Paper set" aria-haspopup="true" aria-expanded="false"></button>
+    <div class="sheets" id="sheets" role="radiogroup" aria-label="Paper"></div>
+    <div class="seg cutmode" role="group" aria-label="Snip or rip">
+      <button data-v="snip" aria-label="Snip"></button><button data-v="rip" aria-label="Rip"></button>
+    </div>
+  </aside>
+
+  <div class="stage" id="stage">
+    <canvas id="art" role="img" aria-label="Collage"></canvas>
+    <div class="piece-bar" id="pieceBar" role="toolbar" aria-label="Piece" hidden>
+      <button data-act="copy" aria-label="Duplicate"></button>
+      <button data-act="flipH" aria-label="Flip horizontal"></button>
+      <button data-act="flipV" aria-label="Flip vertical"></button>
+      <button data-act="front" aria-label="Bring forward"></button>
+      <button data-act="back" aria-label="Send backward"></button>
+      <button data-act="recolor" aria-label="Use current paper colour"></button>
+      <button data-act="edge" aria-label="Switch to rip"></button>
+      <button data-act="swap" aria-label="Swap shape" aria-pressed="false"></button>
+      <button data-act="del" aria-label="Delete"></button>
+      <template data-edge="snip"></template><template data-edge="rip"></template>
+    </div>
+  </div>
+
+  <aside class="tray" id="tray">
+    <div class="tray-grab" aria-hidden="true"></div>
+    <button class="draw-btn" id="drawBtn" aria-label="Draw a shape"></button>
+    <div class="tray-grid" id="trayGrid" role="list"></div>
+  </aside>
+  <div class="scrim" id="trayScrim" hidden></div>
+
+  <nav class="dock" aria-label="Make">
+    <div class="seg cutmode" role="group" aria-label="Snip or rip">
+      <button data-v="snip" aria-label="Snip"></button><button data-v="rip" aria-label="Rip"></button>
+    </div>
+    <button class="draw-fab" id="drawFab" aria-label="Draw a shape"></button>
+    <button class="dot" id="trayBtn" aria-label="Shapes" aria-expanded="false"></button>
+  </nav>
+
+  <div class="pop" id="setPop" hidden role="dialog" aria-label="Paper set">
+    <div class="set-list" id="setList" role="radiogroup" aria-label="Paper set"></div>
+    <div class="cp" id="cpWrap" hidden></div>
+    <div class="pop-row">
+      <div class="seg tex" id="texSeg" role="group" aria-label="Paper texture"></div>
+      <button class="dot" id="bgBtn" aria-label="Fill background with current paper"></button>
+    </div>
+  </div>
+  <div class="pop item-pop" id="itemPop" hidden role="dialog" aria-label="Shape">
+    <button class="dot" id="itemEdit" aria-label="Edit drawing"></button>
+    <button class="dot" id="itemDel" aria-label="Remove from tray"></button>
+  </div>
+</main>
+
+<section id="finish" class="finish" hidden aria-label="Finished artwork">
+  <div class="finish-stage" id="finishStage">
+    <div class="finish-frame" id="finishFrame"><canvas id="finishCanvas"></canvas></div>
+  </div>
+  <div class="finish-bar">
+    <button class="dot" id="backEdit" aria-label="Back to edit"></button>
+    <div class="modes seg" id="finishModes" role="group" aria-label="Output"></div>
+    <div class="caption" id="captionFields" hidden>
+      <label class="field"><span class="field-ic" id="titleIc"></span><input id="artTitle" maxlength="60" autocomplete="off" aria-label="Title"></label>
+      <label class="field"><span class="field-ic" id="authorIc"></span><input id="artAuthor" maxlength="40" autocomplete="off" aria-label="Artist"></label>
+    </div>
+    <button class="dot" id="makeAnother" aria-label="Make another"></button>
+    <button class="dot ink big" id="downloadBtn" aria-label="Download PNG"></button>
+  </div>
+</section>
+
+<div class="modal sizes" id="sizes" hidden role="dialog" aria-modal="true" aria-label="Canvas size">
+  <div class="sizes-card">
+    <div class="size-grid" id="sizeGrid" role="radiogroup" aria-label="Canvas size"></div>
+    <div class="fit-row" id="fitRow" hidden role="group" aria-label="Fit artwork or keep size">
+      <button class="fit-opt" data-fit="fit" aria-label="Fit artwork"><canvas></canvas></button>
+      <button class="fit-opt" data-fit="keep" aria-label="Keep size"><canvas></canvas></button>
+    </div>
+    <button class="dot corner" id="sizesClose" aria-label="Close"></button>
+  </div>
+</div>
+
+<div class="modal pad" id="pad" hidden role="dialog" aria-modal="true" aria-label="Draw a shape">
+  <div class="pad-card">
+    <div class="seg pad-types" id="padTypes" role="group" aria-label="Shape type"></div>
+    <div class="pad-main">
+      <div class="pad-board" id="padBoard"><canvas id="padCanvas" aria-label="Drawing pad"></canvas></div>
+      <div class="pad-tools">
+        <button class="dot" id="padUndo" aria-label="Undo stroke"></button>
+        <button class="dot" id="padClear" aria-label="Clear"></button>
+        <button class="dot" id="padDice" aria-label="New variations"></button>
+      </div>
+    </div>
+    <div class="variants" id="padVariants" role="radiogroup" aria-label="Variation"></div>
+    <div class="pad-foot">
+      <div class="pad-papers" id="padPapers" role="radiogroup" aria-label="Paper"></div>
+      <div class="seg cutmode" role="group" aria-label="Snip or rip">
+        <button data-v="snip" aria-label="Snip"></button><button data-v="rip" aria-label="Rip"></button>
+      </div>
+    </div>
+    <div class="pad-actions">
+      <button class="dot big" id="padClose" aria-label="Close"></button>
+      <button class="dot ink big" id="padOk" aria-label="Add to collage"></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal about" id="about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+  <article class="booklet" id="booklet">
+    <div class="booklet-art" id="bookletArt" aria-hidden="true"></div>
+    <div class="lang seg" role="group" aria-label="Language">
+      <button data-lang="en" aria-pressed="true" title="English">EN</button><button data-lang="zh" aria-pressed="false" title="繁體中文">中文</button>
+    </div>
+    <div class="booklet-text" lang="en" data-text="en">
+      <h1 id="aboutTitle">About This Playground</h1>
+      <p>Inspired by Henri Matisse’s cut-outs, this little playground invites everyone to explore the joy of colours, shapes, and imagination.</p>
+      <p>Pick a colour, draw a shape, cut a little paper, and see where your imagination takes you.</p>
+      <p>There are no right or wrong answers here. Just colours, shapes, and endless possibilities.</p>
+      <h2>A Note of Appreciation</h2>
+      <p>This project is a playful tribute to the creative spirit of Henri Matisse and his remarkable cut-paper artworks.</p>
+      <p class="small">It is an independent creative project and is not affiliated with, sponsored by, or endorsed by any Matisse institution, foundation, or estate.</p>
+    </div>
+    <div class="booklet-text" lang="zh-Hant" data-text="zh" hidden>
+      <h1>關於這座遊樂場</h1>
+      <p>這座小小的創作遊樂場，受到亨利・馬諦斯剪紙藝術的啟發。我們邀請每個人透過色彩、形狀與想像力，享受自由創作的樂趣。</p>
+      <p>選一張喜歡的色紙、畫出一個形狀、剪下一片紙，看看想像力會帶你走到哪裡。</p>
+      <p>這裡沒有標準答案，只有色彩、形狀，以及無限的可能。</p>
+      <h2>致敬說明</h2>
+      <p>本作品向亨利・馬諦斯的剪紙藝術與創作精神致敬。</p>
+      <p class="small">這是一個獨立的個人創作計畫，並未獲得任何馬諦斯相關機構、基金會或遺產管理方的贊助、授權或背書。</p>
+    </div>
+    <button class="dot corner" id="aboutClose" aria-label="Close"></button>
+  </article>
+</div>
+
+<div class="intro" id="intro" hidden>
+  <svg id="forest" aria-hidden="true"></svg>
+  <button class="play" id="playBtn" aria-label="Let’s Play!"></button>
+  <button class="dot intro-info" id="introAbout" aria-label="About"></button>
+</div>
+
+</body>
+</html>
