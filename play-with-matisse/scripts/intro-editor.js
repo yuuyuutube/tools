@@ -75,6 +75,8 @@ function pick(e) {
 async function save() {
   const b = $("#saveBtn");
   b.disabled = true;
+  // Pin every colour you can see, defaults included, so all screen sizes (and the OG image) match the editor.
+  for (const p of built.pieces) layout.colors[p.key] ||= p.color.toUpperCase();
   try {
     const r = await fetch("/__save/intro-layout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(layout) });
     const out = await r.json();

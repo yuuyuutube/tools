@@ -3,8 +3,9 @@
 import { icon } from "./icons.js";
 import { glyphShape } from "./shapes.js";
 import { store } from "./store.js";
+import PIECES from "./intro-pieces.js";
 import savedLayout from "./intro-layout.js";
-import { $, TAU, reduceMotion, rng } from "./util.js";
+import { $, TAU, hashStr, reduceMotion, rng } from "./util.js";
 
 const NS = "http://www.w3.org/2000/svg";
 // Mostly palm and fern fronds. Broad leaves (monstera, banana) only grow in the back layer, where they add
@@ -119,6 +120,15 @@ function roomTo(e, x, y, ang) {
   return t > 0 ? t : Infinity;
 }
 
+// Each piece draws from its own recorded list (then its own seeded stream if it ever needs more), so changing
+// the screen size never changes which leaf a key is.
+function pieceRand(key) {
+  const rec = PIECES[key] || [],
+    more = rng(hashStr(key) ^ 0x51ed);
+  let i = 0;
+  return () => (i < rec.length ? rec[i++] : more());
+}
+
 // Builds the whole forest into `svg` for a vw × vh screen. Every piece has a stable key (leaves "L<layer>-<i>",
 // blossoms "B<i>") so hand-tuned colours and stacking from intro-layout.js (made in scripts/intro-editor.html)
 // land on the same piece every time. Returns the pieces, the title letters and the stacking order.
@@ -135,8 +145,7 @@ export function buildForest(svg, vw, vh, play, layout = savedLayout) {
   bg.setAttribute("fill", "#F4EEE1");
   bg.id = "forestBg";
   svg.append(bg);
-  const R = rng(20251122),
-    perim = 2 * (vw + vh);
+  const perim = 2 * (vw + vh);
   const layersEl = document.createElementNS(NS, "g");
   svg.append(layersEl);
   const title = buildTitle(svg, vw, vh, play);
@@ -155,8 +164,9 @@ export function buildForest(svg, vw, vh, play, layout = savedLayout) {
     order = []; // default stacking, back to front
   LAYERS.forEach((L, li) => {
     if (li === 2) order.push("title");
-    const off = R();
+    const off = pieceRand("off" + li)();
     for (let i = 0; i < L.n; i++) {
+      const R = pieceRand(`L${li}-${i}`);
       const [ex, ey, side] = edgePoint(off + (i + R() * 0.3) / L.n);
       const toC = Math.atan2(cy - ey, cx - ex),
         ang = toC + (R() - 0.5) * 0.4;
@@ -181,7 +191,8 @@ export function buildForest(svg, vw, vh, play, layout = savedLayout) {
       // Broad leaves, back-row leaves that reach into the title and middle-row leaves that run deep into it, are
       // cut from paper just darker than the ground: they keep the forest full without fighting the letters.
       const reaches = li < 2 && roomTo(title.core, bx, by, ang) < len * (li === 0 ? 0.95 : 0.72);
-      if (BROAD.has(id) || reaches) color = PAPER_TONES[Math.floor(R() * PAPER_TONES.length)];
+      const paper = PAPER_TONES[Math.floor(R() * PAPER_TONES.length)]; // always drawn, so later values never shift
+      if (BROAD.has(id) || reaches) color = paper;
       const item = addLeaf(`L${li}-${i}`, a, bx, by, ang, s, color, li, R, cx);
       pieces.push(item);
       order.push(item.key);
@@ -189,6 +200,7 @@ export function buildForest(svg, vw, vh, play, layout = savedLayout) {
     }
     // a few blossoms tucked between the front leaves, spread around the edge
     for (let i = 0; i < L.blooms; i++) {
+      const R = pieceRand(`B${i}`);
       const [ex, ey] = edgePoint(off + (i + 0.5 + (R() - 0.5) * 0.3) / L.blooms);
       const t = 0.06 + R() * 0.1,
         x = ex + (cx - ex) * t,

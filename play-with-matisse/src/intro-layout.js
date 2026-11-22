@@ -2,16 +2,37 @@
 // colors: piece key → fill. z: piece key → stacking rank (higher is in front); "title" is the cut-paper title.
 export default {
   "colors": {
+    "B0": "#F1C232",
+    "B1": "#EC6A4C",
     "B2": "#EC6A4C",
+    "L0-0": "#235A3D",
+    "L0-1": "#E8DECB",
     "L0-10": "#E8DECB",
     "L0-11": "#E4D9C4",
+    "L0-2": "#235A3D",
+    "L0-3": "#1E4D35",
+    "L0-4": "#EBE2D1",
+    "L0-5": "#E4D9C4",
     "L0-6": "#EBE2D1",
     "L0-7": "#E4D9C4",
     "L0-8": "#EBE2D1",
     "L0-9": "#367C4C",
+    "L1-0": "#E4D9C4",
+    "L1-1": "#EBE2D1",
+    "L1-2": "#2E7048",
+    "L1-3": "#2E7048",
+    "L1-4": "#2E7048",
     "L1-5": "#E4D9C4",
+    "L1-6": "#2E7048",
+    "L1-7": "#2E7048",
     "L1-8": "#EBE2D1",
-    "L2-3": "#2E7048"
+    "L2-0": "#5FA83F",
+    "L2-1": "#2A9D9A",
+    "L2-2": "#5FA83F",
+    "L2-3": "#2E7048",
+    "L2-4": "#2A9D9A",
+    "L2-5": "#2A9D9A",
+    "L2-6": "#5FA83F"
   },
   "z": {
     "B0": 290.0,
