@@ -1,0 +1,23 @@
+<!doctype html>
+<!-- OG image source: the intro forest and cut-paper title at 1200 × 630, no button. Rendered by scripts/render-og.sh. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../src/style.css">
+<style>html, body { width: 1200px; height: 630px; } #forest .sway { animation: none; }</style>
+</head>
+<body>
+<div class="intro" id="intro" hidden>
+  <svg id="forest" aria-hidden="true"></svg>
+  <button class="play" id="playBtn" hidden></button>
+  <button class="dot intro-info" id="introAbout" hidden></button>
+</div>
+<script type="module">
+  import { initStore } from "../src/store.js";
+  import { playIntro } from "../src/intro.js";
+  initStore();
+  playIntro();
+  document.title = "ready";
+</script>
+</body>
+</html>

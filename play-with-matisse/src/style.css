@@ -155,6 +155,18 @@ canvas { display: block; }
 
 /* colour picker */
 .cp { display: flex; flex-direction: column; gap: 10px; }
+.cp-slots { display: flex; justify-content: space-between; gap: 6px; padding: 4px 2px 2px; }
+.cp-slot {
+  position: relative; width: 40px; height: 40px; flex: none; background: var(--c);
+  border-radius: 44% 56% 40% 60% / 56% 42% 58% 44%; transform: rotate(var(--r, 0deg));
+  box-shadow: 0 1px 1px rgba(36,34,31,.12), 0 6px 10px -7px rgba(40,30,10,.5); transition: transform .2s var(--ease), box-shadow .2s;
+}
+.cp-slot[aria-checked="true"] { transform: rotate(var(--r, 0deg)) translateY(-3px) scale(1.06); box-shadow: 0 0 0 2.5px var(--paper), 0 0 0 4px var(--ink); }
+.cp-slot[aria-checked="true"]::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%;
+  background: var(--paper); box-shadow: 0 0 0 1.5px var(--ink);
+}
+.cp-slot:active { transform: rotate(var(--r, 0deg)) scale(.92); }
 .cp-sv { position: relative; width: 240px; max-width: 100%; height: 140px; border-radius: 10px; touch-action: none; cursor: crosshair; }
 .cp-hue { position: relative; height: 18px; border-radius: 9px; touch-action: none; cursor: ew-resize;
   background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00); }

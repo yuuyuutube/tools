@@ -202,7 +202,7 @@ const TITLES = {
   Duplicate: "複製", "Flip horizontal": "水平翻轉", "Flip vertical": "垂直翻轉", "Bring forward": "往前一層", "Send backward": "往後一層",
   "Use current paper colour": "換成目前色紙的顏色", "Switch to snip": "改成剪紙邊", "Switch to rip": "改成撕紙邊", "Swap shape": "換一個形狀", Delete: "刪除",
   "Draw a shape": "畫一個形狀", Shapes: "形狀素材", "Fill background with current paper": "用目前色紙當背景",
-  "Edit drawing": "重新編輯這張畫", "Remove from tray": "從素材盤移除", "Edit colour": "調整顏色",
+  "Edit drawing": "重新編輯這張畫", "Remove from tray": "從素材盤移除", "Edit colour": "自訂我的顏色",
   "Back to edit": "回去編輯", "Make another": "再做一張", "Download PNG": "下載 PNG",
   "Original artwork": "原始作品", "Art print": "藝術海報", "Postcard preview": "明信片預覽",
   Close: "關閉", OK: "確定", Cancel: "取消", "Let’s Play!": "開始玩",
@@ -220,7 +220,7 @@ const TITLES = {
   daisy: "雛菊", bloom: "盛開的花", lemon: "檸檬", fruit: "果實", sun: "太陽", moon: "月亮", star: "星芒", sparkle: "閃光",
   blob: "色塊", pebble: "卵石", wave: "波浪", swirl: "漩渦", drop: "水滴", dot: "圓點",
 };
-const zhTitle = (label) => (label.startsWith("Paper #") ? "色紙" : TITLES[label] || "");
+const zhTitle = (label) => (label.startsWith("Paper #") ? "色紙" : label.startsWith("Edit paper") ? "調這張色紙" : TITLES[label] || "");
 
 function applyTitle(el) {
   const t = zhTitle(el.getAttribute("aria-label") || "");

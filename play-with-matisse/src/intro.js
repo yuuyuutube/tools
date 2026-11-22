@@ -38,8 +38,9 @@ function buildTitle(svg, vw, vh) {
     capB = 72 * sB,
     capA = 72 * sA,
     gap = capB * 0.24,
-    btn = 112,
-    btnGap = Math.max(26, capB * 0.32);
+    hasBtn = !$("#playBtn").hidden, // the OG render hides the button and centres the title alone
+    btn = hasBtn ? 112 : 0,
+    btnGap = hasBtn ? Math.max(26, capB * 0.32) : 0;
   const total = capA + gap + capB + btnGap + btn,
     top = Math.max(vh * 0.06, (vh - total) / 2);
   const defs = document.createElementNS(NS, "defs");
@@ -85,7 +86,9 @@ function buildTitle(svg, vw, vh) {
     group,
     // back and middle leaves only keep off the play button and may run under the title;
     // front leaves stay around the title, just touching its edges
-    button: { cx: vw / 2, cy: btnY, ax: btn / 2 + m * 0.06, ay: btn / 2 + m * 0.06 },
+    button: hasBtn
+      ? { cx: vw / 2, cy: btnY, ax: btn / 2 + m * 0.06, ay: btn / 2 + m * 0.06 }
+      : { cx: vw / 2, cy: top + (capA + gap + capB) / 2, ax: titleW * 0.28, ay: (capA + gap + capB) * 0.55 },
     core: { cx: vw / 2, cy: top + (capA + gap + capB) / 2, ax: titleW * 0.47, ay: (capA + gap + capB) * 0.62 },
   };
 }

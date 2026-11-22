@@ -12,6 +12,17 @@ python3 tools/play-with-matisse/scripts/dev-server.py 8767
 Then open http://localhost:8767. The dev server sends `no-store` so edited modules are never cached. It is also in
 `.claude/launch.json` as `play-with-matisse`. Any static server works for production.
 
+## OG image and icons
+
+`og.png`, `assets/apple-touch-icon.png` and `assets/icon-32.png` are rendered from `scripts/og.html` (the intro
+forest and cut-paper title, without the play button) and `scripts/icon.html` (the cut-paper `assets/icon.svg`):
+
+```bash
+./tools/play-with-matisse/scripts/render-og.sh
+```
+
+It needs the dev server running and Google Chrome installed. Bump `?v=` in the `og:image` tags after re-rendering.
+
 ## Files
 
 | File | What it does |

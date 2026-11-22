@@ -75,6 +75,57 @@ function pickPaper(i, fromPad = false) {
 
 /* ---------- set popover ---------- */
 
+// My Colours editor: the five sheets sit right above the picker; tap one to edit it, drag to recolour it.
+function openMineEditor(si) {
+  store.ui.set = si;
+  if (store.ui.paper > 4) store.ui.paper = 0;
+  saveUI();
+  const cp = $("#cpWrap"),
+    slots = h("div", { class: "cp-slots", role: "radiogroup", "aria-label": "My Colours" }),
+    pick = h("div", { class: "cp" });
+  cp.replaceChildren(slots, pick);
+  cp.hidden = false;
+  let queued = false,
+    picker = null;
+  // Repainting the rail and tray on every pointer move is wasteful; once per frame is plenty.
+  const refresh = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => {
+      queued = false;
+      renderSheets();
+      renderSetButton();
+      emit("paper");
+    });
+  };
+  const drawSlots = () =>
+    slots.replaceChildren(
+      ...store.ui.mine.map((c, i) =>
+        h("button", {
+          class: "cp-slot",
+          role: "radio",
+          "aria-checked": String(i === store.ui.paper),
+          "aria-label": "Edit paper " + (i + 1),
+          style: { "--c": c, "--r": TILT[i] + "deg" },
+          onclick: () => {
+            store.ui.paper = i;
+            saveUI();
+            drawSlots();
+            picker.set(store.ui.mine[i]);
+            refresh();
+          },
+        }),
+      ),
+    );
+  picker = colorPicker(pick, store.ui.mine[store.ui.paper], (hex) => {
+    store.ui.mine[store.ui.paper] = hex;
+    saveUI();
+    slots.children[store.ui.paper]?.style.setProperty("--c", hex);
+    refresh();
+  });
+  drawSlots();
+}
+
 function renderSetPop() {
   const list = $("#setList");
   list.replaceChildren(
@@ -102,20 +153,9 @@ function renderSetPop() {
       if (p.id === "mine") {
         const edit = h("button", { class: "edit", "aria-label": "Edit colour", "aria-expanded": String(!$("#cpWrap").hidden), html: icon("drop") });
         edit.onclick = () => {
-          store.ui.set = si;
-          if (store.ui.paper > 4) store.ui.paper = 0;
-          saveUI();
           const cp = $("#cpWrap");
-          cp.hidden = !cp.hidden;
-          if (!cp.hidden)
-            colorPicker(cp, store.ui.mine[store.ui.paper], (hex) => {
-              store.ui.mine[store.ui.paper] = hex;
-              saveUI();
-              renderSheets();
-              renderSetButton();
-              row.querySelectorAll("i")[store.ui.paper].style.background = hex;
-              emit("paper");
-            });
+          if (cp.hidden) openMineEditor(si);
+          else cp.hidden = true;
           renderAll();
           placePopover($("#setPop"), $("#setBtn"));
         };

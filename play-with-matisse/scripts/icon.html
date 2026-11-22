@@ -1,0 +1,15 @@
+<!doctype html>
+<!-- Favicon PNG source, rendered by scripts/render-og.sh. ?s= sets the size; ?bg=1 fills the corners for the opaque touch icon. -->
+<html><head><meta charset="utf-8"><style>
+html, body { margin: 0; overflow: hidden; background: transparent; }
+div { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+div.bg { background: #F4EEE1; }
+img { display: block; width: 100%; height: 100%; }
+</style></head>
+<body><div><img src="../assets/icon.svg" alt=""></div>
+<script>
+  // Headless Chrome won't make a window smaller than a few hundred px, so size the icon box explicitly.
+  const q = new URLSearchParams(location.search), s = (q.get("s") || 180) + "px", box = document.querySelector("div");
+  box.style.width = box.style.height = s;
+  if (q.get("bg")) box.className = "bg";
+</script></body></html>
