@@ -240,11 +240,19 @@ canvas { display: block; }
 .booklet p.small { font-size: 13px; color: var(--mute); }
 
 /* ---------- finish ---------- */
-.finish { position: fixed; inset: 0; z-index: 20; background: #DCD7CC; display: grid; grid-template-rows: minmax(0, 1fr) auto; animation: fade .4s ease; }
+.finish { position: fixed; inset: 0; z-index: 20; background: #DCD7CC; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; animation: fade .4s ease; }
 .finish-stage { display: grid; place-items: center; padding: calc(env(safe-area-inset-top) + 36px) 24px 12px; min-height: 0; }
-.finish-frame { box-shadow: 0 2px 3px rgba(40,30,10,.1), 0 50px 80px -40px rgba(40,30,10,.6); transition: transform .5s var(--ease); }
+.finish-frame { position: relative; box-shadow: 0 2px 3px rgba(40,30,10,.1), 0 50px 80px -40px rgba(40,30,10,.6); transition: transform .5s var(--ease); }
 .finish-frame.postcard { padding: 3.2%; background: #fff; transform: rotate(-2.5deg); border-radius: 2px;
   box-shadow: 0 1px 2px rgba(40,30,10,.12), 0 18px 30px -18px rgba(40,30,10,.55), 26px 40px 60px -40px rgba(40,30,10,.45); }
+#signLayer, #signCatch { position: absolute; left: 0; top: 0; display: none; }
+#signCatch { touch-action: none; cursor: crosshair; }
+.finish[data-sign="type"] #signCatch { cursor: move; }
+.finish.signing #signLayer, .finish.signing #signCatch { display: block; }
+.finish.signing .finish-bar { display: none; }
+.sign-bar { display: none; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; padding: 14px 20px calc(env(safe-area-inset-bottom) + 22px); }
+.finish.signing .sign-bar { display: flex; }
+.sign-field input { width: 220px; font-family: "Kaiti TC", "BiauKai", "DFKai-SB", "STKaiti", "Klee", serif; font-size: 18px; }
 .finish-bar { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; padding: 14px 20px calc(env(safe-area-inset-bottom) + 22px); }
 .modes > button { width: 60px; height: 52px; padding: 4px; border-radius: 16px; }
 .modes canvas { width: 100%; height: 100%; }
@@ -326,6 +334,8 @@ canvas { display: block; }
 
   .finish-bar { gap: 6px; padding-left: 10px; padding-right: 10px; }
   .finish-bar .dot.big { width: 46px; height: 46px; }
+  .sign-bar { gap: 8px; padding-left: 10px; padding-right: 10px; }
+  .sign-field input { width: 100px; }
   .finish-bar .modes > button { width: 48px; height: 46px; }
   .caption { order: -1; width: 100%; justify-content: center; }
   .field input { width: 110px; }

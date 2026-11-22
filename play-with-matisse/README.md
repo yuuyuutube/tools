@@ -52,6 +52,7 @@ It needs the dev server running and Google Chrome installed. Bump `?v=` in the `
 | `src/drawpad.js` | Drawing pad, live variations, add to tray, re-edit a saved drawing |
 | `src/sizes.js` | Canvas size picker; mid-work resize with Fit / Keep previews |
 | `src/export.js` | PNG output (artwork or art print) and the 300 DPI `pHYs` chunk |
+| `src/sign.js` | Signing anywhere on the finished artwork: black pen (thinner when fast) or a typed name in Kaiti, ported from stamp-tour; stored in the artwork and drawn into every export |
 | `src/finish.js` | Finished-artwork view: original / art print / postcard preview, download |
 | `src/intro.js` | Cut-paper rainforest intro (Web Animations API) |
 | `src/about.js` | About / tribute booklet (EN / 繁中) |

@@ -10,6 +10,16 @@ import { $, h } from "./util.js";
 // keep: pieces keep their size relative to the paper (by area); the canvas edges move and may crop.
 const scaleFor = (from, to, mode) => (mode === "fit" ? Math.min(to.w / from.w, to.h / from.h) : Math.sqrt((to.w * to.h) / (from.w * from.h)));
 
+// The signature moves and scales with the artwork.
+export function transformSignature(sig, from, to, mode) {
+  if (!sig) return sig;
+  const s = scaleFor(from, to, mode),
+    X = (x) => to.w / 2 + (x - from.w / 2) * s,
+    Y = (y) => to.h / 2 + (y - from.h / 2) * s;
+  if (sig.type === "pen") return { ...sig, strokes: sig.strokes.map((st) => st.map(([x, y, w]) => [X(x), Y(y), w * s])) };
+  return { ...sig, x: X(sig.x), y: Y(sig.y), size: sig.size * s };
+}
+
 export function transformPieces(pieces, from, to, mode) {
   const s = scaleFor(from, to, mode);
   return pieces.map((p) => ({ ...p, x: to.w / 2 + (p.x - from.w / 2) * s, y: to.h / 2 + (p.y - from.h / 2) * s, s: p.s * s }));
@@ -22,7 +32,7 @@ function preview(c, sizeId, mode) {
     k = max / Math.max(to.w, to.h);
   c.width = Math.round(to.w * k);
   c.height = Math.round(to.h * k);
-  const art = { ...store.art, size: sizeId, pieces: transformPieces(store.art.pieces, from, to, mode) };
+  const art = { ...store.art, size: sizeId, pieces: transformPieces(store.art.pieces, from, to, mode), signature: transformSignature(store.art.signature, from, to, mode) };
   renderArtwork(c.getContext("2d"), art, new DOMMatrix([k, 0, 0, k, 0, 0]), to.w, to.h, getAsset, { shadow: false });
   c.style.aspectRatio = to.w + " / " + to.h;
 }

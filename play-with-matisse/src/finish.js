@@ -3,6 +3,7 @@
 import { sizeById } from "./data.js";
 import { MAT, buildArtworkFile, canShareFiles, renderOutput, saveFile, shareFile } from "./export.js";
 import { icon } from "./icons.js";
+import { cancelSign, finishSign, initSign, isSigning, layoutSign, startSign } from "./sign.js";
 import { store } from "./store.js";
 import { segmented } from "./ui.js";
 import { $, h } from "./util.js";
@@ -37,13 +38,16 @@ function fitFrame() {
     hh = Math.max(40, Math.floor(S.h * k));
   const cv = $("#finishCanvas"),
     dpr = Math.min(devicePixelRatio || 1, 2);
-  const out = renderOutput(store.art, mode === "print" ? "print" : "original", caption, (w * dpr) / S.w);
+  // While signing, the signature being edited lives on the overlay, so the artwork is drawn without it.
+  const art = isSigning() ? { ...store.art, signature: null } : store.art;
+  const out = renderOutput(art, mode === "print" ? "print" : "original", caption, (w * dpr) / S.w);
   cv.width = out.width;
   cv.height = out.height;
   cv.getContext("2d").drawImage(out, 0, 0);
   cv.style.width = w + "px";
   cv.style.height = hh + "px";
   $("#finishFrame").classList.toggle("postcard", mode === "postcard");
+  layoutSign();
 }
 
 function modeThumb(m) {
@@ -103,6 +107,7 @@ export function openFinish() {
 }
 
 export function closeFinish() {
+  if (isSigning()) finishSign();
   $("#finish").hidden = true;
 }
 
@@ -116,6 +121,19 @@ export function initFinish(hooks) {
   $("#authorIc").innerHTML = icon("person");
   $("#backEdit").onclick = () => onBack();
   $("#makeAnother").onclick = () => onAnother();
+  initSign({
+    redrawArt: fitFrame,
+    changed: () => {
+      renderModes();
+      prepared = null;
+      prepare();
+    },
+  });
+  // Signing happens on the plain artwork, so switch to it first.
+  $("#signBtn").onclick = () => {
+    if (mode !== "original") pick("original");
+    startSign();
+  };
   $("#shareBtn").innerHTML = icon("share");
   $("#shareBtn").hidden = !canShareFiles();
   const run = (btn, after) => async () => {
@@ -150,7 +168,12 @@ export function initFinish(hooks) {
   $("#artAuthor").addEventListener("input", typed);
   addEventListener("resize", () => !$("#finish").hidden && fitFrame());
   addEventListener("keydown", (e) => {
-    if ($("#finish").hidden || e.target.tagName === "INPUT") return;
+    if ($("#finish").hidden) return;
+    if (isSigning()) {
+      if (e.key === "Escape") cancelSign();
+      return;
+    }
+    if (e.target.tagName === "INPUT") return;
     if (e.key === "Escape") onBack();
   });
 }

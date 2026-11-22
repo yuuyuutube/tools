@@ -218,6 +218,7 @@ const TITLES = {
   "A4 210 × 297 mm": "A4・直式 210 × 297 mm", "A4 297 × 210 mm": "A4・橫式 297 × 210 mm",
   "My shape": "我的形狀（長按可編輯或移除）",
   Phone: "手機尺寸", Tablet: "平板尺寸", Desktop: "桌機尺寸", "Send to back": "移到最後面", "Bring to front": "移到最前面",
+  Sign: "簽名", Pen: "手寫", Keyboard: "打字", "Clear signature": "清除簽名", "Done signing": "完成簽名", "Signature text": "簽名文字",
   "Reset piece": "還原這一片", "Reset all": "全部還原", "Save layout": "儲存到網站",
   monstera: "龜背芋", banana: "香蕉葉", palm: "棕櫚葉", fern: "羽狀葉", round: "圓葉", slim: "細長葉", sprout: "小枝芽",
   daisy: "雛菊", bloom: "盛開的花", lemon: "檸檬", fruit: "果實", sun: "太陽", moon: "月亮", star: "星芒", sparkle: "閃光",

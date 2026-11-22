@@ -98,7 +98,11 @@
 
 <section id="finish" class="finish" hidden aria-label="Finished artwork">
   <div class="finish-stage" id="finishStage">
-    <div class="finish-frame" id="finishFrame"><canvas id="finishCanvas"></canvas></div>
+    <div class="finish-frame" id="finishFrame">
+      <canvas id="finishCanvas"></canvas>
+      <canvas id="signLayer" aria-hidden="true"></canvas>
+      <div id="signCatch" aria-label="Signing area"></div>
+    </div>
   </div>
   <div class="finish-bar">
     <button class="dot" id="backEdit" aria-label="Back to edit"></button>
@@ -107,9 +111,18 @@
       <label class="field"><span class="field-ic" id="titleIc"></span><input id="artTitle" maxlength="60" autocomplete="off" aria-label="Title"></label>
       <label class="field"><span class="field-ic" id="authorIc"></span><input id="artAuthor" maxlength="40" autocomplete="off" aria-label="Artist"></label>
     </div>
+    <button class="dot" id="signBtn" aria-label="Sign"></button>
     <button class="dot" id="makeAnother" aria-label="Make another"></button>
     <button class="dot big" id="shareBtn" aria-label="Share" hidden></button>
     <button class="dot ink big" id="downloadBtn" aria-label="Download PNG"></button>
+  </div>
+  <div class="sign-bar" role="toolbar" aria-label="Signature">
+    <div class="seg" id="signMode" role="group" aria-label="Pen or keyboard">
+      <button data-v="pen" aria-label="Pen"></button><button data-v="type" aria-label="Keyboard"></button>
+    </div>
+    <label class="field sign-field" id="signField" hidden><span class="field-ic" id="signTextIc"></span><input id="signText" maxlength="30" autocomplete="off" aria-label="Signature text"></label>
+    <button class="dot" id="signClear" aria-label="Clear signature"></button>
+    <button class="dot ink big" id="signDone" aria-label="Done signing"></button>
   </div>
 </section>
 

@@ -194,6 +194,56 @@ export function makeEnv(ctx, art, W, H, shadow = true) {
   return { W, H, pattern, shadow };
 }
 
+/* ---------- signature (pen strokes or typed name, ported from stamp-tour) ---------- */
+
+export const PEN_INK = "#2B2824";
+export const SIGN_FONT = '"Kaiti TC", "BiauKai", "DFKai-SB", "STKaiti", "Klee", serif';
+
+// One pen stroke: points are [x, y, width] in artwork px; drawn as midpoint quadratics with varying width.
+export function penStroke(ctx, s) {
+  if (!s.length) return;
+  if (s.length === 1) {
+    ctx.beginPath();
+    ctx.arc(s[0][0], s[0][1], s[0][2] / 2, 0, Math.PI * 2);
+    ctx.fill();
+    return;
+  }
+  for (let i = 1; i < s.length; i++) {
+    const a = s[i - 1],
+      b = s[i],
+      p = i > 1 ? s[i - 2] : a;
+    ctx.lineWidth = (a[2] + b[2]) / 2;
+    ctx.beginPath();
+    ctx.moveTo((p[0] + a[0]) / 2, (p[1] + a[1]) / 2);
+    ctx.quadraticCurveTo(a[0], a[1], (a[0] + b[0]) / 2, (a[1] + b[1]) / 2);
+    ctx.stroke();
+  }
+  const a = s[s.length - 2],
+    b = s[s.length - 1];
+  ctx.lineWidth = b[2];
+  ctx.beginPath();
+  ctx.moveTo((a[0] + b[0]) / 2, (a[1] + b[1]) / 2);
+  ctx.lineTo(b[0], b[1]);
+  ctx.stroke();
+}
+
+// sig: { type: "pen", strokes } or { type: "text", text, x, y, size } in artwork px.
+export function drawSignature(ctx, sig, base) {
+  if (!sig) return;
+  ctx.save();
+  ctx.setTransform(base);
+  ctx.fillStyle = ctx.strokeStyle = PEN_INK;
+  ctx.lineCap = ctx.lineJoin = "round";
+  if (sig.type === "pen") for (const s of sig.strokes || []) penStroke(ctx, s);
+  else if (sig.type === "text" && sig.text) {
+    ctx.font = `${sig.size}px ${SIGN_FONT}`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(sig.text, sig.x, sig.y);
+  }
+  ctx.restore();
+}
+
 export function renderArtwork(ctx, art, base, W, H, getAsset, opts = {}) {
   const env = makeEnv(ctx, art, W, H, opts.shadow);
   ctx.setTransform(base);
@@ -207,6 +257,7 @@ export function renderArtwork(ctx, art, base, W, H, getAsset, opts = {}) {
     const a = getAsset(p.a);
     if (a) drawPiece(ctx, p, a, base, env);
   }
+  drawSignature(ctx, art.signature, base);
 }
 
 // Thumbnail of a single shape, centred in a square canvas (tray, variants).

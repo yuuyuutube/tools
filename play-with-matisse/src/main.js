@@ -7,7 +7,7 @@ import { initPad, openPad } from "./drawpad.js";
 import { afterHistory, initEditor, layout, render, select } from "./editor.js";
 import { closeFinish, initFinish, openFinish } from "./finish.js";
 import { playIntro } from "./intro.js";
-import { openSizes, transformPieces } from "./sizes.js";
+import { openSizes, transformPieces, transformSignature } from "./sizes.js";
 import { initStore, newArtwork, onChange, redo, save, saveUI, size, snap, store, undo } from "./store.js";
 import { closePopover, confirmIcon, initTitles, modalOpen } from "./ui.js";
 import { $ } from "./util.js";
@@ -41,6 +41,7 @@ async function changeSize() {
   if (!r || r.size === store.art.size) return;
   snap();
   store.art.pieces = transformPieces(store.art.pieces, size(), sizeById(r.size), r.mode);
+  store.art.signature = transformSignature(store.art.signature, size(), sizeById(r.size), r.mode);
   store.art.size = r.size;
   save();
   afterHistory();
