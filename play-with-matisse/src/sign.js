@@ -1,9 +1,9 @@
 // Signing on the finished artwork, anywhere on it. Like stamp-tour's signature: a black pen whose line gets
-// thinner the faster you write, or a typed name in a calligraphy face. One or the other is kept, never both.
+// thinner the faster you write, or a typed name (Latin in the original Kaiti letters, Chinese in Ming/Song). One or the other is kept, never both.
 // While signing, the artwork canvas is drawn without the signature and this overlay shows the one being edited.
 import { sizeById } from "./data.js";
 import { icon } from "./icons.js";
-import { SIGN_FONT, drawSignature } from "./paper.js";
+import { SIGN_FONT, SIGN_WEIGHT, drawSignature, signFontReady } from "./paper.js";
 import { emit, save, snap, store } from "./store.js";
 import { segmented } from "./ui.js";
 import { $, clamp, lerp } from "./util.js";
@@ -52,7 +52,7 @@ export function layoutSign() {
 function textBox() {
   const ctx = $("#signLayer").getContext("2d"),
     t = st.text;
-  ctx.font = `${t.size}px ${SIGN_FONT}`;
+  ctx.font = `${SIGN_WEIGHT} ${t.size}px ${SIGN_FONT}`;
   const w = Math.max(t.size * 1.2, ctx.measureText(t.text || " ").width);
   return { x: t.x - w / 2, y: t.y - t.size * 0.62, w, h: t.size * 1.24 };
 }
@@ -92,6 +92,7 @@ function setMode(m) {
 }
 
 export function startSign() {
+  if (!art()) return;
   const sig = art().signature,
     s = S(),
     short = Math.min(s.w, s.h);
@@ -105,6 +106,7 @@ export function startSign() {
   hooks.redrawArt();
   layoutSign();
   setMode(st.mode);
+  signFontReady.then(() => st && redraw());
 }
 
 function stop(keep) {

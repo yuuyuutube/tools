@@ -197,7 +197,13 @@ export function makeEnv(ctx, art, W, H, shadow = true) {
 /* ---------- signature (pen strokes or typed name, ported from stamp-tour) ---------- */
 
 export const PEN_INK = "#2B2824";
-export const SIGN_FONT = '"Kaiti TC", "BiauKai", "DFKai-SB", "STKaiti", "Klee", serif';
+// Typed signature: Latin letters keep the original Kaiti look ("Sign Latin" in style.css is Kaiti limited to
+// Latin), Chinese is set in a Ming/Song face where there is one, then Hei.
+export const SIGN_FONT =
+  '"Sign Latin", "Songti TC", "LiSong Pro", "Apple LiSung", "PMingLiU", "MingLiU", "Noto Serif TC", "Source Han Serif TC", "PingFang TC", "Heiti TC", "Noto Sans TC", "Microsoft JhengHei", serif';
+export const SIGN_WEIGHT = 400;
+// "Sign Latin" is a local() face, loaded on first use; canvases need it ready before they draw.
+export const signFontReady = document.fonts ? document.fonts.load(`40px ${SIGN_FONT}`, "Aa1").catch(() => {}) : Promise.resolve();
 
 // One pen stroke: points are [x, y, width] in artwork px; drawn as midpoint quadratics with varying width.
 export function penStroke(ctx, s) {
@@ -236,7 +242,7 @@ export function drawSignature(ctx, sig, base) {
   ctx.lineCap = ctx.lineJoin = "round";
   if (sig.type === "pen") for (const s of sig.strokes || []) penStroke(ctx, s);
   else if (sig.type === "text" && sig.text) {
-    ctx.font = `${sig.size}px ${SIGN_FONT}`;
+    ctx.font = `${SIGN_WEIGHT} ${sig.size}px ${SIGN_FONT}`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(sig.text, sig.x, sig.y);

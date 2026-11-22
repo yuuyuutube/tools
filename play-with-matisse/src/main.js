@@ -8,6 +8,7 @@ import { afterHistory, initEditor, layout, render, select } from "./editor.js";
 import { closeFinish, initFinish, openFinish } from "./finish.js";
 import { playIntro } from "./intro.js";
 import { openSizes, transformPieces, transformSignature } from "./sizes.js";
+import { signFontReady } from "./paper.js";
 import { initStore, newArtwork, onChange, redo, save, saveUI, size, snap, store, undo } from "./store.js";
 import { closePopover, confirmIcon, initTitles, modalOpen } from "./ui.js";
 import { $ } from "./util.js";
@@ -123,6 +124,8 @@ function boot() {
     if (w === "modal") render();
   });
 
+  // Redraw once the signature font is ready, in case a saved signature was drawn with a fallback.
+  signFontReady.then(() => store.art?.signature && render());
   $("#desk").hidden = false;
   if (store.art) {
     layout();

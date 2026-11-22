@@ -1,7 +1,7 @@
 // Final output: the artwork itself, or an art print (same paper size, artwork set in a mat with an
 // optional title and artist). Print sizes get a real 300 DPI pHYs chunk, not just a claim in the UI.
 import { DPI, sizeById } from "./data.js";
-import { renderArtwork } from "./paper.js";
+import { renderArtwork, signFontReady } from "./paper.js";
 import { getAsset } from "./store.js";
 import { canvas } from "./util.js";
 
@@ -89,6 +89,7 @@ export function withDpi(buf, dpi) {
 
 // Encode the output as a PNG File (print sizes carry 300 DPI). Shared by download and share.
 export async function buildArtworkFile(art, mode, caption) {
+  await signFontReady;
   const S = sizeById(art.size),
     c = renderOutput(art, mode, caption);
   const blob = await new Promise((r) => c.toBlob(r, "image/png"));

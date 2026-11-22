@@ -12,6 +12,12 @@ python3 tools/play-with-matisse/scripts/dev-server.py 8767
 Then open http://localhost:8767. The dev server sends `no-store` so edited modules are never cached. It is also in
 `.claude/launch.json` as `play-with-matisse`. Any static server works for production.
 
+## Publishing
+
+Run `node tools/play-with-matisse/scripts/stamp.mjs` before committing a release. It adds a content hash to the
+stylesheet, icons, og.png and every JS module (through an import map in index.html), so visitors never get a stale
+cached copy. Re-run it after any change under `src/`, including saves from the intro or OG editor.
+
 ## Intro editor
 
 Open http://localhost:8767/scripts/intro-editor.html with the dev server running. Click a leaf or blossom to
@@ -52,7 +58,7 @@ It needs the dev server running and Google Chrome installed. Bump `?v=` in the `
 | `src/drawpad.js` | Drawing pad, live variations, add to tray, re-edit a saved drawing |
 | `src/sizes.js` | Canvas size picker; mid-work resize with Fit / Keep previews |
 | `src/export.js` | PNG output (artwork or art print) and the 300 DPI `pHYs` chunk |
-| `src/sign.js` | Signing anywhere on the finished artwork: black pen (thinner when fast) or a typed name in Kaiti, ported from stamp-tour; stored in the artwork and drawn into every export |
+| `src/sign.js` | Signing anywhere on the finished artwork: black pen (thinner when fast) or a typed name (Latin in the original Kaiti letters, Chinese in Ming/Song, then Hei), ported from stamp-tour; stored in the artwork and drawn into every export |
 | `src/finish.js` | Finished-artwork view: original / art print / postcard preview, download |
 | `src/intro.js` | Cut-paper rainforest intro (Web Animations API) |
 | `src/about.js` | About / tribute booklet (EN / 繁中) |

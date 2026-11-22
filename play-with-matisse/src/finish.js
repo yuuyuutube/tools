@@ -30,6 +30,7 @@ function prepare() {
 const fileNow = () => (prepared?.key === fileKey() && prepared.file ? Promise.resolve(prepared.file) : prepare());
 
 function fitFrame() {
+  if (!store.art) return;
   const S = sizeById(store.art.size),
     stage = $("#finishStage").getBoundingClientRect();
   const pad = mode === "postcard" ? 1.12 : 1;
@@ -114,7 +115,7 @@ export function closeFinish() {
 export function initFinish(hooks) {
   onBack = hooks.back;
   onAnother = hooks.another;
-  $("#backEdit").innerHTML = icon("pencil");
+  $("#backEdit").innerHTML = icon("arrowLeft");
   $("#makeAnother").innerHTML = icon("file");
   $("#downloadBtn").innerHTML = icon("download");
   $("#titleIc").innerHTML = icon("title");

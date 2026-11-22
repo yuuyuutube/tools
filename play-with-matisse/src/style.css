@@ -1,3 +1,9 @@
+/* The Latin glyphs of the original Kaiti signature face; Chinese in signatures falls through to Ming/Song. */
+@font-face {
+  font-family: "Sign Latin";
+  src: local("Kaiti TC Regular"), local("STKaitiTC-Regular"), local("STKaiti"), local("BiauKai"), local("DFKaiShu-SB-Estd-BF");
+  unicode-range: U+0000-024F, U+2000-206F, U+20AC;
+}
 :root {
   --bg: #E8E4DC; --ink: #24221F; --paper: #FBFAF6; --mute: #8B8984; --line: #DEDBD3;
   --pink: #FF48B0; --blue: #0078BF; --yellow: #FFC629; --orange: #FF6B35;
@@ -252,7 +258,8 @@ canvas { display: block; }
 .finish.signing .finish-bar { display: none; }
 .sign-bar { display: none; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; padding: 14px 20px calc(env(safe-area-inset-bottom) + 22px); }
 .finish.signing .sign-bar { display: flex; }
-.sign-field input { width: 220px; font-family: "Kaiti TC", "BiauKai", "DFKai-SB", "STKaiti", "Klee", serif; font-size: 18px; }
+.sign-field input { width: 220px; font-size: 18px;
+  font-family: "Sign Latin", "Songti TC", "LiSong Pro", "Apple LiSung", "PMingLiU", "MingLiU", "Noto Serif TC", "Source Han Serif TC", "PingFang TC", "Heiti TC", "Noto Sans TC", "Microsoft JhengHei", serif; }
 .finish-bar { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; padding: 14px 20px calc(env(safe-area-inset-bottom) + 22px); }
 .modes > button { width: 60px; height: 52px; padding: 4px; border-radius: 16px; }
 .modes canvas { width: 100%; height: 100%; }

@@ -42,6 +42,7 @@ const I = {
   desktop: '<rect x="3" y="4.5" width="18" height="12" rx="1.5"/><path d="M9 20h6M12 16.5V20"/>',
   signature: '<path d="M3.5 16.5c2.4 0 3.2-8.5 5.3-8.5 1.9 0-1 8.5 1.6 8.5 2 0 2.6-4.6 4.2-4.6 1.4 0 .9 2.9 2.4 2.9 1.2 0 1.9-1.3 3.5-1.3"/><path d="M3.5 20h17"/>',
   keyboard: '<rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M9 14.5h6"/><g fill="currentColor" stroke="none"><circle cx="6.5" cy="9.8" r="1"/><circle cx="10" cy="9.8" r="1"/><circle cx="13.5" cy="9.8" r="1"/><circle cx="17" cy="9.8" r="1"/><circle cx="6.5" cy="14.5" r="1"/><circle cx="17.5" cy="14.5" r="1"/></g>',
+  arrowLeft: '<path d="M19.5 12h-15M10.5 6l-6 6 6 6"/>',
   grid: '<rect x="4" y="4" width="6.5" height="6.5" rx="1.2"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.2"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.2"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.2"/>',
 };
 
