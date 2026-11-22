@@ -1,21 +1,109 @@
 // Walking into a cut-paper rainforest: leaves crowd in from every edge; on play they sway, then part in
 // staggered layers while the view pushes forward, revealing the work table underneath.
 import { icon } from "./icons.js";
+import { glyphShape } from "./shapes.js";
 import { store } from "./store.js";
 import { $, TAU, reduceMotion, rng } from "./util.js";
 
 const NS = "http://www.w3.org/2000/svg";
-const LEAVES = ["p:monstera", "p:banana", "p:palm", "p:fern", "p:round", "p:slim", "p:sprout", "p:monstera", "p:palm"];
-const BLOOMS = ["p:bloom", "p:daisy", "p:flower", "p:sun", "p:dot", "p:sparkle"];
+// Mostly palm and fern fronds. Broad leaves (monstera, banana) only grow in the back layer, where they add
+// weight without covering anything. Layers go from deep to light green so the forest reads as depth;
+// colour accents are kept to a few small blossoms in front.
+const BLOOMS = ["p:bloom", "p:daisy", "p:flower"];
 const LAYERS = [
-  { n: 15, size: [0.78, 1.05], colors: ["#1F5A3A", "#2A6B48", "#2A9D9A", "#1E4F3A"] },
-  { n: 13, size: [0.62, 0.9], colors: ["#5FA83F", "#2A9D9A", "#1F5A3A", "#78A63A", "#3F8F5A"] },
-  { n: 11, size: [0.5, 0.75], colors: ["#5FA83F", "#2A9D9A", "#1F5A3A", "#5FA83F", "#EC6A4C", "#F1C232", "#2552A3", "#2A9D9A"] },
+  { n: 12, size: [0.85, 1.3], colors: ["#1E4D35", "#235A3D"], blooms: 0, leaves: ["p:monstera", "p:palm", "p:fern", "p:banana", "p:palm", "p:monstera", "p:fern"] },
+  { n: 9, size: [0.65, 1.05], colors: ["#2E7048", "#367C4C"], blooms: 0, leaves: ["p:palm", "p:fern", "p:palm", "p:fern", "p:banana"] },
+  { n: 7, size: [0.5, 0.9], colors: ["#5FA83F", "#5FA83F", "#2A9D9A"], blooms: 3, leaves: ["p:palm", "p:fern"] },
 ];
+const TITLE = ["PLAY WITH", "MATISSE"];
+// Papers that read on both the cream ground and the green leaves: no greens (they sink into the leaves)
+// and no creams (they vanish where the ground shows).
+const LETTER_COLORS = ["#EC6A4C", "#2552A3", "#F1C232", "#E57FA0", "#D5312B", "#F08A3C"];
 
 export const ringsToD = (rings) => rings.map((r) => "M" + r.map((p) => p[0].toFixed(1) + " " + p[1].toFixed(1)).join("L") + "Z").join("");
 
-let items = [];
+let items = [],
+  letters = [];
+
+// Cut-paper title, centred above the play button. It sits between the middle and front leaves, so the forest
+// tucks under and over it. Returns the title group plus the zones the leaf tips stop short of.
+function buildTitle(svg, vw, vh) {
+  const R = rng(7031);
+  const lines = TITLE.map((t, li) => [...t].map((ch, i) => (ch === " " ? { space: true, adv: 34 } : { ch, ...glyphShape(ch, 100 + li * 40 + i) })));
+  const track = 4,
+    width = (line) => line.reduce((w, g) => w + g.adv + track, -track);
+  const titleW = Math.min(vw * 0.82, vh * 0.85, 760),
+    sB = titleW / width(lines[1]),
+    sA = sB * 0.5,
+    capB = 72 * sB,
+    capA = 72 * sA,
+    gap = capB * 0.24,
+    btn = 112,
+    btnGap = Math.max(26, capB * 0.32);
+  const total = capA + gap + capB + btnGap + btn,
+    top = Math.max(vh * 0.06, (vh - total) / 2);
+  const defs = document.createElementNS(NS, "defs");
+  defs.innerHTML = '<filter id="paperLift" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="2.5" stdDeviation="3" flood-color="#1C2A1E" flood-opacity=".38"/></filter>';
+  svg.append(defs);
+  const group = document.createElementNS(NS, "g");
+  group.setAttribute("filter", "url(#paperLift)");
+  letters = [];
+  let ci = 0;
+  [
+    [lines[0], sA, top + capA],
+    [lines[1], sB, top + capA + gap + capB],
+  ].forEach(([line, s, baseline]) => {
+    let x = vw / 2 - (width(line) * s) / 2;
+    for (const g of line) {
+      if (!g.space) {
+        const k = s * (0.94 + R() * 0.12),
+          lx = x + (g.adv * s) / 2,
+          ly = baseline - 36 * s + (R() - 0.5) * 7 * s,
+          rot = (R() - 0.5) * 11;
+        const mover = document.createElementNS(NS, "g"),
+          place = document.createElementNS(NS, "g"),
+          path = document.createElementNS(NS, "path");
+        mover.style.transformBox = "fill-box";
+        mover.style.transformOrigin = "center";
+        place.setAttribute("transform", `translate(${lx.toFixed(1)} ${ly.toFixed(1)}) rotate(${rot.toFixed(1)}) scale(${k.toFixed(4)})`);
+        path.setAttribute("d", ringsToD(g.rings));
+        path.setAttribute("transform", `translate(${(-g.adv / 2).toFixed(1)} 36)`);
+        path.setAttribute("fill", LETTER_COLORS[ci++ % LETTER_COLORS.length]);
+        place.append(path);
+        mover.append(place);
+        group.append(mover);
+        letters.push({ el: mover, R: R() });
+      }
+      x += (g.adv + track) * s;
+    }
+  });
+  const play = $("#playBtn"),
+    btnY = top + capA + gap + capB + btnGap + btn / 2,
+    m = Math.min(vw, vh);
+  play.style.top = btnY + "px";
+  return {
+    group,
+    // back and middle leaves only keep off the play button and may run under the title;
+    // front leaves stay around the title, just touching its edges
+    button: { cx: vw / 2, cy: btnY, ax: btn / 2 + m * 0.06, ay: btn / 2 + m * 0.06 },
+    core: { cx: vw / 2, cy: top + (capA + gap + capB) / 2, ax: titleW * 0.47, ay: (capA + gap + capB) * 0.62 },
+  };
+}
+
+// Distance along a ray from (x, y) before it enters the ellipse e (Infinity if it never does).
+function roomTo(e, x, y, ang) {
+  const u = (x - e.cx) / e.ax,
+    v = (y - e.cy) / e.ay,
+    du = Math.cos(ang) / e.ax,
+    dv = Math.sin(ang) / e.ay;
+  const a = du * du + dv * dv,
+    b = 2 * (u * du + v * dv),
+    c = u * u + v * v - 1,
+    disc = b * b - 4 * a * c;
+  if (disc < 0) return Infinity;
+  const t = (-b - Math.sqrt(disc)) / (2 * a);
+  return t > 0 ? t : Infinity;
+}
 
 function build() {
   const svg = $("#forest"),
@@ -34,8 +122,10 @@ function build() {
   bg.id = "forestBg";
   svg.append(bg);
   const R = rng(20251122),
-    perim = 2 * (vw + vh),
-    clear = m * 0.2;
+    perim = 2 * (vw + vh);
+  const layersEl = document.createElementNS(NS, "g");
+  svg.append(layersEl);
+  const title = buildTitle(svg, vw, vh);
   const edgePoint = (u) => {
     u = ((u % 1) + 1) % 1;
     let d = u * perim;
@@ -48,36 +138,43 @@ function build() {
     return [0, vh - d, 3];
   };
   LAYERS.forEach((L, li) => {
+    if (li === 2) layersEl.append(title.group);
     const layer = document.createElementNS(NS, "g");
-    svg.append(layer);
+    layersEl.append(layer);
     const off = R();
     for (let i = 0; i < L.n; i++) {
-      const [ex, ey] = edgePoint(off + (i + R() * 0.6) / L.n);
+      const [ex, ey, side] = edgePoint(off + (i + R() * 0.3) / L.n);
       const toC = Math.atan2(cy - ey, cx - ex),
-        ang = toC + (R() - 0.5) * 1.1;
-      const D = Math.hypot(cx - ex, cy - ey);
-      const id = LEAVES[Math.floor(R() * LEAVES.length)],
+        ang = toC + (R() - 0.5) * 0.4;
+      const id = L.leaves[Math.floor(R() * L.leaves.length)],
         a = store.presets[id];
       if (!a) continue;
-      // Length in px of the leaf; keep the centre clear for the play button.
+      // Length in px of the leaf; keep the title and play button clear.
       let len = m * (L.size[0] + R() * (L.size[1] - L.size[0])) * (vw < vh ? 1.15 : 1);
-      len = Math.min(len, Math.max(m * 0.25, D - clear));
-      const s = len / a.h;
-      const bx = ex - Math.cos(ang) * len * 0.06,
-        by = ey - Math.sin(ang) * len * 0.06;
+      // Leaves that would reach the middle are cut back by a random amount, so neighbours never end up the same length.
+      const room = Math.min(roomTo(title.button, ex, ey, ang), li === 2 ? roomTo(title.core, ex, ey, ang) : Infinity);
+      len = Math.min(len, Math.max(m * 0.24, room * (0.72 + R() * 0.28)));
+      // Every leaf roots well off-screen, pushed straight out past its edge (and grows a little to make up for
+      // it), so no stems show and the rows don't look planted along the edge.
+      len *= 1.12;
+      const s = len / a.h,
+        out = len * 0.16,
+        [nx, ny] = [[0, -1], [1, 0], [0, 1], [-1, 0]][side];
+      const bx = ex - Math.cos(ang) * len * 0.06 + nx * out,
+        by = ey - Math.sin(ang) * len * 0.06 + ny * out;
       items.push(addLeaf(layer, a, bx, by, ang, s, L.colors[Math.floor(R() * L.colors.length)], li, R));
     }
-    // a few blossoms and dots tucked between the leaves
-    const extra = li === 0 ? 3 : li === 1 ? 4 : 5;
-    for (let i = 0; i < extra; i++) {
-      const [ex, ey] = edgePoint(R());
-      const t = 0.08 + R() * 0.16,
+    // a few blossoms tucked between the front leaves, spread around the edge
+    for (let i = 0; i < L.blooms; i++) {
+      const [ex, ey] = edgePoint(off + (i + 0.5 + (R() - 0.5) * 0.3) / L.blooms);
+      const t = 0.06 + R() * 0.1,
         x = ex + (cx - ex) * t,
         y = ey + (cy - ey) * t;
       const a = store.presets[BLOOMS[Math.floor(R() * BLOOMS.length)]];
-      if (!a) continue;
+      const z = title.core;
+      if (!a || ((x - z.cx) / (z.ax * 1.4)) ** 2 + ((y - z.cy) / (z.ay * 1.6)) ** 2 < 1) continue;
       const s = (m * (0.07 + R() * 0.1)) / 100;
-      const col = ["#F1C232", "#EC6A4C", "#EE9DB3", "#2552A3", "#F5ECD9"][Math.floor(R() * 5)];
+      const col = ["#F1C232", "#EC6A4C", "#EE9DB3"][i % 3];
       items.push(addLeaf(layer, a, x, y, R() * TAU, s, col, li, R, true));
     }
   });
@@ -96,7 +193,9 @@ function addLeaf(layer, a, bx, by, ang, s, color, depth, R, centred = false) {
   sway.style.setProperty("--a", (0.8 + R() * 1.8).toFixed(2) + "deg");
   path.setAttribute("d", ringsToD(a.rings));
   path.setAttribute("fill", color);
-  path.setAttribute("transform", centred ? `scale(${s.toFixed(3)})` : `translate(0 ${(-a.h / 2) * s}) scale(${s.toFixed(3)})`);
+  // Each leaf gets its own width and is mirrored at random, so repeats of one shape don't look stamped.
+  const sx = centred ? s : s * (0.78 + R() * 0.44) * (R() < 0.5 ? -1 : 1);
+  path.setAttribute("transform", centred ? `scale(${s.toFixed(3)})` : `translate(0 ${(-a.h / 2) * s}) scale(${sx.toFixed(3)} ${s.toFixed(3)})`);
   sway.append(path);
   place.append(sway);
   mover.append(place);
@@ -104,11 +203,35 @@ function addLeaf(layer, a, bx, by, ang, s, color, depth, R, centred = false) {
   return { el: mover, bx, by, depth, side: Math.sign(bx - innerWidth / 2) || 1, R: R() };
 }
 
+// The play button as cut paper: an uneven cream disc with a coral triangle on top. Its keyboard focus ring
+// is a third, darker cut disc behind it instead of a drawn outline.
+function cutPlayButton() {
+  const R = rng(4242),
+    cutDisc = (n, r0, r1) => {
+      const out = [];
+      for (let i = 0; i < n; i++) {
+        const a = ((i + (R() - 0.5) * 0.5) / n) * TAU,
+          r = r0 + R() * (r1 - r0);
+        out.push([60 + Math.cos(a) * r, 60 + Math.sin(a) * r]);
+      }
+      return out;
+    };
+  const disc = cutDisc(14, 52, 57),
+    ring = cutDisc(15, 61, 65);
+  const tri = [
+    [45 + R() * 3, 35 + R() * 3],
+    [44 + R() * 3, 85 - R() * 3],
+    [87 - R() * 3, 59 + R() * 3],
+  ];
+  const pts = (list) => list.map((p) => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" ");
+  return `<svg viewBox="-7 -7 134 134" aria-hidden="true"><polygon points="${pts(ring)}" fill="#24221F" class="ring"/><polygon points="${pts(disc)}" fill="#FBF7EE"/><polygon points="${pts(tri)}" fill="#EC6A4C" class="tri"/></svg>`;
+}
+
 export function playIntro() {
   return new Promise((resolve) => {
     const intro = $("#intro"),
       play = $("#playBtn");
-    play.innerHTML = icon("play");
+    play.innerHTML = cutPlayButton();
     $("#introAbout").innerHTML = icon("info");
     intro.hidden = false;
     build();
@@ -162,6 +285,18 @@ export function playIntro() {
           ),
         );
       }
+      letters.forEach((l, i) => {
+        const dy = -(30 + l.R * 50),
+          rot = (l.R - 0.5) * 50;
+        anims.push(
+          l.el.animate([{ transform: "none", opacity: 1 }, { transform: `translate(0px, ${dy.toFixed(0)}px) rotate(${rot.toFixed(0)}deg) scale(1.15)`, opacity: 0 }], {
+            duration: 520,
+            delay: 40 + i * 28,
+            easing: "cubic-bezier(.5,0,.75,0)",
+            fill: "forwards",
+          }),
+        );
+      });
       anims.push($("#forest").animate([{ transform: "scale(1)" }, { transform: "scale(1.22)" }], { duration: last, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" }));
       anims.push($("#forestBg").animate([{ opacity: 1 }, { opacity: 1, offset: 0.35 }, { opacity: 0 }], { duration: last * 0.75, fill: "forwards" }));
       setTimeout(finish, last + 60);
@@ -178,6 +313,7 @@ export function playIntro() {
       if (e.target.closest("#introAbout")) return;
       start();
     };
-    requestAnimationFrame(() => play.focus({ preventScroll: true }));
+    // Focus for Enter/Space, without drawing the keyboard focus ring on load.
+    requestAnimationFrame(() => play.focus({ preventScroll: true, focusVisible: false }));
   });
 }

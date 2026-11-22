@@ -212,7 +212,8 @@ canvas { display: block; }
 .pad-papers .sheet-btn { width: 38px; height: 38px; }
 .pad-actions { display: flex; gap: 18px; }
 
-/* about */
+/* about: above the intro too, so the intro's info button can open it */
+.modal.about { z-index: 70; }
 .booklet { position: relative; width: min(680px, 100%); max-height: calc(100dvh - 32px); overflow: auto; background: #FBF8F1; border-radius: 6px;
   box-shadow: 0 1px 2px rgba(40,30,10,.08), 0 40px 70px -30px rgba(40,30,10,.55); animation: rise .35s var(--ease); padding: 64px 56px 96px; }
 .booklet-art { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
@@ -246,12 +247,15 @@ canvas { display: block; }
 #forest .sway { animation: sway var(--d, 6s) ease-in-out infinite alternate; animation-delay: var(--dl, 0s); }
 @keyframes sway { from { transform: rotate(calc(var(--a, 1.6deg) * -1)); } to { transform: rotate(var(--a, 1.6deg)); } }
 .play {
-  position: absolute; left: 50%; top: 50%; width: 112px; height: 112px; margin: -56px 0 0 -56px; border-radius: 50%;
-  background: var(--paper); color: var(--ink); display: grid; place-items: center;
-  box-shadow: 0 2px 3px rgba(40,30,10,.12), 0 30px 50px -24px rgba(40,30,10,.6);
+  position: absolute; left: 50%; top: 50%; width: 128px; height: 128px; margin: -64px 0 0 -64px; border-radius: 50%;
+  background: none; display: grid; place-items: center;
   transition: transform .35s var(--ease), opacity .3s; animation: breathe 2.8s ease-in-out infinite;
 }
-.play .ic { width: 46px; height: 46px; margin-left: 6px; }
+.play svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 2px 2px rgba(28,42,30,.3)) drop-shadow(0 16px 18px rgba(28,42,30,.32)); }
+.play .tri { filter: drop-shadow(0 1px 1px rgba(80,30,10,.3)); }
+.play:focus-visible { outline: none; }
+.play .ring { opacity: 0; transition: opacity .2s; }
+.play:focus-visible .ring { opacity: 1; }
 .play:active { transform: scale(.94); }
 @keyframes breathe { 50% { transform: scale(1.05); } }
 .intro.go .play { opacity: 0; transform: scale(.6); animation: none; pointer-events: none; }

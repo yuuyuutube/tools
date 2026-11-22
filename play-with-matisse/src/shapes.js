@@ -417,23 +417,106 @@ export function generate(type, strokes, variant, seed) {
 
 /* ---------- presets: an original set of cut-paper pieces ---------- */
 
+// Hand-cut stand-ins for perfect geometry: a disc is an uneven polygon, a stem ends in a straight snip,
+// a slit narrows to a point like a scissor cut, a strip has slanted ends and a slightly uneven width.
+function disc(x, y, r, cut) {
+  const R = rng(Math.round(x * 31 + y * 17 + r * 13) + 7),
+    n = Math.max(7, Math.min(17, Math.round(r / 3.1))),
+    ph = R() * TAU,
+    pts = [];
+  for (let i = 0; i < n; i++) {
+    const a = ph + ((i + (R() - 0.5) * 0.55) / n) * TAU,
+      rr = r * (0.92 + R() * 0.13);
+    pts.push([x + Math.cos(a) * rr, y + Math.sin(a) * rr]);
+  }
+  return poly(pts, cut ? { cut: true } : undefined);
+}
+// A small snipped star: what's left after a few quick scissor cuts into the middle of a flower.
+function rosette(x, y, r, points, inner, cut) {
+  const R = rng(Math.round(r * 97 + points * 13)),
+    ph = R() * TAU,
+    pts = [];
+  for (let i = 0; i < points * 2; i++) {
+    const a = ph + ((i + (R() - 0.5) * 0.35) / (points * 2)) * TAU,
+      rr = r * (i % 2 ? inner * (0.85 + R() * 0.3) : 0.85 + R() * 0.25);
+    pts.push([x + Math.cos(a) * rr, y + Math.sin(a) * rr]);
+  }
+  return poly(pts, cut ? { cut: true } : undefined);
+}
+const stem = (a, b, w) => poly(ribbon(resample([a, b], 2), w, w * 0.78));
+function slit(inner, outer, w) {
+  const dx = outer[0] - inner[0],
+    dy = outer[1] - inner[1],
+    L = Math.hypot(dx, dy) || 1,
+    nx = (-dy / L) * (w / 2),
+    ny = (dx / L) * (w / 2);
+  return poly([inner, [outer[0] + nx, outer[1] + ny], [outer[0] - nx, outer[1] - ny]], { cut: true });
+}
+function strip(pts, w, ph = 0) {
+  const path = resample(pts, 2),
+    T = tangents(path),
+    n = path.length,
+    l = [],
+    r = [];
+  path.forEach(([x, y], i) => {
+    const hw = (w / 2) * (1 + 0.14 * Math.sin((i / n) * 9 + ph)),
+      nx = -T[i][1],
+      ny = T[i][0];
+    l.push([x + nx * hw, y + ny * hw]);
+    r.push([x - nx * hw, y - ny * hw]);
+  });
+  l[0] = add(l[0], T[0], w * 0.45);
+  r[n - 1] = add(r[n - 1], T[n - 1], -w * 0.45);
+  return poly(l.concat(r.reverse()));
+}
+
+// Scissor pass: a little wobble, then long straight facets (RDP) with uneven vertices — corners you can see,
+// the way a shape looks after being cut with scissors rather than plotted.
+function scissorCut(shape, seed, { eps = 0.95, wobble = 1.4 } = {}) {
+  const R = rng(seed);
+  const s = wobble ? waveRings(shape, { amp: wobble, lambda: 15 }, seed) : shape;
+  const rings = s.rings
+    .map((ring) => {
+      const r = rdpClosed(resample(ring, 0.5, true), eps * (0.8 + R() * 0.4));
+      if (r.length < 3) return ring;
+      const N = ringNormals(r);
+      return r.map((p, i) => {
+        const j = (R() - 0.5) * eps * 0.7;
+        return [p[0] + N[i][0] * j, p[1] + N[i][1] * j];
+      });
+    })
+    .filter((r) => r.length >= 3);
+  return normalizeRings(rings);
+}
+
+// Fine-leaved presets keep a lighter touch so thin leaflets don't collapse.
+const CUT = {
+  monstera: { eps: 0.7, wobble: 0.7 },
+  banana: { eps: 0.7, wobble: 0.6 },
+  palm: { eps: 0.8, wobble: 0.8 },
+  fern: { eps: 0.85, wobble: 0.9 },
+  sprout: { eps: 0.55, wobble: 0.5 },
+  daisy: { eps: 0.75, wobble: 0.8 },
+  sparkle: { eps: 0.8, wobble: 0.8 },
+};
+
 const PRESETS = {
   monstera() {
     const path = curve([0, 110], [8, -100], 0.07, 60),
       w = 64,
       W = walker(path),
       prims = [poly(leafOutline(path, { w, p: 0.42, tip: 0.78 }))];
-    prims.push(line([[0, 108], [-3, 140]], 6));
+    prims.push(stem([0, 104], [-3, 140], 6.5));
     for (let k = 0; k < 6; k++)
       for (const side of [1, -1]) {
         const { p, tan } = W.at(W.L * (0.17 + k * 0.12 + (side > 0 ? 0 : 0.05))),
           N = [-tan[1] * side, tan[0] * side];
-        prims.push(line([add(p, N, w * 0.3), add(add(p, N, w * 1.6), tan, w * 0.6)], 6.5, true));
+        prims.push(slit(add(p, N, w * 0.3), add(add(p, N, w * 1.6), tan, w * 0.6), 9));
       }
     for (let k = 0; k < 4; k++) {
       const { p, tan } = W.at(W.L * (0.25 + k * 0.13)),
         side = k % 2 ? 1 : -1;
-      prims.push(circ(...add(p, [-tan[1] * side, tan[0] * side], w * 0.48), 4.6, true));
+      prims.push(disc(...add(p, [-tan[1] * side, tan[0] * side], w * 0.48), 4.6, true));
     }
     return prims;
   },
@@ -441,27 +524,28 @@ const PRESETS = {
     const path = curve([0, 140], [6, -140], 0.06, 80),
       w = 30,
       W = walker(path),
-      prims = [poly(leafOutline(path, { w, p: 0.3, tip: 0.95 })), line([[0, 138], [0, 172]], 5)];
+      prims = [poly(leafOutline(path, { w, p: 0.3, tip: 0.95 })), stem([0, 134], [0, 172], 5.5)];
     const R = rng(11);
     for (let k = 0; k < 8; k++) {
       const side = k % 2 ? 1 : -1,
         { p, tan } = W.at(W.L * (0.18 + k * 0.085 + R() * 0.03)),
         N = [-tan[1] * side, tan[0] * side];
-      prims.push(line([add(p, N, w * 1.3), add(add(p, N, w * (0.2 + R() * 0.2)), tan, 3)], 2.4, true));
+      prims.push(slit(add(add(p, N, w * (0.2 + R() * 0.2)), tan, 3), add(p, N, w * 1.3), 4.5));
     }
     return prims;
   },
   palm() {
     const path = curve([0, 150], [14, -150], 0.1, 80),
       W = walker(path),
-      prims = [poly(ribbon(path, 6, 2.5))];
-    for (let i = 0; i < 11; i++) {
-      const t = 0.08 + i * 0.083,
-        { p, tan } = W.at(W.L * t),
-        len = 104 * (1 - 0.62 * t);
+      prims = [poly(ribbon(path, 9, 4))];
+    // Seven fat fronds a side, staggered a little so the two sides don't mirror each other.
+    for (let i = 0; i < 7; i++) {
       for (const side of [1, -1]) {
-        const dir = rot(tan, side * (0.82 - t * 0.25));
-        prims.push(poly(leafOutline(curve(p, add(p, dir, len), 0.1 * side, 20), { w: len * 0.075, p: 0.8, tip: 0.9 })));
+        const t = 0.1 + i * 0.125 + (side > 0 ? 0 : 0.035),
+          { p, tan } = W.at(W.L * t),
+          len = 112 * (1 - 0.58 * t);
+        const dir = rot(tan, side * (0.85 - t * 0.3));
+        prims.push(poly(leafOutline(curve(p, add(p, dir, len), 0.12 * side, 20), { w: len * 0.15, p: 0.65, tip: 0.85 })));
       }
     }
     return prims;
@@ -469,18 +553,19 @@ const PRESETS = {
   fern() {
     const path = curve([0, 130], [-10, -130], -0.06, 60),
       W = walker(path),
-      prims = [poly(ribbon(path, 4.5, 2))];
-    for (let i = 0; i < 12; i++) {
-      const t = 0.1 + i * 0.07,
+      prims = [poly(ribbon(path, 7, 3))];
+    // Six chunky pairs of leaflets, shrinking toward the tip.
+    for (let i = 0; i < 6; i++) {
+      const t = 0.12 + i * 0.135,
         { p, tan } = W.at(W.L * t),
-        len = 46 * (1 - 0.65 * t);
-      for (const side of [1, -1]) prims.push(poly(leafOutline(curve(p, add(p, rot(tan, side * 1.15), len), 0.05 * side, 16), { w: len * 0.34, p: 0.5, tip: 0.8 })));
+        len = 66 * (1 - 0.6 * t);
+      for (const side of [1, -1]) prims.push(poly(leafOutline(curve(p, add(p, rot(tan, side * 0.95), len), 0.12 * side, 16), { w: len * 0.2, p: 0.5, tip: 0.75 })));
     }
-    prims.push(poly(leafOutline(curve(W.at(W.L).p, add(W.at(W.L).p, W.at(W.L).tan, 22), 0, 12), { w: 7, p: 0.5 })));
+    prims.push(poly(leafOutline(curve(W.at(W.L).p, add(W.at(W.L).p, W.at(W.L).tan, 34), 0, 12), { w: 9, p: 0.5 })));
     return prims;
   },
   round() {
-    return [poly(leafOutline(curve([0, 70], [4, -70], 0.05, 40), { w: 60, p: 0.5, tip: 0.72 })), line([[0, 68], [-4, 106]], 5)];
+    return [poly(leafOutline(curve([0, 70], [4, -70], 0.05, 40), { w: 60, p: 0.5, tip: 0.72 })), stem([0, 64], [-4, 106], 5.5)];
   },
   slim() {
     return [poly(leafOutline(curve([0, 120], [0, -120], 0.18, 50), { w: 22, p: 0.9, tip: 0.9 }))];
@@ -501,10 +586,10 @@ const PRESETS = {
     return prims;
   },
   flower() {
-    return [poly(polar((a) => 60 * (0.54 + 0.46 * Math.pow(Math.abs(Math.cos((5 * a) / 2)), 0.45)))), circ(0, 0, 7, true)];
+    return [poly(polar((a) => 60 * (0.54 + 0.46 * Math.pow(Math.abs(Math.cos((5 * a) / 2)), 0.45)))), rosette(0, 0, 11, 5, 0.42, true)];
   },
   daisy() {
-    const prims = [circ(0, 0, 14)];
+    const prims = [rosette(0, 0, 17, 8, 0.66)];
     for (let k = 0; k < 11; k++) {
       const a = (k * TAU) / 11,
         d = [Math.cos(a), Math.sin(a)];
@@ -519,17 +604,17 @@ const PRESETS = {
         d = [Math.cos(a), Math.sin(a)];
       prims.push(poly(leafOutline(curve(add([0, 0], d, 8), add([0, 0], d, 66), 0.12, 20), { w: 22, p: 0.45, tip: 0.65 })));
     }
-    prims.push(circ(0, 0, 13, true), circ(0, 0, 8));
+    prims.push(rosette(0, 0, 15, 6, 0.45, true));
     return prims;
   },
   lemon() {
     return [poly(leafOutline(resample([[-66, 0], [66, 0]], 2), { w: 38, p: 0.55, tip: 1 }))];
   },
   fruit() {
-    return [circ(0, 12, 46), line([[0, -30], [2, -46]], 5), poly(leafOutline(curve([2, -42], [40, -70], -0.2, 20), { w: 13, p: 0.6 }))];
+    return [disc(0, 12, 46), stem([0, -28], [2, -46], 5.5), poly(leafOutline(curve([2, -42], [40, -70], -0.2, 20), { w: 13, p: 0.6 }))];
   },
   sun() {
-    const prims = [circ(0, 0, 38)];
+    const prims = [disc(0, 0, 38)];
     for (let k = 0; k < 14; k++) {
       const a = (k * TAU) / 14,
         r1 = k % 2 ? 58 : 70,
@@ -539,7 +624,7 @@ const PRESETS = {
     return prims;
   },
   moon() {
-    return [circ(0, 0, 50), circ(26, -14, 44, true)];
+    return [disc(0, 0, 50), disc(26, -14, 44, true)];
   },
   star() {
     return [poly(polar((a) => 72 * (0.36 + 0.64 * Math.pow(Math.abs(Math.cos(4 * a)), 6)), 480))];
@@ -559,7 +644,7 @@ const PRESETS = {
       const x = -90 + i * 2.25;
       pts.push([x, 18 * Math.sin((x / 90) * TAU * 1.1)]);
     }
-    return [line(pts, 17)];
+    return [strip(pts, 17, 0.4)];
   },
   swirl() {
     const pts = [];
@@ -569,13 +654,13 @@ const PRESETS = {
         r = 6 + t * 56;
       pts.push([Math.cos(a) * r, Math.sin(a) * r]);
     }
-    return [line(pts, 13)];
+    return [strip(pts, 13, 2.1)];
   },
   drop() {
     return [poly(leafOutline(resample([[0, -70], [0, 70]], 2), { w: 40, p: 0.55, tip: 1.8 }))];
   },
   dot() {
-    return [circ(0, 0, 50)];
+    return [disc(0, 0, 50)];
   },
 };
 
@@ -584,8 +669,66 @@ export const PRESET_IDS = Object.keys(PRESETS);
 export function buildPresets() {
   const out = {};
   for (const id of PRESET_IDS) {
-    const shape = rasterize(PRESETS[id](), { blur: 1.2 });
-    if (shape) out["p:" + id] = { id: "p:" + id, preset: true, ...shape };
+    const traced = rasterize(PRESETS[id](), { blur: 1.2 });
+    if (!traced) continue;
+    const shape = scissorCut(traced, 900 + PRESET_IDS.indexOf(id) * 37, CUT[id]);
+    out["p:" + id] = { id: "p:" + id, preset: true, cut: true, ...shape };
   }
+  return out;
+}
+
+/* ---------- cut-paper letters ---------- */
+
+const GLYPH_FONT = '900 200px "Arial Black", "Helvetica Neue", Helvetica, Arial, sans-serif';
+const glyphCache = new Map();
+
+// One capital traced from a heavy sans and re-cut by hand: a slight wobble, straight scissor facets and
+// uneven corners. Units: the font size is 100, x from 0 to `adv`, the baseline at y = 0 (caps go negative).
+export function glyphShape(ch, seed) {
+  const key = ch + ":" + seed;
+  if (glyphCache.has(key)) return glyphCache.get(key);
+  const F = 200,
+    pad = 24,
+    base = pad + F * 0.9;
+  const probe = canvas(1, 1).getContext("2d");
+  probe.font = GLYPH_FONT;
+  const adv = probe.measureText(ch).width;
+  const w = Math.ceil(adv) + pad * 2,
+    h = Math.ceil(F * 1.1) + pad * 2;
+  const c = canvas(w, h),
+    ctx = c.getContext("2d", { willReadFrequently: true });
+  ctx.font = GLYPH_FONT;
+  ctx.fillText(ch, pad, base);
+  const data = ctx.getImageData(0, 0, w, h).data,
+    f = new Float32Array(w * h);
+  for (let i = 0; i < f.length; i++) f[i] = data[i * 4 + 3] / 255;
+  boxBlur(f, w, h, 1);
+  let rings = traceField(f, w, h, 0.5)
+    .map((r) => rdpClosed(r, 0.3))
+    .filter((r) => r.length >= 3 && Math.abs(signedArea(r)) > 30);
+  orientRings(rings);
+  const k = 100 / F;
+  rings = rings.map((r) => r.map((p) => [(p[0] - pad) * k, (p[1] - base) * k]));
+  const R = rng(seed),
+    n = noise2(seed);
+  rings = rings.map((ring, ri) => {
+    const pts = resample(ring, 0.6, true);
+    if (pts.length < 6) return ring;
+    const N = ringNormals(pts),
+      Lr = (pts.length * 0.6) / (TAU * 12);
+    const wob = pts.map((p, i) => {
+      const th = (TAU * i) / pts.length,
+        d = n(Math.cos(th) * Lr + ri * 9, Math.sin(th) * Lr) * 0.9;
+      return [p[0] + N[i][0] * d, p[1] + N[i][1] * d];
+    });
+    const cut = rdpClosed(wob, 1.1),
+      N2 = ringNormals(cut);
+    return cut.map((p, i) => {
+      const j = (R() - 0.5) * 0.9;
+      return [p[0] + N2[i][0] * j, p[1] + N2[i][1] * j];
+    });
+  });
+  const out = { rings, adv: adv * k };
+  glyphCache.set(key, out);
   return out;
 }

@@ -6,7 +6,6 @@ import { initDesk, setPadOpener, setPaperPickedHook, setTray } from "./desk.js";
 import { initPad, openPad } from "./drawpad.js";
 import { afterHistory, initEditor, layout, render, select } from "./editor.js";
 import { closeFinish, initFinish, openFinish } from "./finish.js";
-import { icon } from "./icons.js";
 import { playIntro } from "./intro.js";
 import { openSizes, transformPieces } from "./sizes.js";
 import { initStore, newArtwork, onChange, redo, save, saveUI, size, snap, store, undo } from "./store.js";
@@ -128,5 +127,4 @@ function boot() {
   playIntro().then(() => startNew(false));
 }
 
-$("#playBtn").innerHTML = icon("play");
 boot();

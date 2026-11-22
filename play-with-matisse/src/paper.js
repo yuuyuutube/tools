@@ -86,7 +86,7 @@ export function geometry(asset, edge, seed) {
   let g = geoCache.get(key);
   if (g) return g;
   if (edge === "rip") g = rip(asset.rings, seed);
-  else g = { body: smoothPath(asset.rings), rim: null, fib: null };
+  else g = { body: asset.cut ? linePath(asset.rings) : smoothPath(asset.rings), rim: null, fib: null };
   if (geoCache.size > 600) geoCache.delete(geoCache.keys().next().value);
   geoCache.set(key, g);
   return g;
