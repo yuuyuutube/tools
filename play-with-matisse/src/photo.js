@@ -48,109 +48,67 @@ export async function loadPhoto(src) {
 
 /* ---------- ink map ---------- */
 
-// Paper white per block (a bright percentile); blocks full of ink borrow the paper around them; then it
-// is interpolated back to every pixel. ink = how much darker than the paper.
+// Running max (or min) over a window of 2r + 1 along one line, with a monotonic queue: O(n).
+function slide(src, dst, n, idx, r, isMax) {
+  const q = new Int32Array(n);
+  let head = 0,
+    tail = 0,
+    j = 0;
+  const better = (a, b) => (isMax ? src[idx(a)] >= src[idx(b)] : src[idx(a)] <= src[idx(b)]);
+  for (let i = 0; i < n; i++) {
+    for (; j < n && j <= i + r; j++) {
+      while (tail > head && better(j, q[tail - 1])) tail--;
+      q[tail++] = j;
+    }
+    while (q[head] < i - r) head++;
+    dst[idx(i)] = src[idx(q[head])];
+  }
+}
+
+// Square grey-level filter of radius r: max (grow the paper) or min (shrink it back).
+function rank(src, w, h, r, isMax) {
+  const tmp = new Float32Array(src.length),
+    out = new Float32Array(src.length);
+  for (let y = 0; y < h; y++) slide(src, tmp, w, (i) => y * w + i, r, isMax);
+  for (let x = 0; x < w; x++) slide(tmp, out, h, (i) => i * w + x, r, isMax);
+  return out;
+}
+
+// Paper white at every pixel, by a grey-level closing (max, then min, over a ~60 px square). Anything
+// darker and narrower than the square (pencil lines, small coloured-in areas) is wiped out of it, while
+// broad changes in light keep their exact shape, edges included. So a hand or phone shadow is part of
+// "the paper" and cancels out, instead of its edge reading as a line. ink = how much darker than that.
 function inkMap({ w, h, gray }) {
-  const B = 20,
-    gw = Math.ceil(w / B),
-    gh = Math.ceil(h / B);
-  let grid = new Float32Array(gw * gh);
-  const hist = new Uint32Array(256);
-  for (let gy = 0; gy < gh; gy++)
-    for (let gx = 0; gx < gw; gx++) {
-      hist.fill(0);
-      let n = 0;
-      for (let y = gy * B; y < Math.min(h, gy * B + B); y++)
-        for (let x = gx * B; x < Math.min(w, gx * B + B); x++) {
-          hist[gray[y * w + x]]++;
-          n++;
-        }
-      let acc = 0,
-        v = 255;
-      for (; v > 0; v--) if ((acc += hist[v]) >= n * 0.1) break;
-      grid[gy * gw + gx] = v;
-    }
-  const pass = (fn) => {
-    const out = new Float32Array(grid.length);
-    for (let y = 0; y < gh; y++)
-      for (let x = 0; x < gw; x++) {
-        const vals = [];
-        for (let dy = -1; dy <= 1; dy++)
-          for (let dx = -1; dx <= 1; dx++) {
-            const xx = x + dx,
-              yy = y + dy;
-            if (xx >= 0 && yy >= 0 && xx < gw && yy < gh) vals.push(grid[yy * gw + xx]);
-          }
-        out[y * gw + x] = fn(grid[y * gw + x], vals);
-      }
-    grid = out;
-  };
-  const mean = (v) => v.reduce((a, b) => a + b, 0) / v.length;
-  // A block much darker than its brightest neighbour is mostly ink (a coloured-in area): give it the
-  // brighter half of its neighbours. Gentle shading changes less than that from block to block, so it
-  // is left alone and keeps evening out.
-  const lift = (self, v) => {
-    if (self >= Math.max(...v) * 0.82) return self;
-    const top = v.sort((a, b) => b - a).slice(0, Math.ceil(v.length / 2));
-    return mean(top);
-  };
-  for (let k = 0; k < 4; k++) pass(lift);
-  pass((_, v) => mean(v));
+  const r = Math.max(8, Math.round(Math.max(w, h) / 14));
+  const g = Float32Array.from(gray);
+  const bg = rank(rank(g, w, h, r, true), w, h, r, false);
+  // A big area coloured in with marker would count as paper too. Shadows rarely take paper below half
+  // its white, marker does: so the paper is never taken to be darker than half the brightest paper.
+  // (A dark table round the page also passes this; it touches the photo's edge and is dropped later.)
+  const sorted = Float32Array.from(bg).sort(),
+    floor = sorted[Math.floor(sorted.length * 0.95)] * 0.5;
+  for (let i = 0; i < bg.length; i++) if (bg[i] < floor) bg[i] = floor;
   const ink = new Float32Array(w * h);
-  for (let y = 0; y < h; y++) {
-    const fy = clamp((y + 0.5) / B - 0.5, 0, gh - 1),
-      y0 = Math.floor(fy),
-      y1 = Math.min(gh - 1, y0 + 1),
-      ty = fy - y0;
-    for (let x = 0; x < w; x++) {
-      const fx = clamp((x + 0.5) / B - 0.5, 0, gw - 1),
-        x0 = Math.floor(fx),
-        x1 = Math.min(gw - 1, x0 + 1),
-        tx = fx - x0;
-      const top = grid[y0 * gw + x0] * (1 - tx) + grid[y0 * gw + x1] * tx,
-        bot = grid[y1 * gw + x0] * (1 - tx) + grid[y1 * gw + x1] * tx,
-        bg = Math.max(top * (1 - ty) + bot * ty, 40);
-      ink[y * w + x] = clamp((bg - gray[y * w + x]) / bg, 0, 1);
-    }
+  for (let i = 0; i < ink.length; i++) {
+    const paper = Math.max(bg[i], 40);
+    ink[i] = clamp((paper - g[i]) / paper, 0, 1);
   }
   return ink;
 }
 
-// Starting threshold: just above the paper's own noise, so light pencil comes through, but never above
-// Otsu's split (paper vs the darkest marks). Only the middle of the photo counts, so a strip of table
-// along the edge doesn't skew it. The slider moves it from there.
+// Starting threshold: just above the paper's own noise, so light pencil comes through. Paper is most of
+// the middle of a sketch photo, so its median and spread don't move when there are big dark areas too.
+// Only the middle counts, so a strip of table along the edge doesn't skew it. The slider moves it from there.
 function autoLevel({ w, h, ink }) {
-  const hist = new Float64Array(101),
-    mx = Math.round(w * 0.1),
-    my = Math.round(h * 0.1);
-  let n = 0;
-  for (let y = my; y < h - my; y++)
-    for (let x = mx; x < w - mx; x++) {
-      hist[Math.round(ink[y * w + x] * 100)]++;
-      n++;
-    }
-  let sum = 0;
-  for (let i = 0; i <= 100; i++) sum += i * hist[i];
-  let wB = 0,
-    sB = 0,
-    best = 0,
-    otsu = 25,
-    p90 = -1;
-  for (let i = 0; i <= 100; i++) {
-    wB += hist[i];
-    if (p90 < 0 && wB >= n * 0.9) p90 = i;
-    if (!wB || wB === n) continue;
-    sB += i * hist[i];
-    const mB = sB / wB,
-      mF = (sum - sB) / (n - wB),
-      between = wB * (n - wB) * (mB - mF) ** 2;
-    if (between > best) {
-      best = between;
-      otsu = i;
-    }
-  }
-  const noise = (Math.max(p90, 0) * 2 + 8) / 100;
-  return clamp(Math.min(noise, (otsu / 100) * 0.8), 0.1, 0.35);
+  const mx = Math.round(w * 0.1),
+    my = Math.round(h * 0.1),
+    vals = [];
+  for (let y = my; y < h - my; y++) for (let x = mx; x < w - mx; x++) vals.push(ink[y * w + x]);
+  const v = Float32Array.from(vals).sort(),
+    med = v[v.length >> 1],
+    dev = v.map((x) => Math.abs(x - med)).sort(),
+    mad = dev[dev.length >> 1];
+  return clamp(Math.round((med + mad * 8 + 0.07) * 100) / 100, 0.1, 0.3);
 }
 
 /* ---------- mask ---------- */
@@ -260,6 +218,11 @@ export function photoMask(photo, type, level) {
     // Close small gaps in a hand-drawn outline so its inside can be filled, then shrink back.
     const r = Math.max(2, Math.round(Math.max(w, h) / 90));
     m = morph(fillEnclosed(morph(m, w, h, r, true), w, h), w, h, r, false);
+    // Then trim what is still a bare pencil line: a stroke that ran past a corner, a stray tail. Only
+    // strands a few pixels thin go, so filled areas and their points stay.
+    const t = Math.max(2, Math.round(r / 2));
+    const opened = morph(morph(m, w, h, t, false), w, h, t, true);
+    if (opened.some((v) => v)) m = opened;
   }
   return { mask: m, w, h };
 }

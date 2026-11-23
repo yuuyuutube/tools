@@ -83,11 +83,15 @@ the export match.
 ## Shapes from a photo
 
 The camera button (next to the pencil in the tray, beside the pencil in the phone dock, and in the pad's tools) takes
-a photo or picks one from the library. The photo is shrunk to 420 px and turned grey. Each 20 px block gets a
-paper-white level, and blocks that are mostly ink borrow it from brighter neighbours, so shadows and uneven light
-cancel out. The slider sets how faint a mark still counts as ink, starting just above the paper's own noise.
-Specks are dropped, and so are pieces touching the photo's edge (the table, the paper's shadow), unless nothing else
-is left. **Fill** closes small gaps in the outline and fills everything the outside can't reach. **Lines** keeps the
+a photo or picks one from the library. The photo is shrunk to 420 px and turned grey. The paper's white at
+each pixel comes from a grey-level closing (max, then min, over a ~60 px square): pencil lines and small filled
+areas are wiped out of it, while shadows keep their exact shape and edges, so a hand or phone shadow cancels out
+instead of its edge reading as a line. It is never taken below half the brightest paper, so a big area coloured in
+with marker still counts as ink. The slider sets how faint a mark still counts, starting just above the paper's
+own noise (median + spread, measured in the middle of the photo). Specks are dropped, and so are pieces touching
+the photo's edge (the table, the paper's shadow), unless nothing else is left. **Fill** closes small gaps in the
+outline, fills everything the outside can't reach, then trims strands that are still bare pencil lines (a stroke
+that ran past a corner). **Lines** keeps the
 marks as strips. Leaf, branch and flower aren't offered for photos. The three looks and tracing are the same as for
 drawings (`traceMask` in `shapes.js`). The grey 420 px JPEG (about 20 KB) is kept in the asset, so a photo shape
 can be re-edited like a drawing.
