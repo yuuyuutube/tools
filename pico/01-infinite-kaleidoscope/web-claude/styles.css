@@ -1,0 +1,235 @@
+:root {
+  --bg: #e8e4dc;
+  --ink: #24221f;
+  --paper: #fbfaf6;
+  --mute: #8b8984;
+  --line: #dedbd3;
+  --pink: #ff48b0;
+  --blue: #0078bf;
+  --yellow: #ffc629;
+  --orange: #ff6b35;
+  --green: #2e9e6b;
+  --red: #e2412a;
+  --font: "Helvetica Neue", Helvetica, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+  --card: 0 0 0 1px rgba(36, 34, 31, 0.05), 0 8px 24px -14px rgba(40, 30, 10, 0.35);
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#art {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: block;
+  touch-action: none;
+  cursor: grab;
+}
+#art.dragging { cursor: grabbing; }
+body.idle #art { cursor: none; }
+
+/* ---- toolbar ------------------------------------------------------------- */
+
+.ui {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: opacity 0.32s var(--ease), transform 0.32s var(--ease);
+  z-index: 2;
+}
+.ui.hidden {
+  opacity: 0;
+  transform: translateX(-50%) translateY(14px);
+  pointer-events: none;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 5px;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: var(--card);
+}
+
+.group { display: flex; align-items: center; gap: 2px; }
+.sep { width: 1px; height: 20px; background: var(--line); margin: 0 5px; flex: none; }
+
+.dot {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex: none;
+  transition: background-color 0.18s, color 0.18s, transform 0.18s var(--ease);
+  touch-action: manipulation;
+}
+.dot svg { width: 22px; height: 22px; display: block; }
+@media (hover: hover) {
+  .dot:hover { background: rgba(36, 34, 31, 0.07); }
+}
+.dot:active { transform: scale(0.9); }
+.dot:focus { outline: none; }
+.dot:focus-visible { box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--blue); }
+
+/* Mode selector with a sliding ink dot behind the active icon. */
+.modes { position: relative; display: flex; gap: 2px; }
+.modes .slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--ink);
+  transition: transform 0.42s var(--ease);
+  pointer-events: none;
+}
+.modes .dot { z-index: 1; }
+.modes .dot.on { color: var(--paper); }
+@media (hover: hover) {
+  .modes .dot.on:hover { background: transparent; }
+}
+
+/* Current ink set, as a tiny print. */
+.swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(36, 34, 31, 0.18);
+  position: relative;
+  overflow: hidden;
+}
+.swatch i {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+}
+.swatch i:nth-child(1) { left: 0; top: 0; }
+.swatch i:nth-child(2) { right: 0; top: 0; }
+.swatch i:nth-child(3) { left: 0; bottom: 0; }
+.swatch i:nth-child(4) { right: 0; bottom: 0; }
+.swatch b {
+  position: absolute;
+  inset: 30%;
+  border-radius: 50%;
+}
+
+.inks {
+  display: flex;
+  gap: 4px;
+  padding: 5px;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: var(--card);
+  transition: opacity 0.24s var(--ease), transform 0.24s var(--ease);
+}
+.inks.closed { opacity: 0; transform: translateY(8px) scale(0.96); pointer-events: none; }
+.inks .dot.on { box-shadow: 0 0 0 2px var(--ink); }
+
+/* Pico knob: notch follows the dial, ring shows the connection. */
+.pico .notch { transform-origin: 12px 12px; transition: transform 0.08s linear; }
+.pico .ring { stroke: var(--mute); stroke-dasharray: 2.2 3.1; opacity: 0.9; }
+.pico[data-status="connecting"] .ring { stroke: var(--ink); animation: spin 1.4s linear infinite; transform-origin: 12px 12px; }
+.pico[data-status="connected"] .ring { stroke: var(--green); stroke-dasharray: none; stroke-width: 2.2; }
+.pico[data-status="lost"] .ring { stroke: var(--orange); animation: spin 3s linear infinite; transform-origin: 12px 12px; }
+.pico[data-status="error"] .ring { stroke: var(--red); stroke-dasharray: none; }
+.pico.shake { animation: shake 0.42s var(--ease); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes shake {
+  20% { transform: translateX(-3px); }
+  45% { transform: translateX(3px); }
+  70% { transform: translateX(-2px); }
+}
+
+.dot.busy svg { animation: pulse 0.9s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: 0.3; } }
+
+/* ---- first-run hint ------------------------------------------------------ */
+
+.hint {
+  position: fixed;
+  left: 50%;
+  bottom: calc(86px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: var(--card);
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s var(--ease);
+  z-index: 1;
+}
+.hint svg { width: 26px; height: 26px; animation: sway 1.6s ease-in-out infinite; }
+.hint.show { opacity: 1; }
+@keyframes sway { 0%, 100% { transform: translateX(-4px); } 50% { transform: translateX(4px); } }
+
+.fallback {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.fallback[hidden] { display: none; }
+
+/* ---- small screens ------------------------------------------------------- */
+
+@media (max-width: 560px) {
+  .bar {
+    flex-wrap: wrap;
+    justify-content: center;
+    border-radius: 26px;
+    width: max-content;
+    max-width: calc(100vw - 20px);
+    row-gap: 2px;
+  }
+  .sep.wrap { flex-basis: 100%; height: 0; margin: 0; background: none; }
+  .ui { bottom: calc(10px + env(safe-area-inset-bottom)); }
+  .hint { bottom: calc(132px + env(safe-area-inset-bottom)); }
+  .dot { width: 42px; height: 42px; }
+  .modes .slider { width: 42px; height: 42px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hint svg, .pico .ring { animation: none !important; }
+  .modes .slider, .ui, .inks { transition-duration: 0.01s; }
+}
