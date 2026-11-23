@@ -415,6 +415,37 @@ export function generate(type, strokes, variant, seed) {
   return out;
 }
 
+// A 0/1 mask (from a photo) → cut-paper rings, through the same soften-and-trace path as drawn shapes.
+export function traceMask(mask, mw, mh, { blur = 1, wave = null, seed = 0 } = {}) {
+  let x0 = mw,
+    y0 = mh,
+    x1 = -1,
+    y1 = -1;
+  for (let y = 0; y < mh; y++)
+    for (let x = 0; x < mw; x++)
+      if (mask[y * mw + x]) {
+        if (x < x0) x0 = x;
+        if (x > x1) x1 = x;
+        if (y < y0) y0 = y;
+        if (y > y1) y1 = y;
+      }
+  if (x1 < 0) return null;
+  const pad = Math.ceil(blur * 2) + 3,
+    w = x1 - x0 + 1 + pad * 2,
+    hgt = y1 - y0 + 1 + pad * 2,
+    f = new Float32Array(w * hgt);
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) f[(y - y0 + pad) * w + (x - x0 + pad)] = mask[y * mw + x];
+  boxBlur(f, w, hgt, Math.round(blur));
+  const minArea = Math.max(12, (x1 - x0 + 1) * (y1 - y0 + 1) * 0.0015);
+  const rings = traceField(f, w, hgt, 0.5)
+    .map((r) => rdpClosed(r, 0.35))
+    .filter((r) => r.length >= 3 && Math.abs(signedArea(r)) > minArea);
+  if (!rings.length) return null;
+  orientRings(rings);
+  const out = normalizeRings(rings);
+  return wave ? waveRings(out, wave, seed) : out;
+}
+
 /* ---------- presets: an original set of cut-paper pieces ---------- */
 
 // Hand-cut stand-ins for perfect geometry: a disc is an uneven polygon, a stem ends in a straight snip,

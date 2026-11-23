@@ -1,8 +1,10 @@
-// Draw a few strokes → pick a type and a variation → add the new paper piece to the tray and the collage.
+// Draw a few strokes (or photograph a sketch) → pick a type and a variation → add the new paper piece
+// to the tray and the collage.
 import { renderPadPapers } from "./desk.js";
 import { addPiece } from "./editor.js";
 import { icon } from "./icons.js";
 import { drawShapeThumb } from "./paper.js";
+import { PHOTO_TYPES, cachedMask, loadPhoto, photoShape } from "./photo.js";
 import { TYPES, VARIANTS, generate } from "./shapes.js";
 import { currentColor, emit, onChange, save, store } from "./store.js";
 import { segmented } from "./ui.js";
@@ -19,11 +21,17 @@ let strokes = [],
   regenTimer = 0,
   px = 300,
   dpr = 1;
+// Photo mode: a traced sketch photo replaces the strokes until it is cleared.
+let photo = null,
+  photoType = "fill",
+  level = 0.25,
+  loading = 0;
 let cv, ctx;
 
 function sizePad() {
   const narrow = innerWidth < 900;
-  const room = narrow ? Math.min(innerWidth - 24, innerHeight - 380) : Math.min(440, innerHeight - 360);
+  const extra = photo ? 46 : 0;
+  const room = narrow ? Math.min(innerWidth - 24, innerHeight - 380 - extra) : Math.min(440, innerHeight - 360 - extra);
   px = Math.max(200, Math.floor(room));
   dpr = Math.min(devicePixelRatio || 1, 2.5);
   cv.style.width = cv.style.height = px + "px";
@@ -31,9 +39,40 @@ function sizePad() {
   drawStrokes();
 }
 
+// The photo, faded, with what will be cut from it laid over in ink.
+function drawPhoto() {
+  const W = cv.width,
+    k = Math.min(W / photo.w, W / photo.h) * 0.94,
+    dw = photo.w * k,
+    dh = photo.h * k,
+    dx = (W - dw) / 2,
+    dy = (W - dh) / 2;
+  ctx.globalAlpha = 0.3;
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(photo.view, dx, dy, dw, dh);
+  ctx.globalAlpha = 1;
+  const res = cachedMask(photo, photoType, level);
+  if (!res) return;
+  const c = document.createElement("canvas");
+  c.width = res.w;
+  c.height = res.h;
+  const o = c.getContext("2d"),
+    img = o.createImageData(res.w, res.h);
+  for (let i = 0; i < res.mask.length; i++)
+    if (res.mask[i]) {
+      img.data[i * 4] = 36;
+      img.data[i * 4 + 1] = 34;
+      img.data[i * 4 + 2] = 31;
+      img.data[i * 4 + 3] = 215;
+    }
+  o.putImageData(img, 0, 0);
+  ctx.drawImage(c, dx, dy, dw, dh);
+}
+
 function drawStrokes() {
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, cv.width, cv.height);
+  if (photo) return drawPhoto();
   const k = (px * dpr) / N;
   ctx.setTransform(k, 0, 0, k, 0, 0);
   // faint dot grid helps judge size without being decoration
@@ -65,10 +104,12 @@ function regen() {
   clearTimeout(regenTimer);
   regenTimer = setTimeout(() => {
     gen++;
-    results = strokes.length ? VARIANTS.map((v, i) => {
-      const s = generate(type, strokes, v, seed);
+    const make = photo ? (v) => photoShape(photo, photoType, v, level, seed) : (v) => generate(type, strokes, v, seed);
+    results = photo || strokes.length ? VARIANTS.map((v, i) => {
+      const s = make(v);
       return s ? { id: `tmp:${gen}:${i}`, ...s } : null;
     }) : [];
+    if (photo) drawStrokes();
     renderVariants();
   }, 30);
 }
@@ -94,14 +135,60 @@ function renderVariants() {
   $("#padOk").disabled = !results[variant];
 }
 
+// Drawing offers every type; a photo is already a shape, so it is only filled in or kept as lines.
 function renderTypes() {
-  const wrap = $("#padTypes");
-  if (!wrap.children.length) wrap.append(...TYPES.map((t) => h("button", { "data-v": t, "aria-label": t, html: icon(t) })));
-  segmented(wrap, type, (t) => {
-    type = t;
+  const wrap = $("#padTypes"),
+    mode = photo ? "photo" : "draw";
+  if (wrap.dataset.mode !== mode) {
+    wrap.dataset.mode = mode;
+    const list = photo ? PHOTO_TYPES : TYPES;
+    wrap.replaceChildren(...list.map((t) => h("button", { "data-v": t, "aria-label": t, html: icon(t) })));
+  }
+  segmented(wrap, photo ? photoType : type, (t) => {
+    if (photo) photoType = t;
+    else type = t;
     renderTypes();
     regen();
   });
+}
+
+function renderMode() {
+  $("#padLevel").hidden = !photo;
+  $("#padUndo").hidden = !!photo;
+  $("#padClear").setAttribute("aria-label", photo ? "Remove photo" : "Clear");
+  cv.style.cursor = photo ? "default" : "";
+  if (photo) $("#padLevelIn").value = String(Math.round((0.66 - level) * 100));
+  renderTypes();
+  sizePad();
+}
+
+async function usePhoto(src, saved) {
+  const ticket = ++loading;
+  $("#padBoard").classList.add("busy");
+  try {
+    const p = await loadPhoto(src);
+    if (ticket !== loading) return;
+    photo = p;
+    level = saved?.level ?? p.auto;
+    if (saved?.type) photoType = saved.type;
+    if (!saved) {
+      seed = newSeed();
+      variant = 0;
+    }
+    renderMode();
+    regen();
+  } catch (e) {
+    console.warn("photo failed", e);
+  } finally {
+    if (ticket === loading) $("#padBoard").classList.remove("busy");
+  }
+}
+
+// Opens the camera / photo library. Must run inside a click so the browser allows the picker.
+export function pickPhoto() {
+  const input = $("#photoInput");
+  input.value = "";
+  input.click();
 }
 
 function confirm() {
@@ -112,7 +199,9 @@ function confirm() {
     rings: a.rings,
     w: a.w,
     h: a.h,
-    gen: { type, variant: VARIANTS[variant], seed, strokes: strokes.map((s) => s.map((p) => [p[0], p[1]])) },
+    gen: photo
+      ? { type: photoType, variant: VARIANTS[variant], seed, level, photo: photo.url }
+      : { type, variant: VARIANTS[variant], seed, strokes: strokes.map((s) => s.map((p) => [p[0], p[1]])) },
   };
   store.custom.unshift(asset);
   save();
@@ -121,6 +210,7 @@ function confirm() {
   addPiece(asset.id);
   strokes = [];
   results = [];
+  photo = null;
   seed = newSeed();
   if (!store.ui.seen) {
     store.ui.seen = true;
@@ -128,17 +218,24 @@ function confirm() {
   }
 }
 
-export function openPad(fromAsset) {
-  if (fromAsset?.gen) {
-    strokes = fromAsset.gen.strokes.map((s) => s.map((p) => [p[0], p[1]]));
-    type = fromAsset.gen.type;
-    seed = fromAsset.gen.seed;
-    variant = Math.max(0, VARIANTS.indexOf(fromAsset.gen.variant));
+export function openPad(fromAsset, file) {
+  const g = fromAsset?.gen;
+  if (g?.photo) {
+    seed = g.seed;
+    variant = Math.max(0, VARIANTS.indexOf(g.variant));
+    usePhoto(g.photo, g);
+  } else if (g?.strokes) {
+    loading++;
+    photo = null;
+    strokes = g.strokes.map((s) => s.map((p) => [p[0], p[1]]));
+    type = g.type;
+    seed = g.seed;
+    variant = Math.max(0, VARIANTS.indexOf(g.variant));
   }
+  if (file) usePhoto(file);
   $("#pad").hidden = false;
-  renderTypes();
+  renderMode();
   renderPadPapers();
-  sizePad();
   regen();
   renderVariants();
   emit("modal");
@@ -156,10 +253,24 @@ export function initPad() {
   $("#padUndo").innerHTML = icon("undo");
   $("#padClear").innerHTML = icon("eraser");
   $("#padDice").innerHTML = icon("dice");
+  $("#padPhoto").innerHTML = icon("camera");
+  $("#padLevelLo").innerHTML = icon("lineBold");
+  $("#padLevelHi").innerHTML = icon("lineFaint");
+  $("#padPhoto").onclick = pickPhoto;
+  $("#photoInput").addEventListener("change", (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if ($("#pad").hidden) openPad(null, f);
+    else usePhoto(f);
+  });
+  $("#padLevelIn").addEventListener("input", (e) => {
+    level = Math.round(66 - +e.target.value) / 100;
+    regen();
+  });
   $("#padClose").innerHTML = icon("close");
   $("#padOk").innerHTML = icon("check");
   cv.addEventListener("pointerdown", (e) => {
-    if (e.button > 0) return;
+    if (e.button > 0 || photo) return;
     e.preventDefault();
     try {
       cv.setPointerCapture(e.pointerId);
@@ -191,6 +302,13 @@ export function initPad() {
     regen();
   };
   $("#padClear").onclick = () => {
+    if (photo) {
+      loading++;
+      photo = null;
+      renderMode();
+      regen();
+      return;
+    }
     strokes = [];
     drawStrokes();
     regen();

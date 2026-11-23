@@ -55,7 +55,9 @@ It needs the dev server running and Google Chrome installed. Bump `?v=` in the `
 | `src/paper.js` | Snip and rip edges, paper texture, and the one renderer used by the editor, thumbnails and export |
 | `src/editor.js` | Collage canvas: picking, move / scale / rotate (mouse, pen, one or two fingers), piece toolbar, keyboard |
 | `src/desk.js` | Paper rail, set popover (texture, background, My Colours picker), cut mode, shape tray |
-| `src/drawpad.js` | Drawing pad, live variations, add to tray, re-edit a saved drawing |
+| `src/drawpad.js` | Drawing pad, live variations, add to tray, re-edit a saved drawing or photo |
+| `src/tour.js` | First-visit guide on the work table: spotlight over the real control + speech bubble, in English or 繁中 (switch in the bubble; shares the About booklet's language); steps whose control isn't on screen are skipped, so desktop and phone each get their own path. Runs once (`store.ui.toured`); the `?` button in the top bar replays it |
+| `src/photo.js` | Photo of a paper sketch → ink mask (lighting evened out, table edge and specks dropped), filled in or kept as lines |
 | `src/sizes.js` | Canvas size picker; mid-work resize with Fit / Keep previews |
 | `src/export.js` | PNG output (artwork or art print) and the 300 DPI `pHYs` chunk |
 | `src/sign.js` | Signing anywhere on the finished artwork: black pen (thinner when fast) or a typed name (Latin in the original Kaiti letters, Chinese in Ming/Song, then Hei), ported from stamp-tour; stored in the artwork and drawn into every export |
@@ -77,6 +79,18 @@ a tangle), it falls back to the thickened stroke, so a drawing never vanishes.
 Rip edges are computed at render time from the traced rings and a per-piece seed. Periodic noise at three scales moves
 the edge, and a pale core rim with fibres sits outside it. The same seed always gives the same tear, so the editor and
 the export match.
+
+## Shapes from a photo
+
+The camera button (next to the pencil in the tray, beside the pencil in the phone dock, and in the pad's tools) takes
+a photo or picks one from the library. The photo is shrunk to 420 px and turned grey. Each 20 px block gets a
+paper-white level, and blocks that are mostly ink borrow it from brighter neighbours, so shadows and uneven light
+cancel out. The slider sets how faint a mark still counts as ink, starting just above the paper's own noise.
+Specks are dropped, and so are pieces touching the photo's edge (the table, the paper's shadow), unless nothing else
+is left. **Fill** closes small gaps in the outline and fills everything the outside can't reach. **Lines** keeps the
+marks as strips. Leaf, branch and flower aren't offered for photos. The three looks and tracing are the same as for
+drawings (`traceMask` in `shapes.js`). The grey 420 px JPEG (about 20 KB) is kept in the asset, so a photo shape
+can be re-edited like a drawing.
 
 ## Reused from puri-club
 

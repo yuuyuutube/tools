@@ -245,7 +245,7 @@ function trayItem(asset) {
 let itemTarget = null;
 function openItemPop(asset, anchor) {
   itemTarget = asset;
-  $("#itemEdit").hidden = !asset.gen?.strokes?.length;
+  $("#itemEdit").hidden = !(asset.gen?.strokes?.length || asset.gen?.photo);
   togglePopover($("#itemPop"), anchor);
 }
 
@@ -277,6 +277,7 @@ export function renderAll() {
 
 export function initDesk() {
   $("#aboutBtn").innerHTML = icon("info");
+  $("#helpBtn").innerHTML = icon("help");
   $("#newBtn").innerHTML = icon("file");
   $("#sizeBtn").innerHTML = icon("aspect");
   $("#undoBtn").innerHTML = icon("undo");
@@ -284,6 +285,8 @@ export function initDesk() {
   $("#doneBtn").innerHTML = icon("check");
   $("#drawBtn").innerHTML = icon("pencil");
   $("#drawFab").innerHTML = icon("pencil");
+  $("#photoBtn").innerHTML = icon("camera");
+  $("#photoFab").innerHTML = icon("camera");
   $("#trayBtn").innerHTML = icon("shapes");
   $("#bgBtn").innerHTML = icon("bg");
   $("#itemEdit").innerHTML = icon("pencil");

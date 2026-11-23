@@ -3,10 +3,11 @@
 import { initAbout, openAbout } from "./about.js";
 import { sizeById } from "./data.js";
 import { initDesk, setPadOpener, setPaperPickedHook, setTray } from "./desk.js";
-import { initPad, openPad } from "./drawpad.js";
+import { initPad, openPad, pickPhoto } from "./drawpad.js";
 import { afterHistory, initEditor, layout, render, select } from "./editor.js";
 import { closeFinish, initFinish, openFinish } from "./finish.js";
 import { playIntro } from "./intro.js";
+import { startTour } from "./tour.js";
 import { openSizes, transformPieces, transformSignature } from "./sizes.js";
 import { signFontReady } from "./paper.js";
 import { initStore, newArtwork, onChange, redo, save, saveUI, size, snap, store, undo } from "./store.js";
@@ -27,8 +28,19 @@ async function startNew(cancellable) {
   layout();
   syncTop();
   if (!store.ui.seen) $("#papers").classList.add("pulse");
+  firstTour();
   return true;
 }
+
+// The guide runs once, the first time someone reaches the work table; the "?" button replays it.
+function tour() {
+  closePopover();
+  select(null);
+  setTray(false);
+  // wait a beat so the size picker has gone and the layout has settled
+  return new Promise((res) => setTimeout(res, 350)).then(startTour);
+}
+const firstTour = () => !store.ui.toured && tour();
 
 function history(fn) {
   closePopover();
@@ -87,6 +99,7 @@ function boot() {
   });
 
   $("#aboutBtn").onclick = () => (closePopover(), openAbout());
+  $("#helpBtn").onclick = tour;
   $("#introAbout").onclick = (e) => (e.stopPropagation(), openAbout());
   $("#newBtn").onclick = askNew;
   $("#sizeBtn").onclick = changeSize;
@@ -105,6 +118,13 @@ function boot() {
   };
   $("#drawBtn").onclick = draw;
   $("#drawFab").onclick = draw;
+  const photo = () => {
+    closePopover();
+    setTray(false);
+    pickPhoto();
+  };
+  $("#photoBtn").onclick = photo;
+  $("#photoFab").onclick = photo;
 
   addEventListener("keydown", (e) => {
     if (modalOpen() || $("#desk").hidden || !$("#finish").hidden || !$("#intro").hidden) return;
@@ -130,6 +150,7 @@ function boot() {
   if (store.art) {
     layout();
     syncTop();
+    firstTour();
     return;
   }
   playIntro().then(() => startNew(false));
