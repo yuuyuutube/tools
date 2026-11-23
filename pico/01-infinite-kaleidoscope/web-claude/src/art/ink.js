@@ -28,10 +28,13 @@ export function inkParams(seed) {
     clearRate: r.range(0.45, 0.7),
     stir: r.range(0.2, 0.3),
     spin: r.sign(),
+    baseStir: r.range(1.2, 3.5), // a fixed, gentle stir; the knob no longer stirs
+    ringK: r.chance(0.5) ? 2 : 1, // ripple petals: k or 2k lobes
+    flow: r.range(0.018, 0.035), // ripples drift outward on their own, waves per second
   };
 }
 
-// One round: a centre drop or a ring of k drops, followed by a stir.
+// One round: a centre drop or a ring of k drops, followed by a stir and a ripple.
 export function roundSpec(P, n) {
   const r = rng('ink-round', P.seed, n);
   const ink = n % 2 === 0 || !r.chance(P.clearRate);
@@ -61,6 +64,15 @@ export function roundSpec(P, n) {
     // Mostly one direction per universe, so turning the knob winds the whole bath.
     stirWeight: (r.chance(0.18) ? -P.spin : P.spin) * r.range(0.35, 1.0),
     stirReach: r.range(0.2, 0.85),
+    // A petal-shaped ripple that runs from the centre outward as the knob turns.
+    ripple: {
+      lam: r.range(0.22, 0.55),
+      k: P.k * (r.chance(0.35) ? 2 : P.ringK),
+      e: r.range(0.25, 0.75),
+      strength: r.range(0.45, 0.85), // fraction of the largest fold-free amplitude
+      perDetent: r.range(0.06, 0.11), // wavelengths per detent
+      phase: r.next(),
+    },
   };
 }
 
@@ -89,8 +101,12 @@ export function buildOps(P, t, dial, out = new Float32Array(MAX_OPS * 8)) {
     if (grow <= 1e-4) continue;
     for (const d of spec.drops) put(DROP, d.x, d.y, d.r * grow, spec.color, d.k, d.e, d.ph);
     const drift = 0.6 * Math.sin(t * 0.045 + n * 1.7);
-    const strength = (dial + drift) * P.stir * spec.stirWeight * bloom;
-    put(VORTEX, strength, spec.stirReach, 0, 0, 0, 0, 0);
+    const strength = (P.baseStir + drift) * P.stir * spec.stirWeight * bloom;
+    const w = spec.ripple;
+    // Largest amplitude that keeps the radial map one-to-one: amp * 2π/λ * (1 + e) < 1.
+    const amp = ((w.strength * w.lam) / (2 * Math.PI * (1 + w.e))) * bloom;
+    const phase = w.phase + dial * w.perDetent + t * P.flow;
+    put(VORTEX, strength, spec.stirReach, amp, w.lam, w.k, w.e, phase);
   }
   return { data: out, count: i };
 }
@@ -163,6 +179,24 @@ void main() {
       J = (mat2(f) + (h / (L * L * max(f, 1e-3))) * outerProduct(d, d)) * J;
       p = A.yz + d * f;
     } else {
+      // Ripple from the centre outward (the knob moves its phase), undone first...
+      if (A.w > 0.0) {
+        float r = length(p) + 1e-6;
+        vec2 u = p / r;
+        vec2 v = vec2(-u.y, u.x);
+        float th = atan(p.y, p.x);
+        float lam = B.x, k = B.y, e = B.z;
+        float psi = 6.28318530718 * (r / lam - B.w);
+        float env = smoothstep(0.0, 0.6 * lam, r);
+        float shape = 1.0 + e * cos(k * th);
+        float sn = sin(psi), cs = cos(psi);
+        float rp = max(r - A.w * sn * shape * env, 0.0);
+        float dr = 1.0 - A.w * cs * 6.28318530718 / lam * shape * env;
+        float dth = A.w * sn * e * k * sin(k * th) * env;
+        J = (outerProduct(dr * u, u) + outerProduct(dth * u + rp * v, v / r)) * J;
+        p = rp * u;
+      }
+      // ...then the gentle ambient stir.
       float L = dot(p, p);
       float l2 = A.z * A.z;
       // Counter-rotating stir: the centre and the rim turn opposite ways, so rings shear.
