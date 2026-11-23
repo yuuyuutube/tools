@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#12130f">
+    <meta name="description" content="An interactive kaleidoscope with four patterns and thirteen palettes.">
+    <title>Infinite Kaleidoscope</title>
+    <link rel="stylesheet" href="./src/styles/gallery.css">
+    <script type="module" src="./src/main.js"></script>
+  </head>
+  <body>
+    <main class="gallery" id="gallery">
+      <section class="stage" id="stage" aria-label="Interactive artwork">
+        <canvas id="artwork" role="img" aria-label="Generative artwork"></canvas>
+      </section>
+
+      <div class="utility" role="group" aria-label="Device and display">
+        <div class="bloom-style" id="bloom-style-control" hidden>
+          <button class="icon-button" type="button" aria-label="Bloom style" data-tooltip="Bloom style" aria-haspopup="listbox" aria-expanded="false" aria-controls="bloom-style-options">
+            <svg aria-hidden="true"><use href="./icons.svg#styles"/></svg>
+          </button>
+          <div class="palette-options" id="bloom-style-options" role="listbox" aria-label="Bloom style" hidden></div>
+        </div>
+        <button class="icon-button" id="connect" type="button" aria-label="Connect Pico" data-tooltip="Connect Pico">
+          <svg aria-hidden="true"><use href="./icons.svg#plug"/></svg>
+        </button>
+        <button class="icon-button" id="help-toggle" type="button" aria-label="Help and settings" data-tooltip="Help and settings" aria-expanded="false" aria-controls="guide">
+          <svg aria-hidden="true"><use href="./icons.svg#help"/></svg>
+        </button>
+        <button class="icon-button" id="fullscreen" type="button" aria-label="Enter fullscreen" data-tooltip="Fullscreen">
+          <svg aria-hidden="true"><use href="./icons.svg#fullscreen"/></svg>
+        </button>
+      </div>
+
+      <footer class="dock" aria-label="Artwork controls">
+        <div class="dock-row">
+          <div class="segment" role="group" aria-label="Pattern">
+            <button class="icon-button" type="button" data-engine="kaleido" aria-label="Kaleido" data-tooltip="Kaleido" aria-pressed="true">
+              <svg aria-hidden="true"><use href="./icons.svg#kaleido"/></svg>
+            </button>
+            <button class="icon-button" type="button" data-engine="spiro" aria-label="Spiro" data-tooltip="Spiro" aria-pressed="false">
+              <svg aria-hidden="true"><use href="./icons.svg#spiro"/></svg>
+            </button>
+            <button class="icon-button" type="button" data-engine="optical" aria-label="Optical" data-tooltip="Optical" aria-pressed="false">
+              <svg aria-hidden="true"><use href="./icons.svg#optical"/></svg>
+            </button>
+            <button class="icon-button" type="button" data-engine="bloom" aria-label="Eternal Bloom" data-tooltip="Eternal Bloom" aria-pressed="false">
+              <svg aria-hidden="true"><use href="./icons.svg#bloom"/></svg>
+            </button>
+          </div>
+          <div class="segment" role="group" aria-label="Evolve artwork">
+            <button class="icon-button" id="back" type="button" aria-label="Evolve backward" data-tooltip="Evolve backward">
+              <svg aria-hidden="true"><use href="./icons.svg#minus"/></svg>
+            </button>
+            <button class="icon-button" id="forward" type="button" aria-label="Evolve forward" data-tooltip="Evolve forward">
+              <svg aria-hidden="true"><use href="./icons.svg#plus"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="dock-row">
+          <div class="palette-control" id="palette-control">
+            <button class="icon-button palette-toggle" id="palette" type="button" aria-label="Color palette" data-tooltip="Color palette" aria-haspopup="listbox" aria-expanded="false" aria-controls="palette-options">
+              <span class="swatches" aria-hidden="true"></span>
+              <svg aria-hidden="true"><use href="./icons.svg#chevron"/></svg>
+            </button>
+            <div class="palette-options" id="palette-options" role="listbox" aria-label="Color palette" hidden></div>
+          </div>
+          <button class="icon-button" id="regenerate" type="button" aria-label="New pattern" data-tooltip="New pattern">
+            <svg aria-hidden="true"><use href="./icons.svg#shuffle"/></svg>
+          </button>
+          <div class="segment" role="group" aria-label="Share and export">
+            <button class="icon-button" id="copy" type="button" aria-label="Copy link" data-tooltip="Copy link">
+              <svg aria-hidden="true"><use href="./icons.svg#link"/></svg>
+            </button>
+            <button class="icon-button" id="save" type="button" aria-label="Save PNG" data-tooltip="Save PNG">
+              <svg aria-hidden="true"><use href="./icons.svg#download"/></svg>
+            </button>
+          </div>
+        </div>
+      </footer>
+
+      <aside class="guide" id="guide" aria-label="Help and settings" hidden>
+        <div class="guide-head">
+          <h2>Controls</h2>
+          <button class="icon-button" id="close-guide" type="button" aria-label="Close controls">
+            <svg aria-hidden="true"><use href="./icons.svg#close"/></svg>
+          </button>
+        </div>
+        <dl>
+          <div><dt>Evolve</dt><dd>Drag, swipe, scroll, or use <kbd>←</kbd> <kbd>→</kbd></dd></div>
+          <div id="bloom-guide" hidden><dt>Bloom direction</dt><dd>Turn clockwise to bloom. Turn back to retract.</dd></div>
+          <div><dt>Switch pattern</dt><dd><kbd>Space</kbd></dd></div>
+          <div><dt>New pattern</dt><dd><kbd>R</kbd></dd></div>
+          <div><dt>Fullscreen</dt><dd><kbd>F</kbd></dd></div>
+          <div><dt>Pico dial</dt><dd id="pico-dial-guide">Turn to evolve, tap to switch, hold to shuffle.</dd></div>
+        </dl>
+        <div class="settings">
+          <button class="switch-button" id="demo" type="button" role="switch" aria-checked="false">
+            Demo mode <span class="switch-track" aria-hidden="true"></span>
+          </button>
+          <button class="switch-button" id="motion" type="button" role="switch" aria-checked="false">
+            Reduce motion <span class="switch-track" aria-hidden="true"></span>
+          </button>
+        </div>
+        <form id="restore-form" class="restore" novalidate>
+          <div class="restore-row">
+            <input type="text" id="restore-link" aria-label="Pattern link" aria-describedby="restore-feedback" placeholder="Paste a pattern link" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false">
+            <button type="submit">Restore</button>
+          </div>
+          <p class="restore-feedback" id="restore-feedback" role="status"></p>
+        </form>
+      </aside>
+
+      <p class="notice" id="notice" role="status" hidden></p>
+      <p class="screen-reader" id="serial-status" role="status"></p>
+      <noscript>Enable JavaScript to use the kaleidoscope.</noscript>
+    </main>
+  </body>
+</html>
