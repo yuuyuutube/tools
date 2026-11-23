@@ -32,7 +32,10 @@ let uid = 0;
 
 // WebP contains only illustration; the entire card interface is live SVG.
 // 抽牌畫面與海報用 printed: true 取用；其他頁面仍畫原本的 SVG 插畫。
-const FACE_URL = id => new URL(`../../assets/faces/${id}.webp?v=illustration-only-v1`, import.meta.url).href;
+export const ART_VERSION = 'symbols-20261123';
+export const illustrationURL = id => new URL(`../../assets/faces/${id}.webp?v=${ART_VERSION}`, import.meta.url).href;
+export const revealAssetURL = (number,key) => new URL(`../../assets/reveal/${number}-${key}.webp?v=${ART_VERSION}`, import.meta.url).href;
+const FACE_URL = illustrationURL;
 const faceData = new Map();
 // 濕式擴散先合回原筆畫；乾式紙齒、乾墨再挖除墨色，毛刺只調整墨層邊緣。
 // 使用卡面座標，讓水平細線也有非零濾鏡區域，展框時暈墨厚度不變。

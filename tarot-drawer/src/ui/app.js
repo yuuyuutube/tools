@@ -4,7 +4,7 @@ import { SPREADS, SPREAD_INFO, DEFAULTS, MOTION, EASE } from '../config.js';
 import { actOf, elementOf, ELEMENTS, elementIcon, relationsOf, moonPhaseIndex, CLOSING } from '../data/pro.js';
 import { CARDS, CARD_IDS, cardById, keywordsOf } from '../data/cards.js';
 import { createSession } from '../engine/draw.js';
-import { faceSVG, BACKS, BACK_NAMES, BACK_THUMBS, offsetsFromSeed, svgDataURL } from '../art/frame.js';
+import { faceSVG, BACKS, BACK_NAMES, BACK_THUMBS, offsetsFromSeed, svgDataURL, revealAssetURL } from '../art/frame.js';
 import { stampForBack } from '../poster/stamps.js';
 import { posterBlob, savePoster } from '../poster/poster.js';
 import { sfx, soundOn, setSound } from '../audio/sound.js';
@@ -445,7 +445,7 @@ function pick(cd) {
     overlay.dataset.revealPlates = 'true'; overlay.style.isolation = 'isolate';
     const plateReady = [];
     for (const key of ['paper', 'N', 'Y', 'O', 'B']) {
-      const href = `assets/reveal/${card.number}-${key}.webp`;
+      const href = revealAssetURL(card.number,key);
       const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
       image.dataset.plate = key; image.setAttribute('href', href);
       image.setAttribute('x', '41'); image.setAttribute('y', '76');

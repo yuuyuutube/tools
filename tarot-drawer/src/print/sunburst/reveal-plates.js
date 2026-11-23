@@ -51,11 +51,20 @@ export async function buildRevealPlates(number,{inkSpread=.5}={}){
  const keys=['Y','O','B','N'],canvases=Object.fromEntries(keys.map(k=>[k,make(w,h)]));
  const data=Object.fromEntries(keys.map(k=>[k,canvases[k].getContext('2d').createImageData(w,h)]));
  const cache=new Map();
+ // These four small glyphs are authored in the colour PNG, not the line master.
+ // Preserve their contours as solid dark ink rather than four misregistered
+ // halftones. The gold backing comes from a blank part of the same wheel.
+ const backingPixel=(540*w+508)*4;
+ const glyphBacking=number===10?solve([cd[backingPixel],cd[backingPixel+1],cd[backingPixel+2]]):null;
  for(let i=0;i<n;i++){
   const p=i*4,key=(cd[p]<<16)|(cd[p+1]<<8)|cd[p+2];
   let d=cache.get(key);if(!d){d=solve([cd[p],cd[p+1],cd[p+2]]);cache.set(key,d);}
+  const x=i%w,y=(i/w)|0;
+  const glyph=number===10&&x>=395&&x<=628&&y>=612&&y<=848&&cd[p]<190&&cd[p+1]<160&&cd[p+2]<100;
+  const glyphAlpha=glyph?Math.round(255*Math.max(0,Math.min(1,(230-cd[p])/222))):0;
+  if(glyph)d=glyphBacking;
   for(let k=0;k<3;k++){const o=data[keys[k]].data;o[p+1]=Math.round(d[k]*255);o[p+3]=255;}
-  const N=data.N.data;N[p]=id[p+3];N[p+1]=Math.round(d[3]*255);N[p+3]=255;
+  const N=data.N.data;N[p]=Math.max(id[p+3],glyphAlpha);N[p+1]=Math.round(d[3]*255);N[p+3]=255;
  }
  for(const k of keys)canvases[k].getContext('2d').putImageData(data[k],0,0);
  const plates={};

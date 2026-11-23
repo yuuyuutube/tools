@@ -1,4 +1,4 @@
-import {faceSVG} from '../art/frame.js';
+import {faceSVG,revealAssetURL} from '../art/frame.js';
 import {cardById} from '../data/cards.js';
 import {windowFrameAt} from './window-reveal.js';
 const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
@@ -18,7 +18,7 @@ function play(){stop();apply(0);last=performance.now();const tick=now=>{apply(ti
 async function setCard(id){stop();time=0;const token=++serial,c=cards.find(v=>v.id===id)||cards[0];$('phase').textContent=`${c.number} · 正在載入印版…`;$('status').textContent='正在載入預先印好的色版。';$('timeline').disabled=true;for(const b of ['play','ink','final'])$(b).disabled=true;
  $('face').innerHTML=faceSVG(cardById(c.id),{printed:true,id:`lp_${c.number}_`});svg=$('face').querySelector('svg');art=svg.querySelector('[data-card-layer="illustration"]');original=art.querySelector('image');overlay=document.createElementNS(NS,'g');overlay.dataset.revealPlates='true';overlay.style.isolation='isolate';art.append(overlay);
  try{
-  for(const key of ['paper','N','Y','O','B']){const im=document.createElementNS(NS,'image');im.dataset.plate=key;im.setAttribute('href',`assets/reveal/${c.number}-${key}.webp`);for(const [k,v]of Object.entries({x:41,y:76,width:218,height:290,preserveAspectRatio:'none'}))im.setAttribute(k,v);if(key!=='paper')im.style.mixBlendMode='multiply';overlay.append(im);images[key]=im}
+  for(const key of ['paper','N','Y','O','B']){const im=document.createElementNS(NS,'image');im.dataset.plate=key;im.setAttribute('href',revealAssetURL(c.number,key));for(const [k,v]of Object.entries({x:41,y:76,width:218,height:290,preserveAspectRatio:'none'}))im.setAttribute(k,v);if(key!=='paper')im.style.mixBlendMode='multiply';overlay.append(im);images[key]=im}
   windowPath=svg.querySelector('[data-card-layer="window"] path');clipPath=svg.querySelector('[data-card-clip="illustration"] path');rule=svg.querySelector('[data-card-layer="rule"]');title=svg.querySelector('[data-card-layer="title"]');subtitle=svg.querySelector('[data-card-layer="subtitle"]');
   await Promise.all([...art.querySelectorAll('image')].map(el=>new Promise((resolve,reject)=>{const img=new Image();img.onload=resolve;img.onerror=reject;img.src=el.getAttribute('href')})));if(token!==serial)return;
   $('status').textContent=`已載入 ${c.number} 號牌印版。可拖動時間軸檢查每個套印階段。`;$('timeline').disabled=false;for(const b of ['play','ink','final'])$(b).disabled=false;

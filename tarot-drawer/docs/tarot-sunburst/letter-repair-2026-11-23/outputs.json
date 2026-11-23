@@ -1,0 +1,18 @@
+[
+  {
+    "path": "assets/faces/wheel-of-fortune.webp",
+    "sha256": "4ea43b798dd1084375d1164486586a05e143b9923c24e1af5e6bbd81b583b55a"
+  },
+  {
+    "path": "assets/reveal/10-N.webp",
+    "sha256": "42e82915e387c72ba3a598c14c4a2b8c7bf568a0e4581fcec0f2afee022dfcbf"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/10-wheel-of-fortune-ink-transparent.png",
+    "sha256": "5f92ebcc8753e653b57c1c675626d86901a7033430af871755dac9abbb8e46d8"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/10-wheel-of-fortune-preview.png",
+    "sha256": "daff295c3735eed3d13a99994b9fa953f7e282edb4f501ba4363a7bfc90e83dd"
+  }
+]

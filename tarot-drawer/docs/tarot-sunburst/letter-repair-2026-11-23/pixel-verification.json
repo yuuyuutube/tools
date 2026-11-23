@@ -1,0 +1,25 @@
+{
+  "changedAlphaPixels" : 3515,
+  "changedPixelsOutsideLetterAreas" : 0,
+  "clockwiseAngles" : [
+    0,
+    55,
+    90,
+    145,
+    180,
+    235,
+    270,
+    325
+  ],
+  "letters" : [
+    "T",
+    "י",
+    "A",
+    "ה",
+    "R",
+    "ו",
+    "O",
+    "ה"
+  ],
+  "removedInkPixels" : 0
+}

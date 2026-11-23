@@ -1,0 +1,362 @@
+[
+  {
+    "path": "assets/faces/empress.webp",
+    "beforeSHA256": "34ab5bd9c69937279f94dd5847140ed21730f5598ef97e7ede65a3f1cfafbb2e",
+    "afterSHA256": "3d118ea9eafcc0bc20053b2ca12038a87c825f17a0e05bdb03ed112f38b7b9dc"
+  },
+  {
+    "path": "assets/reveal/3-paper.webp",
+    "beforeSHA256": "4661fc50ac52297d5c25c23ca31e2c5b1cb16bdb9231301f5b9cdcca9e78585b",
+    "afterSHA256": "4661fc50ac52297d5c25c23ca31e2c5b1cb16bdb9231301f5b9cdcca9e78585b"
+  },
+  {
+    "path": "assets/reveal/3-N.webp",
+    "beforeSHA256": "ee68baf2353b2d495cca24448e8e0835119e1e06393a5e04a195c1fd77638450",
+    "afterSHA256": "ae2185ff3d95423d56991c24d67afa21cd5ca82063831b754a3f8a196123ea1b"
+  },
+  {
+    "path": "assets/reveal/3-Y.webp",
+    "beforeSHA256": "35399f0ba444f17906d06634e80b6fd36c45306c8abccd5f0730a691434b21fd",
+    "afterSHA256": "e8b7c80f042f06b9dd8c52435d8ece6af5268e84cf0689b7e91378b5faa341e7"
+  },
+  {
+    "path": "assets/reveal/3-O.webp",
+    "beforeSHA256": "d67db5aa30499a34661280a824807ab44cbbfd1d9bcd3eb1c7bbd42caf1d0120",
+    "afterSHA256": "08db710a6dab82ee7e719d586f5d549ed4d4aa321338bd67e70f4f90ff2aaadb"
+  },
+  {
+    "path": "assets/reveal/3-B.webp",
+    "beforeSHA256": "2d1987d0aa8ba1c7170fb9524adb475a46474fe9b9a031e131a518f382b476a5",
+    "afterSHA256": "22e77e52caeffb166a4de7a86e952080a5a2f7066bba51cb7af61c4b563c19ee"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/03-empress-colour.png",
+    "beforeSHA256": "0adc7f6461a2409bf51a1341693e7be537dff633644c9add1b24e64fd040e978",
+    "afterSHA256": "0fb1f5db4427fdf607678c6dd862a8af584f99043bc4334fca704a4374bda0a3"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/03-empress-ink-transparent.png",
+    "beforeSHA256": "8c85427440dcee073cd821ade2af7d09cd77983289fdba3204872c9a92345440",
+    "afterSHA256": "8c85427440dcee073cd821ade2af7d09cd77983289fdba3204872c9a92345440"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/03-empress-preview.png",
+    "beforeSHA256": "9efed1c918884cb8af1e892fd47a7dc3a6d4a23d2d2b7b355c8390de511f64d2",
+    "afterSHA256": "ee4f39712ce0679cee2098fdbbd19085594291d4253f19d070fa3432fdaff978"
+  },
+  {
+    "path": "assets/faces/hierophant.webp",
+    "beforeSHA256": "ae1203147faf166169dc4861adc4fde4a42285a9bbeadec77b6646fb9839f036",
+    "afterSHA256": "2aad49d1c380b2515ef745912e2be0681a4da097c26dc24a4d0036c20277e75c"
+  },
+  {
+    "path": "assets/reveal/5-paper.webp",
+    "beforeSHA256": "e32ecc8676055fda1f65d8b1ed2eec2504bed616faed19e6c8c5154c06bfa7d5",
+    "afterSHA256": "e32ecc8676055fda1f65d8b1ed2eec2504bed616faed19e6c8c5154c06bfa7d5"
+  },
+  {
+    "path": "assets/reveal/5-N.webp",
+    "beforeSHA256": "05619335dfa6748071963a63dfa53d378c04ffde268b70f8552c9c490adb5de5",
+    "afterSHA256": "73ecdc8c6b9994b9f68dfe955c1f9e81295e2fdf5b6564e81edf65f74c3781b6"
+  },
+  {
+    "path": "assets/reveal/5-Y.webp",
+    "beforeSHA256": "3f5c6ba162a290c50995fd3a6c69628871329668ef4c676999c7ba6601edd6ab",
+    "afterSHA256": "1a35e8608464d829d4b91a6bc710fc0b92bb3916aa5b5316826806bbc660bd82"
+  },
+  {
+    "path": "assets/reveal/5-O.webp",
+    "beforeSHA256": "b282b4275232d84b8eaecbe8230ae787444886759d68e4077e0e7efdd9dffc50",
+    "afterSHA256": "b38ff9087522d4e8fe3e33a903025c27f9dfec23e3c5825bd54383a190a5553f"
+  },
+  {
+    "path": "assets/reveal/5-B.webp",
+    "beforeSHA256": "3578ae70fdcb80de64033dbf1219952dcb3fb47e8b6a845bd15195fa3e87b7c5",
+    "afterSHA256": "420be1782390f5f1300795286b998e22d4ecbd1ac5a4b464aee8cd9afe77a190"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/05-hierophant-colour.png",
+    "beforeSHA256": "aab45b35ab78388122f5affb533354e720a15bb1c4374ca523feb2799c417973",
+    "afterSHA256": "9eb95be318ee0b92e67fd26820906710b912a729c06dea1b04474e79b1de0725"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/05-hierophant-ink-transparent.png",
+    "beforeSHA256": "628890f0091e92d147a32d2c7102cb91551f86ad2a13f1450d32682a03776658",
+    "afterSHA256": "628890f0091e92d147a32d2c7102cb91551f86ad2a13f1450d32682a03776658"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/05-hierophant-preview.png",
+    "beforeSHA256": "fc5230ae0145066375be737fed70c76a600f903b7def2d0bc1fd5449ca6d8eb4",
+    "afterSHA256": "b9721028cdded9fd1cf031a5e3d619c0b7ffe8ba04fdfa557fb81de5948e910b"
+  },
+  {
+    "path": "assets/faces/lovers.webp",
+    "beforeSHA256": "27cc844f4b12d3f7acffb0a95ff2e6a889ab288dc980b5da9d8475b71446fcd6",
+    "afterSHA256": "e90fea82e0caed3b0ee0b85e7fcf5932717f174c091517f3273245b8a643d274"
+  },
+  {
+    "path": "assets/reveal/6-paper.webp",
+    "beforeSHA256": "3ac3d503ce827f1d55b74550af2f1cb8441aca4a58fd1423ca730de608022f9d",
+    "afterSHA256": "3ac3d503ce827f1d55b74550af2f1cb8441aca4a58fd1423ca730de608022f9d"
+  },
+  {
+    "path": "assets/reveal/6-N.webp",
+    "beforeSHA256": "3fd41704e55cbe2bafcd1802185e61c74f65a0f1d52fdffccb7522ead38d119b",
+    "afterSHA256": "7df8f3ff0bcddb7d052f312ce187df386cee603d6d06a2fefe0d4db24052f731"
+  },
+  {
+    "path": "assets/reveal/6-Y.webp",
+    "beforeSHA256": "a4c1cac718f200cccd998eb474279535366d52ec608ad93e9798af4587b01989",
+    "afterSHA256": "f656be61e4e762d0a7142b354824e9281eb4817c8ef0e4665ed1a8923abe36eb"
+  },
+  {
+    "path": "assets/reveal/6-O.webp",
+    "beforeSHA256": "0bd24af2f10e798dfb4cb34ca7f285360104fd07f75cd4340ae1daf19272c344",
+    "afterSHA256": "e115be9e3f330c457391d77a89a12aeaed3954a98bbd56d1272c195d998a8631"
+  },
+  {
+    "path": "assets/reveal/6-B.webp",
+    "beforeSHA256": "b9ecf7c4cf30cded943ed4b09a3e175449a66a2f9845e2ba54c51110ea50b807",
+    "afterSHA256": "71d358299b467e440de3e107f5461385c850050cb5c94a6c2a65d936a380ec14"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/06-lovers-colour.png",
+    "beforeSHA256": "d0a93b3bbd10b6644552293f05058290ead4de23c8069b20be7c2bc9bb721736",
+    "afterSHA256": "099fb5c9e04002fa5c3b6c14196c38127fb9a437e29ce60a31cee8a70befed94"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/06-lovers-ink-transparent.png",
+    "beforeSHA256": "35148280fcacb4e9c393f4d3779f8511608234267f56b0f25346fdcd74042282",
+    "afterSHA256": "35148280fcacb4e9c393f4d3779f8511608234267f56b0f25346fdcd74042282"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/06-lovers-preview.png",
+    "beforeSHA256": "4a61b2330ad10704591231dde7a381e94f7841d1641e485e43b856ab23e39be9",
+    "afterSHA256": "2583d3227ce4603394cb76b7226194135644501bebfdce18b39ef85f8c9d40a5"
+  },
+  {
+    "path": "assets/faces/chariot.webp",
+    "beforeSHA256": "931771fe4f27bac5b70ef6a9662dd67fdda5a8776609ee2e2657337a0fba8030",
+    "afterSHA256": "31ffa1b958e09c975e3b9bd2b7b264694c6ea8b27840ab10805c046f41e0f25a"
+  },
+  {
+    "path": "assets/reveal/7-paper.webp",
+    "beforeSHA256": "57db873d1ecb4a03239b0811993521e043d124310c394b0d24fd4d271914fd1c",
+    "afterSHA256": "57db873d1ecb4a03239b0811993521e043d124310c394b0d24fd4d271914fd1c"
+  },
+  {
+    "path": "assets/reveal/7-N.webp",
+    "beforeSHA256": "518ad40e0a827531d332df81e10f201b0ded2abedc3795887f25e2e167cf47be",
+    "afterSHA256": "51288db78f8b25d2ae906021b520e8513336a490cd6c9dc0865be282ae898b11"
+  },
+  {
+    "path": "assets/reveal/7-Y.webp",
+    "beforeSHA256": "0828c82e48b82d7f6c111e14596010b287b3585703d301f8a6760a8804ad76b0",
+    "afterSHA256": "3013b101e0eed42dd8b575f81ed9cd13d88824ded9e63ff8c0854120a31e14f9"
+  },
+  {
+    "path": "assets/reveal/7-O.webp",
+    "beforeSHA256": "a19dfa9da5cadb31a65e674774918b426e4e0a86a3ef37985d40d3519e8f23c9",
+    "afterSHA256": "22920d7b648dfd9937a78c237b2b89587c5ec3fb79fdfe9f7eac33e5f8a9b70b"
+  },
+  {
+    "path": "assets/reveal/7-B.webp",
+    "beforeSHA256": "4f2d9ccac00501d72b8b21c1ac8077cbaa77731fecfd444a42fb263c3d3d17a9",
+    "afterSHA256": "53a0d84225a2b3203003629d64fb2bfba587299218cceb7710277f771c73c09a"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/07-chariot-colour.png",
+    "beforeSHA256": "c8cfa2999b8f8996adc5ccb47b22ac0b660c1e1b3e5f42258b79e9aeba34f2cc",
+    "afterSHA256": "cdf08d6b902fdfa7faf462a6c9e4ec150892eb8c1037b6ec0d291011b9a18317"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/07-chariot-ink-transparent.png",
+    "beforeSHA256": "35e04b7fff9ca4b8ae49f2ad8271765037234824d71e045b5dfd8b66ad5b9e79",
+    "afterSHA256": "35e04b7fff9ca4b8ae49f2ad8271765037234824d71e045b5dfd8b66ad5b9e79"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/07-chariot-preview.png",
+    "beforeSHA256": "c600b46132c0dd563dadfcb81a1383d99f6e9b9c50850b8e84ee70bf98441398",
+    "afterSHA256": "cfe0575ba316fb837eae0f478c9586258faa4c6362db37f551f64e9ee5458d0d"
+  },
+  {
+    "path": "assets/faces/wheel-of-fortune.webp",
+    "beforeSHA256": "4ea43b798dd1084375d1164486586a05e143b9923c24e1af5e6bbd81b583b55a",
+    "afterSHA256": "337e5365f3f26db33425a3ac0b9e532ab8ea34591386751a49eee901451944eb"
+  },
+  {
+    "path": "assets/reveal/10-paper.webp",
+    "beforeSHA256": "49102502b79dae18d6544f892107ece8d443085c304bb4b0a247b13c81251524",
+    "afterSHA256": "49102502b79dae18d6544f892107ece8d443085c304bb4b0a247b13c81251524"
+  },
+  {
+    "path": "assets/reveal/10-N.webp",
+    "beforeSHA256": "42e82915e387c72ba3a598c14c4a2b8c7bf568a0e4581fcec0f2afee022dfcbf",
+    "afterSHA256": "c89eb489f498b40443392e66576d2d82700e8583f2ad99e7b9441f35e862c2c0"
+  },
+  {
+    "path": "assets/reveal/10-Y.webp",
+    "beforeSHA256": "63272ecfd6eddc47787a43d9500e9773ae8d52c5bc7727db31dbb27f4c0a396e",
+    "afterSHA256": "504b2863eb9a1cfee9b62e1b409f1c49330e0ad48ce150ac0902df19170989f6"
+  },
+  {
+    "path": "assets/reveal/10-O.webp",
+    "beforeSHA256": "0b6ee06e89aeb2fdc38be38f0c23c485aca7d98c9ec38a208b96db74514a62ac",
+    "afterSHA256": "46b383562eed6ffadb6453980ee27fff5b13c7c58f3b3086cdabc53cfe11627b"
+  },
+  {
+    "path": "assets/reveal/10-B.webp",
+    "beforeSHA256": "684c8c57bc9e1a72f214ac7ed12664bae25b920bacbeec2addda5d858fd5f3bb",
+    "afterSHA256": "a73ea6cc85b4163def490944c4132eee5ca4e31881e9225f3f9189b7e6e6fa36"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/10-wheel-of-fortune-colour.png",
+    "beforeSHA256": "ccbdb931d18fc1ced01cbbdd69e5dabdca662fe66eab924ae11e5dd5eed94ffe",
+    "afterSHA256": "63fed562355c4e96996b6c87527940afbfc5c31e01e57cd29f7d60a29b6904c5"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/10-wheel-of-fortune-ink-transparent.png",
+    "beforeSHA256": "5f92ebcc8753e653b57c1c675626d86901a7033430af871755dac9abbb8e46d8",
+    "afterSHA256": "5f92ebcc8753e653b57c1c675626d86901a7033430af871755dac9abbb8e46d8"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/10-wheel-of-fortune-preview.png",
+    "beforeSHA256": "daff295c3735eed3d13a99994b9fa953f7e282edb4f501ba4363a7bfc90e83dd",
+    "afterSHA256": "5091d3c4de7d4f628a1352915dbb5489a9b2d0b41c8eac3c0bae22735efb7caf"
+  },
+  {
+    "path": "assets/faces/temperance.webp",
+    "beforeSHA256": "dd26017b8067f8475220b97a6fa1ec99299a12e8e009347900cf99b8c5da4ce2",
+    "afterSHA256": "aef5208c4c548fcc597ed93880e812337c4c4c7702cf7c7bbd6e601737f57a40"
+  },
+  {
+    "path": "assets/reveal/14-paper.webp",
+    "beforeSHA256": "c746bc8b935749f404f40bc4adc086333bad576299d178be0b9ef9e647a320ef",
+    "afterSHA256": "c746bc8b935749f404f40bc4adc086333bad576299d178be0b9ef9e647a320ef"
+  },
+  {
+    "path": "assets/reveal/14-N.webp",
+    "beforeSHA256": "00bf0d9360052685cc15b8d302f57737fd6a6bcfb17f344b0c20492729cb1610",
+    "afterSHA256": "c20564394b9a4cd675e7940613b3ed454ae6e7f9ae79eaf00190011558dd9274"
+  },
+  {
+    "path": "assets/reveal/14-Y.webp",
+    "beforeSHA256": "e11fcb6081243b5309bdc1d20f0ef2de7a024648815ae85dbb2a613a51e7bf42",
+    "afterSHA256": "4274911f105963c1ca83e4c120b28771f62cd63921a34c18e6149e2256a09ca0"
+  },
+  {
+    "path": "assets/reveal/14-O.webp",
+    "beforeSHA256": "60af66678e6ba52fb989afddd96e41710913502441f074d247906115619bca0a",
+    "afterSHA256": "ba7a580053fd1098550209d4e9ff51dc7845a0bd8bb53dd7dafba5660e5cfd30"
+  },
+  {
+    "path": "assets/reveal/14-B.webp",
+    "beforeSHA256": "220c5d93cf414ab2b7c462ba89db074b92ca15cd69bb7497f792fd160dd9c803",
+    "afterSHA256": "3b846f7792e9ed0c1dfa384a0ab4a9e39e2b6e2f2f3a2ca6b1faa44c63c0603c"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/14-temperance-colour.png",
+    "beforeSHA256": "3254218646a7e1d48d3ff031a38ec13b5c045325e6a3025d885e6f2ed34eb0cb",
+    "afterSHA256": "3f916c43e2c64320b115576e274174033ac978daf980136240ecb3aa7189c193"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/14-temperance-ink-transparent.png",
+    "beforeSHA256": "f9777e1dbe2a3e91f913b68fbd9c4d7eb61c3e230fb40b3bc83458ec55c4b27e",
+    "afterSHA256": "f9777e1dbe2a3e91f913b68fbd9c4d7eb61c3e230fb40b3bc83458ec55c4b27e"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/14-temperance-preview.png",
+    "beforeSHA256": "945cff89b521b9c42dfe5fccb7c741a1b2d84fd59e0ef773a473232afcbf3821",
+    "afterSHA256": "08da3604cf11c9031388b5392dca280ef9a63dbb5c3c8e2ddda36a77f3769144"
+  },
+  {
+    "path": "assets/faces/tower.webp",
+    "beforeSHA256": "871e321c318bc44654ee443b17da93571b87d13b5a3ec1475b47c0fd679f28b2",
+    "afterSHA256": "a0530df878c258c4a91fdf267847b44882b5a0cbcf68e5c64b5517fa7fd9c400"
+  },
+  {
+    "path": "assets/reveal/16-paper.webp",
+    "beforeSHA256": "d926d09336b7223c786b76b63b2c87a7c3784944a49a4959d77ec840baf30b26",
+    "afterSHA256": "d926d09336b7223c786b76b63b2c87a7c3784944a49a4959d77ec840baf30b26"
+  },
+  {
+    "path": "assets/reveal/16-N.webp",
+    "beforeSHA256": "51bdd9e25b55d37ea3658663f8c2d59af2dca59651b5c1b6458810330ec0e71c",
+    "afterSHA256": "5de8642f2d74e6b80b0206e7c28ec59a6ba604bd6e504f7de7d379c1e4235132"
+  },
+  {
+    "path": "assets/reveal/16-Y.webp",
+    "beforeSHA256": "efcbcd09c4ff5fc3d35154fcf1c2d2359dfa1f33133bc75067dbd2a5579cce70",
+    "afterSHA256": "10a365419316a1c66ef289b54da62751224a0b6d78cdac20444e0310ea808d23"
+  },
+  {
+    "path": "assets/reveal/16-O.webp",
+    "beforeSHA256": "adfe3b0a43860a6868f6bf46f21d17c616413b39764687956a3b19f08736fdda",
+    "afterSHA256": "4bccca42b58494fd801dc71d0e47bdd9d4183f8f6fc1c3279a078dd46c07f478"
+  },
+  {
+    "path": "assets/reveal/16-B.webp",
+    "beforeSHA256": "69cf71eac433603df8fa11907e503bfb5798450041e63dc7837696a08b1827b0",
+    "afterSHA256": "fd6491ebbaecbabd61698f36a6fcf040667454dba6b83150692dc1d94462829f"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/16-tower-colour.png",
+    "beforeSHA256": "3aeed7471c877e5dc806d5ca454de6d7c5d89f26a0d4733046028615d3fba2da",
+    "afterSHA256": "94147e7afb648afe9bbbe2d97be9fc393fc849edae9def55ea37c6a39d26d841"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/16-tower-ink-transparent.png",
+    "beforeSHA256": "dc5808bd68304a0b632b5c023f656aa008c72c26e49a25eda71e46110234f839",
+    "afterSHA256": "dc5808bd68304a0b632b5c023f656aa008c72c26e49a25eda71e46110234f839"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/16-tower-preview.png",
+    "beforeSHA256": "6416a8aeb33f86d0eb662a8eebc19c5f3fefea508995243ab281f70c5e74d780",
+    "afterSHA256": "803ba9e8650f9cff8511b507269732c953fe331f4c4bd36a0d370530daba0b01"
+  },
+  {
+    "path": "assets/faces/moon.webp",
+    "beforeSHA256": "eb5986be39b5f1d189c2237127ff7d5ef6322b3a35e88d586a2d5f5e4f2c9726",
+    "afterSHA256": "dcf02032ed84d4a112bfb279d2a6da4fe6b56a9ed8e61eb01c1440ae10d06c51"
+  },
+  {
+    "path": "assets/reveal/18-paper.webp",
+    "beforeSHA256": "fd4bf6e3d4238889a3ec57c5b1bde24b7a841b02647ddf48f2c27a5d858bba68",
+    "afterSHA256": "fd4bf6e3d4238889a3ec57c5b1bde24b7a841b02647ddf48f2c27a5d858bba68"
+  },
+  {
+    "path": "assets/reveal/18-N.webp",
+    "beforeSHA256": "78e412c98eee33b64e045c844c96f0a0d36fcbc72bb6eb39ffc4cb7edbf1937f",
+    "afterSHA256": "62d1a4c3994290bcfa280d6e13bd88a231eea5f44eebec43eb727c5d4269d1f4"
+  },
+  {
+    "path": "assets/reveal/18-Y.webp",
+    "beforeSHA256": "c71ef4a5005d0ae72c33f54da02104157c98949d71daed05aa07c6f6a42517d3",
+    "afterSHA256": "58a6563a587774c2cd747b83fbd0def834dcf6111784483e09399c1ba4ae7f73"
+  },
+  {
+    "path": "assets/reveal/18-O.webp",
+    "beforeSHA256": "bfe710863c7f20aab282204fd683456eb717f9fe386aa2dcb1769f532b528cc2",
+    "afterSHA256": "df2184175b876d0f5dcdaf2ff05fe33e208624d91317ef378066ed1fd7355b61"
+  },
+  {
+    "path": "assets/reveal/18-B.webp",
+    "beforeSHA256": "17077036965a244438f8298e9d5856b6a59a128f976b07cad760e2eebbb09878",
+    "afterSHA256": "674b84048f3cd8ad4a3038d7aa175a8bff4dd2e15e6a4e741e5e846b24154174"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/18-moon-colour.png",
+    "beforeSHA256": "7f04d90e7c8135dce8eaf49cda694201ed376a3ac8251730bf10e2a451e3e5fa",
+    "afterSHA256": "97022723e63e27ebcd7757d7e89e455e982b41f9bad84c4756f49e586545324e"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/18-moon-ink-transparent.png",
+    "beforeSHA256": "2ba4516838d17513da3faacdf71467180805d60f346c313aa45ec1ea45c7ffdf",
+    "afterSHA256": "90fd9ed48e09ff187ccb1c68b92b2f9f6fd086e193c7b7abb3e6e8e7906b79c4"
+  },
+  {
+    "path": "docs/tarot-sunburst/light-paint/18-moon-preview.png",
+    "beforeSHA256": "1c3afc7fa4e146a200995825b37b93757bee28f8490fad771e0bc2f4650537c7",
+    "afterSHA256": "85684abe7c1bb2ccf46a98e6072b5b25914f95d5d7a74329849c200aac3c48db"
+  }
+]

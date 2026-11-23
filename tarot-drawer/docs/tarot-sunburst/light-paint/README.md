@@ -1,3 +1,5 @@
+> 2026-11-23 發布更新：本頁 JSON／ZIP 已同步目前 Photoshop 平塗、補字、符號色層與月亮光芒。22份專案內嵌圖層均與最新PNG相符，見 current-project-validation.json。舊 validation.json／pixel-validation.json 是原始匯出時的歷史驗證，不代表此次修圖後的墨線仍與原批次相同。
+
 # Light Paint 塔羅分層修色專案
 
 0～21 號共 22 張；每張都是 1024 × 1536，從目前已匯出的 Y/O/B/N 色版製作，包含最近一次修色結果與 2026-11-19 的墨線修訂（來源 ff36530）。

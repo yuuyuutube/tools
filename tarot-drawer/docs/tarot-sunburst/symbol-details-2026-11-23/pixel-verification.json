@@ -1,0 +1,93 @@
+{
+  "cards" : [
+    {
+      "card" : 3,
+      "changedBounds" : [
+        366,
+        586,
+        581,
+        1050
+      ],
+      "changedRGBPixels" : 3997,
+      "inkByteIdentical" : true
+    },
+    {
+      "card" : 5,
+      "changedBounds" : [
+        141,
+        884,
+        851,
+        1183
+      ],
+      "changedRGBPixels" : 3740,
+      "inkByteIdentical" : true
+    },
+    {
+      "card" : 6,
+      "changedBounds" : [
+        844,
+        260,
+        955,
+        574
+      ],
+      "changedRGBPixels" : 1944,
+      "inkByteIdentical" : true
+    },
+    {
+      "card" : 7,
+      "changedBounds" : [
+        332,
+        196,
+        691,
+        266
+      ],
+      "changedRGBPixels" : 1023,
+      "inkByteIdentical" : true
+    },
+    {
+      "card" : 10,
+      "changedBounds" : [
+        400,
+        618,
+        621,
+        841
+      ],
+      "changedRGBPixels" : 1600,
+      "inkByteIdentical" : true
+    },
+    {
+      "card" : 14,
+      "changedBounds" : [
+        506,
+        295,
+        517,
+        306
+      ],
+      "changedRGBPixels" : 116,
+      "inkByteIdentical" : true
+    },
+    {
+      "card" : 16,
+      "changedBounds" : [
+        154,
+        237,
+        901,
+        916
+      ],
+      "changedRGBPixels" : 6158,
+      "inkByteIdentical" : true
+    },
+    {
+      "card" : 18,
+      "changedBounds" : [
+        327,
+        198,
+        671,
+        517
+      ],
+      "changedRGBPixels" : 22724,
+      "inkByteIdentical" : false
+    }
+  ],
+  "moonColourDropletComponents" : 15
+}

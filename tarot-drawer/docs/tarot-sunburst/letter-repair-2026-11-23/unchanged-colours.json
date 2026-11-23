@@ -1,0 +1,33 @@
+{
+  "all22FlatColourPNGsUnchanged": true,
+  "unchangedRevealLayers": [
+    "paper",
+    "Y",
+    "O",
+    "B"
+  ],
+  "files": {
+    "00-fool-colour.png": true,
+    "01-magician-colour.png": true,
+    "02-high-priestess-colour.png": true,
+    "03-empress-colour.png": true,
+    "04-emperor-colour.png": true,
+    "05-hierophant-colour.png": true,
+    "06-lovers-colour.png": true,
+    "07-chariot-colour.png": true,
+    "08-strength-colour.png": true,
+    "09-hermit-colour.png": true,
+    "10-wheel-of-fortune-colour.png": true,
+    "11-justice-colour.png": true,
+    "12-hanged-man-colour.png": true,
+    "13-death-colour.png": true,
+    "14-temperance-colour.png": true,
+    "15-devil-colour.png": true,
+    "16-tower-colour.png": true,
+    "17-star-colour.png": true,
+    "18-moon-colour.png": true,
+    "19-sun-colour.png": true,
+    "20-judgement-colour.png": true,
+    "21-world-colour.png": true
+  }
+}
