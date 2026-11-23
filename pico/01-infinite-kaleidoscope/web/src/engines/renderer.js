@@ -2,8 +2,13 @@ import { universe } from '../controllers/artwork.js';
 import { palettes } from '../palettes/index.js';
 import { createBloomRenderer } from './bloom.js';
 import { drawSpiro } from './plot.js';
+import { kaleidoStyles } from './kaleido-styles.js';
+import { spiroStyles } from './spiro-styles.js';
+import { opticalStyles } from './optical-styles.js';
 import { fallbackEngines } from './fallback.js';
 import { makeShaderRenderer } from './webgl.js';
+
+const styleRenderers = { kaleido: kaleidoStyles, spiro: spiroStyles, optical: opticalStyles };
 
 export class ArtworkRenderer {
   #canvas;
@@ -61,9 +66,11 @@ export class ArtworkRenderer {
     frame.phase = phase;
     frame.bloomProgress = bloomProgress;
     frame.bloomStyle = state.bloomStyle;
+    frame.patternStyle = state.patternStyle;
     const palette = this.#palette;
     const ctx = this.#ctx;
-    const drawing = frame.engine === 'bloom' ? this.#drawBloom : frame.engine === 'spiro' ? drawSpiro : null;
+    const drawing = styleRenderers[frame.engine]?.[frame.patternStyle] ??
+      (frame.engine === 'bloom' ? this.#drawBloom : frame.engine === 'spiro' ? drawSpiro : null);
     const result = drawing ? null : this.#shader?.draw(width, height, frame, palette, this.#seedValues);
     if (result) {
       ctx.drawImage(result, 0, 0);

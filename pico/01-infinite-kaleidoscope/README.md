@@ -39,6 +39,19 @@ python3 -m http.server 8000 --bind 127.0.0.1 --directory web
 
 作品連結包含演算法版本、引擎、Seed、位置、色盤與目前的動畫時間。開啟連結會停在同一個動畫時刻。切換引擎、色盤或 Seed 時若立即保存，會先完成過場，保存過場的目的畫面。使用相同版號、渲染模式和畫布比例可重現構圖，輸出解析度依畫布與渲染預算而定。本機網址可在同一台電腦開啟，或貼到另一台已啟動同版本作品的還原欄位。
 
+### 風格選單
+
+四種模式都可點右上角的疊層圖示選風格，或長按 Pico 旋鈕依選單順序輪換三款風格。切換模式再回來會記得這次開啟頁面時選過的風格。分享連結記住目前的風格，PNG 會以當下的樣子匯出。
+
+| 模式 | 預設 | 新風格 |
+| --- | --- | --- |
+| KALEIDO | Chromatic Fold | Enamel Window 琺瑯花窗，Folded Star 折紙星 |
+| SPIRO | Plotter Plate | Ribbon Orbit 緞帶軌道，Celestial Etching 天體蝕刻 |
+| OPTICAL | Kinetic Field | Tidal Relief 潮汐浮雕，Moiré Weave 莫列織紋 |
+| ETERNAL BLOOM | Indian | Nordic 北歐風，Japanese 日系 |
+
+前三種模式切換風格時保留現有色盤和旋鈕位置。Bloom 切換風格時套用搭配的色盤。
+
 ### Eternal Bloom
 
 選第四個花瓣圖示進入 Eternal Bloom。順時針轉動 KY-040、點 `+` 或向右拖曳會向外綻放，反向會向花芯收回。也可用滾輪或左右方向鍵操作。每格推進或回退四分之一環，停手後畫面收在最後一格，等下一次操作。
@@ -99,7 +112,7 @@ python3 -m http.server 8000 --bind 127.0.0.1 --directory web
 3. 執行 **MicroPico: Disconnect**，並關閉仍占用該序列埠的 REPL、其他 VS Code 視窗或終端機。若 MicroPico 設為自動重連，可先關閉該 VS Code 工作區。
 4. 拔掉再插回 Pico 的 USB，讓它從裝置上的 `/main.py` 獨立開機。先等裝置出現在 macOS，再切到 Chrome。
 5. 在本機作品頁點右上角的插頭圖示，從 Chrome 選擇器選 Pico 或 USB Serial 裝置，再按連線。macOS 終端的 `ls /dev/cu.usbmodem*` 可協助比對裝置。USB CDC 是 Pico 透過 USB 模擬的序列埠。網頁以 115200 開啟連線，這是 Web Serial 的設定值，在此 USB CDC 路徑上不代表實體 UART 的傳輸速度。 [Chrome Web Serial 說明](https://developer.chrome.com/docs/capabilities/serial/)
-6. 插頭圖示亮起時，轉動旋鈕可演化，Eternal Bloom 模式下會直接綻放或收回。短按依序切換四個引擎。長按在 Eternal Bloom 會切換風格，在其他三種模式會開啟新宇宙。測完先點插頭斷線，再回 MicroPico。意外拔除時網頁可繼續用，插回後點插頭並重新選擇。
+6. 插頭圖示亮起時，轉動旋鈕可演化，Eternal Bloom 模式下會直接綻放或收回。短按依序切換四個模式，長按輪換目前模式的三款風格。測完先點插頭斷線，再回 MicroPico。意外拔除時網頁可繼續用，插回後點插頭並重新選擇。
 
 > **一次只讓一個程式使用 Pico 序列埠。** MicroPico 的 REPL 與 Chrome Web Serial 共用同一條連線。
 
@@ -156,5 +169,5 @@ python3 -B -m unittest discover -s tests -p 'test_*.py'
 - [x] macOS Chrome 實測三引擎、滾輪與鍵盤、Demo 與減少動態、展覽模式、固定 Seed 重載及窄螢幕排版。
 - [x] 以 Chromium 匯出並檢查 PNG 尺寸，以 Chrome 強制停用 WebGL2 檢查兩個 Canvas 2D 備援。
 - [x] 既有 `blink.py`、`encoder.py` 保留於 Pico 工作資料夾。
-- [ ] 輪詢版上板確認各轉十格、快速往返、短按逐一換引擎、長按每次只換一款 Bloom 風格或在其他模式只換一次 Seed、Chrome 手動斷線及 USB 拔除後重連。記下是否需要調整每格的邊沿數。
+- [ ] 輪詢版上板確認各轉十格、快速往返、短按逐一換模式、四種模式長按每次只換一款風格、Chrome 手動斷線及 USB 拔除後重連。記下是否需要調整每格的邊沿數。
 - [ ] 實體平板確認：在目標裝置上滑動、旋轉螢幕與長時間展覽播放。可依測得的效能調整解析度上限，再校對 fallback 的版形。

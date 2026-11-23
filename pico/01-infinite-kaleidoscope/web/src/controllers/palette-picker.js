@@ -13,7 +13,21 @@ export function createPalettePicker(root, palettes, onSelect, onOpen, label = 'C
   const list = root.querySelector('[role="listbox"]');
   const current = toggle.querySelector('.swatches');
   let selectedIndex = 0;
-  const options = palettes.map((palette) => {
+  let options;
+  let entries;
+  let activeLabel;
+  function setOptions(next, nextLabel = label) {
+    close();
+    entries = next;
+    activeLabel = nextLabel;
+    selectedIndex = 0;
+    list.setAttribute('aria-label', activeLabel);
+    options = next.map(makeOption);
+    list.replaceChildren(...options);
+    select(next[0].id);
+  }
+
+  function makeOption(palette) {
     const option = document.createElement('button');
     option.type = 'button';
     option.className = 'palette-option';
@@ -23,7 +37,7 @@ export function createPalettePicker(root, palettes, onSelect, onOpen, label = 'C
     const swatches = document.createElement('span');
     swatches.className = 'swatches';
     swatches.setAttribute('aria-hidden', 'true');
-    paintSwatches(swatches, palette.colors);
+    if (palette.colors) paintSwatches(swatches, palette.colors);
     const name = document.createElement('span');
     name.textContent = palette.name;
     const check = document.createElementNS(svgNamespace, 'svg');
@@ -32,14 +46,15 @@ export function createPalettePicker(root, palettes, onSelect, onOpen, label = 'C
     use.setAttribute('href', './icons.svg#check');
     check.append(use);
 
-    option.append(swatches, name, check);
+    if (palette.colors) option.append(swatches);
+    else option.classList.add('name-only-option');
+    option.append(name, check);
     option.addEventListener('click', () => {
       onSelect(palette.id);
       close(true);
     });
     return option;
-  });
-  list.append(...options);
+  }
 
   function open() {
     onOpen();
@@ -83,17 +98,17 @@ export function createPalettePicker(root, palettes, onSelect, onOpen, label = 'C
     if (!root.contains(event.target)) close();
   });
 
-  return {
-    close,
-    select(id) {
-      selectedIndex = palettes.findIndex((palette) => palette.id === id);
-      const palette = palettes[selectedIndex];
-      if (current) paintSwatches(current, palette.colors);
-      toggle.setAttribute('aria-label', label + ': ' + palette.name);
-      toggle.dataset.tooltip = palette.name;
-      options.forEach((option, index) => {
-        option.setAttribute('aria-selected', index === selectedIndex);
-      });
-    },
-  };
+  function select(id) {
+    selectedIndex = entries.findIndex((entry) => entry.id === id);
+    const selected = entries[selectedIndex];
+    if (current) paintSwatches(current, selected.colors);
+    toggle.setAttribute('aria-label', activeLabel + ': ' + selected.name);
+    toggle.dataset.tooltip = selected.name;
+    options.forEach((option, index) => {
+      option.setAttribute('aria-selected', index === selectedIndex);
+    });
+  }
+
+  setOptions(palettes);
+  return { close, select, setOptions };
 }

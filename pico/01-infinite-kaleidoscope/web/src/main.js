@@ -1,6 +1,7 @@
 import { Animation } from './controllers/animation.js';
 import { clamp, engines, initialArtwork, newSeed, restoreState, stateURL } from './controllers/artwork.js';
 import { BLOOM_START, BLOOM_STYLES, changeBloomProgress } from './controllers/bloom.js';
+import { DEFAULT_PATTERN_STYLE, nextStyle, patternStyles } from './controllers/styles.js';
 import { createPalettePicker } from './controllers/palette-picker.js';
 import { ArtworkRenderer } from './engines/renderer.js';
 import { knobInput } from './hardware/protocol.js';
@@ -21,7 +22,7 @@ const demoSwitch = byId('demo');
 const restoreInput = byId('restore-link');
 const restoreFeedback = byId('restore-feedback');
 const fullscreenButton = byId('fullscreen');
-const bloomStyleControl = byId('bloom-style-control');
+const patternStyleControl = byId('pattern-style-control');
 const stepBack = byId('back');
 const stepForward = byId('forward');
 const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
@@ -36,6 +37,8 @@ const savePreference = (key, value) => {
 const saved = restoreState(location.href, location.href);
 let artwork = { ...BLOOM_START, ...(saved ?? initialArtwork) };
 const animation = new Animation(artwork);
+const rememberedStyles = new Map();
+let pickerEngine;
 let motionPreference = readPreference('weird-lab-motion');
 const playback = {
   reduced: motionPreference === null ? motionQuery.matches : motionPreference === 'reduced',
@@ -51,7 +54,7 @@ let serialStatus = 'idle';
 let guideFocus = null;
 let inPageExhibit = false;
 const serialAPI = navigator.serial;
-const serial = new SerialConnection(serialAPI, (event) => knobInput(event, dialActions), setSerialStatus);
+const serial = new SerialConnection(serialAPI, (event) => knobInput(event, controls), setSerialStatus);
 const renderer = new ArtworkRenderer(canvas, schedule);
 
 const palettePicker = createPalettePicker(byId('palette-control'), palettes, (id) => {
@@ -61,13 +64,21 @@ const palettePicker = createPalettePicker(byId('palette-control'), palettes, (id
   stylePicker.close();
 });
 
-const styles = BLOOM_STYLES.map((style) => ({
+const bloomOptions = BLOOM_STYLES.map((style) => ({
   ...style, colors: palettes.find(({ id }) => id === style.palette).colors,
 }));
-const stylePicker = createPalettePicker(bloomStyleControl, styles, (id) => controls.setBloomStyle(id), () => {
+const stylePicker = createPalettePicker(patternStyleControl, patternStyles.kaleido, selectStyle, () => {
   toggleGuide(false);
   palettePicker.close();
-}, 'Bloom style');
+}, 'Kaleido style');
+
+function selectStyle(id) {
+  if (artwork.engine === 'bloom') {
+    controls.setBloomStyle(id);
+  } else if ((artwork.patternStyle ?? DEFAULT_PATTERN_STYLE) !== id) {
+    transitionTo({ ...artwork, patternStyle: id });
+  }
+}
 
 function schedule() {
   if (request === null && !document.hidden) request = requestAnimationFrame(render);
@@ -101,15 +112,20 @@ function syncControls() {
   canvas.setAttribute('aria-label', name + ' generative artwork');
   byId('bloom-guide').hidden = !bloom;
   byId('pico-dial-guide').textContent = bloom
-    ? 'Turn to bloom or retract, tap to switch patterns, hold to change Bloom style.'
-    : 'Turn to evolve, tap to switch, hold to shuffle.';
-  bloomStyleControl.hidden = !bloom;
+    ? 'Turn to bloom or retract, tap to switch modes, hold to change style.'
+    : 'Turn to evolve, tap to switch modes, hold to change style.';
   const stepGroup = stepBack.parentElement;
   stepGroup.setAttribute('aria-label', bloom ? 'Bloom progress' : 'Evolve artwork');
   setActionLabel(stepBack, bloom ? 'Retract Bloom' : 'Evolve backward');
   setActionLabel(stepForward, bloom ? 'Expand Bloom' : 'Evolve forward');
   palettePicker.select(artwork.palette);
-  stylePicker.select(artwork.bloomStyle);
+  if (pickerEngine !== artwork.engine) {
+    pickerEngine = artwork.engine;
+    stylePicker.setOptions(bloom ? bloomOptions : patternStyles[pickerEngine], bloom ? 'Bloom style' : name + ' style');
+  }
+  const style = artwork.patternStyle ?? DEFAULT_PATTERN_STYLE;
+  if (!bloom) rememberedStyles.set(artwork.engine, style);
+  stylePicker.select(bloom ? artwork.bloomStyle : style);
   syncPlayback();
 }
 
@@ -154,7 +170,11 @@ const controls = {
   },
   setEngine(engine) {
     if (engine === artwork.engine) return;
-    transitionTo({ ...artwork, engine, bloomProgress: animation.bloomProgress });
+    transitionTo({
+      ...artwork, engine,
+      patternStyle: rememberedStyles.get(engine) ?? DEFAULT_PATTERN_STYLE,
+      bloomProgress: animation.bloomProgress,
+    });
   },
   cycleEngine() {
     controls.setEngine(engines[(engines.indexOf(artwork.engine) + 1) % engines.length]);
@@ -165,13 +185,11 @@ const controls = {
       transitionTo({ ...artwork, bloomStyle: id, palette: style.palette });
     }
   },
-  longPress() {
-    if (artwork.engine !== 'bloom') {
-      controls.newUniverse();
-      return;
-    }
-    const index = BLOOM_STYLES.findIndex(({ id }) => id === artwork.bloomStyle);
-    controls.setBloomStyle(BLOOM_STYLES[(index + 1) % BLOOM_STYLES.length].id);
+  cycleStyle() {
+    const current = artwork.engine === 'bloom'
+      ? artwork.bloomStyle
+      : artwork.patternStyle ?? DEFAULT_PATTERN_STYLE;
+    selectStyle(nextStyle(artwork.engine, current));
   },
   newUniverse() {
     const seed = newSeed();
@@ -180,9 +198,6 @@ const controls = {
     animation.reset(artwork);
   },
 };
-
-// The dial's long press uses the current mode; the shuffle button and R still always change Seed.
-const dialActions = { ...controls, newUniverse: controls.longPress };
 
 function setSerialStatus(status) {
   serialStatus = status;
@@ -282,7 +297,8 @@ async function savePrint() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    const name = frame.engine === 'bloom' ? frame.engine + '-' + frame.bloomStyle : frame.engine;
+    const style = frame.engine === 'bloom' ? frame.bloomStyle : frame.patternStyle;
+    const name = style && style !== DEFAULT_PATTERN_STYLE ? frame.engine + '-' + style : frame.engine;
     link.download = 'weird-lab-' + name + '-' + frame.seed + '.png';
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 30000);

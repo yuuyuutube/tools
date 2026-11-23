@@ -1,5 +1,7 @@
 import { palettes } from '../palettes/index.js';
-import { BLOOM_START, BLOOM_STYLES, MAX_BLOOM_PROGRESS } from './bloom.js';
+import { BLOOM_START, MAX_BLOOM_PROGRESS } from './bloom.js';
+
+import { DEFAULT_PATTERN_STYLE, patternStyles } from './styles.js';
 
 export const engines = ['kaleido', 'spiro', 'optical', 'bloom'];
 export const version = 1;
@@ -43,6 +45,8 @@ export function stateURL(state, base) {
   if (state.engine === 'bloom') {
     params.set('b', state.bloomProgress);
     params.set('style', state.bloomStyle ?? BLOOM_START.bloomStyle);
+  } else if (state.patternStyle && state.patternStyle !== DEFAULT_PATTERN_STYLE) {
+    params.set('style', state.patternStyle);
   }
   url.search = params.toString();
   return url;
@@ -74,11 +78,15 @@ export function restoreState(value, base) {
       !Number.isFinite(state.position) || Math.abs(state.position) > 1e9 ||
       !Number.isFinite(state.phase) || state.phase < 0 || state.phase > 1e9 ||
       !palettes.some((palette) => palette.id === state.palette)) return null;
+  const style = params.get('style');
+  if (params.getAll('style').length > 1 ||
+      (style !== null && !patternStyles[state.engine].some(({ id }) => id === style))) return null;
   if (state.engine === 'bloom') {
     state.bloomProgress = Number(params.get('b'));
-    state.bloomStyle = params.get('style') ?? BLOOM_START.bloomStyle;
-    if (params.getAll('style').length > 1 || !BLOOM_STYLES.some(({ id }) => id === state.bloomStyle) ||
-        !Number.isFinite(state.bloomProgress) || Math.abs(state.bloomProgress) > MAX_BLOOM_PROGRESS) return null;
+    state.bloomStyle = style ?? BLOOM_START.bloomStyle;
+    if (!Number.isFinite(state.bloomProgress) || Math.abs(state.bloomProgress) > MAX_BLOOM_PROGRESS) return null;
+  } else if (style && style !== DEFAULT_PATTERN_STYLE) {
+    state.patternStyle = style;
   }
   return state;
 }

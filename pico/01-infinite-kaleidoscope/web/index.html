@@ -16,11 +16,11 @@
       </section>
 
       <div class="utility" role="group" aria-label="Device and display">
-        <div class="bloom-style" id="bloom-style-control" hidden>
-          <button class="icon-button" type="button" aria-label="Bloom style" data-tooltip="Bloom style" aria-haspopup="listbox" aria-expanded="false" aria-controls="bloom-style-options">
+        <div class="pattern-style" id="pattern-style-control">
+          <button class="icon-button" type="button" aria-label="Pattern style" data-tooltip="Pattern style" aria-haspopup="listbox" aria-expanded="false" aria-controls="pattern-style-options">
             <svg aria-hidden="true"><use href="./icons.svg#styles"/></svg>
           </button>
-          <div class="palette-options" id="bloom-style-options" role="listbox" aria-label="Bloom style" hidden></div>
+          <div class="palette-options" id="pattern-style-options" role="listbox" aria-label="Pattern style" hidden></div>
         </div>
         <button class="icon-button" id="connect" type="button" aria-label="Connect Pico" data-tooltip="Connect Pico">
           <svg aria-hidden="true"><use href="./icons.svg#plug"/></svg>
@@ -93,7 +93,7 @@
           <div><dt>Switch pattern</dt><dd><kbd>Space</kbd></dd></div>
           <div><dt>New pattern</dt><dd><kbd>R</kbd></dd></div>
           <div><dt>Fullscreen</dt><dd><kbd>F</kbd></dd></div>
-          <div><dt>Pico dial</dt><dd id="pico-dial-guide">Turn to evolve, tap to switch, hold to shuffle.</dd></div>
+          <div><dt>Pico dial</dt><dd id="pico-dial-guide">Turn to evolve, tap to switch modes, hold to change style.</dd></div>
         </dl>
         <div class="settings">
           <button class="switch-button" id="demo" type="button" role="switch" aria-checked="false">

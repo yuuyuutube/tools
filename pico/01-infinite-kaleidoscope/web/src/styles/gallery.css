@@ -161,12 +161,12 @@ svg { display: block; pointer-events: none; }
 }
 
 .palette-control { position: relative; }
-.bloom-style .palette-options {
+.pattern-style .palette-options {
   top: calc(100% + 8px);
   right: 0;
   bottom: auto;
   left: auto;
-  width: 196px;
+  width: 210px;
 }
 .palette-toggle {
   display: flex;
@@ -218,6 +218,7 @@ svg { display: block; pointer-events: none; }
   background: transparent;
   font-size: .88rem;
 }
+.name-only-option { grid-template-columns: 1fr 18px; }
 .palette-option:focus-visible { outline-offset: -2px; }
 .palette-option[aria-selected="true"] { background: var(--well); color: var(--accent); }
 .palette-option:hover, .palette-option:active { background: var(--hover); }
@@ -372,7 +373,7 @@ kbd {
   .dock { flex-direction: column; width: 100%; gap: 5px; }
   .dock-row { justify-content: center; }
   .palette-options { bottom: calc(100% + var(--target) + 20px); left: -12px; }
-  .bloom-style .palette-options { bottom: auto; left: auto; }
+  .pattern-style .palette-options { bottom: auto; left: auto; }
   .notice { bottom: calc(2 * var(--frame) + 2 * var(--target) + 29px); }
 }
 @media (max-height: 500px) and (min-width: 581px) {

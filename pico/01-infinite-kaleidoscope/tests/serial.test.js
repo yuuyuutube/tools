@@ -25,13 +25,13 @@ test('hardware events use the public artwork controller actions', () => {
   const events = [];
   const controls = {
     rotate: (delta) => events.push(delta),
-    cycleEngine: () => events.push('cycle'),
-    newUniverse: () => events.push('new'),
+    cycleEngine: () => events.push('mode'),
+    cycleStyle: () => events.push('style'),
   };
   knobInput({ type: 'rotate', delta: -5 }, controls);
   knobInput({ type: 'press', kind: 'short' }, controls);
   knobInput({ type: 'press', kind: 'long' }, controls);
-  assert.deepEqual(events, [-5, 'cycle', 'new']);
+  assert.deepEqual(events, [-5, 'mode', 'style']);
 });
 
 class MockPort extends EventTarget {

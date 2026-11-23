@@ -56,5 +56,5 @@ export class EventDecoder {
 export function knobInput(event, controls) {
   if (event.type === 'rotate') controls.rotate(event.delta);
   else if (event.kind === 'short') controls.cycleEngine();
-  else if (event.kind === 'long') controls.newUniverse();
+  else if (event.kind === 'long') controls.cycleStyle();
 }
