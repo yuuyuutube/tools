@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="zh-Hant"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3.1 局部上色修正｜前後對照</title>
+<style>body{margin:0;padding:32px;background:#f6efe0;color:#1e284a;font:16px/1.7 system-ui}main{max-width:1080px;margin:auto}h1{font-size:28px}section{border-top:1px solid #b6ac97;padding:24px 0}figure{margin:0}figcaption{font-weight:bold;margin-bottom:8px}.pair{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}.face{width:327px;max-width:100%;height:auto}.thumb{width:120px;height:auto}.small{font-size:14px;opacity:.8}a{color:inherit}</style>
+<main><h1>3.1｜局部上色修正</h1><p>保留原有構圖與透明墨線，只修改五張平塗 PNG，並重新產生正式牌面與翻牌五色版。左為修正前，右為目前正式輸出。</p>
+<div id="cards"></div><p class="small">月亮光芒 16＋16、高塔 22 火滴及 §3.2 不在本次修改範圍。</p></main>
+<script>
+const cards=[['17','star','XVII 星星','一顆大八芒星＋七顆小八芒星；放大小星芒，保留大星及人物。'],['09','hermit','IX 隱者','用紙白填亮原有六芒星、壓深燈內周圍琥珀色，保留兩個交疊三角的墨線。'],['16','tower','XVI 高塔','兩扇深窗各補朱橘火舌與金色火心，保留暗部和窗框。'],['18','moon','XVIII 月亮','清除原有十一個散點的色塊，改為月亮下方十五枚可清點的同形露滴／Yod 色塊。'],['20','judgement','XX 審判','在既有白旗內加朱紅十字，依旗面方向傾斜，保留旗邊與天使。']];
+document.querySelector('#cards').innerHTML=cards.map(([n,id,title,description])=>`<section><h2>${title}</h2><p>${description}</p><div class="pair"><figure><figcaption>修正前</figcaption><img class="face" src="before/${id}.webp" alt="${title}修正前"></figure><figure><figcaption>目前正式牌面</figcaption><img class="face" src="../../../assets/faces/${id}.webp?v=20261123-symbol" alt="${title}上色修正後"></figure><figure><figcaption>120px 縮圖</figcaption><img class="thumb" src="../../../assets/faces/${id}.webp?v=20261123-symbol" alt="${title}縮圖"></figure></div></section>`).join('');
+</script></html>

@@ -1,0 +1,248 @@
+{
+  "date": "2026-11-23",
+  "inkMastersVerifiedUnchanged": 22,
+  "smallStars": 7,
+  "moonDroplets": 15,
+  "files": [
+    {
+      "path": "docs/tarot-sunburst/light-paint/09-hermit-colour.png",
+      "beforeSha256": "bbe1a2290d757173bcbaf053a678479d2b29fddf75534f00a4107fa4e91df645",
+      "afterSha256": "9d6fda889507525c1620302850b33a6e6684a387fd5564d3d12699071dce05fd",
+      "bytes": 71267
+    },
+    {
+      "path": "docs/tarot-sunburst/light-paint/09-hermit-preview.png",
+      "beforeSha256": "da1a6d74e785c831ec13650d07d1a0a3b71ad81531647964077d3052d3707e88",
+      "afterSha256": "9e0b7d3cfb061be18344e9b46eb1f6895e034c3c56ffef9e99c22e1bd3d66e6d",
+      "bytes": 737725
+    },
+    {
+      "path": "assets/faces/hermit.webp",
+      "beforeSha256": "e912c2f453ebec200f72b03361e86942b6c8d808e4ae78d339aa77809f4c9b9c",
+      "afterSha256": "46cf81bfbaced29b42e77dc9621b67f57a9475b828f714444e5d0861aa96f9ed",
+      "bytes": 384990
+    },
+    {
+      "path": "assets/reveal/9-paper.webp",
+      "beforeSha256": "f9cc901fdc119a2c56f8f6c4023c2589e65918b0ca44bb0f3c3fe6eba8135f99",
+      "afterSha256": "f9cc901fdc119a2c56f8f6c4023c2589e65918b0ca44bb0f3c3fe6eba8135f99",
+      "bytes": 24204
+    },
+    {
+      "path": "assets/reveal/9-N.webp",
+      "beforeSha256": "6e262101bf77789645c0ab5024de4e1158de92b427617ded8f39405646c8b29d",
+      "afterSha256": "82b289c797e3127507068a159b763b9ca991a358b83cda46758264141b0047c1",
+      "bytes": 304728
+    },
+    {
+      "path": "assets/reveal/9-Y.webp",
+      "beforeSha256": "1b6bd1c633de79bac3598dfa3111e6083b18a0cedc9b57854d0e730e01127847",
+      "afterSha256": "f935f666d57d2f71eecd8a9d4ee46437c70b937f0d4b59bb050492c13818a162",
+      "bytes": 164728
+    },
+    {
+      "path": "assets/reveal/9-O.webp",
+      "beforeSha256": "0dd269f47485010d2f85e6aadffd302ff7292e8778a06020b52093ad3a48dfef",
+      "afterSha256": "83b9e28992dcc4524d3fd841d2dfcfb56105811199890cd77c70fc238510ad5a",
+      "bytes": 209196
+    },
+    {
+      "path": "assets/reveal/9-B.webp",
+      "beforeSha256": "afd7a8eb9ffd78c56b380d6957c43127ca98527b0a7d29738b288cedb35da07c",
+      "afterSha256": "2256709b12dd13ae2388c1f7c92faa0ccc74b76ca53353f231b24c0e7c507950",
+      "bytes": 333898
+    },
+    {
+      "path": "docs/tarot-sunburst/light-paint/16-tower-colour.png",
+      "beforeSha256": "acde3fa6bd7a321a322ad7938a4c6d845d44bbf6e36214d2d64227c37ed69445",
+      "afterSha256": "3aeed7471c877e5dc806d5ca454de6d7c5d89f26a0d4733046028615d3fba2da",
+      "bytes": 82730
+    },
+    {
+      "path": "docs/tarot-sunburst/light-paint/16-tower-preview.png",
+      "beforeSha256": "a4254cd95143828a1c4278ecc3d211b5cf5515efc0fc938fc48402d1fe1e5f12",
+      "afterSha256": "6416a8aeb33f86d0eb662a8eebc19c5f3fefea508995243ab281f70c5e74d780",
+      "bytes": 962647
+    },
+    {
+      "path": "assets/faces/tower.webp",
+      "beforeSha256": "76e2a16d8e4c5a5e85bcbfd9c9f8a3be6bc983db46ddd2b589b37c1eac6ebe83",
+      "afterSha256": "871e321c318bc44654ee443b17da93571b87d13b5a3ec1475b47c0fd679f28b2",
+      "bytes": 391268
+    },
+    {
+      "path": "assets/reveal/16-paper.webp",
+      "beforeSha256": "d926d09336b7223c786b76b63b2c87a7c3784944a49a4959d77ec840baf30b26",
+      "afterSha256": "d926d09336b7223c786b76b63b2c87a7c3784944a49a4959d77ec840baf30b26",
+      "bytes": 24218
+    },
+    {
+      "path": "assets/reveal/16-N.webp",
+      "beforeSha256": "42cc857d0aa3a47e895cd13accf9d6c5133386edcf08932b35fb07e69befeee6",
+      "afterSha256": "51bdd9e25b55d37ea3658663f8c2d59af2dca59651b5c1b6458810330ec0e71c",
+      "bytes": 240498
+    },
+    {
+      "path": "assets/reveal/16-Y.webp",
+      "beforeSha256": "1f8742fc95803fffce7a902a5388bc5b4ab22e71d0b828c106714c927672bdc6",
+      "afterSha256": "efcbcd09c4ff5fc3d35154fcf1c2d2359dfa1f33133bc75067dbd2a5579cce70",
+      "bytes": 249010
+    },
+    {
+      "path": "assets/reveal/16-O.webp",
+      "beforeSha256": "fc6416ef937c73f1b3060f528dacbb43752d7d9cd8824dfd3cb4a3289584f7bd",
+      "afterSha256": "adfe3b0a43860a6868f6bf46f21d17c616413b39764687956a3b19f08736fdda",
+      "bytes": 210168
+    },
+    {
+      "path": "assets/reveal/16-B.webp",
+      "beforeSha256": "a39ed5fb098b1b2e8888303dd6b66c8931a7c76cefb99beda04f913db9f48f0a",
+      "afterSha256": "69cf71eac433603df8fa11907e503bfb5798450041e63dc7837696a08b1827b0",
+      "bytes": 367562
+    },
+    {
+      "path": "docs/tarot-sunburst/light-paint/17-star-colour.png",
+      "beforeSha256": "00228d03f127ee4b68767267e3881ca502b256bac368d1f7c2379a2fe18297cc",
+      "afterSha256": "1318d3507fe267d2606e1fd6d0f45817e3af1fa46e71ab0745789543e412bd94",
+      "bytes": 108026
+    },
+    {
+      "path": "docs/tarot-sunburst/light-paint/17-star-preview.png",
+      "beforeSha256": "a7221bdc4a647a9ee4bc3e97fb0640bad4830105db824dc74a6ba4529dcc375c",
+      "afterSha256": "26311bf647daf6fb574409655576399bf9e1c3fbaefca294ca3b5303bf0e9616",
+      "bytes": 930623
+    },
+    {
+      "path": "assets/faces/star.webp",
+      "beforeSha256": "56ba55db26ffae58d7f940ef0405692d0d66a70552f7a153cc825e694f9a1411",
+      "afterSha256": "b289d6a2dea2c9f14721def1ea49604a9a5443681a98e949c5185aca2438dc81",
+      "bytes": 390456
+    },
+    {
+      "path": "assets/reveal/17-paper.webp",
+      "beforeSha256": "36a7939c8a88fe8b5905feeb6a8c516b6e534551e5bbc18ff10c31fc269cabca",
+      "afterSha256": "36a7939c8a88fe8b5905feeb6a8c516b6e534551e5bbc18ff10c31fc269cabca",
+      "bytes": 24192
+    },
+    {
+      "path": "assets/reveal/17-N.webp",
+      "beforeSha256": "0e0a91d0a2998684bc8b856d5955894cb3746326c4d6908cd74e9d47a162caa8",
+      "afterSha256": "03429b3cc1b057350cd62523598342b9e6001dfc12ff95c9039db7ca034c36e6",
+      "bytes": 322226
+    },
+    {
+      "path": "assets/reveal/17-Y.webp",
+      "beforeSha256": "b50c07342fd7dceab33c77c66a32b885296302c4618b8c26e7d62f9035708fb1",
+      "afterSha256": "87eba7fdfaa9677ee35da816cbd1960b8c93d0003e8dea2d03cf74badd734070",
+      "bytes": 210530
+    },
+    {
+      "path": "assets/reveal/17-O.webp",
+      "beforeSha256": "cea6526d1f672b13e160c15a587925e7c0516b8e22597d264009393992af508e",
+      "afterSha256": "9192d38e96a0c531378678bf0a610912dc8636717c180b0860c3dc98680fb0c5",
+      "bytes": 202994
+    },
+    {
+      "path": "assets/reveal/17-B.webp",
+      "beforeSha256": "ddd65f0d8b86a4eaa60f50f508467b2715681c47a1b751f5815a633a1cec34fb",
+      "afterSha256": "969ce0b72c26f7d2bf7b01e31946ea95a04a5f9a67cc82f9c1c83db3b8aaf36c",
+      "bytes": 322760
+    },
+    {
+      "path": "docs/tarot-sunburst/light-paint/18-moon-colour.png",
+      "beforeSha256": "bc4da7e363d617167b00e462f858db8938c67d0eff6e16261d8d0e2fcf73445e",
+      "afterSha256": "7f04d90e7c8135dce8eaf49cda694201ed376a3ac8251730bf10e2a451e3e5fa",
+      "bytes": 81155
+    },
+    {
+      "path": "docs/tarot-sunburst/light-paint/18-moon-preview.png",
+      "beforeSha256": "8421afa453bd58bdf0b5101368c5d4e82643f4273031ed25d15e9f1e6987d320",
+      "afterSha256": "1c3afc7fa4e146a200995825b37b93757bee28f8490fad771e0bc2f4650537c7",
+      "bytes": 884076
+    },
+    {
+      "path": "assets/faces/moon.webp",
+      "beforeSha256": "e9f34b26406c1f31b9d6cdea80bd1b88338773a50087b3dfc030ba5bd098d804",
+      "afterSha256": "eb5986be39b5f1d189c2237127ff7d5ef6322b3a35e88d586a2d5f5e4f2c9726",
+      "bytes": 387386
+    },
+    {
+      "path": "assets/reveal/18-paper.webp",
+      "beforeSha256": "fd4bf6e3d4238889a3ec57c5b1bde24b7a841b02647ddf48f2c27a5d858bba68",
+      "afterSha256": "fd4bf6e3d4238889a3ec57c5b1bde24b7a841b02647ddf48f2c27a5d858bba68",
+      "bytes": 24170
+    },
+    {
+      "path": "assets/reveal/18-N.webp",
+      "beforeSha256": "5074ff82b901381c45234208ccd7307314dbf2ca52e0d4585a6847b9b7a170b0",
+      "afterSha256": "78e412c98eee33b64e045c844c96f0a0d36fcbc72bb6eb39ffc4cb7edbf1937f",
+      "bytes": 282046
+    },
+    {
+      "path": "assets/reveal/18-Y.webp",
+      "beforeSha256": "c6a67042a77ae11fb433d76b3c15b5ee5e21ad97df9ac796107823ea16d2918a",
+      "afterSha256": "c71ef4a5005d0ae72c33f54da02104157c98949d71daed05aa07c6f6a42517d3",
+      "bytes": 253968
+    },
+    {
+      "path": "assets/reveal/18-O.webp",
+      "beforeSha256": "f87ad40e41f0cedd3842d4094cfb2f86b26aca33d5b3cbddb66d610d36be0cbc",
+      "afterSha256": "bfe710863c7f20aab282204fd683456eb717f9fe386aa2dcb1769f532b528cc2",
+      "bytes": 225498
+    },
+    {
+      "path": "assets/reveal/18-B.webp",
+      "beforeSha256": "473883c40ea1ef21719f0cc77e5e11d38126d9938ae8fea52eb6b486cf3d0302",
+      "afterSha256": "17077036965a244438f8298e9d5856b6a59a128f976b07cad760e2eebbb09878",
+      "bytes": 329598
+    },
+    {
+      "path": "docs/tarot-sunburst/light-paint/20-judgement-colour.png",
+      "beforeSha256": "1836f87ed68de7491806c2447383835a599c3c39cd8b48c0901e8565b2aa7196",
+      "afterSha256": "6792a0ef5d8d04d526bc0ad5e285e44ae2d60dce2c46219f9adc9ab42051e252",
+      "bytes": 82066
+    },
+    {
+      "path": "docs/tarot-sunburst/light-paint/20-judgement-preview.png",
+      "beforeSha256": "df5faf9cf57f7b654ea0262ee6c1c5330a62dfacc5198790f666d4c5d606bfce",
+      "afterSha256": "8a18448ab1e192132f50186fb9e458311be304f44cd988f14f640e393df37507",
+      "bytes": 1091620
+    },
+    {
+      "path": "assets/faces/judgement.webp",
+      "beforeSha256": "dd53d2ec7105c8c1a5d542c731700b450a95b99a8358dd362e2c08c350cc1e0d",
+      "afterSha256": "d00008a1fd0276786f546cfbf5345e780600b729fdc991cbd55bd77e82301e91",
+      "bytes": 380390
+    },
+    {
+      "path": "assets/reveal/20-paper.webp",
+      "beforeSha256": "967a0b0ad9c06c443d1832eebc0affbf7eb1bcc4e9de9c60690ced6b5d6d72a0",
+      "afterSha256": "967a0b0ad9c06c443d1832eebc0affbf7eb1bcc4e9de9c60690ced6b5d6d72a0",
+      "bytes": 24200
+    },
+    {
+      "path": "assets/reveal/20-N.webp",
+      "beforeSha256": "09677253265140e121e6476e5151fe6a39fbfc6ad113227697223d95e0bce460",
+      "afterSha256": "38d8c002ebc596d7857728fb01f3846a053be404988e0ec9e1b5a3857ec14c57",
+      "bytes": 191368
+    },
+    {
+      "path": "assets/reveal/20-Y.webp",
+      "beforeSha256": "1e0fa7c692c985267f4f44d7ce05cedf7fa858b6f69c1e8fc9fcfdbd022bb454",
+      "afterSha256": "b26316cb8524136f1b1d4e74e69e8f4a7b53dea7f458f5201c070aa8be2ebaf2",
+      "bytes": 338406
+    },
+    {
+      "path": "assets/reveal/20-O.webp",
+      "beforeSha256": "7192d320bec43ee7214d48b2712590de8545dc74a712bee77aea4062d491f24c",
+      "afterSha256": "8e70e5870d4aabc37cbf644e349b2bafc38ce9d011756dd1a83fc180e35af928",
+      "bytes": 228856
+    },
+    {
+      "path": "assets/reveal/20-B.webp",
+      "beforeSha256": "46577b7e597649a66327fb4ba434cb8d373013ea824302e8aab4d7444b1a40c4",
+      "afterSha256": "0def874d36c85e223e42db4d3ce7222c3b0c7c0ff07072c6c65fd7d1328131a3",
+      "bytes": 226152
+    }
+  ]
+}
