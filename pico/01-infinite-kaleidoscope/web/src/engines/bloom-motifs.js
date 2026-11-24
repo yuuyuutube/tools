@@ -71,18 +71,61 @@ const indian = {
     leaf(ink, -0.42, 0.40, w * 0.46);
     leaf(light, -0.29, 0.20, w * 0.18);
   },
-  diamond({ shape, ink, light }, { breadth: w, bias }) {
-    const seam = (bias - 0.5) * 0.22;
-    diamond(shape, -0.49, 0.49, 0, w * 0.97, seam);
-    polygon(ink, -0.49, 0, seam, -w * 0.97, 0.21, 0, seam, w * 0.97);
-    diamond(light, -0.27, 0.36, 0, w * 0.47, seam + 0.02);
+  diamond({ shape, ink, light }, { breadth: w }) {
+    // A shallow oil bowl with a curved rim and a tapered flame.
+    shape.moveTo(-0.065, -w * 0.78);
+    shape.quadraticCurveTo(-0.23, 0, -0.065, w * 0.78);
+    shape.bezierCurveTo(-0.25, w * 0.62, -0.445, w * 0.34, -0.445, 0);
+    shape.bezierCurveTo(-0.445, -w * 0.34, -0.25, -w * 0.62, -0.065, -w * 0.78);
+    shape.closePath();
+    ink.moveTo(-0.115, -w * 0.67);
+    ink.quadraticCurveTo(-0.255, 0, -0.115, w * 0.67);
+    ink.quadraticCurveTo(-0.315, 0, -0.115, -w * 0.67);
+    ink.closePath();
+
+    shape.moveTo(0.02, -w * 0.025);
+    shape.bezierCurveTo(0.03, -w * 0.31, 0.23, -w * 0.34, 0.47, w * 0.09);
+    shape.bezierCurveTo(0.295, w * 0.01, 0.25, w * 0.30, 0.12, w * 0.26);
+    shape.quadraticCurveTo(0.025, w * 0.22, 0.02, -w * 0.025);
+    shape.closePath();
+    ink.moveTo(0.044, -w * 0.025);
+    ink.bezierCurveTo(0.053, -w * 0.24, 0.23, -w * 0.24, 0.39, w * 0.058);
+    ink.bezierCurveTo(0.25, w * 0.035, 0.23, w * 0.25, 0.12, w * 0.205);
+    ink.quadraticCurveTo(0.05, w * 0.16, 0.044, -w * 0.025);
+    ink.closePath();
+    light.moveTo(0.064, -w * 0.01);
+    light.quadraticCurveTo(0.085, -w * 0.158, 0.253, w * 0.025);
+    light.quadraticCurveTo(0.176, w * 0.018, 0.14, w * 0.12);
+    light.quadraticCurveTo(0.074, w * 0.15, 0.064, -w * 0.01);
+    light.closePath();
+    for (const y of [-0.20, 0, 0.20]) oval(light, -0.319, w * y, 0.021, w * 0.032);
   },
-  star({ shape, ink, light }, { breadth: w }) {
-    polygon(shape, -0.49, 0, -0.14, -w * 0.31, -0.12, -w,
-      0.14, -w * 0.48, 0.42, -w * 0.70, 0.32, 0,
-      0.42, w * 0.70, 0.14, w * 0.48, -0.12, w, -0.14, w * 0.31);
-    leaf(ink, -0.38, 0.39, w * 0.44);
-    oval(light, -0.04, 0, 0.095, w * 0.15);
+  star({ shape, ink }, { breadth: w }) {
+    // The rounded shoulders overlap while the short, pointed roots stay apart.
+    const unit = 0.017;
+    const height = w * 0.94;
+    for (let index = -2; index <= 2; index++) {
+      const scale = Math.abs(index) === 1 ? 0.96 : 1;
+      const turn = turnMotif(index * Math.PI * 31 / 180, height);
+      const point = (x, y) => {
+        const [radial, tangential] = turn((35 - scale * y) * unit, x * scale * unit);
+        return [radial - 0.55, tangential];
+      };
+      shape.moveTo(...point(-6, 12));
+      shape.bezierCurveTo(...point(-16, 1), ...point(-13, -17), ...point(0, -24));
+      shape.bezierCurveTo(...point(13, -17), ...point(16, 1), ...point(6, 12));
+      shape.lineTo(...point(0, 20));
+      shape.closePath();
+
+      // Reverse the eye contour so it cuts through to the actual background.
+      shape.moveTo(...point(0, -13));
+      shape.quadraticCurveTo(...point(-13, -4), ...point(0, 4));
+      shape.quadraticCurveTo(...point(13, -4), ...point(0, -13));
+      shape.closePath();
+      const [x, y] = point(0, -4);
+      const pupil = 3.15 * scale * unit;
+      oval(ink, x, y, pupil, height * pupil);
+    }
   },
   arc({ shape, ink, light }, { breadth: w, bias }) {
     for (const side of [-1, 1]) {
@@ -97,12 +140,33 @@ const indian = {
     }
   },
   tessellation({ shape, ink, light }, { breadth: w }) {
-    // A pointed arch with an open interior and a single colored keystone.
-    polygon(shape, -0.47, -w * 0.82, 0.04, -w * 0.82, 0.49, 0,
-      0.04, w * 0.82, -0.47, w * 0.82);
-    polygon(ink, -0.39, -w * 0.49, 0.01, -w * 0.49, 0.32, 0,
-      0.01, w * 0.49, -0.39, w * 0.49);
-    diamond(light, -0.24, 0.17, 0, w * 0.28);
+    // A pierced arch and an eight-point star with a diamond opening.
+    shape.moveTo(-0.47, -w * 0.76);
+    shape.lineTo(0.015, -w * 0.76);
+    shape.quadraticCurveTo(0.25, -w * 0.76, 0.47, 0);
+    shape.quadraticCurveTo(0.25, w * 0.76, 0.015, w * 0.76);
+    shape.lineTo(-0.47, w * 0.76);
+    shape.closePath();
+    shape.moveTo(-0.35, -w * 0.59);
+    shape.lineTo(-0.35, w * 0.59);
+    shape.lineTo(0.01, w * 0.59);
+    shape.quadraticCurveTo(0.19, w * 0.59, 0.345, 0);
+    shape.quadraticCurveTo(0.19, -w * 0.59, 0.01, -w * 0.59);
+    shape.closePath();
+
+    const star = [];
+    for (let index = 0; index < 16; index++) {
+      const angle = index * TAU / 16;
+      const radius = index % 2 === 0 ? 1 : 0.66;
+      star.push(-0.045 + 0.275 * radius * Math.cos(angle), w * 0.47 * radius * Math.sin(angle));
+    }
+    polygon(ink, ...star);
+    polygon(ink, -0.161, 0, -0.045, w * 0.20, 0.071, 0, -0.045, -w * 0.20);
+    polygon(ink, -0.361, -w * 0.047, -0.273, -w * 0.047,
+      -0.273, w * 0.047, -0.361, w * 0.047);
+    polygon(ink, 0.195, -w * 0.047, 0.35, -w * 0.047,
+      0.35, w * 0.047, 0.195, w * 0.047);
+    for (const y of [-0.36, 0, 0.36]) oval(light, -0.41, w * y, 0.018, w * 0.035);
   },
   lace({ shape, ink, light, thread }, { breadth: w }) {
     thread.moveTo(-0.28, -w * 0.96);
