@@ -64,8 +64,9 @@ export function createBloomRenderer() {
     ring = generateBloomRing(seed, index);
     ring.paths = makeBloomMotif(ring, style);
     ring.wedge = Math.tan(Math.PI / ring.symmetry) * 0.96;
-    ring.hasThread = ring.family === 'lace' || (ring.family === 'arc' && style === 'japanese');
-    ring.threadInk = style === 'nordic' ? 0 : ring.primary === 3 ? 1 : 3;
+    ring.hasThread = (ring.family === 'lace' && style !== 'nordic') ||
+      (ring.family === 'arc' && style === 'japanese');
+    ring.threadInk = ring.primary === 3 ? 1 : 3;
     slots[slot] = ring;
     return ring;
   }

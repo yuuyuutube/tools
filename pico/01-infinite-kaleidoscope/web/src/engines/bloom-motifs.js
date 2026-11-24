@@ -25,6 +25,39 @@ function leaf(path, left, right, width) {
   path.closePath();
 }
 
+function turnMotif(angle, height) {
+  const c = Math.cos(angle);
+  const s = Math.sin(angle);
+  return (x, y) => [c * x - s * y, height * (s * x + c * y)];
+}
+
+function lilyBell(path, x, y, width, drop) {
+  path.moveTo(x - width * 0.36, y);
+  path.bezierCurveTo(x - width * 0.06, y - drop * 0.15, x + width * 0.36, y - drop * 0.08,
+    x + width * 0.48, y + drop * 0.24);
+  path.quadraticCurveTo(x + width * 0.68, y + drop * 0.68, x + width, y + drop * 0.88);
+  path.quadraticCurveTo(x + width * 0.79, y + drop * 1.16, x + width * 0.42, y + drop * 0.96);
+  path.quadraticCurveTo(x + width * 0.04, y + drop * 1.29, x - width * 0.34, y + drop * 0.96);
+  path.quadraticCurveTo(x - width * 0.74, y + drop * 1.15, x - width, y + drop * 0.88);
+  path.quadraticCurveTo(x - width * 0.62, y + drop * 0.59, x - width * 0.36, y);
+  path.closePath();
+}
+
+function tatewakuBand(path, breadth, inset, halfWidth) {
+  const inner = (offset) => breadth * (offset - inset - halfWidth);
+  const outer = (offset) => breadth * (offset - inset + halfWidth);
+  path.moveTo(-0.44, inner(0.66));
+  path.bezierCurveTo(-0.30, inner(0.66), -0.29, inner(0.26), -0.13, inner(0.26));
+  path.bezierCurveTo(0.02, inner(0.26), 0.02, inner(0.66), 0.18, inner(0.66));
+  path.bezierCurveTo(0.31, inner(0.66), 0.33, inner(0.34), 0.44, inner(0.31));
+  path.quadraticCurveTo(0.49, breadth * (0.31 - inset), 0.44, outer(0.31));
+  path.bezierCurveTo(0.32, outer(0.34), 0.31, outer(0.66), 0.18, outer(0.66));
+  path.bezierCurveTo(0.02, outer(0.66), 0.02, outer(0.26), -0.13, outer(0.26));
+  path.bezierCurveTo(-0.29, outer(0.26), -0.30, outer(0.66), -0.44, outer(0.66));
+  path.quadraticCurveTo(-0.49, breadth * (0.66 - inset), -0.44, inner(0.66));
+  path.closePath();
+}
+
 const indian = {
   petal({ shape, ink, light }, { breadth: w }) {
     shape.moveTo(-0.48, 0);
@@ -107,37 +140,70 @@ const nordic = {
     diamond(ink, -0.32, 0.32, 0, w * 0.51);
     diamond(light, -0.14, 0.14, 0, w * 0.23);
   },
-  arc({ shape, ink, light }, { breadth: w, bias }) {
-    // A pair of folk-art birds with a beak, a plump belly and a painted wing.
-    for (const side of [-1, 1]) {
-      const y = side * w;
-      shape.moveTo(0.37, y * 0.12);
-      shape.lineTo(0.28, y * 0.37);
-      shape.bezierCurveTo(0.54, y * 0.67, 0.20, y * 0.93, 0.01, y * 0.78);
-      shape.quadraticCurveTo(-0.14, y * 0.70, -0.29, y);
-      shape.quadraticCurveTo(-0.49, y * 0.75, -0.42, y * 0.45);
-      shape.bezierCurveTo(-0.27, y * 0.21, -0.04, y * 0.19, 0.18, y * 0.32);
+  arc({ shape, ink, light }, { breadth: w }) {
+    // A curved stem and two broad leaves hold three hanging bell flowers.
+    shape.moveTo(-0.47, w * 0.44);
+    shape.bezierCurveTo(-0.35, -w * 0.33, -0.05, -w * 0.69, 0.40, -w * 0.51);
+    shape.lineTo(0.39, -w * 0.43);
+    shape.bezierCurveTo(-0.02, -w * 0.58, -0.31, -w * 0.23, -0.42, w * 0.46);
+    shape.closePath();
+    shape.moveTo(-0.45, w * 0.39);
+    shape.quadraticCurveTo(-0.51, w * 0.08, -0.43, -w * 0.24);
+    shape.quadraticCurveTo(-0.25, w * 0.01, -0.45, w * 0.39);
+    shape.closePath();
+    ink.moveTo(-0.45, w * 0.41);
+    ink.quadraticCurveTo(-0.32, w * 0.09, -0.17, w * 0.13);
+    ink.quadraticCurveTo(-0.25, w * 0.43, -0.45, w * 0.41);
+    ink.closePath();
+
+    for (const [joint, top, x, y, width, drop] of [
+      [-0.29, -0.13, -0.19, 0.00, 0.14, 0.36],
+      [-0.11, -0.40, 0.03, -0.27, 0.136, 0.35],
+      [0.16, -0.51, 0.30, -0.40, 0.115, 0.27],
+    ]) {
+      shape.moveTo(joint, top * w);
+      shape.quadraticCurveTo(x, (top - 0.09) * w, x + 0.02, y * w);
+      shape.lineTo(x - 0.035, y * w);
+      shape.quadraticCurveTo(x - 0.05, top * w, joint, (top + 0.08) * w);
       shape.closePath();
-      oval(ink, -0.19, y * (0.46 + 0.10 * bias), 0.15, w * 0.12);
-      oval(light, 0.25, y * 0.55, 0.045, w * 0.067);
+      lilyBell(shape, x, y * w, width, drop * w);
+      lilyBell(light, x, y * w, width, drop * w);
     }
   },
   tessellation({ shape, ink, light }, { breadth: w }) {
-    polygon(shape, -0.44, -w * 0.65, 0.07, -w * 0.65, 0.07, -w,
-      0.49, 0, 0.07, w, 0.07, w * 0.65, -0.44, w * 0.65);
-    polygon(ink, 0.10, -w * 0.62, 0.36, 0, 0.10, w * 0.62);
-    polygon(light, -0.39, -w * 0.20, -0.11, -w * 0.20, -0.11, w * 0.20, -0.39, w * 0.20);
+    // Six forked stitches radiate from a filled hexagonal center.
+    const height = w * 1.17;
+    const hub = [];
+    for (let index = 0; index < 6; index++) {
+      const turn = turnMotif(index * TAU / 6, height);
+      polygon(shape, ...turn(0, -0.039), ...turn(0.255, -0.039), ...turn(0.332, -0.146),
+        ...turn(0.391, -0.109), ...turn(0.340, -0.039), ...turn(0.472, -0.039),
+        ...turn(0.472, 0.039), ...turn(0.340, 0.039), ...turn(0.391, 0.109),
+        ...turn(0.332, 0.146), ...turn(0.255, 0.039), ...turn(0, 0.039));
+      hub.push(...turn(0.123, 0));
+    }
+    polygon(ink, ...hub);
+    oval(light, 0, 0, 0.039, height * 0.039);
   },
-  lace({ shape, ink, light, thread }, { breadth: w }) {
-    // Spaced berry pairs around a single spruce-shaped silhouette.
-    polygon(shape, -0.44, -w * 0.32, -0.20, -w * 0.32, -0.20, -w * 0.73,
-      0.10, -w * 0.39, 0.10, -w * 0.58, 0.48, 0,
-      0.10, w * 0.58, 0.10, w * 0.39, -0.20, w * 0.73, -0.20, w * 0.32, -0.44, w * 0.32);
-    thread.moveTo(-0.44, 0);
-    thread.lineTo(0.30, 0);
-    oval(ink, 0.04, -w * 0.82, 0.11, w * 0.14);
-    oval(ink, 0.04, w * 0.82, 0.11, w * 0.14);
-    oval(light, 0.20, 0, 0.08, w * 0.13);
+  lace({ shape, light }, { breadth: w }) {
+    // Broad petals meet at a pale center with five cutouts for the stamens.
+    const height = w * 1.25;
+    oval(light, 0, 0, 0.133, height * 0.133);
+    for (let index = 0; index < 5; index++) {
+      const turn = turnMotif((index * TAU / 5) + Math.PI / 10, height);
+      shape.moveTo(...turn(-0.07, 0.055));
+      shape.bezierCurveTo(...turn(-0.36, -0.055), ...turn(-0.36, -0.33), ...turn(-0.18, -0.423));
+      shape.quadraticCurveTo(...turn(-0.068, -0.480), ...turn(0, -0.402));
+      shape.quadraticCurveTo(...turn(0.072, -0.478), ...turn(0.20, -0.412));
+      shape.bezierCurveTo(...turn(0.36, -0.32), ...turn(0.28, -0.052), ...turn(0.07, 0.055));
+      shape.closePath();
+
+      const [x, y] = turn(0, -0.067);
+      const stamen = 0.019;
+      light.moveTo(x + stamen, y);
+      light.ellipse(x, y, stamen, height * stamen, 0, 0, -TAU, true);
+      light.closePath();
+    }
   },
 };
 
@@ -155,11 +221,17 @@ const japanese = {
     leaf(ink, -0.43, 0.19, w * 0.48);
     oval(light, -0.21, 0, 0.10, w * 0.11);
   },
-  diamond({ shape, ink, light }, { breadth: w, bias }) {
-    const joint = -0.10 + bias * 0.16;
-    diamond(shape, -0.49, 0.49, 0, w, joint);
-    diamond(ink, -0.32, 0.31, 0, w * 0.63, joint);
-    diamond(light, -0.23, 0.22, 0, w * 0.29, joint * 0.7);
+  diamond({ shape, ink, light }, { breadth: w }) {
+    // The neck rises from the chest and folds down into the beak in one silhouette.
+    polygon(shape, -0.49, -w * 0.31, -0.24, -w * 0.14, -0.36, -w * 0.80,
+      -0.02, -w * 0.31, 0.13, -w * 0.15, 0.31, -w * 0.79,
+      0.49, -w * 0.55, 0.34, -w * 0.61, 0.29, -w * 0.085,
+      0.21, w * 0.17, -0.035, w * 0.81, -0.20, w * 0.24, -0.27, w * 0.23);
+    polygon(ink, -0.36, -w * 0.80, -0.02, -w * 0.31, -0.24, -w * 0.14);
+    polygon(ink, 0.13, -w * 0.15, 0.31, -w * 0.79, 0.34, -w * 0.61,
+      0.29, -w * 0.085, 0.21, w * 0.17);
+    polygon(light, -0.20, w * 0.24, 0.21, w * 0.17, -0.035, w * 0.81);
+    polygon(light, 0.31, -w * 0.79, 0.49, -w * 0.55, 0.34, -w * 0.61);
   },
   star({ shape, ink, light }, { breadth: w }) {
     // Hemp-leaf facets with one open seam down the center.
@@ -185,12 +257,15 @@ const japanese = {
     thread.bezierCurveTo(0.57, -w * 0.86, 0.57, w * 0.86, -0.43, w * 0.86);
   },
   tessellation({ shape, ink, light }, { breadth: w }) {
-    // An interlocking Shippo cell, painted as four generous curved lobes.
-    oval(shape, 0, 0, 0.45, w * 0.86);
-    oval(ink, -0.16, 0, 0.25, w * 0.42);
-    oval(ink, 0.16, 0, 0.25, w * 0.42);
-    oval(light, 0, -w * 0.34, 0.20, w * 0.35);
-    oval(light, 0, w * 0.34, 0.20, w * 0.35);
+    // Opposing S-curves alternate between a narrow waist and an open center.
+    for (const side of [-w, w]) {
+      tatewakuBand(shape, side, 0, 0.064);
+      tatewakuBand(ink, side, 0.18, 0.031);
+    }
+    light.moveTo(0.08, 0);
+    light.quadraticCurveTo(0.16, -w * 0.145, 0.24, 0);
+    light.quadraticCurveTo(0.16, w * 0.145, 0.08, 0);
+    light.closePath();
   },
   lace({ shape, ink, light, thread }, { breadth: w, bias }) {
     // A tied fan with three pleats and a single pearl at its hinge.
