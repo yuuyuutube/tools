@@ -1,0 +1,22 @@
+<!doctype html>
+<!-- Previous OG image (kept for the OG editor): the intro forest and cut-paper title at 1200 × 630, no button, with the OG overrides from
+     src/og-layout.js on top of the intro layout. Rendered by scripts/render-og.sh. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #F4EEE1; } svg { display: block; width: 1200px; height: 630px; }</style>
+</head>
+<body>
+<svg id="forest" aria-hidden="true"></svg>
+<div id="play" hidden></div>
+<script type="module">
+  import { initStore } from "../src/store.js";
+  import { buildForest, mergeLayout } from "../src/intro.js";
+  import introLayout from "../src/intro-layout.js";
+  import ogLayout from "../src/og-layout.js";
+  initStore();
+  buildForest(document.getElementById("forest"), 1200, 630, document.getElementById("play"), mergeLayout(introLayout, ogLayout));
+  document.title = "ready";
+</script>
+</body>
+</html>

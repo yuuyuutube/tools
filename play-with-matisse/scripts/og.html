@@ -1,21 +1,115 @@
 <!doctype html>
-<!-- OG image source: the intro forest and cut-paper title at 1200 × 630, no button, with the OG overrides from
-     src/og-layout.js on top of the intro layout. Rendered by scripts/render-og.sh. -->
+<!-- OG image source (1200 × 630): a real piece made with the site (assets/og-artwork.jpg) bleeds off the right
+     edge, its paper continuing across the whole card; the cut-paper title sits on the open paper at the left in the
+     artwork's own blue, with one torn strip of coral under it. Rendered by scripts/render-og.sh.
+     The earlier forest version is scripts/og-forest.html. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<style>html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #F4EEE1; } svg { display: block; width: 1200px; height: 630px; }</style>
+<style>html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #F1ECE2; } svg { display: block; width: 1200px; height: 630px; }</style>
 </head>
 <body>
-<svg id="forest" aria-hidden="true"></svg>
-<div id="play" hidden></div>
+<svg id="og" viewBox="0 0 1200 630" aria-hidden="true"></svg>
 <script type="module">
   import { initStore } from "../src/store.js";
-  import { buildForest, mergeLayout } from "../src/intro.js";
-  import introLayout from "../src/intro-layout.js";
-  import ogLayout from "../src/og-layout.js";
+  import { glyphShape } from "../src/shapes.js";
+  import { ringsToD } from "../src/intro.js";
+  import { rng, noise2 } from "../src/util.js";
+
   initStore();
-  buildForest(document.getElementById("forest"), 1200, 630, document.getElementById("play"), mergeLayout(introLayout, ogLayout));
+  const NS = "http://www.w3.org/2000/svg",
+    svg = document.getElementById("og"),
+    SRC = "../assets/og-artwork.jpg";
+  const el = (tag, attrs = {}, parent = svg) => {
+    const n = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+    parent.append(n);
+    return n;
+  };
+
+  const img = await new Promise((res) => {
+    const i = new Image();
+    i.onload = () => res(i);
+    i.src = SRC;
+  });
+  // Take the paper colour and the cut-paper blue straight from the artwork, so the card and the picture are one sheet.
+  const probe = document.createElement("canvas");
+  probe.width = img.naturalWidth;
+  probe.height = img.naturalHeight;
+  const pc = probe.getContext("2d", { willReadFrequently: true });
+  pc.drawImage(img, 0, 0);
+  const avg = (x, y, w, h) => {
+    const d = pc.getImageData(x, y, w, h).data;
+    let r = 0, g = 0, b = 0;
+    for (let i = 0; i < d.length; i += 4) (r += d[i]), (g += d[i + 1]), (b += d[i + 2]);
+    const n = d.length / 4;
+    return `rgb(${Math.round(r / n)},${Math.round(g / n)},${Math.round(b / n)})`;
+  };
+  const W = img.naturalWidth,
+    paper = avg(10, 520, 60, 200),
+    blue = avg(Math.round(W * 0.47), Math.round(W * 0.2), 40, 40);
+  document.body.style.background = paper;
+
+  el("defs").innerHTML = `
+    <linearGradient id="fadeL" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".14" stop-color="#fff"/></linearGradient>
+    <mask id="artMask"><rect x="560" y="0" width="640" height="630" fill="url(#fadeL)"/></mask>
+    <filter id="lift" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="2.5" stdDeviation="2.6" flood-color="#2A2014" flood-opacity=".28"/></filter>`;
+  el("rect", { width: 1200, height: 630, fill: paper });
+
+  // The artwork, full height on the right; its left edge fades into the same paper.
+  el("image", { href: SRC, x: 570, y: 0, width: 630, height: 630, mask: "url(#artMask)" });
+
+  // Cut-paper title in the artwork's blue: a small "PLAY WITH" over a big "MATISSE".
+  const R = rng(5150),
+    track = 4,
+    lines = ["PLAY WITH", "MATISSE"].map((t, li) => [...t].map((ch, i) => (ch === " " ? { space: true, adv: 34 } : { ch, ...glyphShape(ch, 300 + li * 40 + i) }))),
+    width = (line) => line.reduce((w, g) => w + g.adv + track, -track);
+  const left = 72,
+    titleW = 500,
+    sB = titleW / width(lines[1]),
+    sA = sB * 0.5,
+    capA = 72 * sA,
+    capB = 72 * sB,
+    gap = capB * 0.3,
+    top = 315 - (capA + gap + capB) / 2 - 18;
+
+  // One torn coral strip under the title, cut with the same rough edge the site's "rip" uses.
+  const n = noise2(77),
+    sy = top + capA + gap + capB + 30,
+    sx0 = left - 6,
+    sx1 = left + titleW + 10,
+    edge = (y0, o) => {
+      const pts = [];
+      for (let x = sx0; x <= sx1; x += 3) pts.push([x, y0 + n(x / 26, o) * 3.2 + n(x / 7, o + 9) * 1.3]);
+      return pts;
+    };
+  const topEdge = edge(sy, 0),
+    botEdge = edge(sy + 24, 40).reverse(),
+    strip = topEdge.concat(botEdge);
+  const rim = strip.map(([x, y], i) => [x + (i < topEdge.length ? 0 : 0), y + (i < topEdge.length ? -1.6 : 1.6)]);
+  const P = (pts) => "M" + pts.map((p) => p[0].toFixed(1) + " " + p[1].toFixed(1)).join("L") + "Z";
+  el("path", { d: P(rim), fill: "#FBF7EE", filter: "url(#lift)" });
+  el("path", { d: P(strip), fill: "#EC6A4C" });
+
+  const title = el("g", { filter: "url(#lift)" });
+  [
+    [lines[0], sA, top + capA],
+    [lines[1], sB, top + capA + gap + capB],
+  ].forEach(([line, s, baseline], li) => {
+    let x = left;
+    for (const g of line) {
+      if (!g.space) {
+        const k = s * (0.95 + R() * 0.1),
+          lx = x + (g.adv * s) / 2,
+          ly = baseline - 36 * s + (R() - 0.5) * 6 * s,
+          rot = (R() - 0.5) * 9;
+        const p = el("g", { transform: `translate(${lx.toFixed(1)} ${ly.toFixed(1)}) rotate(${rot.toFixed(1)}) scale(${k.toFixed(4)})` }, title);
+        el("path", { d: ringsToD(g.rings), transform: `translate(${(-g.adv / 2).toFixed(1)} 36)`, fill: li === 0 ? "#EC6A4C" : blue }, p);
+      }
+      x += (g.adv + track) * s;
+    }
+  });
+
   document.title = "ready";
 </script>
 </body>
