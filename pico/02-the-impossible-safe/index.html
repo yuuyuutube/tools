@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Impossible Safe</title>
+<meta name="description" content="A Very Serious Vault for Very Unimportant Things. 無用物品保護局。">
+<meta name="theme-color" content="#121513">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+<div id="app">
+  <section id="stage" aria-label="保險箱"></section>
+  <div id="controls" aria-label="操作">
+    <button class="ctl" data-ctl="ccw" aria-label="向左轉"></button>
+    <button class="ctl primary" data-ctl="press" aria-label="按下"></button>
+    <button class="ctl" data-ctl="cw" aria-label="向右轉"></button>
+    <button class="ctl" data-ctl="back" aria-label="返回／長按"></button>
+  </div>
+  <section id="dossier">
+    <header id="letterhead">
+      <div class="seal" aria-hidden="true"></div>
+      <div class="bureau"><b>無用物品保護局</b><span>THE BUREAU OF UNNECESSARY PROTECTION</span></div>
+      <div class="lh-status">
+        <button id="btn-sound" class="icon-btn" aria-label="聲音"></button>
+        <button id="btn-pico" class="icon-btn" aria-label="旋鈕連線"></button>
+      </div>
+    </header>
+    <main id="sheet"></main>
+    <footer id="dispatch" aria-live="polite"></footer>
+  </section>
+</div>
+<div id="toast" role="status"></div>
+<input id="import-file" type="file" accept="application/json,.json" hidden>
+<noscript>本局的保險箱需要 JavaScript 才能運作。</noscript>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
