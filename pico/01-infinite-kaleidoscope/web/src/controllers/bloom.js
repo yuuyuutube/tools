@@ -2,6 +2,9 @@ export const BLOOM_STYLES = [
   { id: 'indian', name: 'Indian', palette: 'moss-cyclamen' },
   { id: 'nordic', name: 'Nordic', palette: 'cocoa-bluebell' },
   { id: 'japanese', name: 'Japanese', palette: 'prussian-celadon' },
+  { id: 'tarot', name: 'Tarot', palette: 'midnight-gilt' },
+  { id: 'dimsum', name: 'Dim Sum', palette: 'lacquer-steamer' },
+  { id: 'cosmos', name: 'Cosmos', palette: 'cosmic-mint' },
 ];
 export const BLOOM_START = { bloomProgress: 0.56, bloomStyle: 'indian' };
 export const MAX_BLOOM_PROGRESS = 1e10;

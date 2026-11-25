@@ -48,7 +48,7 @@ python3 -m http.server 8000 --bind 127.0.0.1 --directory web
 | KALEIDO | Chromatic Fold | Enamel Window 琺瑯花窗，Folded Star 折紙星 |
 | SPIRO | Plotter Plate | Ribbon Orbit 緞帶軌道，Celestial Etching 天體蝕刻 |
 | OPTICAL | Kinetic Field | Tidal Relief 潮汐浮雕，Moiré Weave 莫列織紋 |
-| ETERNAL BLOOM | Indian | Nordic 北歐風，Japanese 日系 |
+| ETERNAL BLOOM | Indian | Nordic 北歐風，Japanese 日系，Tarot 塔羅，Dim Sum 東方點心，Cosmos 太空與 UFO |
 
 前三種模式切換風格時保留現有色盤和旋鈕位置。Bloom 切換風格時套用搭配的色盤。
 
@@ -56,7 +56,7 @@ python3 -m http.server 8000 --bind 127.0.0.1 --directory web
 
 選第四個花瓣圖示進入 Eternal Bloom。順時針轉動 KY-040、點 `+` 或向右拖曳會向外綻放，反向會向花芯收回。也可用滾輪或左右方向鍵操作。每格推進或回退四分之一環，停手後畫面收在最後一格，等下一次操作。
 
-點右上的疊層圖示可直接選 **Indian**、**Nordic**、**Japanese**。長按 Pico 旋鈕會依這個順序循環切換，保有目前的 Seed 和綻放位置。印度風有蓮瓣、小油燈、孔雀尾羽、雙彎勾紋、鏤空石窗和珠串，北歐風有鬱金香、拼色菱形、四角冬星、鈴蘭、編織雪花和野玫瑰，日系有淺凹櫻瓣、紙鶴、麻葉折面、青海波、立涌和折扇。各風格都有六套輪廓。選風格會套用搭配的色盤，仍可用原本的色盤選單更換。
+點右上的疊層圖示可直接選 **Indian**、**Nordic**、**Japanese**、**Tarot**、**Dim Sum**、**Cosmos**。長按 Pico 旋鈕會依這個順序循環切換，保有目前的 Seed 和綻放位置。印度風有蓮瓣、小油燈、孔雀尾羽、雙彎勾紋、鏤空石窗和珠串，北歐風有鬱金香、拼色菱形、四角冬星、鈴蘭、編織雪花和野玫瑰，日系有淺凹櫻瓣、紙鶴、麻葉折面、青海波、立涌和折扇。塔羅有石榴、百合、無限符號、聖杯、太陽和全視之眼，東方點心有小籠包、月餅、茶杯、竹葉、八角和筷子，太空有外星人、土星、飛碟、火箭、閃星和人造衛星。各風格都有六套輪廓。選風格會套用搭配的色盤，仍可用原本的色盤選單更換。
 
 每個新環用 Seed 和生成序號建立扇形向量路徑。外輪廓先形成，內色塊與細節隨後顯現。每六個生成槽包含六個家族各一次。相鄰層交替配置顏色與輪廓，各環保有由 Seed 決定的共同對稱軸。
 
@@ -112,7 +112,7 @@ python3 -m http.server 8000 --bind 127.0.0.1 --directory web
 3. 執行 **MicroPico: Disconnect**，並關閉仍占用該序列埠的 REPL、其他 VS Code 視窗或終端機。若 MicroPico 設為自動重連，可先關閉該 VS Code 工作區。
 4. 拔掉再插回 Pico 的 USB，讓它從裝置上的 `/main.py` 獨立開機。先等裝置出現在 macOS，再切到 Chrome。
 5. 在本機作品頁點右上角的插頭圖示，從 Chrome 選擇器選 Pico 或 USB Serial 裝置，再按連線。macOS 終端的 `ls /dev/cu.usbmodem*` 可協助比對裝置。USB CDC 是 Pico 透過 USB 模擬的序列埠。網頁以 115200 開啟連線，這是 Web Serial 的設定值，在此 USB CDC 路徑上不代表實體 UART 的傳輸速度。 [Chrome Web Serial 說明](https://developer.chrome.com/docs/capabilities/serial/)
-6. 插頭圖示亮起時，轉動旋鈕可演化，Eternal Bloom 模式下會直接綻放或收回。短按依序切換四個模式，長按輪換目前模式的三款風格。測完先點插頭斷線，再回 MicroPico。意外拔除時網頁可繼續用，插回後點插頭並重新選擇。
+6. 插頭圖示亮起時，轉動旋鈕可演化，Eternal Bloom 模式下會直接綻放或收回。短按依序切換四個模式，長按輪換目前模式的風格（Bloom 有六款，其他模式各三款）。測完先點插頭斷線，再回 MicroPico。意外拔除時網頁可繼續用，插回後點插頭並重新選擇。
 
 > **一次只讓一個程式使用 Pico 序列埠。** MicroPico 的 REPL 與 Chrome Web Serial 共用同一條連線。
 

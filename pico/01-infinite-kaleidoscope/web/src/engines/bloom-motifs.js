@@ -58,6 +58,68 @@ function tatewakuBand(path, breadth, inset, halfWidth) {
   path.closePath();
 }
 
+function hole(path, x, y, rx, ry) {
+  // Counter-clockwise, so it cuts through whatever this layer already filled.
+  path.moveTo(x + rx, y);
+  path.ellipse(x, y, rx, ry, 0, 0, -TAU, true);
+  path.closePath();
+}
+
+function arcAt(path, x, y, rx, ry, rot, a0, a1, ccw = false) {
+  const c = Math.cos(rot), s = Math.sin(rot);
+  const px = rx * Math.cos(a0), py = ry * Math.sin(a0);
+  path.moveTo(x + c * px - s * py, y + s * px + c * py);
+  path.ellipse(x, y, rx, ry, rot, a0, a1, ccw);
+}
+
+function streak(path, x0, y0, x1, y1, thick) {
+  // A thin lens between two points.
+  const dx = x1 - x0, dy = y1 - y0, len = Math.hypot(dx, dy) || 1;
+  const nx = -dy / len * thick, ny = dx / len * thick;
+  const mx = (x0 + x1) / 2, my = (y0 + y1) / 2;
+  path.moveTo(x0, y0);
+  path.quadraticCurveTo(mx + nx, my + ny, x1, y1);
+  path.quadraticCurveTo(mx - nx, my - ny, x0, y0);
+  path.closePath();
+}
+
+function sparkle(path, x, y, rx, ry, pinch = 0.12) {
+  path.moveTo(x + rx, y);
+  path.quadraticCurveTo(x + rx * pinch, y + ry * pinch, x, y + ry);
+  path.quadraticCurveTo(x - rx * pinch, y + ry * pinch, x - rx, y);
+  path.quadraticCurveTo(x - rx * pinch, y - ry * pinch, x, y - ry);
+  path.quadraticCurveTo(x + rx * pinch, y - ry * pinch, x + rx, y);
+  path.closePath();
+}
+
+function lanceLeaf(path, x0, y0, x1, y1, width) {
+  // A pointed leaf, widest a third of the way from its base. Always wound the same way,
+  // so overlapping leaves on one layer merge instead of cancelling.
+  const dx = x1 - x0, dy = y1 - y0, len = Math.hypot(dx, dy);
+  const nx = -dy / len * width, ny = dx / len * width;
+  const cx = x0 + dx * 0.38, cy = y0 + dy * 0.38;
+  path.moveTo(x0, y0);
+  path.quadraticCurveTo(cx + nx, cy + ny, x1, y1);
+  path.quadraticCurveTo(cx - nx, cy - ny, x0, y0);
+  path.closePath();
+}
+
+function ribbon(path, points, thick) {
+  // A band of even width along a closed polyline, built from same-wound quads.
+  const n = points.length;
+  const off = points.map((_, i) => {
+    const [ax, ay] = points[(i + n - 1) % n], [bx, by] = points[(i + 1) % n];
+    const len = Math.hypot(bx - ax, by - ay) || 1;
+    return [-(by - ay) / len * thick, (bx - ax) / len * thick];
+  });
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    const [px, py] = points[i], [qx, qy] = points[j];
+    polygon(path, px + off[i][0], py + off[i][1], qx + off[j][0], qy + off[j][1],
+      qx - off[j][0], qy - off[j][1], px - off[i][0], py - off[i][1]);
+  }
+}
+
 const indian = {
   petal({ shape, ink, light }, { breadth: w }) {
     shape.moveTo(-0.48, 0);
@@ -349,7 +411,315 @@ const japanese = {
   },
 };
 
-const styles = { indian, nordic, japanese };
+const tarot = {
+  petal({ shape, ink, light }, { breadth: w }) {
+    // Pomegranate: a round fruit crowned by its calyx, split open to show the seeds.
+    oval(shape, -0.07, 0, 0.38, w * 0.70);
+    polygon(shape, 0.20, -w * 0.26, 0.47, -w * 0.42, 0.37, -w * 0.14, 0.49, 0,
+      0.37, w * 0.14, 0.47, w * 0.42, 0.20, w * 0.26);
+    leaf(ink, -0.37, 0.21, w * 0.44);
+    for (const [x, y] of [[-0.25, 0], [-0.14, -0.19], [-0.14, 0.19], [-0.08, 0],
+      [0.01, -0.16], [0.01, 0.16], [0.09, 0]]) oval(light, x, y * w, 0.03, w * 0.052);
+  },
+  arc({ shape, ink, light }, { breadth: w }) {
+    // Lily: the Magician card lily drawn as a three-petal fleur-de-lis.
+    leaf(shape, -0.12, 0.49, w * 0.26);
+    for (const s of [-1, 1]) {
+      shape.moveTo(-0.04, s * w * 0.06);
+      shape.bezierCurveTo(0.10, s * w * 0.10, 0.38, s * w * 0.40, 0.30, s * w * 0.84);
+      shape.bezierCurveTo(0.24, s * w * 0.60, 0.10, s * w * 0.38, -0.04, s * w * 0.28);
+      shape.closePath();
+      shape.moveTo(-0.15, s * w * 0.10);
+      shape.quadraticCurveTo(-0.30, s * w * 0.42, -0.45, s * w * 0.32);
+      shape.quadraticCurveTo(-0.30, s * w * 0.24, -0.15, s * w * 0.24);
+      shape.closePath();
+    }
+    polygon(shape, -0.15, -w * 0.12, -0.15, w * 0.12, -0.42, 0);
+    polygon(shape, -0.16, -w * 0.32, -0.04, -w * 0.32, -0.04, w * 0.32, -0.16, w * 0.32);
+    leaf(ink, 0.00, 0.40, w * 0.11);
+    polygon(light, -0.135, -w * 0.29, -0.065, -w * 0.29, -0.065, w * 0.29, -0.135, w * 0.29);
+  },
+  lace({ shape, ink, light }, { breadth: w }) {
+    // Infinity: a two-tone ribbon in a figure eight, a small star in each loop.
+    const pts = [];
+    for (let i = 0; i < 120; i++) {
+      const t = i * TAU / 120, d = 1 + Math.sin(t) ** 2;
+      pts.push([0.85 * Math.sin(t) * Math.cos(t) / d, w * 0.84 * Math.cos(t) / d]);
+    }
+    ribbon(shape, pts, 0.07);
+    ribbon(ink, pts, 0.024);
+    for (const s of [-1, 1]) sparkle(light, 0, s * w * 0.50, 0.06, w * 0.10, 0.14);
+  },
+  diamond({ shape, ink, light }, { breadth: w }) {
+    // Chalice: a flat silhouette with a rim line, a jewel and a knotted stem.
+    shape.moveTo(0.47, -w * 0.52);
+    shape.bezierCurveTo(0.22, -w * 0.52, 0.12, -w * 0.26, 0.10, -w * 0.07);
+    for (const [x, y] of [[-0.30, -0.06], [-0.40, -0.36], [-0.47, -0.38],
+      [-0.47, 0.38], [-0.40, 0.36], [-0.30, 0.06], [0.10, 0.07]]) shape.lineTo(x, y * w);
+    shape.bezierCurveTo(0.12, w * 0.26, 0.22, w * 0.52, 0.47, w * 0.52);
+    shape.closePath();
+    oval(shape, -0.08, 0, 0.045, w * 0.12);
+    polygon(ink, 0.47, -w * 0.52, 0.47, w * 0.52, 0.40, w * 0.51, 0.40, -w * 0.51);
+    polygon(ink, -0.47, -w * 0.38, -0.43, -w * 0.37, -0.43, w * 0.37, -0.47, w * 0.38);
+    oval(light, 0.24, 0, 0.045, w * 0.10);
+    oval(light, -0.08, 0, 0.022, w * 0.05);
+  },
+  star({ shape, ink, light }, { breadth: w }) {
+    // Sun: straight rays alternate with wavy ones around a bright disc.
+    const h = w * 1.05;
+    oval(shape, 0, 0, 0.22, h * 0.22);
+    for (let i = 0; i < 16; i++) {
+      const t = turnMotif(i * TAU / 16, h);
+      if (i % 2 === 0) {
+        polygon(shape, ...t(0.15, -0.055), ...t(0.49, 0), ...t(0.15, 0.055));
+      } else {
+        shape.moveTo(...t(0.15, -0.045));
+        shape.bezierCurveTo(...t(0.23, -0.10), ...t(0.29, 0.06), ...t(0.41, 0));
+        shape.bezierCurveTo(...t(0.29, 0.10), ...t(0.23, -0.04), ...t(0.15, 0.045));
+        shape.closePath();
+      }
+    }
+    oval(ink, 0, 0, 0.175, h * 0.175);
+    oval(light, 0, 0, 0.13, h * 0.13);
+  },
+  tessellation({ shape, ink, light }, { breadth: w }) {
+    // All-seeing eye: an eye inside a triangle, with twelve rays behind it.
+    const h = w * 1.05;
+    for (let i = 0; i < 12; i++) {
+      const t = turnMotif(i * TAU / 12 + TAU / 24, h);
+      polygon(shape, ...t(0.12, -0.028), ...t(i % 2 ? 0.40 : 0.49, 0), ...t(0.12, 0.028));
+    }
+    const tri = (r) => [0, 1, 2].flatMap((k) => turnMotif(k * TAU / 3, h)(r, 0));
+    polygon(shape, ...tri(0.36));
+    polygon(ink, ...tri(0.28));
+    light.moveTo(-0.04, -h * 0.16);
+    light.quadraticCurveTo(0.07, 0, -0.04, h * 0.16);
+    light.quadraticCurveTo(-0.15, 0, -0.04, -h * 0.16);
+    light.closePath();
+    hole(light, -0.04, 0, 0.032, h * 0.05);
+  },
+};
+
+const dimsum = {
+  petal({ shape, ink, light }, { breadth: w }) {
+    // Xiaolongbao: a plump bun whose pleats swirl into a twisted knot.
+    shape.moveTo(-0.42, 0);
+    shape.bezierCurveTo(-0.47, -w * 0.82, 0.08, -w * 0.98, 0.32, -w * 0.30);
+    shape.quadraticCurveTo(0.40, -w * 0.14, 0.48, -w * 0.05);
+    shape.quadraticCurveTo(0.50, 0, 0.48, w * 0.05);
+    shape.quadraticCurveTo(0.40, w * 0.14, 0.32, w * 0.30);
+    shape.bezierCurveTo(0.08, w * 0.98, -0.47, w * 0.82, -0.42, 0);
+    shape.closePath();
+    for (const k of [-2, -1, 0, 1, 2]) {
+      const sx = 0.41, sy = k * 0.025 * w;
+      const ex = -0.06 + Math.abs(k) * 0.065, ey = k * 0.27 * w;
+      const mx = (sx + ex) / 2, my = (sy + ey) / 2 + w * 0.10;
+      const d = w * 0.035;
+      ink.moveTo(sx, sy);
+      ink.quadraticCurveTo(mx, my - d, ex, ey);
+      ink.quadraticCurveTo(mx, my + d, sx, sy);
+      ink.closePath();
+    }
+  },
+  diamond({ shape, ink, light }, { breadth: w }) {
+    // Bamboo leaves: five slender leaves fanning from one short twig, two tones alternating.
+    polygon(shape, -0.48, -w * 0.035, -0.36, -w * 0.03, -0.36, w * 0.03, -0.48, w * 0.035);
+    const x0 = -0.38;
+    for (const [deg, len, layer] of [[0, 0.86, shape], [62, 0.70, shape], [-62, 0.70, shape],
+      [30, 0.80, ink], [-30, 0.80, ink]]) {
+      const a = deg * Math.PI / 180;
+      lanceLeaf(layer, x0, 0, x0 + len * Math.cos(a), w * len * Math.sin(a), 0.14);
+    }
+    streak(light, -0.30, 0, 0.36, 0, w * 0.012);
+  },
+  star({ shape, ink, light }, { breadth: w }) {
+    // Star anise: eight boat-shaped pods, each holding one glossy seed.
+    const h = w * 1.12;
+    oval(shape, 0, 0, 0.09, h * 0.09);
+    for (let i = 0; i < 8; i++) {
+      const t = turnMotif(i * TAU / 8, h);
+      shape.moveTo(...t(0.04, -0.05));
+      shape.quadraticCurveTo(...t(0.26, -0.19), ...t(0.49, 0));
+      shape.quadraticCurveTo(...t(0.26, 0.19), ...t(0.04, 0.05));
+      shape.closePath();
+      ink.moveTo(...t(0.15, 0));
+      ink.quadraticCurveTo(...t(0.29, -0.085), ...t(0.44, 0));
+      ink.quadraticCurveTo(...t(0.29, 0.085), ...t(0.15, 0));
+      ink.closePath();
+      const [x, y] = t(0.28, 0);
+      oval(light, x, y, 0.032, h * 0.032);
+    }
+    oval(ink, 0, 0, 0.055, h * 0.055);
+  },
+  arc({ shape, ink, light }, { breadth: w }) {
+    // Mooncake from above: a scalloped edge around a pressed flower pattern.
+    const h = w * 1.05, n = 12;
+    const at = (a, r) => [r * Math.cos(a), h * r * Math.sin(a)];
+    shape.moveTo(...at(0, 0.44));
+    for (let i = 0; i < n; i++) {
+      shape.quadraticCurveTo(...at((i + 0.5) * TAU / n, 0.53), ...at((i + 1) * TAU / n, 0.44));
+    }
+    shape.closePath();
+    oval(ink, 0, 0, 0.36, h * 0.36);
+    oval(light, 0, 0, 0.32, h * 0.32);
+    hole(light, 0, 0, 0.285, h * 0.285);
+    for (let i = 0; i < 8; i++) {
+      const t = turnMotif(i * TAU / 8 + TAU / 16, h);
+      light.moveTo(...t(0.05, 0));
+      light.quadraticCurveTo(...t(0.14, -0.075), ...t(0.23, 0));
+      light.quadraticCurveTo(...t(0.14, 0.075), ...t(0.05, 0));
+      light.closePath();
+    }
+    oval(light, 0, 0, 0.035, h * 0.035);
+  },
+  tessellation({ shape, ink, light }, { breadth: w }) {
+    // Chopsticks: a tapered pair, tips toward the center, resting on a small rest.
+    for (const s of [-1, 1]) {
+      polygon(shape, -0.47, s * w * 0.035, -0.47, s * w * 0.085,
+        0.47, s * w * 0.37, 0.47, s * w * 0.23);
+      for (const x of [0.22, 0.28]) {
+        const c = 0.06 + 0.24 * (x + 0.47) / 0.94;
+        const half = 0.025 + 0.045 * (x + 0.47) / 0.94;
+        polygon(light, x - 0.012, s * w * (c - half - 0.004), x + 0.012, s * w * (c - half),
+          x + 0.012, s * w * (c + half + 0.004), x - 0.012, s * w * (c + half));
+      }
+    }
+    // The rest shows only in the gaps, so the sticks read as lying on top of it.
+    polygon(ink, -0.16, -w * 0.08, -0.04, -w * 0.08, -0.04, w * 0.08, -0.16, w * 0.08);
+    for (const s of [-1, 1]) {
+      polygon(ink, -0.16, s * w * 0.24, -0.04, s * w * 0.25, -0.04, s * w * 0.38, -0.16, s * w * 0.38);
+      oval(ink, -0.10, s * w * 0.38, 0.06, w * 0.06);
+    }
+  },
+  lace({ shape, ink, light }, { breadth: w }) {
+    // Teacup as a flat side silhouette: straight rim, painted rim line and band, flared foot.
+    shape.moveTo(0.40, -w * 0.64);
+    shape.bezierCurveTo(0.18, -w * 0.62, -0.14, -w * 0.44, -0.24, -w * 0.26);
+    shape.lineTo(-0.25, -w * 0.20);
+    shape.lineTo(-0.44, -w * 0.24);
+    shape.lineTo(-0.44, w * 0.24);
+    shape.lineTo(-0.25, w * 0.20);
+    shape.lineTo(-0.24, w * 0.26);
+    shape.bezierCurveTo(-0.14, w * 0.44, 0.18, w * 0.62, 0.40, w * 0.64);
+    shape.closePath();
+    polygon(ink, 0.40, -w * 0.64, 0.40, w * 0.64, 0.331, w * 0.63, 0.331, -w * 0.63);
+    polygon(light, 0.03, -w * 0.49, 0.03, w * 0.49, -0.03, w * 0.455, -0.03, -w * 0.455);
+  },
+};
+
+const cosmos = {
+  petal({ shape, ink, light }, { breadth: w }) {
+    // Alien head: a pointed chin, a wide dome and two tilted almond eyes.
+    shape.moveTo(-0.47, 0);
+    shape.bezierCurveTo(-0.30, -w * 0.22, -0.12, -w * 0.86, 0.18, -w * 0.84);
+    shape.bezierCurveTo(0.44, -w * 0.82, 0.49, -w * 0.36, 0.49, 0);
+    shape.bezierCurveTo(0.49, w * 0.36, 0.44, w * 0.82, 0.18, w * 0.84);
+    shape.bezierCurveTo(-0.12, w * 0.86, -0.30, w * 0.22, -0.47, 0);
+    shape.closePath();
+    for (const s of [-1, 1]) {
+      ink.moveTo(-0.10, s * w * 0.10);
+      ink.bezierCurveTo(-0.03, s * w * 0.58, 0.20, s * w * 0.74, 0.31, s * w * 0.63);
+      ink.bezierCurveTo(0.29, s * w * 0.34, 0.06, s * w * 0.12, -0.10, s * w * 0.10);
+      ink.closePath();
+      oval(light, 0.19, s * w * 0.52, 0.03, w * 0.06);
+    }
+    oval(ink, -0.31, 0, 0.012, w * 0.06);
+  },
+  diamond({ shape, ink, light }, { breadth: w }) {
+    // Rocket: nose cone outward, three fins and a round porthole.
+    const h = w * 1.1;
+    shape.moveTo(0.49, 0);
+    shape.quadraticCurveTo(0.36, -w * 0.30, 0.14, -w * 0.30);
+    for (const [x, y] of [[-0.10, -0.30], [-0.45, -0.72], [-0.38, -0.26], [-0.47, -0.16],
+      [-0.47, 0.16], [-0.38, 0.26], [-0.45, 0.72], [-0.10, 0.30], [0.14, 0.30]]) {
+      shape.lineTo(x, y * w);
+    }
+    shape.quadraticCurveTo(0.36, w * 0.30, 0.49, 0);
+    shape.closePath();
+    ink.moveTo(0.49, 0);
+    ink.quadraticCurveTo(0.398, -w * 0.213, 0.264, -w * 0.275);
+    ink.lineTo(0.264, w * 0.275);
+    ink.quadraticCurveTo(0.398, w * 0.213, 0.49, 0);
+    ink.closePath();
+    for (const s of [-1, 1]) polygon(ink, -0.10, s * w * 0.30, -0.45, s * w * 0.72, -0.38, s * w * 0.26);
+    polygon(ink, -0.44, -w * 0.045, -0.12, -w * 0.045, -0.12, w * 0.045, -0.44, w * 0.045);
+    oval(ink, 0.07, 0, 0.10, h * 0.10);
+    oval(light, 0.07, 0, 0.066, h * 0.066);
+  },
+  star({ shape, ink, light }, { breadth: w }) {
+    // Twinkle: a long four-point star crossed by a shorter diagonal one.
+    sparkle(shape, 0, 0, 0.48, w * 0.90, 0.12);
+    ink.moveTo(0.27, w * 0.48);
+    ink.quadraticCurveTo(0, w * 0.07, -0.27, w * 0.48);
+    ink.quadraticCurveTo(-0.04, 0, -0.27, -w * 0.48);
+    ink.quadraticCurveTo(0, -w * 0.07, 0.27, -w * 0.48);
+    ink.quadraticCurveTo(0.04, 0, 0.27, w * 0.48);
+    ink.closePath();
+    sparkle(light, 0, 0, 0.13, w * 0.24, 0.14);
+    sparkle(light, 0.38, -w * 0.74, 0.07, w * 0.13, 0.14);
+    sparkle(light, -0.38, w * 0.74, 0.07, w * 0.13, 0.14);
+  },
+  arc({ shape, ink, light }, { breadth: w }) {
+    // Saturn: the front half of the ring passes over the planet; the back half hides behind it.
+    const h = w * 1.05, tilt = Math.PI / 2 - 0.32;
+    oval(shape, 0, 0, 0.27, h * 0.27);
+    arcAt(shape, 0, 0, w * 0.94, 0.13, tilt, 0, TAU);
+    shape.closePath();
+    arcAt(shape, 0, 0, w * 0.78, 0.075, tilt, 0, -TAU, true);
+    shape.closePath();
+    arcAt(ink, 0, 0, 0.27, h * 0.27, 0, -Math.PI / 2, Math.PI / 2);
+    ink.ellipse(0, 0, 0.11, h * 0.27, 0, Math.PI / 2, -Math.PI / 2, true);
+    ink.closePath();
+    arcAt(light, 0, 0, w * 0.94, 0.13, tilt, 0, Math.PI);
+    light.ellipse(0, 0, w * 0.78, 0.075, tilt, Math.PI, 0, true);
+    light.closePath();
+    oval(light, 0.37, -w * 0.70, 0.04, w * 0.075);
+  },
+  tessellation({ shape, ink, light }, { breadth: w }) {
+    // Satellite: a boxy body, two gridded solar wings and a dish facing outward.
+    polygon(shape, -0.16, -w * 0.20, 0.16, -w * 0.20, 0.16, w * 0.20, -0.16, w * 0.20);
+    polygon(shape, 0.15, -w * 0.035, 0.27, -w * 0.035, 0.27, w * 0.035, 0.15, w * 0.035);
+    shape.moveTo(0.38, -w * 0.30);
+    shape.quadraticCurveTo(0.12, 0, 0.38, w * 0.30);
+    shape.lineTo(0.41, w * 0.25);
+    shape.quadraticCurveTo(0.22, 0, 0.41, -w * 0.25);
+    shape.closePath();
+    polygon(shape, 0.28, -w * 0.02, 0.45, -w * 0.02, 0.45, w * 0.02, 0.28, w * 0.02);
+    oval(shape, 0.455, 0, 0.032, w * 0.06);
+    for (const s of [-1, 1]) {
+      polygon(shape, -0.03, s * w * 0.20, 0.03, s * w * 0.20, 0.03, s * w * 0.32, -0.03, s * w * 0.32);
+      polygon(shape, -0.16, s * w * 0.32, 0.16, s * w * 0.32, 0.16, s * w * 0.97, -0.16, s * w * 0.97);
+      for (const [c0, c1] of [[-0.13, -0.015], [0.015, 0.13]]) {
+        for (let r = 0; r < 3; r++) {
+          const y0 = (0.35 + r * 0.205) * w, y1 = y0 + 0.18 * w;
+          polygon(ink, c0, s * y0, c1, s * y0, c1, s * y1, c0, s * y1);
+        }
+      }
+    }
+    polygon(ink, -0.11, -w * 0.14, 0.11, -w * 0.14, 0.11, w * 0.14, -0.11, w * 0.14);
+    oval(light, 0, 0, 0.055, w * 0.085);
+    oval(light, 0.455, 0, 0.016, w * 0.03);
+  },
+  lace({ shape, ink, light, thread }, { breadth: w }) {
+    // Flying saucer: glass dome outward, a ring of lights, a tractor beam toward the center.
+    for (const y of [-0.58, 0, 0.58]) {
+      thread.moveTo(-0.13, y * 0.42 * w);
+      thread.lineTo(-0.46, y * w);
+    }
+    arcAt(shape, 0.04, 0, 0.36, w * 0.38, 0, -Math.PI / 2, Math.PI / 2);
+    shape.closePath();
+    oval(shape, 0.02, 0, 0.13, w * 0.93);
+    arcAt(ink, 0.06, 0, 0.31, w * 0.32, 0, -Math.PI / 2, Math.PI / 2);
+    ink.closePath();
+    oval(ink, -0.01, 0, 0.045, w * 0.84);
+    arcAt(light, 0.08, 0, 0.25, w * 0.25, 0, -Math.PI / 2, Math.PI / 2);
+    light.closePath();
+    hole(light, 0.22, -w * 0.10, 0.03, w * 0.06);
+    for (const y of [-0.62, -0.31, 0, 0.31, 0.62]) oval(light, -0.01, y * w, 0.024, w * 0.045);
+  },
+};
+
+const styles = { indian, nordic, japanese, tarot, dimsum, cosmos };
 
 export function makeBloomMotif(ring, style) {
   const layers = { shape: new Path2D(), ink: new Path2D(), light: new Path2D(), thread: new Path2D() };

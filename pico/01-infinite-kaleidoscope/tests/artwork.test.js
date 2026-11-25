@@ -9,10 +9,10 @@ import { styleMotion } from '../web/src/engines/style-motion.js';
 const base = 'http://localhost:8000/01/?debug=yes#old';
 
 test('cycling a style follows the menu order and wraps within each mode', () => {
-  for (const [engine, [first, second, third]] of Object.entries(patternStyles)) {
-    assert.equal(nextStyle(engine, first.id), second.id);
-    assert.equal(nextStyle(engine, second.id), third.id);
-    assert.equal(nextStyle(engine, third.id), first.id);
+  for (const [engine, styles] of Object.entries(patternStyles)) {
+    styles.forEach((style, index) => {
+      assert.equal(nextStyle(engine, style.id), styles[(index + 1) % styles.length].id);
+    });
   }
 });
 

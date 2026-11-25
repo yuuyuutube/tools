@@ -154,7 +154,7 @@ test('path families use distinct primitives and drawing reuses each visible gene
     const ring = generateBloomRing(seed, index);
     const forms = BLOOM_STYLES.map(({ id }) => Object.values(makeBloomMotif(ring, id))
       .map((path) => path.operations));
-    assert.equal(new Set(forms.map((form) => JSON.stringify(form))).size, 3);
+    assert.equal(new Set(forms.map((form) => JSON.stringify(form))).size, BLOOM_STYLES.length);
     signatures.add(forms[0].flat().map(([name]) => name).join(','));
   }
   assert.equal(signatures.size, 6);

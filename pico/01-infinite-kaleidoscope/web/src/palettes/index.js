@@ -13,6 +13,9 @@ export const palettes = [
   { id: 'marigold-peacock', name: 'Marigold Peacock', colors: ['#082E34', '#FFF1C6', '#C44877', '#9AB047', '#F3AA2A'] },
   { id: 'lingonberry-wool', name: 'Lingonberry Wool', colors: ['#203731', '#F6EEE2', '#B74959', '#5F9385', '#AFC9E3'] },
   { id: 'persimmon-ink', name: 'Persimmon Ink', colors: ['#242A33', '#F6EAD5', '#C55A3A', '#85965A', '#9BB8C0'] },
+  { id: 'midnight-gilt', name: 'Midnight Gilt', colors: ['#1A1534', '#F4EAD3', '#C8473F', '#D9B25A', '#6F8FCB'] },
+  { id: 'lacquer-steamer', name: 'Lacquer Steamer', colors: ['#3A1512', '#FBF0DC', '#E07A3F', '#EBC46A', '#86AD6E'] },
+  { id: 'cosmic-mint', name: 'Cosmic Mint', colors: ['#0D1233', '#F3F1FF', '#F2668B', '#7FE0C4', '#8F7CF0'] },
 ].map((palette) => ({
   ...palette,
   rgb: new Float32Array(palette.colors.flatMap((color) =>
