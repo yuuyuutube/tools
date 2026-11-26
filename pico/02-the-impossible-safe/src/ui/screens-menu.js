@@ -5,7 +5,7 @@ import { MISSIONS, MISSION_BY_ID, ACTS, missionUnlocked } from '../game/missions
 import { ARTIFACTS } from '../game/artifacts.js';
 import { generateCommission, dateKey, DAILY_PER_DAY } from '../game/daily.js';
 import { lookOf } from '../rendering/looks.js';
-import { SENSITIVITY } from '../input/rotary-navigation.js';
+import { SENSITIVITY } from '../../../shared/rotary/rotary-navigation.js';
 import { esc, pad2 } from '../game/doc.js';
 
 const row = (no, title, meta = '', cls = '') =>

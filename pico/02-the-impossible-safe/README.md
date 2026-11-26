@@ -43,9 +43,13 @@ cd tools/pico/02-the-impossible-safe
 node serve.mjs
 ```
 
-開啟 <http://localhost:5175/>（可用 `node serve.mjs 8080` 指定埠號）。
+開啟 <http://localhost:5175/>（會轉到 `/02-the-impossible-safe/`；可用 `node serve.mjs 8080` 指定埠號）。
 
-專案根目錄的 `.claude/launch.json` 也有 `impossible-safe-claude` 設定。
+伺服器以 `pico/` 為根目錄，因為旋鈕底層程式（序列埠、協定、角度追蹤、圓形拖曳、鍵盤與滾輪、按壓分派）已移到 `pico/shared/rotary/`，與 `03-rotary-stories` 共用同一份程式。正式部署時請發布整個 `pico/` 資料夾，相對路徑 `../shared/` 才找得到。詳見 `../shared/README.md`。
+
+專案根目錄的 `.claude/launch.json` 有 `impossible-safe` 設定。
+
+測試：`node --test tests/`（Windows 的 Node 20.0 不支援 `npm test` 裡的 `tests/*.test.js` 萬用字元）。
 
 ## 操作說明
 
@@ -54,7 +58,7 @@ node serve.mjs
 ```text
 Pico / Mouse / Touch / Keyboard
                  ↓
-          Input Adapter            src/input/input-controller.js
+          Input Adapter            src/input/input-controller.js（底層：../shared/rotary/）
                  ↓
          Game Controller           src/core/game-controller.js
                  ↓

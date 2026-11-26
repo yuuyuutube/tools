@@ -3,9 +3,10 @@
 import { SaveManager } from './core/save-manager.js';
 import { GameController } from './core/game-controller.js';
 import { AudioEngine } from './audio/audio-engine.js';
-import { InputController, attachKeyboard, attachWheel, holdRepeat } from './input/input-controller.js';
-import { attachPointerDial } from './input/pointer-dial.js';
-import { PicoSerial } from './input/serial-adapter.js';
+import { InputController } from './input/input-controller.js';
+import { attachKeyboard, attachWheel, holdRepeat, attachPressButton } from '../../shared/rotary/dom-input.js';
+import { attachPointerDial } from '../../shared/rotary/pointer-dial.js';
+import { PicoSerial } from '../../shared/rotary/serial-adapter.js';
 import { SafeStage } from './rendering/safe-stage.js';
 import { TitleScreen, IntroScreen, MenuScreen, MissionsScreen, DailyScreen, BriefScreen, SettingsScreen, ConfirmScreen } from './ui/screens-menu.js';
 import { UnlockScreen } from './ui/screen-unlock.js';
@@ -77,29 +78,8 @@ for (const btn of controls.querySelectorAll('.ctl')) btn.innerHTML = ICONS[btn.d
 holdRepeat(controls.querySelector('[data-ctl="ccw"]'), () => input.detents(-1, 'button'));
 holdRepeat(controls.querySelector('[data-ctl="cw"]'), () => input.detents(1, 'button'));
 controls.querySelector('[data-ctl="back"]').addEventListener('click', () => input.press('long', 'button'));
-{
-  // The centre button: tap = short, hold = long, like the real knob.
-  const b = controls.querySelector('[data-ctl="press"]');
-  let timer = null;
-  let fired = false;
-  b.addEventListener('pointerdown', (e) => {
-    if (e.button !== 0) return;
-    fired = false;
-    timer = setTimeout(() => {
-      fired = true;
-      input.press('long', 'button');
-    }, 650);
-  });
-  const up = (e) => {
-    clearTimeout(timer);
-    if (e.type === 'pointerup' && !fired) input.press('short', 'button');
-    fired = true;
-  };
-  b.addEventListener('pointerup', up);
-  b.addEventListener('pointercancel', up);
-  b.addEventListener('pointerleave', up);
-  b.addEventListener('keydown', (e) => e.key === 'Enter' && e.stopPropagation());
-}
+// The centre button: tap = short, hold = long, like the real knob.
+attachPressButton(controls.querySelector('[data-ctl="press"]'), input);
 // Buttons should not keep keyboard focus: Enter belongs to the knob.
 document.addEventListener('pointerup', () => {
   if (document.activeElement && document.activeElement.tagName === 'BUTTON') document.activeElement.blur();

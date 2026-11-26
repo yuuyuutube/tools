@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rotary Stories 旋轉式故事圖書館</title>
+<meta name="description" content="要用手轉，才讀得到的故事。一座可以用實體旋鈕閱讀的互動文學圖書館。WEIRD LAB / 03">
+<meta name="theme-color" content="#ECE6DA">
+<link rel="icon" href="src/styles/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@400;600;900&display=swap">
+<link rel="stylesheet" href="src/styles/base.css">
+<link rel="stylesheet" href="src/styles/library.css">
+</head>
+<body>
+<div id="app">
+  <main id="view" class="view"></main>
+  <nav id="topbar" aria-label="裝置">
+    <button id="btn-pico" class="icon-btn" aria-label="連接旋鈕"></button>
+    <button id="btn-sound" class="icon-btn" aria-label="聲音"></button>
+    <button id="btn-settings" class="icon-btn" aria-label="設定"></button>
+  </nav>
+  <div id="captions" aria-live="polite"></div>
+  <div id="dock" aria-label="旋鈕按鈕">
+    <button data-ctl="ccw" aria-label="逆時針轉"></button>
+    <button data-ctl="press" class="primary" aria-label="按下（按住為長按）"></button>
+    <button data-ctl="cw" aria-label="順時針轉"></button>
+    <button data-ctl="back" aria-label="返回（長按）"></button>
+  </div>
+  <div id="toast" role="status"></div>
+</div>
+<noscript>ROTARY STORIES 需要 JavaScript。</noscript>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

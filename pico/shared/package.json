@@ -1,0 +1,9 @@
+{
+  "name": "pico-shared",
+  "private": true,
+  "type": "module",
+  "description": "Rotary input modules shared by the pico/ sites (no dependencies).",
+  "scripts": {
+    "test": "node --test tests/"
+  }
+}

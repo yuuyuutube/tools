@@ -1,10 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { LineDecoder, parseEvent } from '../src/input/protocol.js';
+import { LineDecoder, parseEvent } from '../../shared/rotary/protocol.js';
 import { InputController } from '../src/input/input-controller.js';
-import { DialGear, NavGear, AngleAccumulator } from '../src/input/rotary-navigation.js';
-import { angleDelta } from '../src/input/pointer-dial.js';
-import { PicoSerial } from '../src/input/serial-adapter.js';
+import { DialGear, NavGear } from '../../shared/rotary/rotary-navigation.js';
+import { AngleAccumulator, angleDelta } from '../../shared/rotary/angle-tracker.js';
+import { PicoSerial } from '../../shared/rotary/serial-adapter.js';
 
 test('protocol: accumulated deltas survive, garbage is dropped', () => {
   assert.deepEqual(parseEvent('{"type":"rotate","delta":-4}'), { type: 'rotate', delta: -4 });
